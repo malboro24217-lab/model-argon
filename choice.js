@@ -21,17 +21,18 @@ const CH = {
 function sceneKey(L, p) { return p.key || (p.id + "@" + L.age); }
 
 /* ---- Dấu ấn: gọi từ resolve() trước khi áp dụng hiệu ứng ---- */
-function markChoice(L, p, i) {
+function markChoice(L, p, i, typed) {
   if (!L.lw) return null;
   const g = argonGate(L);
-  const visible = p.choices.map((c, k) => ({ c, k })).filter(x => choiceState(L, x.c, g) === "show");
-  const ch = p.choices[i];
+  const visible = typed ? p.choices.map((c, k) => ({ c, k })) : p.choices.map((c, k) => ({ c, k })).filter(x => choiceState(L, x.c, g) === "show");
+  const ch = typed ? { label: typed } : p.choices[i];
   const mark = Argon.addMark(L.lw.cz, { age: L.age, storylet: p.id, title: p.title, choice: ch ? ch.label : "", alternatives: visible.map(x => x.c.label), choice_index: i, witnesses: p.npc ? [p.npc.id] : [], doors_closed: [] });
   mark.alt_indices = visible.map(x => x.k).filter(k => k !== i);
   mark.key = sceneKey(L, p);
   mark.altLabels = Object.fromEntries(p.choices.map((c, k) => [k, c.label]));
-  L.choices.push({ key: mark.key, index: i });
-  if (!L.replay && ch && visible.length >= 2 && !/^(Không năm nay|Bạn để sang năm|Ghi nhớ|Tổng kết|Chịu|Nhận)$/.test(ch.label)) log(L, `${p.title} — bạn chọn: ${ch.label}`, "choice");
+  L.choices.push(typed ? { key: mark.key, index: -1, typed } : { key: mark.key, index: i });
+  if (typed) { if (!L.replay) log(L, `${p.title} — bạn chọn: ${typed}`, "choice"); }
+  else if (!L.replay && ch && visible.length >= 2 && !/^(Không năm nay|Bạn để sang năm|Ghi nhớ|Tổng kết|Chịu|Nhận)$/.test(ch.label)) log(L, `${p.title} — bạn chọn: ${ch.label}`, "choice");
   L.curMark = mark;
   return mark;
 }
