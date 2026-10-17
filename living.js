@@ -2,7 +2,7 @@
    Dàn nhân vật bền suốt đời · người phụ thuộc · ký ức & bí mật · storyteller · storylet → cảnh.
    Mọi thay đổi thế giới đi qua applyEffect(); kịch bản chỉ là dữ liệu. */
 const POOL = { major: null, micro: null, generic: null };
-function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || []); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
+function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || [], (Argon.PATH_STORYLETS || []).filter(s => s.category === "micro")); POOL.major = POOL.major.concat((Argon.PATH_STORYLETS || []).filter(s => s.category !== "micro")); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
 function yearBudget(L) { const a = L.age; if (a < 6) return 0; if (a < 13) return 1; if (a < 18) return 2; if (a < 65) return 2 + (L.ar && L.ar.rng.next() < 0.35 ? 1 : 0); return 1; }
 const LW = {
   ROLE_VN: { mother: "mẹ", father: "cha", sibling: "anh/chị/em", childhood_friend: "bạn thân từ nhỏ", bully: "kẻ bắt nạt ngày xưa", neighbor: "hàng xóm", first_boss: "sếp đầu tiên", official: "cán bộ", partner: "đối tác", creditor: "chủ nợ", mentor: "người thầy", rival: "đối thủ", spouse: "bạn đời", child: "con" },
@@ -37,6 +37,8 @@ function fill(L, text) {
 }
 
 /* ---- FactContext ---- */
+/** 0..1 cố định theo đời (từ seed): quyết định đời này gặp lát nội dung tùy chọn nào. */
+function lifeLuck(L) { if (L.luck === undefined) L.luck = (Math.imul((L.seed >>> 0) ^ 0x5bd1e995, 2654435761) >>> 0) / 4294967296; return L.luck; }
 function factContext(L) {
   const g = argonGate(L); const s = L.ar.state; const cast = L.lw.cast; const yearly = Math.max(300, householdIncome(L));
   const kids = [...cast.values()].filter(m => m.alive && m.role === "child").map(m => L.age + m.age_offset);
@@ -48,7 +50,7 @@ function factContext(L) {
   const rep = s.capitals.socialLedger.reputation;
   const debt = L.debt || 0, savings = L.savings;
   return {
-    age: L.age, sex: L.sex, country: L.c.id, gdp: L.c.g, poor_country: L.c.g < 8000, family_wealth: L.fam,
+    age: L.age, sex: L.sex, country: L.c.id, luck: lifeLuck(L), gdp: L.c.g, poor_country: L.c.g < 8000, family_wealth: L.fam,
     in_school: L.school.in, years_school: L.school.years, has_degree: L.school.deg, has_job: !!L.job && !L.retired, job: L.job || "", farmer: L.job === "nông dân" || L.job === "phụ giúp việc đồng áng", worker: /công nhân|kho|nhà máy|thợ/.test(L.job || ""), retired: L.retired,
     married: L.married, widowed: !!L.widowed, kids_alive: kids.length, kids_teen: kids.filter(a => a >= 13 && a <= 19).length, kids_school: kids.filter(a => a >= 6 && a < 18).length,
     parents_alive: parents.length, parent_old: parents.some(m => L.age + m.age_offset >= 65), parent_sick: parents.some(m => m.health < 40), sibling_alive: !!castMap.sibling,
@@ -90,6 +92,18 @@ function applyEffect(L, e, npcId) {
   if (e.role) { const m = L.lw.cast.get(e.role.npc); if (m && !m.roles.includes(e.role.add)) m.roles.push(e.role.add); }
   if (e.custom) customEffect(L, e.custom, npcId);
 }
+/** Bước vào một trong 96 con đường đời (registry trong engine). Con đường nghề thay nghề cũ; con đường "đời" (tị nạn, đi tu…) chồng lên. */
+function becomePath(L, id) {
+  const d = Argon.PATHS[id]; if (!d || !L.lw) return false;
+  const fl = L.lw.sflags;
+  if (d.kind === "career") for (const k of [...fl]) { const o = k.startsWith("life_") && Argon.PATHS[k.slice(5)]; if (o && o.kind === "career") fl.delete(k); }
+  fl.add("life_" + id); L.lw.counters["p_" + id] = 0; L.lw.counters["p_" + id + "_at"] = L.age;
+  const fam = famOf(L); const base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4);
+  if (d.fam && FAM[d.fam]) { for (const k in FAM) fl.delete("job_" + k); fl.add("job_" + d.fam); }
+  L.job = d.title; L.lastJob = d.title; L.income = base * d.incomeMult; L.retired = false;
+  log(L, `Bạn bước vào con đường ${d.vn}.`, "big");
+  return true;
+}
 function customEffect(L, c, npcId) {
   const s = L.ar.state, yearly = Math.max(300, householdIncome(L));
   if (c.includes("|")) { for (const part of c.split("|")) customEffect(L, part, npcId); return; }
@@ -102,6 +116,7 @@ function customEffect(L, c, npcId) {
     case "job_lose_maybe": if (L.r() < 0.5) customEffect(L, "job_lose"); break;
     case "job_new": getJob(L); break;
     case "job_switch": if (FAM[arg]) assignJob(L, arg); break;
+    case "become": becomePath(L, arg); break;
     case "scholar": L.school.target = 12; addSt(L, "know", 5); break;
     case "return_home": L.lw.sflags.delete("path_migrant"); if (L.migrated) { L.migrated = false; L.c = L.birthC; } L.income *= 0.55; log(L, `Bạn về lại ${L.birthC.n}.`, "big"); break;
     case "spouse_leave": { const sp = castRole(L, "spouse"); if (sp) { sp.roles = sp.roles.filter(r => r !== "spouse"); sp.roles.push("rival"); } L.married = false; log(L, "Hai người chia tay.", "bad big"); break; }

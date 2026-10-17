@@ -361,7 +361,8 @@ function careerOptions(L){const c=L.c,S=L.school,fl=L.lw?L.lw.sflags:new Set();c
   if((c.g<20000&&!fl.has("origin_rich"))||fl.has("origin_poor_rural"))av.add("farm");if(fl.has("origin_rich")&&av.size>3){av.delete("farm");av.delete("domestic")}if(fl.has("coder")&&S.years>=12)av.add("tech");
   const temper=Object.keys(TEMPER_PREF).find(t=>fl.has(t));const t2=Object.keys(TEMPER_PREF).find(t=>fl.has("temper2_"+t.slice(7)));let pref=temper?TEMPER_PREF[temper].find(x=>av.has(x)):null;const pref2=t2?TEMPER_PREF[t2].find(x=>av.has(x)&&x!==pref):null;
   if(fl.has("coder")&&av.has("tech"))pref="tech";if(fl.has("clinic_vol")&&av.has("health"))pref="health";if(fl.has("origin_poor_rural")&&!S.deg&&L.r()<.4)pref="farm";
-  const rest=[...av].filter(x=>x!==pref&&x!==pref2);const out=pref?[pref]:[];if(pref2)out.push(pref2);while(out.length<3&&rest.length)out.push(rest.splice(Math.floor(L.r()*rest.length),1)[0]);return out}
+  const rest=[...av].filter(x=>x!==pref&&x!==pref2);const out=pref?[pref]:[];if(pref2)out.push(pref2);while(out.length<3&&rest.length)out.push(rest.splice(Math.floor(L.r()*rest.length),1)[0]);
+  const tal=(Argon.PATH_LIST||[]).filter(d=>d.kind==="career"&&fl.has("talent_"+d.id)&&L.age<=d.ages[1]).slice(0,2).map(d=>"path:"+d.id);return tal.concat(out).slice(0,4)}
 function assignJob(L,fam){const fl=L.lw.sflags;const old=famOf(L);for(const k in FAM)fl.delete("job_"+k);fl.add("job_"+fam);
   const t=FAM[fam].t;const title=fam==="health"?(L.school.deg&&L.r()<.35?"bác sĩ":"y tá"):fam==="office"&&!L.school.deg?"nhân viên văn phòng":t[Math.floor(L.r()*t.length)];
   if(old&&L.income>0){L.income*=FAM[fam].m/FAM[old].m}else L.income=incomeAt(L.c,L.incomePct||.4)*FAM[fam].m;
@@ -373,10 +374,11 @@ function getJob(L,child){const c=L.c,r=L.r;
   L.incomePct=p;
   if(child||!L.lw){const title=c.g<10000?"phụ giúp việc đồng áng":"làm việc vặt";L.job=title;L.income=incomeAt(c,p)*.3;log(L,`Bạn bắt đầu làm ${title}.`);return}
   const opts=careerOptions(L);
-  if(L.pending||opts.length<2){assignJob(L,opts[0]||"market");return}
+  const take=(L2,o)=>o.startsWith("path:")?becomePath(L2,o.slice(5)):assignJob(L2,o);
+  if(L.pending||opts.length<2){take(L,opts[0]||"market");return}
   L.job=null;L.income=0;
   scene(L,{id:"career",key:"career@"+L.age,title:L.age<20?"Đi làm":"Chọn nghề",text:`${L.school.deg?"Bạn đã có bằng đại học.":L.school.years>=9?`Bạn học hết lớp ${L.school.years}.`:"Bạn không được đi học nhiều."} Trước mắt có mấy con đường. Con đường nào cũng sẽ đưa bạn đến những người khác, những chuyện khác.`,
-    choices:opts.map(f=>({label:FAM_VN[f].charAt(0).toUpperCase()+FAM_VN[f].slice(1),hint:`≈ ${fmtVND(incomeAt(c,p)*FAM[f].m)}/tháng`+(f==="build"||f==="factory"?" · nặng nhọc":f==="tech"||f==="office"?" · ngồi một chỗ":f==="farm"?" · phụ thuộc trời":f==="market"?" · lên xuống thất thường":""),fx:L2=>assignJob(L2,f)})),def:0})}
+    choices:opts.map(f=>f.startsWith("path:")?(d=>({label:d.vn.charAt(0).toUpperCase()+d.vn.slice(1),hint:"Con đường bạn có năng khiếu · bấp bênh hơn",fx:L2=>becomePath(L2,d.id)}))(Argon.PATHS[f.slice(5)]):({label:FAM_VN[f].charAt(0).toUpperCase()+FAM_VN[f].slice(1),hint:`≈ ${fmtVND(incomeAt(c,p)*FAM[f].m)}/tháng`+(f==="build"||f==="factory"?" · nặng nhọc":f==="tech"||f==="office"?" · ngồi một chỗ":f==="farm"?" · phụ thuộc trời":f==="market"?" · lên xuống thất thường":""),fx:L2=>assignJob(L2,f)})),def:0})}
 
 function work(L){if(!L.job||L.retired)return;
   if(L.job==="phụ giúp việc đồng áng"||L.job==="làm việc vặt"){if(L.age>=16)getJob(L)}
@@ -518,6 +520,10 @@ var Argon = (() => {
     MICRO: () => MICRO,
     MICRO_GATES: () => MICRO_GATES,
     MILESTONES: () => MILESTONES,
+    PATHS: () => PATHS,
+    PATH_GROUPS: () => PATH_GROUPS,
+    PATH_LIST: () => PATH_LIST,
+    PATH_STORYLETS: () => PATH_STORYLETS,
     PLAYER_NODE_ID: () => PLAYER_NODE_ID,
     RELAPSE_AGENCY: () => RELAPSE_AGENCY,
     RELAPSE_TICKS: () => RELAPSE_TICKS,
@@ -1382,7 +1388,7 @@ var Argon = (() => {
     clean_record: { vi: "Qu\xE1 kh\u1EE9 s\u1EA1ch", desc: "T\u1EEB nay c\xF3 m\u1ED9t chuy\u1EC7n ng\u01B0\u1EDDi ta c\xF3 th\u1EC3 d\xF9ng \u0111\u1EC3 n\u1EAFm th\xF3p b\u1EA1n." },
     return_home: { vi: "\u0110\u01B0\u1EDDng v\u1EC1", desc: "Qu\xEA kh\xF4ng c\xF2n l\xE0 n\u01A1i b\u1EA1n c\xF3 th\u1EC3 quay l\u1EA1i nh\u01B0 ch\u01B0a t\u1EEBng \u0111i." }
   }, prov = {
-    flag: (f4) => `flag:${f4}`,
+    flag: (f5) => `flag:${f5}`,
     memory: (npc, tag) => `memory:${npc}:${tag}`,
     secret: (tag) => `secret:${tag}`,
     door: (d) => `door:${d}`,
@@ -1493,15 +1499,15 @@ var Argon = (() => {
       prerequisites: (c) => c.age >= 13 && c.age <= 17 && c.in_school && !!role(c, "childhood_friend"),
       specificity: (c) => countTrue(c.know < 45, c.bandwidth < 50),
       build: (c, N) => {
-        let f4 = role(c, "childhood_friend");
+        let f5 = role(c, "childhood_friend");
         return {
           title: "B\xE0i thi cu\u1ED1i n\u0103m",
           concept: "ev",
-          npc: f4,
-          text: `${N(f4)} ng\u1ED3i c\u1EA1nh \u0111\u1EA9y t\u1EDD gi\u1EA5y sang. Kho\u1EA3ng 1 trong 4 l\u1EA7n ch\xE9p b\xE0i l\xE0 b\u1ECB b\u1EAFt. V\xE0 ${N(f4)} s\u1EBD l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t bi\u1EBFt chuy\u1EC7n n\xE0y.`,
+          npc: f5,
+          text: `${N(f5)} ng\u1ED3i c\u1EA1nh \u0111\u1EA9y t\u1EDD gi\u1EA5y sang. Kho\u1EA3ng 1 trong 4 l\u1EA7n ch\xE9p b\xE0i l\xE0 b\u1ECB b\u1EAFt. V\xE0 ${N(f5)} s\u1EBD l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t bi\u1EBFt chuy\u1EC7n n\xE0y.`,
           choices: [
-            C("Ch\xE9p b\xE0i", { trait: { risk: 2, fair: -1 }, gamble: { p: 0.75, win: { happy: 3, secret: { tag: "CHEATED_EXAM", severity: 0.35, fuse_years: [10, 25], note: "ch\xE9p b\xE0i thi cu\u1ED1i n\u0103m", known_by: [f4] }, log: "B\u1EA1n qua k\u1EF3 thi v\xE0 kh\xF4ng ai bi\u1EBFt, tr\u1EEB m\u1ED9t ng\u01B0\u1EDDi." }, lose: { happy: -8, rel: -5, counters: { lost_school_year: 1 }, log: "B\u1EA1n b\u1ECB b\u1EAFt qu\u1EA3 tang v\xE0 ph\u1EA3i h\u1ECDc l\u1EA1i m\u1ED9t n\u0103m." } } }, "75%: qua d\u1EC5 d\xE0ng \xB7 25%: b\u1ECB \u0111\xECnh ch\u1EC9"),
-            C("T\u1EF1 l\xE0m", { know: 3, memory: { npc: f4, tag: "KEPT_PROMISE", weight: 0.1, note: "kh\xF4ng ch\xE9p b\xE0i" }, log: "B\u1EA1n t\u1EF1 l\xE0m b\xE0i, \u0111i\u1EC3m kh\xF4ng cao nh\u01B0ng l\xE0 c\u1EE7a m\xECnh." }, "\u0110i\u1EC3m th\u1EA5p h\u01A1n m\u1ED9t ch\xFAt, ki\u1EBFn th\u1EE9c th\u1EADt", { longterm: !0 })
+            C("Ch\xE9p b\xE0i", { trait: { risk: 2, fair: -1 }, gamble: { p: 0.75, win: { happy: 3, secret: { tag: "CHEATED_EXAM", severity: 0.35, fuse_years: [10, 25], note: "ch\xE9p b\xE0i thi cu\u1ED1i n\u0103m", known_by: [f5] }, log: "B\u1EA1n qua k\u1EF3 thi v\xE0 kh\xF4ng ai bi\u1EBFt, tr\u1EEB m\u1ED9t ng\u01B0\u1EDDi." }, lose: { happy: -8, rel: -5, counters: { lost_school_year: 1 }, log: "B\u1EA1n b\u1ECB b\u1EAFt qu\u1EA3 tang v\xE0 ph\u1EA3i h\u1ECDc l\u1EA1i m\u1ED9t n\u0103m." } } }, "75%: qua d\u1EC5 d\xE0ng \xB7 25%: b\u1ECB \u0111\xECnh ch\u1EC9"),
+            C("T\u1EF1 l\xE0m", { know: 3, memory: { npc: f5, tag: "KEPT_PROMISE", weight: 0.1, note: "kh\xF4ng ch\xE9p b\xE0i" }, log: "B\u1EA1n t\u1EF1 l\xE0m b\xE0i, \u0111i\u1EC3m kh\xF4ng cao nh\u01B0ng l\xE0 c\u1EE7a m\xECnh." }, "\u0110i\u1EC3m th\u1EA5p h\u01A1n m\u1ED9t ch\xFAt, ki\u1EBFn th\u1EE9c th\u1EADt", { longterm: !0 })
           ],
           def: 1
         };
@@ -1541,17 +1547,17 @@ var Argon = (() => {
       prerequisites: (c) => c.age >= 18 && c.age <= 55 && !!role(c, "childhood_friend") && c.savings > 0.3 * c.income,
       specificity: (c) => countTrue(op(c, role(c, "childhood_friend")) > 0.3, c.rich, c.poor_country),
       build: (c, N) => {
-        let f4 = role(c, "childhood_friend");
+        let f5 = role(c, "childhood_friend");
         return {
-          title: `${N(f4)} h\u1ECFi m\u01B0\u1EE3n ti\u1EC1n`,
+          title: `${N(f5)} h\u1ECFi m\u01B0\u1EE3n ti\u1EC1n`,
           concept: "trust",
-          npc: f4,
-          text: `${N(f4)}, b\u1EA1n t\u1EEB nh\u1ECF, c\u1EA7n m\u1ED9t kho\u1EA3n b\u1EB1ng v\xE0i th\xE1ng l\u01B0\u01A1ng c\u1EE7a b\u1EA1n \u0111\u1EC3 xoay x\u1EDF vi\u1EC7c nh\xE0, h\u1EE9a sang n\u0103m tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i. Kh\xF4ng gi\u1EA5y t\u1EDD g\xEC c\u1EA3.`,
+          npc: f5,
+          text: `${N(f5)}, b\u1EA1n t\u1EEB nh\u1ECF, c\u1EA7n m\u1ED9t kho\u1EA3n b\u1EB1ng v\xE0i th\xE1ng l\u01B0\u01A1ng c\u1EE7a b\u1EA1n \u0111\u1EC3 xoay x\u1EDF vi\u1EC7c nh\xE0, h\u1EE9a sang n\u0103m tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i. Kh\xF4ng gi\u1EA5y t\u1EDD g\xEC c\u1EA3.`,
           choices: [
-            C("Cho m\u01B0\u1EE3n", { trait: { coop: 2 }, game: { npc: f4, move: "cooperate", stake_frac: 0.3 }, log: "B\u1EA1n cho m\u01B0\u1EE3n kh\xF4ng gi\u1EA5y t\u1EDD" }, "C\xF3 th\u1EC3 \u0111\u01B0\u1EE3c tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i, ho\u1EB7c m\u1EA5t tr\u1EAFng"),
-            C("Cho m\u1ED9t n\u1EEDa, kh\xF4ng c\u1EA7n tr\u1EA3", { money: -0.12, rel: 4, memory: { npc: f4, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "cho ti\u1EC1n l\xFAc t\xFAng" }, log: `B\u1EA1n \u0111\u01B0a ${N(f4)} m\u1ED9t n\u1EEDa v\xE0 n\xF3i kh\xF4ng c\u1EA7n tr\u1EA3.` }, "M\u1EA5t \xEDt, gi\u1EEF \u0111\u01B0\u1EE3c t\xECnh b\u1EA1n"),
-            C("Cho m\u01B0\u1EE3n c\xF3 gi\u1EA5y t\u1EDD v\xE0 ng\u01B0\u1EDDi l\xE0m ch\u1EE9ng", { trait: { coop: 1 }, game: { npc: f4, move: "arbitrage", stake_frac: 0.3 }, log: "B\u1EA1n cho m\u01B0\u1EE3n c\xF3 gi\u1EA5y t\u1EDD" }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: gi\u1EEF l\xF2ng tin b\u1EB1ng c\u1EA5u tr\xFAc, kh\xF4ng b\u1EB1ng hy v\u1ECDng", { tier: "sovereign", longterm: !0 }),
-            C("T\u1EEB ch\u1ED1i", { trait: { coop: -1 }, rel: -5, memory: { npc: f4, tag: "REFUSED_HELP", weight: -0.3, note: "t\u1EEB ch\u1ED1i cho m\u01B0\u1EE3n l\xFAc t\xFAng" }, log: `${N(f4)} n\xF3i kh\xF4ng sao, nh\u01B0ng \xEDt gh\xE9 ch\u01A1i h\u01A1n.` }, "Gi\u1EEF ti\u1EC1n")
+            C("Cho m\u01B0\u1EE3n", { trait: { coop: 2 }, game: { npc: f5, move: "cooperate", stake_frac: 0.3 }, log: "B\u1EA1n cho m\u01B0\u1EE3n kh\xF4ng gi\u1EA5y t\u1EDD" }, "C\xF3 th\u1EC3 \u0111\u01B0\u1EE3c tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i, ho\u1EB7c m\u1EA5t tr\u1EAFng"),
+            C("Cho m\u1ED9t n\u1EEDa, kh\xF4ng c\u1EA7n tr\u1EA3", { money: -0.12, rel: 4, memory: { npc: f5, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "cho ti\u1EC1n l\xFAc t\xFAng" }, log: `B\u1EA1n \u0111\u01B0a ${N(f5)} m\u1ED9t n\u1EEDa v\xE0 n\xF3i kh\xF4ng c\u1EA7n tr\u1EA3.` }, "M\u1EA5t \xEDt, gi\u1EEF \u0111\u01B0\u1EE3c t\xECnh b\u1EA1n"),
+            C("Cho m\u01B0\u1EE3n c\xF3 gi\u1EA5y t\u1EDD v\xE0 ng\u01B0\u1EDDi l\xE0m ch\u1EE9ng", { trait: { coop: 1 }, game: { npc: f5, move: "arbitrage", stake_frac: 0.3 }, log: "B\u1EA1n cho m\u01B0\u1EE3n c\xF3 gi\u1EA5y t\u1EDD" }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: gi\u1EEF l\xF2ng tin b\u1EB1ng c\u1EA5u tr\xFAc, kh\xF4ng b\u1EB1ng hy v\u1ECDng", { tier: "sovereign", longterm: !0 }),
+            C("T\u1EEB ch\u1ED1i", { trait: { coop: -1 }, rel: -5, memory: { npc: f5, tag: "REFUSED_HELP", weight: -0.3, note: "t\u1EEB ch\u1ED1i cho m\u01B0\u1EE3n l\xFAc t\xFAng" }, log: `${N(f5)} n\xF3i kh\xF4ng sao, nh\u01B0ng \xEDt gh\xE9 ch\u01A1i h\u01A1n.` }, "Gi\u1EEF ti\u1EC1n")
           ],
           def: 0
         };
@@ -2345,10 +2351,10 @@ var Argon = (() => {
       prerequisites: (c) => c.age === age,
       specificity: () => 10,
       build: (c, N) => {
-        let q = { 15: "N\u0103m nay b\u1EA1n 15. Nh\xECn quanh: ai trong nh\u1EEFng ng\u01B0\u1EDDi n\xE0y s\u1EBD c\xF2n \u1EDF \u0111\xE2y khi b\u1EA1n 40?", 30: "Ba m\u01B0\u01A1i. Nh\u1EEFng g\xEC b\u1EA1n \u0111ang l\xE0m m\u1ED7i ng\xE0y c\xF3 ph\u1EA3i l\xE0 th\u1EE9 b\u1EA1n ch\u1ECDn, hay l\xE0 th\u1EE9 \u0111\xE3 ch\u1ECDn b\u1EA1n?", 50: "N\u0103m m\u01B0\u01A1i. B\u1EA1n \u0111\xE3 l\xE0m l\u1EE3i cho ai, v\xE0 ai \u0111\xE3 tr\u1EA3 gi\xE1 cho nh\u1EEFng g\xEC b\u1EA1n c\xF3?", 70: "B\u1EA3y m\u01B0\u01A1i. N\u1EBFu \u0111\u01B0\u1EE3c sinh ra l\u1EA7n n\u1EEFa \u1EDF \u0111\xFAng n\u01A1i n\xE0y, b\u1EA1n s\u1EBD \u0111\u1ED5i \u0111i\u1EC1u g\xEC?" }[age], m = role(c, "mother"), f4 = role(c, "childhood_friend");
+        let q = { 15: "N\u0103m nay b\u1EA1n 15. Nh\xECn quanh: ai trong nh\u1EEFng ng\u01B0\u1EDDi n\xE0y s\u1EBD c\xF2n \u1EDF \u0111\xE2y khi b\u1EA1n 40?", 30: "Ba m\u01B0\u01A1i. Nh\u1EEFng g\xEC b\u1EA1n \u0111ang l\xE0m m\u1ED7i ng\xE0y c\xF3 ph\u1EA3i l\xE0 th\u1EE9 b\u1EA1n ch\u1ECDn, hay l\xE0 th\u1EE9 \u0111\xE3 ch\u1ECDn b\u1EA1n?", 50: "N\u0103m m\u01B0\u01A1i. B\u1EA1n \u0111\xE3 l\xE0m l\u1EE3i cho ai, v\xE0 ai \u0111\xE3 tr\u1EA3 gi\xE1 cho nh\u1EEFng g\xEC b\u1EA1n c\xF3?", 70: "B\u1EA3y m\u01B0\u01A1i. N\u1EBFu \u0111\u01B0\u1EE3c sinh ra l\u1EA7n n\u1EEFa \u1EDF \u0111\xFAng n\u01A1i n\xE0y, b\u1EA1n s\u1EBD \u0111\u1ED5i \u0111i\u1EC1u g\xEC?" }[age], m = role(c, "mother"), f5 = role(c, "childhood_friend");
         return {
           title: `Kho\u1EA3ng l\u1EB7ng \xB7 ${age} tu\u1ED5i`,
-          text: `${q} ${age === 15 && m ? `${N(m)} \u0111\u1EE9ng trong b\u1EBFp, kh\xF4ng bi\u1EBFt b\u1EA1n \u0111ang ngh\u0129 g\xEC.` : age === 30 && f4 ? `${N(f4)} v\u1EEBa nh\u1EAFn, l\xE2u r\u1ED3i kh\xF4ng g\u1EB7p.` : ""}`,
+          text: `${q} ${age === 15 && m ? `${N(m)} \u0111\u1EE9ng trong b\u1EBFp, kh\xF4ng bi\u1EBFt b\u1EA1n \u0111ang ngh\u0129 g\xEC.` : age === 30 && f5 ? `${N(f5)} v\u1EEBa nh\u1EAFn, l\xE2u r\u1ED3i kh\xF4ng g\u1EB7p.` : ""}`,
           choices: [C("T\xF4i \u0111\xE3 ch\u1ECDn", { agency: 0.03, happy: 2, log: "B\u1EA1n tin m\xECnh \u0111\xE3 ch\u1ECDn." }), C("N\xF3 \u0111\xE3 ch\u1ECDn t\xF4i", { agency: 0.05, happy: -2, bw: 4, log: "B\u1EA1n th\u1EEBa nh\u1EADn \u0111i\u1EC1u kh\xF3 n\xF3i." }), C("T\xF4i ch\u01B0a bi\u1EBFt", { agency: 0.02, log: "B\u1EA1n \u0111\u1EC3 c\xE2u h\u1ECFi m\u1EDF." })],
           def: 2
         };
@@ -2372,12 +2378,12 @@ var Argon = (() => {
   var any = () => 1, MICRO = [
     /* =============================== Tuổi thơ 6–12 =============================== */
     M("m_share_lunch", [6, 12], (c) => !!role2(c, "childhood_friend"), (c) => countTrue(c.poor_country, c.family_wealth < 0.4), (c, N) => {
-      let f4 = role2(c, "childhood_friend");
+      let f5 = role2(c, "childhood_friend");
       return {
-        npc: f4,
+        npc: f5,
         title: "H\u1ED9p c\u01A1m tr\u01B0a",
-        text: vary("lunch", c.age, [`${N(f4)} kh\xF4ng mang c\u01A1m, ng\u1ED3i nh\xECn b\u1EA1n \u0103n.`, `Gi\u1EDD ra ch\u01A1i, ${N(f4)} b\u1EA3o h\xF4m nay nh\xE0 h\u1EBFt g\u1EA1o.`]),
-        choices: [C2("Chia m\u1ED9t n\u1EEDa", { happy: -1, counters: { kind: 1 }, memory: { npc: f4, tag: "HELPED_IN_CRISIS", weight: 0.12, note: "n\u1EEDa h\u1ED9p c\u01A1m n\u0103m l\u1EDBp 2" } }), C2("\u0102n h\u1EBFt", { health: 1 })],
+        text: vary("lunch", c.age, [`${N(f5)} kh\xF4ng mang c\u01A1m, ng\u1ED3i nh\xECn b\u1EA1n \u0103n.`, `Gi\u1EDD ra ch\u01A1i, ${N(f5)} b\u1EA3o h\xF4m nay nh\xE0 h\u1EBFt g\u1EA1o.`]),
+        choices: [C2("Chia m\u1ED9t n\u1EEDa", { happy: -1, counters: { kind: 1 }, memory: { npc: f5, tag: "HELPED_IN_CRISIS", weight: 0.12, note: "n\u1EEDa h\u1ED9p c\u01A1m n\u0103m l\u1EDBp 2" } }), C2("\u0102n h\u1EBFt", { health: 1 })],
         def: 0
       };
     }),
@@ -2430,12 +2436,12 @@ var Argon = (() => {
       };
     }),
     M("m_help_father", [8, 14], (c) => !!role2(c, "father"), (c) => countTrue(c.poor_country, c.farmer), (c, N) => {
-      let f4 = role2(c, "father");
+      let f5 = role2(c, "father");
       return {
-        npc: f4,
-        title: `Ph\u1EE5 ${N(f4)}`,
-        text: `${N(f4)} c\u1EA7n ng\u01B0\u1EDDi ph\u1EE5 vi\u1EC7c cu\u1ED1i tu\u1EA7n.`,
-        choices: [C2("\u0110i ph\u1EE5", { health: -1, trust: { npc: f4, delta: 0.06 }, know: 1 }), C2("\u1EDE nh\xE0 ch\u01A1i", { happy: 2 })],
+        npc: f5,
+        title: `Ph\u1EE5 ${N(f5)}`,
+        text: `${N(f5)} c\u1EA7n ng\u01B0\u1EDDi ph\u1EE5 vi\u1EC7c cu\u1ED1i tu\u1EA7n.`,
+        choices: [C2("\u0110i ph\u1EE5", { health: -1, trust: { npc: f5, delta: 0.06 }, know: 1 }), C2("\u1EDE nh\xE0 ch\u01A1i", { happy: 2 })],
         def: 0
       };
     }),
@@ -2463,11 +2469,11 @@ var Argon = (() => {
     })),
     /* =============================== Thiếu niên 13–19 =============================== */
     M("m_first_smoke", [13, 19], (c) => !!role2(c, "childhood_friend") && h(c, "smoke") === 0, any, (c, N) => {
-      let f4 = role2(c, "childhood_friend");
+      let f5 = role2(c, "childhood_friend");
       return {
-        npc: f4,
+        npc: f5,
         title: "\u0110i\u1EBFu thu\u1ED1c \u0111\u1EA7u ti\xEAn",
-        text: `Sau gi\u1EDD h\u1ECDc, ${N(f4)} ch\xECa ra m\u1ED9t \u0111i\u1EBFu thu\u1ED1c. "Th\u1EED \u0111i, c\xF3 sao \u0111\xE2u."`,
+        text: `Sau gi\u1EDD h\u1ECDc, ${N(f5)} ch\xECa ra m\u1ED9t \u0111i\u1EBFu thu\u1ED1c. "Th\u1EED \u0111i, c\xF3 sao \u0111\xE2u."`,
         choices: [C2("Th\u1EED", { counters: { smoke: 2 }, rel: 2, flags: ["habit_smoke"] }, "B\u1EAFt \u0111\u1EA7u m\u1ED9t th\xF3i quen"), C2("L\u1EAFc \u0111\u1EA7u", { rel: -1 })],
         def: 1
       };
@@ -2491,21 +2497,21 @@ var Argon = (() => {
       def: 0
     })),
     M("m_father_future", [15, 19], (c) => !!role2(c, "father"), any, (c, N) => {
-      let f4 = role2(c, "father");
+      let f5 = role2(c, "father");
       return {
-        npc: f4,
+        npc: f5,
         title: "Chuy\u1EC7n t\u01B0\u01A1ng lai",
-        text: `${N(f4)} mu\u1ED1n b\u1EA1n theo ngh\u1EC1 \u1ED5n \u0111\u1ECBnh. B\u1EA1n mu\u1ED1n th\u1EE9 kh\xE1c.`,
-        choices: [C2("Nghe l\u1EDDi", { trust: { npc: f4, delta: 0.1 }, happy: -2 }), C2("C\xE3i l\u1EA1i", { trust: { npc: f4, delta: -0.12 }, agency: 0.02, trait: { bold: 1 }, memory: { npc: f4, tag: "HUMILIATED_ME", weight: -0.08, note: "con c\xE3i l\u1EDDi chuy\u1EC7n t\u01B0\u01A1ng lai" } })],
+        text: `${N(f5)} mu\u1ED1n b\u1EA1n theo ngh\u1EC1 \u1ED5n \u0111\u1ECBnh. B\u1EA1n mu\u1ED1n th\u1EE9 kh\xE1c.`,
+        choices: [C2("Nghe l\u1EDDi", { trust: { npc: f5, delta: 0.1 }, happy: -2 }), C2("C\xE3i l\u1EA1i", { trust: { npc: f5, delta: -0.12 }, agency: 0.02, trait: { bold: 1 }, memory: { npc: f5, tag: "HUMILIATED_ME", weight: -0.08, note: "con c\xE3i l\u1EDDi chuy\u1EC7n t\u01B0\u01A1ng lai" } })],
         def: 0
       };
     }),
     M("m_teen_drink", [15, 19], (c) => !!role2(c, "childhood_friend"), any, (c, N) => {
-      let f4 = role2(c, "childhood_friend");
+      let f5 = role2(c, "childhood_friend");
       return {
-        npc: f4,
+        npc: f5,
         title: "Chai r\u01B0\u1EE3u \u0111\u1EA7u ti\xEAn",
-        text: `${N(f4)} mang r\u01B0\u1EE3u \u0111\u1EBFn bu\u1ED5i li\xEAn hoan cu\u1ED1i n\u0103m.`,
+        text: `${N(f5)} mang r\u01B0\u1EE3u \u0111\u1EBFn bu\u1ED5i li\xEAn hoan cu\u1ED1i n\u0103m.`,
         choices: [C2("U\u1ED1ng c\xF9ng", { counters: { drink: 1 }, rel: 2, happy: 2 }), C2("Kh\xF4ng u\u1ED1ng", { rel: -1 })],
         def: 1
       };
@@ -2521,22 +2527,22 @@ var Argon = (() => {
       };
     }),
     M("m_defend_friend", [12, 18], (c) => !!role2(c, "bully") && !!role2(c, "childhood_friend"), any, (c, N) => {
-      let b = role2(c, "bully"), f4 = role2(c, "childhood_friend");
+      let b = role2(c, "bully"), f5 = role2(c, "childhood_friend");
       return {
         npc: b,
-        title: `${N(b)} v\xE0 ${N(f4)}`,
-        text: `${N(b)} \u0111ang d\u1ED3n ${N(f4)} v\xE0o g\xF3c t\u01B0\u1EDDng.`,
-        choices: [C2("X\xF4ng v\xE0o", { health: -3, trait: { bold: 2 }, memory: { npc: f4, tag: "STOOD_UP_FOR_ME", weight: 0.3, note: `\u0111\u1EE9ng ra che cho ${N(f4)} tr\u01B0\u1EDBc ${N(b)}` } }), C2("G\u1ECDi ng\u01B0\u1EDDi l\u1EDBn", { memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.15, note: "g\u1ECDi ng\u01B0\u1EDDi l\u1EDBn" } }), C2("\u0110i ch\u1ED7 kh\xE1c", { memory: { npc: f4, tag: "REFUSED_HELP", weight: -0.2, note: "quay l\u01B0ng b\u1ECF \u0111i h\xF4m \u0111\xF3" } })],
+        title: `${N(b)} v\xE0 ${N(f5)}`,
+        text: `${N(b)} \u0111ang d\u1ED3n ${N(f5)} v\xE0o g\xF3c t\u01B0\u1EDDng.`,
+        choices: [C2("X\xF4ng v\xE0o", { health: -3, trait: { bold: 2 }, memory: { npc: f5, tag: "STOOD_UP_FOR_ME", weight: 0.3, note: `\u0111\u1EE9ng ra che cho ${N(f5)} tr\u01B0\u1EDBc ${N(b)}` } }), C2("G\u1ECDi ng\u01B0\u1EDDi l\u1EDBn", { memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.15, note: "g\u1ECDi ng\u01B0\u1EDDi l\u1EDBn" } }), C2("\u0110i ch\u1ED7 kh\xE1c", { memory: { npc: f5, tag: "REFUSED_HELP", weight: -0.2, note: "quay l\u01B0ng b\u1ECF \u0111i h\xF4m \u0111\xF3" } })],
         def: 1
       };
     }),
     M("m_friend_secret", [13, 22], (c) => !!role2(c, "childhood_friend"), any, (c, N) => {
-      let f4 = role2(c, "childhood_friend");
+      let f5 = role2(c, "childhood_friend");
       return {
-        npc: f4,
+        npc: f5,
         title: "B\xED m\u1EADt c\u1EE7a b\u1EA1n",
-        text: `${N(f4)} k\u1EC3 cho b\u1EA1n m\u1ED9t chuy\u1EC7n nh\xE0 kh\xF4ng ai \u0111\u01B0\u1EE3c bi\u1EBFt.`,
-        choices: [C2("Gi\u1EEF k\xEDn", { memory: { npc: f4, tag: "KEPT_PROMISE", weight: 0.2, note: "gi\u1EEF k\xEDn chuy\u1EC7n nh\xE0" } }), C2("K\u1EC3 cho ng\u01B0\u1EDDi kh\xE1c", { rel: 1, memory: { npc: f4, tag: "CHEATED_ME", weight: -0.35, note: "\u0111em chuy\u1EC7n nh\xE0 \u0111i k\u1EC3" } })],
+        text: `${N(f5)} k\u1EC3 cho b\u1EA1n m\u1ED9t chuy\u1EC7n nh\xE0 kh\xF4ng ai \u0111\u01B0\u1EE3c bi\u1EBFt.`,
+        choices: [C2("Gi\u1EEF k\xEDn", { memory: { npc: f5, tag: "KEPT_PROMISE", weight: 0.2, note: "gi\u1EEF k\xEDn chuy\u1EC7n nh\xE0" } }), C2("K\u1EC3 cho ng\u01B0\u1EDDi kh\xE1c", { rel: 1, memory: { npc: f5, tag: "CHEATED_ME", weight: -0.35, note: "\u0111em chuy\u1EC7n nh\xE0 \u0111i k\u1EC3" } })],
         def: 0
       };
     }),
@@ -2722,12 +2728,12 @@ var Argon = (() => {
       def: 0
     }), { cooldownYears: 6 }),
     M("m_friend_pitch", [22, 55], (c) => !!role2(c, "childhood_friend"), (c) => countTrue(op2(c, role2(c, "childhood_friend")) > 0.2), (c, N) => {
-      let f4 = role2(c, "childhood_friend");
+      let f5 = role2(c, "childhood_friend");
       return {
-        npc: f4,
-        title: `${N(f4)} r\u1EE7 b\xE1n h\xE0ng online`,
-        text: `${N(f4)} mu\u1ED1n b\u1EA1n g\xF3p m\u1ED9t \xEDt v\u1ED1n nh\u1EADp h\xE0ng v\u1EC1 b\xE1n th\u1EED.`,
-        choices: [C2("G\xF3p", { game: { npc: f4, move: "cooperate", stake_frac: 0.08 } }), C2("T\u1EEB ch\u1ED1i", { trust: { npc: f4, delta: -0.03 } })],
+        npc: f5,
+        title: `${N(f5)} r\u1EE7 b\xE1n h\xE0ng online`,
+        text: `${N(f5)} mu\u1ED1n b\u1EA1n g\xF3p m\u1ED9t \xEDt v\u1ED1n nh\u1EADp h\xE0ng v\u1EC1 b\xE1n th\u1EED.`,
+        choices: [C2("G\xF3p", { game: { npc: f5, move: "cooperate", stake_frac: 0.08 } }), C2("T\u1EEB ch\u1ED1i", { trust: { npc: f5, delta: -0.03 } })],
         def: 0
       };
     }, { cooldownYears: 10 }),
@@ -4084,6 +4090,323 @@ var Argon = (() => {
     ]))
   ];
 
+  // src/engine/narrative/paths/registry.ts
+  var P = (id, vn, group, fam, title, incomeMult, ages, talent2, kind = "career") => ({ id, vn, group, fam, title, incomeMult, ages, talent: talent2, kind }), PATH_GROUPS = {
+    arts: "Ngh\u1EC7 thu\u1EADt & gi\u1EA3i tr\xED",
+    media: "Truy\u1EC1n th\xF4ng & m\u1EA1ng",
+    sport: "Th\u1EC3 thao",
+    state: "Quy\u1EC1n l\u1EF1c & nh\xE0 n\u01B0\u1EDBc",
+    money: "Kinh doanh & l\xE0m gi\xE0u",
+    under: "Th\u1EBF gi\u1EDBi ng\u1EA7m",
+    serve: "Ph\u1EE5ng s\u1EF1 & t\xE2m linh",
+    mind: "Khoa h\u1ECDc & tri th\u1EE9c",
+    road: "Bi\u1EC3n, tr\u1EDDi, \u0111\u01B0\u1EDDng xa",
+    away: "Ph\u1EADn \u0111i xa",
+    craft: "Tay ngh\u1EC1 & l\xE0ng ngh\u1EC1",
+    street: "\u0110\u1EDDi th\u01B0\u1EDDng \u0111\u1EB7c bi\u1EC7t"
+  }, PATH_LIST = [
+    // Nghệ thuật & giải trí
+    P("singer", "ca s\u0129", "arts", "market", "ca s\u0129", 0.8, [15, 40], ["bold", "kind"]),
+    P("actor", "di\u1EC5n vi\xEAn", "arts", "market", "di\u1EC5n vi\xEAn", 0.8, [16, 40], ["bold"]),
+    P("writer", "nh\xE0 v\u0103n", "arts", null, "nh\xE0 v\u0103n", 0.6, [18, 60], ["curious"]),
+    P("painter", "h\u1ECDa s\u0129", "arts", null, "h\u1ECDa s\u0129", 0.6, [16, 55], ["curious", "kind"]),
+    P("photographer", "nhi\u1EBFp \u1EA3nh gia", "arts", "market", "nhi\u1EBFp \u1EA3nh gia", 0.9, [18, 50], ["curious"]),
+    P("folk_musician", "ngh\u1EC7 nh\xE2n \xE2m nh\u1EA1c d\xE2n gian", "arts", null, "ngh\u1EC7 nh\xE2n \u0111\xE0n h\xE1t", 0.6, [12, 50], ["kind", "tough"]),
+    P("comedian", "di\u1EC5n vi\xEAn h\xE0i", "arts", "market", "di\u1EC5n vi\xEAn h\xE0i", 0.8, [18, 45], ["bold"]),
+    P("dancer", "v\u0169 c\xF4ng", "arts", "market", "v\u0169 c\xF4ng", 0.7, [12, 30], ["bold", "tough"]),
+    // Truyền thông & mạng
+    P("journalist", "nh\xE0 b\xE1o \u0111i\u1EC1u tra", "media", "office", "ph\xF3ng vi\xEAn", 1, [21, 45], ["curious", "bold"]),
+    P("tv_host", "MC truy\u1EC1n h\xECnh", "media", "office", "MC", 1.2, [20, 40], ["bold"]),
+    P("streamer", "streamer", "media", "tech", "streamer", 0.7, [15, 35], ["bold", "curious"]),
+    P("influencer", "ng\u01B0\u1EDDi c\xF3 \u1EA3nh h\u01B0\u1EDFng tr\xEAn m\u1EA1ng", "media", "market", "KOL", 0.8, [16, 40], ["bold"]),
+    P("vlogger", "vlogger du l\u1ECBch", "media", "market", "vlogger", 0.7, [18, 40], ["curious"]),
+    P("film_director", "\u0111\u1EA1o di\u1EC5n phim", "media", "office", "\u0111\u1EA1o di\u1EC5n", 0.9, [22, 50], ["curious", "bold"]),
+    P("ad_creative", "d\xE2n qu\u1EA3ng c\xE1o", "media", "office", "ng\u01B0\u1EDDi l\xE0m qu\u1EA3ng c\xE1o", 1.2, [21, 45], ["curious"]),
+    P("radio_voice", "ph\xE1t thanh vi\xEAn", "media", "office", "ph\xE1t thanh vi\xEAn", 1, [20, 50], ["kind"]),
+    // Thể thao
+    P("footballer", "c\u1EA7u th\u1EE7 b\xF3ng \u0111\xE1", "sport", null, "c\u1EA7u th\u1EE7", 1, [12, 22], ["tough", "bold"]),
+    P("boxer", "v\xF5 s\u0129", "sport", null, "v\xF5 s\u0129", 0.8, [14, 28], ["tough", "bold"]),
+    P("runner", "v\u1EADn \u0111\u1ED9ng vi\xEAn \u0111i\u1EC1n kinh", "sport", null, "v\u1EADn \u0111\u1ED9ng vi\xEAn", 0.7, [12, 24], ["tough"]),
+    P("esports", "tuy\u1EC3n th\u1EE7 th\u1EC3 thao \u0111i\u1EC7n t\u1EED", "sport", "tech", "tuy\u1EC3n th\u1EE7 eSports", 0.9, [14, 24], ["curious", "bold"]),
+    P("coach", "hu\u1EA5n luy\u1EC7n vi\xEAn", "sport", "teach", "hu\u1EA5n luy\u1EC7n vi\xEAn", 1, [25, 55], ["tough", "kind"]),
+    P("referee", "tr\u1ECDng t\xE0i", "sport", "office", "tr\u1ECDng t\xE0i", 0.9, [22, 45], ["tough"]),
+    P("chess", "k\u1EF3 th\u1EE7 c\u1EDD vua", "sport", null, "k\u1EF3 th\u1EE7", 0.6, [8, 25], ["curious"]),
+    P("climber", "v\u1EADn \u0111\u1ED9ng vi\xEAn leo n\xFAi", "sport", null, "v\u1EADn \u0111\u1ED9ng vi\xEAn leo n\xFAi", 0.6, [18, 40], ["tough", "bold"]),
+    // Quyền lực & nhà nước
+    P("official", "c\xE1n b\u1ED9 nh\xE0 n\u01B0\u1EDBc", "state", "office", "c\xE1n b\u1ED9", 1, [22, 40], ["tough"]),
+    P("politician", "ch\xEDnh tr\u1ECB gia", "state", "office", "\u0111\u1EA1i bi\u1EC3u", 1.3, [28, 55], ["bold"]),
+    P("police", "c\u1EA3nh s\xE1t", "state", "office", "c\u1EA3nh s\xE1t", 1, [18, 30], ["tough", "bold"]),
+    P("soldier", "qu\xE2n nh\xE2n", "state", null, "qu\xE2n nh\xE2n", 0.9, [18, 30], ["tough"]),
+    P("judge", "th\u1EA9m ph\xE1n", "state", "office", "th\u1EA9m ph\xE1n", 1.4, [30, 50], ["curious"]),
+    P("lawyer", "lu\u1EADt s\u01B0", "state", "office", "lu\u1EADt s\u01B0", 1.4, [24, 45], ["curious", "bold"]),
+    P("diplomat", "nh\xE0 ngo\u1EA1i giao", "state", "office", "nh\xE0 ngo\u1EA1i giao", 1.5, [25, 45], ["curious"]),
+    P("customs", "c\xE1n b\u1ED9 h\u1EA3i quan", "state", "office", "c\xE1n b\u1ED9 h\u1EA3i quan", 1.2, [22, 40], ["tough"]),
+    // Kinh doanh & làm giàu
+    P("startup", "ng\u01B0\u1EDDi kh\u1EDFi nghi\u1EC7p", "money", "tech", "nh\xE0 s\xE1ng l\u1EADp", 0.6, [20, 50], ["curious", "bold"]),
+    P("real_estate", "d\xE2n b\u1EA5t \u0111\u1ED9ng s\u1EA3n", "money", "market", "m\xF4i gi\u1EDBi b\u1EA5t \u0111\u1ED9ng s\u1EA3n", 1.2, [22, 55], ["bold"]),
+    P("restaurateur", "\u0111\u1EA7u b\u1EBFp, ch\u1EE7 nh\xE0 h\xE0ng", "money", "market", "\u0111\u1EA7u b\u1EBFp", 0.9, [18, 50], ["kind", "curious"]),
+    P("border_trader", "d\xE2n bu\xF4n bi\xEAn gi\u1EDBi", "money", "market", "th\u01B0\u01A1ng l\xE1i", 1.1, [18, 50], ["bold"]),
+    P("investor", "nh\xE0 \u0111\u1EA7u t\u01B0", "money", "office", "nh\xE0 \u0111\u1EA7u t\u01B0", 1, [22, 60], ["bold", "curious"]),
+    P("factory_owner", "ch\u1EE7 x\u01B0\u1EDFng", "money", "factory", "ch\u1EE7 x\u01B0\u1EDFng", 1.3, [25, 55], ["tough"]),
+    P("ecommerce", "ng\u01B0\u1EDDi b\xE1n h\xE0ng online", "money", "market", "ch\u1EE7 shop online", 0.9, [16, 50], ["bold"]),
+    P("banker", "nh\xE2n vi\xEAn ng\xE2n h\xE0ng", "money", "office", "chuy\xEAn vi\xEAn ng\xE2n h\xE0ng", 1.3, [22, 40], ["curious"]),
+    // Thế giới ngầm
+    P("smuggler", "d\xE2n bu\xF4n l\u1EADu", "under", "driver", "ng\u01B0\u1EDDi ch\u1EDF h\xE0ng", 1.3, [18, 45], ["bold"]),
+    P("loan_shark", "ng\u01B0\u1EDDi cho vay n\u1EB7ng l\xE3i", "under", "market", "ch\u1EE7 c\u1EA7m \u0111\u1ED3", 1.3, [22, 55], ["bold", "tough"]),
+    P("scammer", "k\u1EBB l\u1EEBa \u0111\u1EA3o tr\xEAn m\u1EA1ng", "under", "tech", "nh\xE2n vi\xEAn 'c\xF4ng ty'", 1.2, [16, 40], ["bold"]),
+    P("gangster", "giang h\u1ED3", "under", null, "\u0111\xE0n em", 0.9, [14, 30], ["bold", "tough"]),
+    P("gambler", "d\xE2n c\u1EDD b\u1EA1c chuy\xEAn nghi\u1EC7p", "under", null, "con b\u1EA1c", 0.6, [18, 50], ["bold"]),
+    P("counterfeiter", "k\u1EBB l\xE0m h\xE0ng gi\u1EA3", "under", "factory", "ch\u1EE7 x\u01B0\u1EDFng 'h\xE0ng x\xE1ch tay'", 1.2, [22, 50], ["curious"]),
+    P("hacker", "hacker", "under", "tech", "hacker", 1.1, [15, 35], ["curious"]),
+    P("ex_convict", "ng\u01B0\u1EDDi t\u1EEBng \u1EDF t\xF9", "under", null, "ng\u01B0\u1EDDi m\u1EDBi ra t\xF9", 0.5, [16, 60], [], "life"),
+    // Phụng sự & tâm linh
+    P("monk", "ng\u01B0\u1EDDi tu h\xE0nh", "serve", null, "nh\xE0 tu h\xE0nh", 0.2, [12, 60], ["kind", "curious"], "life"),
+    P("priest", "linh m\u1EE5c, n\u1EEF tu", "serve", null, "ch\u1EE9c s\u1EAFc t\xF4n gi\xE1o", 0.3, [18, 40], ["kind"], "life"),
+    P("aid_doctor", "b\xE1c s\u0129 thi\u1EC7n nguy\u1EC7n", "serve", "health", "b\xE1c s\u0129 thi\u1EC7n nguy\u1EC7n", 0.8, [25, 55], ["kind"]),
+    P("activist", "nh\xE0 ho\u1EA1t \u0111\u1ED9ng x\xE3 h\u1ED9i", "serve", null, "nh\xE0 ho\u1EA1t \u0111\u1ED9ng", 0.5, [18, 60], ["kind", "bold"]),
+    P("environmentalist", "ng\u01B0\u1EDDi b\u1EA3o v\u1EC7 m\xF4i tr\u01B0\u1EDDng", "serve", null, "ki\u1EC3m l\xE2m, nh\xE0 b\u1EA3o t\u1ED3n", 0.7, [18, 50], ["kind", "tough"]),
+    P("social_worker", "nh\xE2n vi\xEAn c\xF4ng t\xE1c x\xE3 h\u1ED9i", "serve", "teach", "nh\xE2n vi\xEAn x\xE3 h\u1ED9i", 0.8, [22, 50], ["kind"]),
+    P("fortune_teller", "th\u1EA7y b\xF3i, th\u1EA7y phong th\u1EE7y", "serve", "market", "th\u1EA7y", 1, [25, 65], ["curious"]),
+    P("firefighter", "l\xEDnh c\u1EE9u h\u1ECFa", "serve", null, "l\xEDnh c\u1EE9u h\u1ECFa", 0.9, [18, 30], ["tough", "bold"]),
+    // Khoa học & tri thức
+    P("scientist", "nh\xE0 khoa h\u1ECDc", "mind", "office", "nghi\xEAn c\u1EE9u vi\xEAn", 1, [22, 40], ["curious"]),
+    P("inventor", "nh\xE0 s\xE1ng ch\u1EBF", "mind", "build", "nh\xE0 s\xE1ng ch\u1EBF", 0.8, [14, 60], ["curious"]),
+    P("professor", "gi\u1EA3ng vi\xEAn \u0111\u1EA1i h\u1ECDc", "mind", "teach", "gi\u1EA3ng vi\xEAn", 1.1, [24, 45], ["curious"]),
+    P("archaeologist", "nh\xE0 kh\u1EA3o c\u1ED5", "mind", "office", "nh\xE0 kh\u1EA3o c\u1ED5", 0.9, [22, 40], ["curious"]),
+    P("surgeon", "b\xE1c s\u0129 ph\u1EABu thu\u1EADt", "mind", "health", "b\xE1c s\u0129 ph\u1EABu thu\u1EADt", 1.8, [24, 35], ["curious", "tough"]),
+    P("ai_engineer", "k\u1EF9 s\u01B0 tr\xED tu\u1EC7 nh\xE2n t\u1EA1o", "mind", "tech", "k\u1EF9 s\u01B0 AI", 1.6, [20, 45], ["curious"]),
+    P("architect", "ki\u1EBFn tr\xFAc s\u01B0", "mind", "office", "ki\u1EBFn tr\xFAc s\u01B0", 1.3, [22, 40], ["curious"]),
+    P("vet", "b\xE1c s\u0129 th\xFA y", "mind", "health", "b\xE1c s\u0129 th\xFA y", 1.1, [22, 45], ["kind"]),
+    // Biển, trời, đường xa
+    P("sailor", "thuy\u1EC1n vi\xEAn vi\u1EC5n d\u01B0\u01A1ng", "road", null, "thuy\u1EC1n vi\xEAn", 1.4, [18, 40], ["tough", "bold"]),
+    P("pilot", "phi c\xF4ng", "road", null, "phi c\xF4ng", 2, [20, 30], ["bold"]),
+    P("deep_fisher", "ng\u01B0 d\xE2n b\xE1m bi\u1EC3n", "road", null, "ng\u01B0 d\xE2n", 0.9, [14, 45], ["tough"]),
+    P("long_hauler", "t\xE0i x\u1EBF \u0111\u01B0\u1EDDng d\xE0i", "road", "driver", "t\xE0i x\u1EBF \u0111\u01B0\u1EDDng d\xE0i", 1.1, [21, 50], ["tough"]),
+    P("tour_guide", "h\u01B0\u1EDBng d\u1EABn vi\xEAn du l\u1ECBch", "road", "market", "h\u01B0\u1EDBng d\u1EABn vi\xEAn", 1, [20, 45], ["kind", "curious"]),
+    P("explorer", "nh\xE0 th\xE1m hi\u1EC3m", "road", null, "nh\xE0 th\xE1m hi\u1EC3m", 0.6, [20, 45], ["bold", "curious"]),
+    P("flight_attendant", "ti\u1EBFp vi\xEAn h\xE0ng kh\xF4ng", "road", null, "ti\u1EBFp vi\xEAn", 1.3, [19, 28], ["kind"]),
+    P("train_driver", "l\xE1i t\xE0u", "road", "driver", "l\xE1i t\xE0u", 1, [20, 35], ["tough"]),
+    // Phận đi xa
+    P("labor_export", "lao \u0111\u1ED9ng xu\u1EA5t kh\u1EA9u", "away", "factory", "lao \u0111\u1ED9ng \u1EDF n\u01B0\u1EDBc ngo\xE0i", 2, [18, 40], [], "life"),
+    P("refugee", "ng\u01B0\u1EDDi t\u1ECB n\u1EA1n", "away", null, "ng\u01B0\u1EDDi t\u1ECB n\u1EA1n", 0.3, [1, 70], [], "life"),
+    P("miner", "th\u1EE3 m\u1ECF", "away", null, "th\u1EE3 m\u1ECF", 1.2, [18, 45], ["tough"]),
+    P("seasonal_worker", "lao \u0111\u1ED9ng th\u1EDDi v\u1EE5", "away", "farm", "lao \u0111\u1ED9ng th\u1EDDi v\u1EE5", 1.3, [18, 50], ["tough"]),
+    P("marriage_migrant", "ng\u01B0\u1EDDi l\u1EA5y ch\u1ED3ng/v\u1EE3 n\u01B0\u1EDBc ngo\xE0i", "away", null, "ng\u01B0\u1EDDi l\xE0m d\xE2u/r\u1EC3 x\u1EE9 l\u1EA1", 0.6, [18, 35], [], "life"),
+    P("student_abroad", "du h\u1ECDc sinh", "away", null, "du h\u1ECDc sinh", 0.3, [16, 30], ["curious"], "life"),
+    P("returnee", "ng\u01B0\u1EDDi v\u1EC1 n\u01B0\u1EDBc l\u1EADp nghi\u1EC7p", "away", null, "ng\u01B0\u1EDDi m\u1EDBi v\u1EC1 n\u01B0\u1EDBc", 1, [25, 60], [], "life"),
+    P("domestic_abroad", "gi\xFAp vi\u1EC7c \u1EDF n\u01B0\u1EDBc ngo\xE0i", "away", "domestic", "ng\u01B0\u1EDDi gi\xFAp vi\u1EC7c \u1EDF n\u01B0\u1EDBc ngo\xE0i", 1.8, [18, 45], [], "life"),
+    // Tay nghề & làng nghề
+    P("artisan", "ngh\u1EC7 nh\xE2n l\xE0ng ngh\u1EC1", "craft", "build", "ngh\u1EC7 nh\xE2n", 0.9, [14, 60], ["kind", "tough"]),
+    P("fashion", "th\u1EE3 may th\xE0nh nh\xE0 thi\u1EBFt k\u1EBF", "craft", "factory", "th\u1EE3 may", 0.9, [16, 45], ["curious"]),
+    P("barber", "th\u1EE3 c\u1EAFt t\xF3c", "craft", "market", "th\u1EE3 c\u1EAFt t\xF3c", 0.9, [16, 45], ["kind"]),
+    P("carpenter", "th\u1EE3 m\u1ED9c", "craft", "build", "th\u1EE3 m\u1ED9c", 1, [15, 50], ["tough"]),
+    P("baker", "th\u1EE3 l\xE0m b\xE1nh", "craft", "market", "th\u1EE3 l\xE0m b\xE1nh", 0.9, [16, 50], ["kind"]),
+    P("herbalist", "th\u1EA7y thu\u1ED1c nam", "craft", "health", "th\u1EA7y thu\u1ED1c", 0.8, [20, 60], ["kind", "curious"]),
+    P("agritech", "n\xF4ng d\xE2n c\xF4ng ngh\u1EC7 cao", "craft", "farm", "ch\u1EE7 trang tr\u1EA1i", 1.1, [20, 55], ["curious"]),
+    P("fish_farmer", "ng\u01B0\u1EDDi nu\xF4i tr\u1ED3ng th\u1EE7y s\u1EA3n", "craft", "farm", "ch\u1EE7 \u0111\u1EA7m t\xF4m", 1.1, [18, 55], ["tough"]),
+    // Đời thường đặc biệt
+    P("shipper", "shipper", "street", "driver", "shipper", 0.8, [16, 50], ["tough"]),
+    P("ride_hailing", "t\xE0i x\u1EBF xe c\xF4ng ngh\u1EC7", "street", "driver", "t\xE0i x\u1EBF xe c\xF4ng ngh\u1EC7", 0.9, [18, 55], ["tough"]),
+    P("street_vendor", "ng\u01B0\u1EDDi b\xE1n h\xE0ng rong", "street", "market", "ng\u01B0\u1EDDi b\xE1n h\xE0ng rong", 0.6, [12, 70], ["tough", "kind"]),
+    P("waste_picker", "ng\u01B0\u1EDDi nh\u1EB7t ve chai", "street", null, "ng\u01B0\u1EDDi nh\u1EB7t ve chai", 0.4, [10, 75], [], "life"),
+    P("security_guard", "b\u1EA3o v\u1EC7", "street", "office", "b\u1EA3o v\u1EC7", 0.7, [18, 65], ["tough"]),
+    P("homemaker", "ng\u01B0\u1EDDi n\u1ED9i tr\u1EE3 to\xE0n th\u1EDDi gian", "street", null, "n\u1ED9i tr\u1EE3", 0, [20, 60], ["kind"], "life"),
+    P("funeral_worker", "ng\u01B0\u1EDDi l\xE0m ngh\u1EC1 tang l\u1EC5", "street", "market", "ng\u01B0\u1EDDi l\xE0m d\u1ECBch v\u1EE5 tang l\u1EC5", 1, [18, 60], ["tough"]),
+    P("caregiver", "ng\u01B0\u1EDDi ch\u0103m b\u1EC7nh", "street", "health", "ng\u01B0\u1EDDi ch\u0103m b\u1EC7nh", 0.8, [18, 65], ["kind"])
+  ], PATHS = Object.fromEntries(PATH_LIST.map((p) => [p.id, p]));
+
+  // src/engine/narrative/paths/kit.ts
+  var C6 = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), T4 = (title, text, choices, def = 0, more = {}) => ({ title, text, choices, def, ...more }), f4 = (c, flag) => c.flags.has(flag), role6 = (c, r) => c.cast[r], vary4 = (id, age, arr) => {
+    let x = age * 31;
+    for (let ch of id) x = x * 33 + ch.charCodeAt(0) >>> 0;
+    return arr[x % arr.length];
+  }, life = (path) => `life_${path}`, talentFlag = (path) => `talent_${path}`, become = (path) => ({ custom: `become:${path}` }), leave = (path) => ({ unflags: [life(path)], custom: "job_lose" }), TEMPERS = ["curious", "bold", "kind", "tough"], temperOf = (c) => TEMPERS.find((t) => c.flags.has(`temper_${t}`)) ?? null;
+  function slice(c, key, p) {
+    let x = Math.floor((c.luck ?? 0) * 4294967295) >>> 0;
+    for (let ch of key) x = Math.imul(x ^ ch.charCodeAt(0), 2654435761) >>> 0;
+    return x ^= x >>> 15, (x >>> 0) / 4294967296 < p;
+  }
+  var step = (c, path, more = {}) => ({ [`p_${path}`]: 1, [`p_${path}_at`]: c.age - (c.counters[`p_${path}_at`] ?? 0), ...more }), inAges = (c, a) => c.age >= a[0] && c.age <= a[1];
+  function talent(path, id, ages, when, build) {
+    let def = PATHS[path];
+    return {
+      id,
+      category: "micro",
+      urgency: 18,
+      cooldownYears: 99,
+      once: !0,
+      maxPerLife: 1,
+      tension: 1,
+      prerequisites: (c) => inAges(c, ages) && !f4(c, talentFlag(path)) && !f4(c, life(path)) && (c.counters.talents_seen ?? 0) < 2 && slice(c, "t:" + path, def.talent.includes(temperOf(c) ?? "") ? 0.3 : 0.04) && when(c),
+      specificity: () => 5,
+      build
+    };
+  }
+  function door(path, id, ages, when, build, p = 0.12) {
+    let def = PATHS[path];
+    return {
+      id,
+      category: "arc",
+      urgency: 45,
+      cooldownYears: 99,
+      once: !0,
+      tension: 6,
+      prerequisites: (c) => inAges(c, ages) && inAges(c, def.ages) && !f4(c, life(path)) && (c.counters.doors_seen ?? 0) < 3 && (f4(c, talentFlag(path)) || slice(c, "d:" + id, p)) && when(c),
+      specificity: (c) => f4(c, talentFlag(path)) ? 7 : 6,
+      build
+    };
+  }
+  function beat(path, n, gapYears, build, when = () => !0) {
+    return {
+      id: `${path}_b${n}`,
+      category: "arc",
+      urgency: 84,
+      cooldownYears: 99,
+      once: !0,
+      tension: 6 + n,
+      prerequisites: (c) => f4(c, life(path)) && (c.counters[`p_${path}`] ?? 0) === n - 1 && c.counters[`p_${path}_at`] !== void 0 && c.age - c.counters[`p_${path}_at`] >= gapYears && when(c),
+      specificity: () => 7,
+      causes: () => [prov.flag(life(path))],
+      build
+    };
+  }
+  function daily(path, id, ages, cooldown, build, when = () => !0) {
+    return {
+      id,
+      category: "micro",
+      urgency: 18,
+      cooldownYears: Math.max(6, cooldown),
+      tension: 1,
+      maxPerLife: repeatCap(build),
+      prerequisites: (c) => f4(c, life(path)) && inAges(c, ages) && when(c),
+      specificity: () => 5,
+      causes: () => [prov.flag(life(path))],
+      build
+    };
+  }
+  function cross(path, id, ages, when, build) {
+    return {
+      id,
+      category: "micro",
+      urgency: 18,
+      cooldownYears: 99,
+      once: !0,
+      maxPerLife: 1,
+      tension: 2,
+      prerequisites: (c) => f4(c, life(path)) && inAges(c, ages) && when(c),
+      specificity: () => 5,
+      causes: () => [prov.flag(life(path))],
+      build
+    };
+  }
+
+  // src/engine/narrative/paths/singer.ts
+  var P2 = "singer", SINGER = [
+    /* ---------- năng khiếu ---------- */
+    talent(P2, "sg_t_voice", [8, 14], () => !0, (c) => T4("Gi\u1ECDng h\xE1t", "Bu\u1ED5i v\u0103n ngh\u1EC7 cu\u1ED1i n\u0103m, c\xF4 gi\xE1o b\u1EAFt b\u1EA1n h\xE1t thay m\u1ED9t b\u1EA1n b\u1ECB \u1ED1m. C\u1EA3 s\xE2n tr\u01B0\u1EDDng im l\u1EB7ng nghe. C\xF4 b\u1EA3o gi\u1ECDng b\u1EA1n hi\u1EBFm.", [
+      C6("Xin b\u1ED1 m\u1EB9 cho \u0111i h\u1ECDc h\xE1t", { money: -0.03, flags: [talentFlag(P2)], counters: { talents_seen: 1 }, happy: 3 }, "T\u1ED1n ti\u1EC1n nh\xE0, m\u1EDF m\u1ED9t con \u0111\u01B0\u1EDDng"),
+      C6("H\xE1t cho vui th\xF4i", { counters: { talents_seen: 1 } })
+    ], 0)),
+    /* ---------- cơ hội bước vào ---------- */
+    door(P2, "sg_d_contest", [16, 30], (c) => !c.poor_country || f4(c, talentFlag(P2)), () => T4("Cu\u1ED9c thi tr\xEAn truy\u1EC1n h\xECnh", "M\u1ED9t cu\u1ED9c thi h\xE1t tr\xEAn truy\u1EC1n h\xECnh m\u1EDF v\xF2ng s\u01A1 kh\u1EA3o \u1EDF th\xE0nh ph\u1ED1. Ng\u01B0\u1EDDi x\u1EBFp h\xE0ng d\xE0i t\u1EEB s\xE1ng. B\u1EA1n c\xF3 m\u1ED9t b\xE0i h\xE1t t\u1EE7.", [
+      C6("\u0110i thi, b\u1ECF vi\u1EC7c \u0111ang l\xE0m", { ...become(P2), counters: { doors_seen: 1 }, money: -0.1, agency: 0.02 }, "\u0110\u1EB7t c\u01B0\u1EE3c c\u1EA3 c\xF4ng vi\u1EC7c"),
+      C6("\u0110i thi nh\u01B0ng gi\u1EEF vi\u1EC7c", { counters: { doors_seen: 1 }, gamble: { p: 0.3, win: { ...become(P2), log: "B\u1EA1n l\u1ECDt v\xE0o v\xF2ng trong. M\u1ED9t qu\u1EA3n l\xFD xin s\u1ED1 \u0111i\u1EC7n tho\u1EA1i." }, lose: { happy: -3, log: "B\u1EA1n b\u1ECB lo\u1EA1i \u1EDF v\xF2ng \u0111\u1EA7u." } } }),
+      C6("Th\xF4i", { counters: { doors_seen: 1 } })
+    ], 1)),
+    door(P2, "sg_d_band", [18, 35], () => !0, () => T4("Ban nh\u1EA1c thi\u1EBFu ng\u01B0\u1EDDi h\xE1t", "Ban nh\u1EA1c ch\u01A1i \u1EDF qu\xE1n \u0111\u1EA7u ph\u1ED1 m\u1EA5t ng\u01B0\u1EDDi h\xE1t ch\xEDnh. H\u1ECD tr\u1EA3 m\u1ED7i t\u1ED1i m\u1ED9t \xEDt, nh\u01B0ng h\xE1t \u0111\u1EBFn n\u1EEDa \u0111\xEAm.", [
+      C6("Nh\u1EADn, h\xE1t m\u1ED7i t\u1ED1i", { ...become(P2), counters: { doors_seen: 1 }, health: -2 }, "Thu nh\u1EADp b\u1EA5p b\xEAnh, \u0111\u01B0\u1EE3c h\xE1t"),
+      C6("Ch\u1EC9 h\xE1t cu\u1ED1i tu\u1EA7n", { counters: { doors_seen: 1 }, money: 0.03, happy: 2 })
+    ], 1)),
+    /* ---------- mạch truyện ---------- */
+    beat(P2, 1, 1, (c) => T4("\u0110\xEAm di\u1EC5n \u0111\u1EA7u ti\xEAn", "M\u1ED9t s\xE2n kh\u1EA5u nh\u1ECF, s\xE1u m\u01B0\u01A1i kh\xE1n gi\u1EA3, \xE1nh \u0111\xE8n h\u1ECFng m\u1ED9t b\xEAn. Ch\u1EE7 qu\xE1n mu\u1ED1n b\u1EA1n h\xE1t nh\u1EEFng b\xE0i ai c\u0169ng thu\u1ED9c. B\u1EA1n c\xF3 ba b\xE0i t\u1EF1 vi\u1EBFt.", [
+      C6("H\xE1t b\xE0i c\u1EE7a m\xECnh", { counters: step(c, P2), flags: ["own_songs"], gamble: { p: 0.4, win: { happy: 6, log: "C\xF3 ng\u01B0\u1EDDi quay l\u1EA1i \u0111\xEAm h\xF4m sau ch\u1EC9 \u0111\u1EC3 nghe b\xE0i \u0111\xF3." }, lose: { happy: -3, log: "Kh\xE1n gi\u1EA3 n\xF3i chuy\u1EC7n su\u1ED1t b\xE0i." } } }, "C\xF3 th\u1EC3 kh\xF4ng ai nghe"),
+      C6("H\xE1t b\xE0i quen cho ch\u1EAFc", { counters: step(c, P2), money: 0.02 })
+    ], 0)),
+    beat(P2, 2, 3, (c) => T4("H\u1EE3p \u0111\u1ED3ng m\u01B0\u1EDDi n\u0103m", "M\u1ED9t b\xE0i h\xE1t c\u1EE7a b\u1EA1n b\u1ED7ng \u0111\u01B0\u1EE3c chia s\u1EBB kh\u1EAFp n\u01A1i. M\u1ED9t c\xF4ng ty gi\u1EA3i tr\xED \u0111\u01B0a h\u1EE3p \u0111\u1ED3ng m\u01B0\u1EDDi n\u0103m: h\u1ECD lo h\u1EBFt, \u0111\u1ED5i l\u1EA1i gi\u1EEF s\xE1u ph\u1EA7n m\u01B0\u1EDDi thu nh\u1EADp v\xE0 quy\u1EC1n v\u1EDBi m\u1ECDi b\xE0i h\xE1t.", [
+      C6("K\xFD", { counters: step(c, P2), income_mult: 1.8, flags: ["label_contract"] }, "N\u1ED5i nhanh, m\u1EA5t quy\u1EC1n b\xE0i h\xE1t"),
+      C6("T\u1EF1 ph\xE1t h\xE0nh, t\u1EF1 lo", { counters: step(c, P2), income_mult: 1.2, bw: -6, flags: ["indie_artist"] }, "Ch\u1EADm, m\u1EC7t, gi\u1EEF \u0111\u01B0\u1EE3c t\u1EA5t c\u1EA3"),
+      C6("\u0110\xF2i h\u1EE3p \u0111\u1ED3ng ba n\u0103m, gi\u1EEF quy\u1EC1n b\xE0i h\xE1t", { counters: step(c, P2), gamble: { p: 0.45, win: { income_mult: 1.5, flags: ["owns_masters"], log: "H\u1ECD \u0111\u1ED3ng \xFD. B\u1EA1n l\xE0 ng\u01B0\u1EDDi \u0111\u1EA7u ti\xEAn trong c\xF4ng ty \u0111\u01B0\u1EE3c gi\u1EEF quy\u1EC1n b\xE0i h\xE1t." }, lose: { income_mult: 1.1, log: "H\u1ECD r\xFAt l\u1EDDi m\u1EDDi. B\u1EA1n v\u1EABn c\xF2n b\xE0i h\xE1t c\u1EE7a m\xECnh." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba", { tier: "sovereign" })
+    ], 0)),
+    beat(P2, 3, 4, (c) => T4("Gi\u1ECDng kh\xE0n", "Sau ba th\xE1ng l\u01B0u di\u1EC5n, b\xE1c s\u0129 n\xF3i d\xE2y thanh c\u1EE7a b\u1EA1n c\xF3 h\u1EA1t x\u01A1. Ngh\u1EC9 s\xE1u th\xE1ng th\xEC c\xF3 th\u1EC3 l\xE0nh. Tu\u1EA7n sau c\xF3 \u0111\xEAm di\u1EC5n l\u1EDBn nh\u1EA5t t\u1EEB tr\u01B0\u1EDBc t\u1EDBi gi\u1EDD.", [
+      C6("H\u1EE7y h\u1EBFt, ngh\u1EC9 ch\u1EEFa", { counters: step(c, P2), income_mult: 0.7, money: -0.2, health: 6 }, "M\u1EA5t \u0111\xE0, gi\u1EEF \u0111\u01B0\u1EE3c gi\u1ECDng"),
+      C6("U\u1ED1ng thu\u1ED1c, h\xE1t ti\u1EBFp", { counters: step(c, P2), money: 0.3, gamble: { p: 0.5, win: { log: "B\u1EA1n qua \u0111\u01B0\u1EE3c m\xF9a di\u1EC5n. Gi\u1ECDng kh\xF4ng c\xF2n nh\u01B0 c\u0169, nh\u01B0ng kh\xF4ng ai nh\u1EADn ra." }, lose: { income_mult: 0.5, health: -8, log: "Gi\u1EEFa \u0111\xEAm di\u1EC5n, gi\u1ECDng b\u1EA1n v\u1EE1. \u0110o\u1EA1n phim lan kh\u1EAFp m\u1EA1ng." } } }, "Ti\u1EC1n b\xE2y gi\u1EDD, gi\u1ECDng v\u1EC1 sau")
+    ], 0)),
+    beat(P2, 4, 5, (c) => T4(f4(c, "label_contract") ? "H\u1EBFt h\u1EA1n h\u1EE3p \u0111\u1ED3ng" : "S\xE2n kh\u1EA5u l\u1EDBn", f4(c, "label_contract") ? "M\u01B0\u1EDDi n\u0103m tr\xF4i qua. C\xF4ng ty mu\u1ED1n gia h\u1EA1n, nh\u01B0ng b\u1EA1n bi\u1EBFt h\u1ECD \u0111ang n\xE2ng m\u1ED9t g\u01B0\u01A1ng m\u1EB7t tr\u1EBB h\u01A1n. B\xE0i h\xE1t c\u0169 c\u1EE7a b\u1EA1n v\u1EABn thu\u1ED9c v\u1EC1 h\u1ECD." : "L\u1EA7n \u0111\u1EA7u ti\xEAn b\u1EA1n c\xF3 m\u1ED9t \u0111\xEAm di\u1EC5n ri\xEAng \u1EDF nh\xE0 h\xE1t l\u1EDBn. B\xE1n h\u1EBFt v\xE9. M\u1ED9t nh\xE0 t\xE0i tr\u1EE3 mu\u1ED1n in logo l\xEAn m\u1ECDi th\u1EE9.", [
+      C6("M\u1EDF c\xF4ng ty ri\xEAng, \u0111\xE0o t\u1EA1o ng\u01B0\u1EDDi tr\u1EBB", { counters: step(c, P2), money: -0.6, flags: ["own_label"], agency: 0.03 }, "V\u1ED1n l\u1EDBn, th\xE0nh ng\u01B0\u1EDDi l\xE0m ngh\u1EC1"),
+      C6(f4(c, "label_contract") ? "Gia h\u1EA1n, gi\u1EEF ch\u1ED7" : "Nh\u1EADn nh\xE0 t\xE0i tr\u1EE3", { counters: step(c, P2), income_mult: 1.3 }),
+      C6("Lui v\u1EC1, h\xE1t \u1EDF ph\xF2ng tr\xE0 nh\u1ECF", { counters: step(c, P2), income_mult: 0.6, happy: 5 })
+    ], 0)),
+    beat(P2, 5, 6, (c) => T4("B\xE0i h\xE1t c\u0169", "M\u1ED9t ca s\u0129 tr\u1EBB xin h\xE1t l\u1EA1i b\xE0i h\xE1t \u0111\u1EA7u tay c\u1EE7a b\u1EA1n trong cu\u1ED9c thi l\u1EDBn. B\u1EA3n c\u1EE7a c\u1EADu \u1EA5y hay h\u01A1n b\u1EA3n c\u1EE7a b\u1EA1n ng\xE0y x\u01B0a.", [
+      C6("Cho ph\xE9p, kh\xF4ng l\u1EA5y ti\u1EC1n", { counters: step(c, P2), rel: 5, happy: 4, flags: ["passed_on"] }),
+      C6("Cho ph\xE9p, l\u1EA5y ti\u1EC1n b\u1EA3n quy\u1EC1n", { counters: step(c, P2), money: 0.3 }),
+      C6("Kh\xF4ng cho", { counters: step(c, P2), happy: -2 })
+    ], 0), (c) => c.age >= 40),
+    /* ---------- chuyện thường ngày ---------- */
+    daily(P2, "sg_wedding", [18, 60], 6, (c) => T4("H\xE1t \u0111\xE1m c\u01B0\u1EDBi", vary4("sgw", c.age, ["M\u1ED9t nh\xE0 gi\xE0u thu\xEA b\u1EA1n h\xE1t \u0111\xE1m c\u01B0\u1EDBi, tr\u1EA3 b\u1EB1ng ba \u0111\xEAm di\u1EC5n.", "M\xF9a c\u01B0\u1EDBi, tu\u1EA7n n\xE0o c\u0169ng c\xF3 ng\u01B0\u1EDDi g\u1ECDi h\xE1t ti\u1EC7c."]), [
+      C6("Nh\u1EADn", { money: 0.06, happy: -1 }, "Ti\u1EC1n d\u1EC5, \xEDt ng\u01B0\u1EDDi bi\u1EBFt"),
+      C6("T\u1EEB ch\u1ED1i, gi\u1EEF h\xECnh \u1EA3nh", { happy: 1 })
+    ], 0)),
+    daily(P2, "sg_fan", [18, 60], 8, (c) => T4("Ng\u01B0\u1EDDi h\xE2m m\u1ED9", vary4("sgf", c.age, ["C\xF3 m\u1ED9t ng\u01B0\u1EDDi \u0111\u1EE9ng ch\u1EDD b\u1EA1n \u1EDF c\u1EEDa sau m\u1ECDi \u0111\xEAm di\u1EC5n su\u1ED1t ba th\xE1ng.", "M\u1ED9t ng\u01B0\u1EDDi h\xE2m m\u1ED9 g\u1EEDi th\u01B0 d\xE0i m\u01B0\u1EDDi trang, bi\u1EBFt c\u1EA3 \u0111\u1ECBa ch\u1EC9 nh\xE0 b\u1EA1n."]), [
+      C6("N\xF3i chuy\u1EC7n t\u1EED t\u1EBF m\u1ED9t l\u1EA7n", { gamble: { p: 0.7, win: { log: "H\u1ECD th\xF4i ch\u1EDD. L\xE1 th\u01B0 cu\u1ED1i ch\u1EC9 c\xF3 hai ch\u1EEF c\u1EA3m \u01A1n." }, lose: { bw: -6, log: "H\u1ECD \u0111\u1EBFn t\u1EADn nh\xE0." } } }),
+      C6("Nh\u1EDD qu\u1EA3n l\xFD b\xE1o c\xF4ng an", { bw: -2 })
+    ], 1)),
+    daily(P2, "sg_copy", [20, 65], 7, () => T4("B\xE0i h\xE1t b\u1ECB l\u1EA5y", "B\u1EA1n nghe m\u1ED9t b\xE0i \u0111\u1EE9ng \u0111\u1EA7u b\u1EA3ng x\u1EBFp h\u1EA1ng, giai \u0111i\u1EC7u gi\u1ED1ng h\u1EC7t b\xE0i b\u1EA1n vi\u1EBFt n\u0103m n\u0103m tr\u01B0\u1EDBc.", [
+      C6("Ki\u1EC7n", { money: -0.15, gamble: { p: 0.4, win: { money: 0.5, log: "T\xF2a x\u1EED b\u1EA1n th\u1EAFng." }, lose: { happy: -4, log: "Kh\xF4ng \u0111\u1EE7 b\u1EB1ng ch\u1EE9ng." } } }),
+      C6("\u0110\u0103ng b\u1EA3n g\u1ED1c l\xEAn m\u1EA1ng, \u0111\u1EC3 ng\u01B0\u1EDDi nghe t\u1EF1 ph\xE2n x\u1EED", { rel: 2, flags: ["public_fight"] }),
+      C6("Im l\u1EB7ng", { happy: -3 })
+    ], 2)),
+    daily(P2, "sg_tour", [20, 55], 6, (c) => T4("L\u01B0u di\u1EC5n", vary4("sgt", c.age, ["Chuy\u1EBFn l\u01B0u di\u1EC5n ba m\u01B0\u01A1i t\u1EC9nh, hai th\xE1ng kh\xF4ng v\u1EC1 nh\xE0.", "M\u1ED9t chuy\u1EBFn di\u1EC5n cho c\u1ED9ng \u0111\u1ED3ng ng\u01B0\u1EDDi Vi\u1EC7t \u1EDF n\u01B0\u1EDBc ngo\xE0i, m\u1ED9t th\xE1ng."]), [
+      C6("\u0110i", { money: 0.15, rel: -3, health: -2 }),
+      C6("Ch\u1EC9 nh\u1EADn n\u1EEDa l\u1ECBch", { money: 0.06 })
+    ], 0)),
+    daily(P2, "sg_rival", [20, 60], 8, (c, N) => {
+      let r = role6(c, "rival");
+      return T4("Ng\u01B0\u1EDDi c\xF9ng ngh\u1EC1", `${N(r)} c\u0169ng \u0111i h\xE1t, v\xE0 v\u1EEBa n\xF3i x\u1EA5u b\u1EA1n tr\xEAn m\u1ED9t ch\u01B0\u01A1ng tr\xECnh truy\u1EC1n h\xECnh.`, [
+        C6("\u0110\xE1p tr\u1EA3 c\xF4ng khai", { memory: { npc: r, tag: "HUMILIATED_ME", weight: -0.2, note: "c\xE3i nhau tr\xEAn truy\u1EC1n h\xECnh" }, rel: 1 }),
+        C6("M\u1EDDi \u0111i h\xE1t chung m\u1ED9t b\xE0i", { gamble: { p: 0.5, win: { memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.3, note: "song ca l\xE0m l\xE0nh" }, log: "B\u1EA3n song ca \u0111\u01B0\u1EE3c nghe nhi\u1EC1u h\u01A1n c\u1EA3 hai b\xE0i ri\xEAng." }, lose: { log: "H\u1ECD kh\xF4ng tr\u1EA3 l\u1EDDi." } } }, void 0, { tier: "awakened" })
+      ], 1, { npc: r });
+    }, (c) => !!role6(c, "rival")),
+    daily(P2, "sg_voice", [18, 60], 8, () => T4("Gi\u1EEF gi\u1ECDng", "Sau \u0111\xEAm di\u1EC5n, c\u1EA3 ban r\u1EE7 \u0111i nh\u1EADu v\xE0 h\xFAt thu\u1ED1c \u0111\u1EBFn s\xE1ng.", [
+      C6("\u0110i c\xF9ng", { rel: 3, counters: { drink: 1, smoke: 1 }, health: -2 }),
+      C6("V\u1EC1 ng\u1EE7", { rel: -1, health: 1 })
+    ], 1)),
+    daily(P2, "sg_comments", [16, 60], 7, (c) => T4("B\xECnh lu\u1EADn", vary4("sgc", c.age, ["D\u01B0\u1EDBi video m\u1EDBi c\u1EE7a b\u1EA1n c\xF3 h\xE0ng ngh\xECn b\xECnh lu\u1EADn ch\xEA b\u1EA1n gi\xE0, b\u1EA1n b\xE9o, b\u1EA1n h\u1EBFt th\u1EDDi.", "M\u1ED9t \u0111o\u1EA1n b\u1EA1n h\xE1t sai l\u1EDDi b\u1ECB c\u1EAFt ra, th\xE0nh tr\xF2 c\u01B0\u1EDDi tr\xEAn m\u1EA1ng."]), [
+      C6("\u0110\u1ECDc h\u1EBFt", { happy: -6 }),
+      C6("T\u1EAFt \u0111i\u1EC7n tho\u1EA1i m\u1ED9t tu\u1EA7n", { happy: 1, bw: 3 }),
+      C6("T\u1EF1 l\xE0m video ch\u1EBF l\u1EA1i ch\xEDnh m\xECnh", { gamble: { p: 0.5, win: { rel: 4, log: "Ng\u01B0\u1EDDi ta c\u01B0\u1EDDi c\xF9ng b\u1EA1n, kh\xF4ng c\xF2n c\u01B0\u1EDDi b\u1EA1n." }, lose: { happy: -2 } } })
+    ], 1)),
+    daily(P2, "sg_charity", [20, 70], 8, () => T4("\u0110\xEAm nh\u1EA1c t\u1EEB thi\u1EC7n", "M\u1ED9t \u0111\xEAm nh\u1EA1c g\xE2y qu\u1EF9 cho v\xF9ng l\u0169 m\u1EDDi b\u1EA1n h\xE1t kh\xF4ng l\u1EA5y ti\u1EC1n. C\xF3 tin \u0111\u1ED3n ban t\u1ED5 ch\u1EE9c gi\u1EEF l\u1EA1i m\u1ED9t ph\u1EA7n ti\u1EC1n quy\xEAn g\xF3p.", [
+      C6("H\xE1t, v\xE0 \u0111\xF2i c\xF4ng khai s\u1ED5 s\xE1ch", { rel: 3, agency: 0.01, flags: ["leader"] }),
+      C6("H\xE1t, kh\xF4ng h\u1ECFi g\xEC", { rel: 2 }),
+      C6("T\u1EEB ch\u1ED1i", {})
+    ], 0)),
+    daily(P2, "sg_payola", [20, 55], 9, () => T4("L\xF3t tay", "M\u1ED9t nh\xE0 s\u1EA3n xu\u1EA5t n\xF3i mu\u1ED1n b\xE0i c\u1EE7a b\u1EA1n l\xEAn s\xF3ng gi\u1EDD v\xE0ng th\xEC ph\u1EA3i g\u1EEDi m\u1ED9t kho\u1EA3n.", [
+      C6("G\u1EEDi", { money: -0.2, income_mult: 1.15, secret: { tag: "PAID_BRIBE", severity: 0.3, fuse_years: [3, 10], note: "l\xF3t tay \u0111\u1EC3 l\xEAn s\xF3ng" } }, "L\xEAn s\xF3ng, c\xF3 m\u1ED9t b\xED m\u1EADt"),
+      C6("Kh\xF4ng", { counters: { honest: 1 } })
+    ], 1)),
+    daily(P2, "sg_quit", [30, 60], 99, (c) => T4("Gi\u1EEFa hai cu\u1ED9c \u0111\u1EDDi", "M\u1ED9t ng\u01B0\u1EDDi b\u1EA1n m\u1EDDi b\u1EA1n v\u1EC1 l\xE0m qu\u1EA3n l\xFD nh\xE0 h\xE0ng, l\u01B0\u01A1ng \u1ED5n \u0111\u1ECBnh g\u1EA5p \u0111\xF4i nh\u1EEFng n\u0103m b\u1EA1n \u0111i h\xE1t t\u1EC7 nh\u1EA5t.", [
+      C6("Gi\u1EA3i ngh\u1EC7, \u0111i l\xE0m \u1ED5n \u0111\u1ECBnh", { ...leave(P2), flags: ["ex_singer"] }, "B\xECnh y\xEAn, m\u1EA5t s\xE2n kh\u1EA5u"),
+      C6("V\u1EABn h\xE1t", { happy: 2 })
+    ], 1), (c) => c.happy < 50 || c.broke),
+    /* ---------- gia đình ---------- */
+    cross(P2, "sg_family", [22, 60], (c) => !!role6(c, "father") || !!role6(c, "mother") || c.kids_teen > 0 && !!role6(c, "child"), (c, N) => {
+      let k = role6(c, "child"), p = role6(c, "father") ?? role6(c, "mother");
+      return c.kids_teen > 0 && k ? T4(`${N(k)} mu\u1ED1n \u0111i h\xE1t`, `${N(k)} mu\u1ED1n b\u1ECF h\u1ECDc \u0111\u1EC3 \u0111i theo con \u0111\u01B0\u1EDDng c\u1EE7a b\u1EA1n.`, [
+        C6("\u1EE6ng h\u1ED9", { trust: { npc: k, delta: 0.2 }, money: -0.05 }),
+        C6("C\u1EA5m, b\u1EAFt h\u1ECDc xong", { trust: { npc: k, delta: -0.2 } }),
+        C6("Cho th\u1EED m\u1ED9t n\u0103m, c\xF3 \u0111i\u1EC1u ki\u1EC7n", { trust: { npc: k, delta: 0.1 }, promise: { to: k, what: "gi\xFAp con m\u1ED9t n\u0103m \u0111i h\xE1t", years: 1 } }, void 0, { tier: "awakened" })
+      ], 2, { npc: k }) : T4("Ngh\u1EC1 x\u01B0\u1EDBng ca", `${N(p)} v\u1EABn n\xF3i v\u1EDBi h\xE0ng x\xF3m r\u1EB1ng b\u1EA1n "l\xE0m vi\u1EC7c v\u0103n ph\xF2ng". ${N(p)} ch\u01B0a t\u1EEBng \u0111\u1EBFn m\u1ED9t \u0111\xEAm di\u1EC5n n\xE0o.`, [
+        C6("M\u1EDDi b\u1ED1 m\u1EB9 \u0111\u1EBFn xem", { gamble: { p: 0.6, win: { trust: { npc: p, delta: 0.3 }, log: `${N(p)} ng\u1ED3i h\xE0ng gh\u1EBF cu\u1ED1i, v\u1EC1 nh\xE0 kh\xF4ng n\xF3i g\xEC, nh\u01B0ng gi\u1EEF t\u1EA5m v\xE9.` }, lose: { trust: { npc: p, delta: -0.1 }, log: `${N(p)} kh\xF4ng \u0111\u1EBFn.` } } }),
+        C6("Th\xF4i, \u0111\u1EC3 b\u1ED1 m\u1EB9 ngh\u0129 g\xEC th\xEC ngh\u0129", { happy: -2 })
+      ], 0, { npc: p });
+    })
+  ];
+
+  // src/engine/narrative/paths/index.ts
+  var PATH_STORYLETS = [
+    ...SINGER
+  ];
+
   // src/engine/narrative/vignettes.ts
   var R3 = (id, specificity, when, lines, tone = "") => ({ id, specificity, when, lines, tone }), VIGNETTES = [
     /* ---- tuổi thơ ---- */
@@ -4283,21 +4606,21 @@ var Argon = (() => {
   ];
   function createCast(s, rng, names, playerWealth) {
     let cast = /* @__PURE__ */ new Map(), base = s.spawn.macro.survival_cost_quarterly * 4;
-    for (let [role6, [lo, hi], weight] of BIRTH_ROLES) {
-      let sex = ROLE_SEX[role6] === "any" ? rng.chance(0.5) ? "M" : "F" : ROLE_SEX[role6], name = rng.pick(sex === "M" ? names.male : names.female), arch = rng.pick(ROLE_ARCH[role6]), id = `cast_${role6}`, liquid = base * (role6 === "official" || role6 === "creditor" || role6 === "first_boss" ? 3 + 4 * rng.next() : 0.5 + 2 * rng.next()) * (0.6 + playerWealth), npc = makeNpc(id, name, arch, rng, liquid);
+    for (let [role7, [lo, hi], weight] of BIRTH_ROLES) {
+      let sex = ROLE_SEX[role7] === "any" ? rng.chance(0.5) ? "M" : "F" : ROLE_SEX[role7], name = rng.pick(sex === "M" ? names.male : names.female), arch = rng.pick(ROLE_ARCH[role7]), id = `cast_${role7}`, liquid = base * (role7 === "official" || role7 === "creditor" || role7 === "first_boss" ? 3 + 4 * rng.next() : 0.5 + 2 * rng.next()) * (0.6 + playerWealth), npc = makeNpc(id, name, arch, rng, liquid);
       s.npcs.set(id, npc);
-      let initialTrust = role6 === "mother" || role6 === "father" ? 0.7 : role6 === "childhood_friend" ? 0.4 : role6 === "sibling" ? 0.5 : role6 === "mentor" ? 0.3 : role6 === "bully" ? -0.3 : 0;
+      let initialTrust = role7 === "mother" || role7 === "father" ? 0.7 : role7 === "childhood_friend" ? 0.4 : role7 === "sibling" ? 0.5 : role7 === "mentor" ? 0.3 : role7 === "bully" ? -0.3 : 0;
       addNpcToGraph(s.graph, npc, weight, s.tick, initialTrust);
-      let m = { id, name, role: role6, roles: [role6], age_offset: lo + Math.floor(rng.next() * (hi - lo + 1)), alive: !0, health: 70 + 25 * rng.next(), dependent: !1, true_archetype: arch };
+      let m = { id, name, role: role7, roles: [role7], age_offset: lo + Math.floor(rng.next() * (hi - lo + 1)), alive: !0, health: 70 + 25 * rng.next(), dependent: !1, true_archetype: arch };
       cast.set(id, m);
     }
     let link = (a, b, t) => connectNpcs(s.graph, `cast_${a}`, `cast_${b}`, t, s.tick);
     return link("mother", "father", 0.8), link("mother", "sibling", 0.8), link("father", "sibling", 0.7), link("neighbor", "official", 0.5), link("official", "creditor", 0.5), link("creditor", "first_boss", 0.4), link("childhood_friend", "bully", 0.3), link("rival", "partner", 0.4), link("mentor", "first_boss", 0.5), link("neighbor", "mother", 0.5), cast;
   }
-  function addCastMember(s, cast, rng, role6, name, ageOffset, trust = 0.5, archOverride) {
-    let n = [...cast.values()].filter((c) => c.role === role6).length, id = `cast_${role6}${n ? n + 1 : ""}`, drawn = rng.pick(ROLE_ARCH[role6]), arch = archOverride ?? drawn, npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
+  function addCastMember(s, cast, rng, role7, name, ageOffset, trust = 0.5, archOverride) {
+    let n = [...cast.values()].filter((c) => c.role === role7).length, id = `cast_${role7}${n ? n + 1 : ""}`, drawn = rng.pick(ROLE_ARCH[role7]), arch = archOverride ?? drawn, npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
     s.npcs.set(id, npc), addNpcToGraph(s.graph, npc, 0.5, s.tick, trust);
-    let m = { id, name, role: role6, roles: [role6], age_offset: ageOffset, alive: !0, health: role6 === "child" ? 95 : 80, dependent: role6 === "child", true_archetype: arch };
+    let m = { id, name, role: role7, roles: [role7], age_offset: ageOffset, alive: !0, health: role7 === "child" ? 95 : 80, dependent: role7 === "child", true_archetype: arch };
     return cast.set(id, m), m;
   }
   function ageCast(cast, playerAge, rng, poorCountry) {
@@ -4325,8 +4648,8 @@ var Argon = (() => {
     }
     return out;
   }
-  function byRole(cast, role6) {
-    for (let m of cast.values()) if (m.alive && m.roles.includes(role6)) return m;
+  function byRole(cast, role7) {
+    for (let m of cast.values()) if (m.alive && m.roles.includes(role7)) return m;
   }
   return __toCommonJS(engine_exports);
 })();
@@ -4611,7 +4934,7 @@ function playStyle(L){const t=L.traits||{coop:0,fair:0,risk:0,bold:0};const g=L.
    Dàn nhân vật bền suốt đời · người phụ thuộc · ký ức & bí mật · storyteller · storylet → cảnh.
    Mọi thay đổi thế giới đi qua applyEffect(); kịch bản chỉ là dữ liệu. */
 const POOL = { major: null, micro: null, generic: null };
-function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || []); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
+function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || [], (Argon.PATH_STORYLETS || []).filter(s => s.category === "micro")); POOL.major = POOL.major.concat((Argon.PATH_STORYLETS || []).filter(s => s.category !== "micro")); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
 function yearBudget(L) { const a = L.age; if (a < 6) return 0; if (a < 13) return 1; if (a < 18) return 2; if (a < 65) return 2 + (L.ar && L.ar.rng.next() < 0.35 ? 1 : 0); return 1; }
 const LW = {
   ROLE_VN: { mother: "mẹ", father: "cha", sibling: "anh/chị/em", childhood_friend: "bạn thân từ nhỏ", bully: "kẻ bắt nạt ngày xưa", neighbor: "hàng xóm", first_boss: "sếp đầu tiên", official: "cán bộ", partner: "đối tác", creditor: "chủ nợ", mentor: "người thầy", rival: "đối thủ", spouse: "bạn đời", child: "con" },
@@ -4646,6 +4969,8 @@ function fill(L, text) {
 }
 
 /* ---- FactContext ---- */
+/** 0..1 cố định theo đời (từ seed): quyết định đời này gặp lát nội dung tùy chọn nào. */
+function lifeLuck(L) { if (L.luck === undefined) L.luck = (Math.imul((L.seed >>> 0) ^ 0x5bd1e995, 2654435761) >>> 0) / 4294967296; return L.luck; }
 function factContext(L) {
   const g = argonGate(L); const s = L.ar.state; const cast = L.lw.cast; const yearly = Math.max(300, householdIncome(L));
   const kids = [...cast.values()].filter(m => m.alive && m.role === "child").map(m => L.age + m.age_offset);
@@ -4657,7 +4982,7 @@ function factContext(L) {
   const rep = s.capitals.socialLedger.reputation;
   const debt = L.debt || 0, savings = L.savings;
   return {
-    age: L.age, sex: L.sex, country: L.c.id, gdp: L.c.g, poor_country: L.c.g < 8000, family_wealth: L.fam,
+    age: L.age, sex: L.sex, country: L.c.id, luck: lifeLuck(L), gdp: L.c.g, poor_country: L.c.g < 8000, family_wealth: L.fam,
     in_school: L.school.in, years_school: L.school.years, has_degree: L.school.deg, has_job: !!L.job && !L.retired, job: L.job || "", farmer: L.job === "nông dân" || L.job === "phụ giúp việc đồng áng", worker: /công nhân|kho|nhà máy|thợ/.test(L.job || ""), retired: L.retired,
     married: L.married, widowed: !!L.widowed, kids_alive: kids.length, kids_teen: kids.filter(a => a >= 13 && a <= 19).length, kids_school: kids.filter(a => a >= 6 && a < 18).length,
     parents_alive: parents.length, parent_old: parents.some(m => L.age + m.age_offset >= 65), parent_sick: parents.some(m => m.health < 40), sibling_alive: !!castMap.sibling,
@@ -4699,6 +5024,18 @@ function applyEffect(L, e, npcId) {
   if (e.role) { const m = L.lw.cast.get(e.role.npc); if (m && !m.roles.includes(e.role.add)) m.roles.push(e.role.add); }
   if (e.custom) customEffect(L, e.custom, npcId);
 }
+/** Bước vào một trong 96 con đường đời (registry trong engine). Con đường nghề thay nghề cũ; con đường "đời" (tị nạn, đi tu…) chồng lên. */
+function becomePath(L, id) {
+  const d = Argon.PATHS[id]; if (!d || !L.lw) return false;
+  const fl = L.lw.sflags;
+  if (d.kind === "career") for (const k of [...fl]) { const o = k.startsWith("life_") && Argon.PATHS[k.slice(5)]; if (o && o.kind === "career") fl.delete(k); }
+  fl.add("life_" + id); L.lw.counters["p_" + id] = 0; L.lw.counters["p_" + id + "_at"] = L.age;
+  const fam = famOf(L); const base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4);
+  if (d.fam && FAM[d.fam]) { for (const k in FAM) fl.delete("job_" + k); fl.add("job_" + d.fam); }
+  L.job = d.title; L.lastJob = d.title; L.income = base * d.incomeMult; L.retired = false;
+  log(L, `Bạn bước vào con đường ${d.vn}.`, "big");
+  return true;
+}
 function customEffect(L, c, npcId) {
   const s = L.ar.state, yearly = Math.max(300, householdIncome(L));
   if (c.includes("|")) { for (const part of c.split("|")) customEffect(L, part, npcId); return; }
@@ -4711,6 +5048,7 @@ function customEffect(L, c, npcId) {
     case "job_lose_maybe": if (L.r() < 0.5) customEffect(L, "job_lose"); break;
     case "job_new": getJob(L); break;
     case "job_switch": if (FAM[arg]) assignJob(L, arg); break;
+    case "become": becomePath(L, arg); break;
     case "scholar": L.school.target = 12; addSt(L, "know", 5); break;
     case "return_home": L.lw.sflags.delete("path_migrant"); if (L.migrated) { L.migrated = false; L.c = L.birthC; } L.income *= 0.55; log(L, `Bạn về lại ${L.birthC.n}.`, "big"); break;
     case "spouse_leave": { const sp = castRole(L, "spouse"); if (sp) { sp.roles = sp.roles.filter(r => r !== "spouse"); sp.roles.push("rival"); } L.married = false; log(L, "Hai người chia tay.", "bad big"); break; }
