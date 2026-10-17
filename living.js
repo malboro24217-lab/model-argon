@@ -98,6 +98,7 @@ function becomePath(L, id) {
   const fl = L.lw.sflags;
   if (d.kind === "career") for (const k of [...fl]) { const o = k.startsWith("life_") && Argon.PATHS[k.slice(5)]; if (o && o.kind === "career") fl.delete(k); }
   fl.add("life_" + id); L.lw.counters["p_" + id] = 0; L.lw.counters["p_" + id + "_at"] = L.age;
+  L.lw.queue = L.lw.queue.filter(q => q.custom !== "job_new"); // "job_lose|become:x" = đổi đường, không tìm việc mới nữa
   const fam = famOf(L); const base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4);
   if (d.fam && FAM[d.fam]) { for (const k in FAM) fl.delete("job_" + k); fl.add("job_" + d.fam); }
   L.job = d.title; L.lastJob = d.title; L.income = base * d.incomeMult; L.retired = false;
@@ -243,8 +244,10 @@ function microScene(L, ctx) {
   ctx = ctx || factContext(L);
   const cnt = {}, last = {}; for (const h of lw.history) { cnt[h.id] = (cnt[h.id] || 0) + 1; last[h.id] = h.age; }
   // Ngân sách lặp: mỗi thẻ tối đa maxPerLife lần (mặc định 1), lần lặp phải cách lần trước ≥ 10 năm.
-  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.maxPerLife ?? 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10));
-  let st = Argon.selectStorylet(pool, ctx, { minUrgency: 0, history: lw.history, age: L.age }, L.ar.rng);
+  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.meta && s.meta.path ? (s.maxPerLife ?? 1) : 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10));
+  // Chuyện mới trước: chỉ cho một thẻ quay lại khi không còn thẻ nào chưa gặp.
+  const opts = { minUrgency: 0, history: lw.history, age: L.age };
+  let st = Argon.selectStorylet(pool.filter(s => !cnt[s.id]), ctx, opts, L.ar.rng) || Argon.selectStorylet(pool, ctx, opts, L.ar.rng);
   // Lấp chỗ trống: chuyện chung không theo nhánh, chỉ khi nhánh hết chuyện
   if (!st && L.ar.rng.next() < 0.6) { const fill = Argon.eligible(pools().generic.filter(s => !cnt[s.id]), ctx, { minUrgency: 0, history: lw.history, age: L.age }); if (fill.length) st = fill[Math.floor(L.ar.rng.next() * fill.length)].s; }
   if (!st) return false;

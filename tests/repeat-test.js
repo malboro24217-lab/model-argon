@@ -9,7 +9,7 @@ for (let i = 0; i < 150; i++) {
   const c = {}; for (const [, t] of picks) c[t] = (c[t] || 0) + 1;
   for (const k in c) if (c[k] > 1) { repeats += c[k] - 1; per[k] = (per[k] || 0) + c[k] - 1; }
   for (let a = 0; a < picks.length; a++) for (let b = a + 1; b < picks.length; b++) if (picks[a][1] === picks[b][1] && picks[b][0] - picks[a][0] <= 5) near++;
-  const cries = P.log.filter(e => /khóc/.test(e.text) && / — bạn chọn: /.test(e.text)).length + (P.lw.scenesText || []).filter(t => /khóc/.test(t)).length;
+  const cries = P.log.filter(e => /không khóc/i.test(e.text) && / — bạn chọn: /.test(e.text)).length + 0;
   cry += cries; cryMax = Math.max(cryMax, cries);
   dec.push(P.choices.length);
 }
