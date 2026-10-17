@@ -134,7 +134,12 @@ function applyAct(L, act, kind, text, chon) {
     const reactions = applyPeople(L, act.nguoi);
     applyBig(L, act.viec_lon);
     let story = null;
-    if (act.chuyen) {
+    const inStory = kind === "scene" && p.story && (L.stories || []).find(s => s.id === p.story);
+    if (inStory) {
+      const stage = +(String(p.key).split("#")[1]) || inStory.stage + 1;
+      advanceStory(L, inStory, stage, act.ke, text, act.chuyen ? { hen_nam: act.chuyen.hen_nam, tom_tat: act.chuyen.tom_tat } : null, act.chuyen ? null : "Chuyện khép lại theo cách của bạn.");
+      if (!inStory.closed) story = inStory.title;
+    } else if (act.chuyen) {
       L.stories = L.stories || [];
       const st = { id: "st" + seq, title: act.chuyen.ten, summary: act.chuyen.tom_tat, openedAge: L.age, nextAge: L.age + act.chuyen.hen_nam, stage: 0,
         log: [{ age: L.age, text: act.ke, choice: text }], people: (act.nguoi || []).map(x => x.id).filter(Boolean), originMark: mark ? mark.id : null, closed: false, failures: 0 };
@@ -144,7 +149,7 @@ function applyAct(L, act, kind, text, chon) {
     L.actLog.push({ age: L.age, seq, kind, key: mark ? mark.key : p.key, text, result: act, chon: engineScene ? chon : null });
     if (engineScene) { const k = chon !== null && chon !== undefined && p.choices[chon] ? chon : p.def; L.curMark = mark; L.pending = null; const ch = p.choices[k]; if (ch && ch.fx) ch.fx(L); else resolveCore(L, p, k, L.r, L.c); }
     return { text: act.ke, outcome: act.ket_qua, outcomeVN: OUTCOME_VN[act.ket_qua], deltas: statDeltas(before, statSnap(L)), reactions: reactions.slice(0, 3), story };
-  } finally { L.curMark = null; if (kind === "scene") livingFollowUp(L); }
+  } finally { L.curMark = null; if (kind === "scene") { if (p.story) nextStory(L); livingFollowUp(L); } }
 }
 
 /* ---- Gọi AI: timeout 20 giây, thử lại 1 lần ---- */
@@ -169,4 +174,81 @@ async function agencyAct(L, text, sample) {
     } catch (e) { /* thử lại */ }
   }
   return { ok: false, error: "Người kể chuyện chưa trả lời — thử lại" };
+}
+
+/* ================= CHUYỆN ĐANG DỞ ================= */
+/** Gọi trong lifeEvents (đồng bộ): chọn tối đa 2 chuyện đến hẹn năm nay, lùi phần còn lại sang năm sau. */
+function storyCheck(L) {
+  if (!L.stories || !L.stories.length || L.pending || L.storyDue) return;
+  const due = Argon.dueStories(L.stories, L.age);
+  for (const s of L.stories) if (!s.closed && s.nextAge <= L.age && !due.includes(s)) s.nextAge = L.age + 1;
+  L.storyQueue = due.slice(1).map(s => s.id);
+  L.storyDue = due[0] || null;
+  if (L.storyDue && L.replay) storyReplay(L);
+}
+function nextStory(L) {
+  L.storyDue = null;
+  while (L.storyQueue && L.storyQueue.length && !L.pending) {
+    const s = L.stories.find(x => x.id === L.storyQueue.shift());
+    if (s && !s.closed && s.nextAge <= L.age) { L.storyDue = s; if (L.replay) storyReplay(L); return; }
+  }
+}
+function storyFail(L, story) {
+  story.failures++; story.nextAge = L.age + 1;
+  if (story.failures >= 3) { story.closed = true; log(L, `Chuyện "${story.title}" chìm dần, không ai nhắc lại nữa.`); }
+  nextStory(L);
+}
+function sceneFromStory(L, story, sc, stage) {
+  return { id: "story", story: story.id, key: `story:${story.id}#${stage}`, title: sc.title, text: sc.text, def: sc.def, npc: null,
+    choices: sc.choices.map(c => ({ label: c.label, hint: c.hint, fx: L2 => applyStoryChoice(L2, story.id, c, stage) })) };
+}
+function advanceStory(L, story, stage, text, choiceLabel, tiep, ket) {
+  story.stage = stage; story.log.push({ age: L.age, text, choice: choiceLabel });
+  if (ket || stage >= Argon.MAX_STORY_STAGES) { story.closed = true; if (ket) log(L, ket); }
+  else { story.nextAge = L.age + (tiep ? tiep.hen_nam : 2); if (tiep && tiep.tom_tat) story.summary = tiep.tom_tat; }
+}
+function applyStoryChoice(L, storyId, c, stage) {
+  const story = (L.stories || []).find(s => s.id === storyId); if (!story) return;
+  if (c.log) log(L, c.log);
+  applyEffect(L, actToEffect(c));
+  applyPeople(L, c.nguoi); applyBig(L, c.viec_lon);
+  advanceStory(L, story, stage, c.log || c.label, c.label, c.tiep, c.ket);
+  nextStory(L);
+}
+function storyPacket(L, story) {
+  const pk = actPacket(L, "");
+  delete pk.cau_go; delete pk.tinh_huong_dang_cho;
+  pk.chuyen = { ten: story.title, tom_tat: story.summary, da_xay_ra: story.log.map(l => `${l.age}t: ${l.text}${l.choice ? ` (bạn: ${l.choice})` : ""}`), chang_nay: story.stage + 1, chang_toi_da: Argon.MAX_STORY_STAGES,
+    nguoi_trong_chuyen: story.people.map(id => { const m = L.lw.cast.get(id); return m ? `${m.name}${m.alive ? "" : " (đã mất)"}` : null; }).filter(Boolean) };
+  return pk;
+}
+const STORY_RULES = `Bạn viết chặng tiếp theo của một "chuyện đang dở" trong đời nhân vật (xem "chuyen"). Giữ mạch: đọc kỹ những gì đã xảy ra. Luật giọng văn, tiền, người, cờ, việc lớn giống hệt luật bên dưới.
+Trả về JSON: {"title":"...","text":"2–4 câu","choices":[{"label":"...","hint":"đánh đổi ≤70 ký tự","log":"một câu kể kết quả","chi_so":{},"nguoi":[],"co":[],"viec_lon":[],"tiep":{"hen_nam":1-5,"tom_tat":"..."} HOẶC "ket":"câu khép chuyện"}],"def":0}
+2–4 lựa chọn, mỗi lựa chọn một đánh đổi thật. Mỗi lựa chọn hoặc có "tiep" (chuyện còn tiếp) hoặc "ket" (chuyện khép lại). Chặng cuối (chang_nay = chang_toi_da) mọi lựa chọn phải có "ket".`;
+/** Lấy chặng kế của chuyện từ AI và đặt làm tình huống chờ. Lỗi: thử lại 1 lần, rồi hoãn 1 năm (3 lần → chìm dần). */
+async function agencyStory(L, story, sample) {
+  sample = sample || NAR.sample;
+  if (!L.alive || !story || story.closed) { nextStory(L); return false; }
+  const stage = story.stage + 1;
+  const castIds = new Set([...L.lw.cast.values()].filter(m => m.alive).map(m => m.id));
+  const prompt = STORY_RULES + "\n\n" + AGENCY_RULES.split("CHỈ TRẢ VỀ JSON")[0] + "\nBỐI CẢNH:\n" + JSON.stringify(storyPacket(L, story));
+  if (sample) for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const raw = await withTimeout(sample.json(prompt, { modelTier: "default", cache: false }), AGENCY_TIMEOUT);
+      const sc = Argon.sanitizeStoryScene(raw, castIds, stage, L.age);
+      if (!sc) continue;
+      L.actLog = L.actLog || []; L.actLog.push({ age: L.age, kind: "story", key: `story:${story.id}#${stage}`, storyId: story.id, stage, scene: sc });
+      L.storyDue = null; L.pending = sceneFromStory(L, story, sc, stage);
+      return true;
+    } catch (e) { /* thử lại */ }
+  }
+  storyFail(L, story);
+  return false;
+}
+/** Tua lại đời: dùng chặng đã lưu, không gọi AI. Không có thì chuyện hoãn một năm. */
+function storyReplay(L) {
+  const story = L.storyDue; const stage = story.stage + 1;
+  const rec = (L.replayActs || []).find(a => a.kind === "story" && a.key === `story:${story.id}#${stage}`);
+  if (!rec) { L.storyDue = null; storyFail(L, story); return; }
+  L.storyDue = null; L.pending = sceneFromStory(L, story, rec.scene, stage);
 }

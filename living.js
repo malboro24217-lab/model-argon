@@ -182,7 +182,7 @@ function livingYear(L) {
   Argon.decayMemories(lw.mem);
   for (const leak of Argon.leakSecrets(s, lw.mem, rng)) if (rng.chance(0.3)) log(L, `${castName(L, leak.to)} nghe được chuyện ${LW.SECRET_VN[leak.secret.tag]} của bạn.`, "bad");
   for (const sec of Argon.fuseCheck(s, lw.mem, L.age, rng)) { lw.sflags.add("scandal_pending"); lw.counters.scandal_age = sec.age; log(L, `Chuyện ${LW.SECRET_VN[sec.tag]} năm ${sec.age} tuổi bỗng được kể lại.`, "bad big"); }
-  if (L.pending) return true;
+  if (L.pending || L.storyDue) return true;
   if (L.age < 5) { if (L.age === 3) { const st = pools().major.find(x => x.id === "temper_3"); if (st && !lw.history.some(h => h.id === st.id)) { fire(L, st, factContext(L)); return true; } } return false; }
   foreshadow(L);
   if (promiseDueScene(L)) return true;
@@ -253,7 +253,7 @@ function microScene(L, ctx) {
   scene(L, sc); return true;
 }
 /* Sau mỗi lựa chọn, nếu năm nay còn ngân sách thì đưa tiếp một chuyện nhỏ */
-function livingFollowUp(L) { if (!L.lw || L.pending || !L.alive || L.age < 6) return; microScene(L, null); }
+function livingFollowUp(L) { if (!L.lw || L.pending || !L.alive) return; if (typeof storyCheck === "function") { storyCheck(L); if (L.storyDue || L.pending) return; } if (L.age < 6) return; microScene(L, null); }
 /* ---- Thói quen trôi theo năm ---- */
 function habitYear(L) {
   const c = L.lw.counters, yi = Math.max(300, householdIncome(L));

@@ -82,5 +82,39 @@ const pho = { ke: "Bạn gom tiền thuê một góc vỉa hè.", ket_qua: "nua_
     assert(r.ok && r.card, 'card returned'); let g = 0; while (P.alive && g++ < 80) stepYear(P);
   }
   console.log('PASS task4 one act');
+
+  /* ---------------- Task 5: chuyện đang dở ---------------- */
+  const storyScene = (tiep = true) => ({ title: "Quán phở, năm sau", text: "Khách đông dần.", choices: [
+    { label: "Mở thêm giờ khuya", hint: "Mệt hơn", log: "Bạn bán đến nửa đêm.", chi_so: { money: 0.1 }, ...(tiep ? { tiep: { hen_nam: 1, tom_tat: "Quán đông." } } : { ket: "Quán đóng cửa." }) },
+    { label: "Giữ như cũ", hint: "Ổn định", log: "Bạn giữ nhịp cũ.", ...(tiep ? { tiep: { hen_nam: 1, tom_tat: "Quán vừa đủ." } } : { ket: "Bạn sang lại quán." }) }], def: 0 });
+  const runUntilStory = (P, maxYears = 10) => { let g = 0; while (P.alive && !P.storyDue && g++ < maxYears) { stepYear(P); while (P.pending) resolve(P, P.pending.def); } return P.storyDue; };
+  { // due exactly at opened age + hen_nam
+    const P = grow(301, 30, P => !P.pending); await agencyAct(P, "mở quán phở", fake(() => pho)); const opened = P.age;
+    const st = runUntilStory(P); assert(st && P.age === opened + 2, 'story due at +2, got age ' + P.age + ' opened ' + opened);
+    const ok1 = await agencyStory(P, st, fake(() => storyScene(true))); assert(ok1 && P.pending && P.pending.story === st.id, 'story scene pending');
+    resolve(P, 0); assert.strictEqual(st.stage, 1); assert.strictEqual(st.nextAge, P.age + 1); assert(!P.storyDue || P.storyDue.id !== st.id);
+  }
+  { // 4 due in one year → 2 stages, others pushed to next year
+    const P = grow(311, 30, P => !P.pending);
+    for (let k = 0; k < 4; k++) await agencyAct(P, "việc " + k, fake(() => ({ ...pho, co: [], viec_lon: [], chuyen: { ten: "Chuyện " + k, tom_tat: "t", hen_nam: 1 } })));
+    const year = P.age + 1; runUntilStory(P); assert.strictEqual(P.age, year); let staged = 0;
+    while (P.storyDue && P.age === year) { const ok2 = await agencyStory(P, P.storyDue, fake(() => storyScene(true))); assert(ok2); resolve(P, 0); staged++; }
+    assert.strictEqual(staged, 2, 'two story stages in one year'); assert.strictEqual(P.stories.filter(s => s.nextAge === year + 1 && s.stage === 0).length, 2, 'two pushed to next year');
+  }
+  { // closes after 8 stages even if AI keeps continuing
+    const P = grow(321, 25, P => !P.pending); await agencyAct(P, "mở quán phở", fake(() => pho)); const st = P.stories[0];
+    for (let k = 0; k < 12 && !st.closed && P.alive; k++) { const d = runUntilStory(P, 8); if (!d) break; await agencyStory(P, d, fake(() => storyScene(true))); resolve(P, 0); }
+    assert(st.closed && st.stage <= 8, 'closed by stage 8, stage ' + st.stage);
+  }
+  { // AI fails three years in a row → closed, logged
+    const P = grow(331, 30, P => !P.pending); await agencyAct(P, "mở quán phở", fake(() => pho)); const st = P.stories[0];
+    for (let k = 0; k < 3; k++) { const d = runUntilStory(P); assert(d); const okf = await agencyStory(P, d, fake(() => { throw new Error('down'); })); assert(!okf); }
+    assert(st.closed, 'closed after 3 failures'); assert(P.log.some(e => /chìm dần/.test(e.text)), 'logged');
+  }
+  { // death closes every story
+    const P = grow(341, 30, P => !P.pending); await agencyAct(P, "mở quán phở", fake(() => pho)); die(P, "tai nạn");
+    assert(P.stories.every(s => s.closed), 'all closed on death');
+  }
+  console.log('PASS task5 stories');
 })().catch(e => { console.error(e); process.exit(1); });
 `);
