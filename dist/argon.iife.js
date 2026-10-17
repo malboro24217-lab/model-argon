@@ -1,0 +1,3833 @@
+"use strict";
+var Argon = (() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: !0 });
+  }, __copyProps = (to, from, except, desc) => {
+    if (from && typeof from == "object" || typeof from == "function")
+      for (let key of __getOwnPropNames(from))
+        !__hasOwnProp.call(to, key) && key !== except && __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    return to;
+  };
+  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: !0 }), mod);
+
+  // src/engine/index.ts
+  var engine_exports = {};
+  __export(engine_exports, {
+    ALL_ARCHETYPES: () => ALL_ARCHETYPES,
+    ARCHETYPE_PRIOR: () => ARCHETYPE_PRIOR,
+    BANDWIDTH_LOCK_LEVEL: () => BANDWIDTH_LOCK_LEVEL,
+    BRANCHES: () => BRANCHES,
+    BRANCHES2: () => BRANCHES2,
+    BREACH_DD_THRESHOLD: () => BREACH_DD_THRESHOLD,
+    CRITICAL_STRESS: () => CRITICAL_STRESS,
+    DOORS: () => DOORS,
+    EMPTY_DELTA: () => EMPTY_DELTA,
+    GOSSIP_DEFECT_TRUST: () => GOSSIP_DEFECT_TRUST,
+    LIFE_VARIANTS: () => LIFE_VARIANTS,
+    MICRO: () => MICRO,
+    MICRO_GATES: () => MICRO_GATES,
+    MILESTONES: () => MILESTONES,
+    PLAYER_NODE_ID: () => PLAYER_NODE_ID,
+    RELAPSE_AGENCY: () => RELAPSE_AGENCY,
+    RELAPSE_TICKS: () => RELAPSE_TICKS,
+    STORYLETS: () => STORYLETS,
+    TEMPER2_ECHO: () => TEMPER2_ECHO,
+    TEMPER_LIFE: () => TEMPER_LIFE,
+    TICKS_PER_YEAR: () => TICKS_PER_YEAR,
+    VIGNETTES: () => VIGNETTES,
+    addCastMember: () => addCastMember,
+    addMark: () => addMark,
+    addMemory: () => addMemory,
+    addNpcToGraph: () => addNpcToGraph,
+    addSecret: () => addSecret,
+    ageCast: () => ageCast,
+    ageingCapLoss: () => ageingCapLoss,
+    agencyDriftDelta: () => agencyDriftDelta,
+    allianceCount: () => allianceCount,
+    applyDelta: () => applyDelta,
+    arbitragePayoff: () => arbitragePayoff,
+    attachConsequence: () => attachConsequence,
+    awaken: () => awaken,
+    bandwidthRegenDelta: () => bandwidthRegenDelta,
+    beliefAbout: () => beliefAbout,
+    bioEnergyDelta: () => bioEnergyDelta,
+    byRole: () => byRole,
+    cellPayoff: () => cellPayoff,
+    checkBreach: () => checkBreach,
+    checkRelapse: () => checkRelapse,
+    clamp: () => clamp,
+    closeDoor: () => closeDoor,
+    connectNpcs: () => connectNpcs,
+    costlySignalTrustDelta: () => costlySignalTrustDelta,
+    countTrue: () => countTrue,
+    createCast: () => createCast,
+    createCausality: () => createCausality,
+    createGraph: () => createGraph,
+    createMemory: () => createMemory,
+    createRng: () => createRng,
+    createStoryteller: () => createStoryteller,
+    createWorld: () => createWorld,
+    dealChoices: () => dealChoices,
+    decayMemories: () => decayMemories,
+    decide: () => decide,
+    dependentCosts: () => dependentCosts,
+    detectCrisis: () => detectCrisis,
+    doorOpen: () => doorOpen,
+    edgeKey: () => edgeKey,
+    effectiveAccuracy: () => effectiveAccuracy,
+    eligible: () => eligible,
+    expectedCapital: () => expectedCapital,
+    financialEntropyDelta: () => financialEntropyDelta,
+    fuseCheck: () => fuseCheck,
+    getEdge: () => getEdge,
+    groupIndex: () => groupIndex,
+    hooks: () => hooks,
+    initialCapitals: () => initialCapitals,
+    isBandwidthLocked: () => isBandwidthLocked,
+    isNashCell: () => isNashCell,
+    leakSecrets: () => leakSecrets,
+    lifeShock: () => lifeShock,
+    lifeTopology: () => lifeTopology,
+    lifestyleSpend: () => lifestyleSpend,
+    macroShock: () => macroShock,
+    makeNpc: () => makeNpc,
+    markById: () => markById,
+    memoriesOf: () => memoriesOf,
+    mergeDeltas: () => mergeDeltas,
+    mortalityQuarter: () => mortalityQuarter,
+    nextStress: () => nextStress,
+    npcDecide: () => npcDecide,
+    onFired: () => onFired,
+    opinionOf: () => opinionOf,
+    phaseFor: () => phaseFor,
+    pivotalMarks: () => pivotalMarks,
+    predictedCoopProb: () => predictedCoopProb,
+    pressure: () => pressure,
+    propagate: () => propagate,
+    prov: () => prov,
+    purchaseDelta: () => purchaseDelta,
+    ratRace: () => ratRace,
+    rawAccuracy: () => rawAccuracy,
+    reputationOf: () => reputationOf,
+    resolveCauses: () => resolveCauses,
+    resolveInteraction: () => resolveInteraction,
+    scarcityTax: () => scarcityTax,
+    selectStorylet: () => selectStorylet,
+    selectVignette: () => selectVignette,
+    setEdge: () => setEdge,
+    severEdge: () => severEdge,
+    snapshot: () => snapshot,
+    socialSummary: () => socialSummary,
+    stamp: () => stamp,
+    stressCapLoss: () => stressCapLoss,
+    strongestMemory: () => strongestMemory,
+    surfaceSignal: () => surfaceSignal,
+    survivalThreshold: () => survivalThreshold,
+    tick: () => tick,
+    tickChoices: () => tickChoices,
+    tierOf: () => tierOf,
+    trustToward: () => trustToward
+  });
+
+  // src/engine/types/FiveCapitals.ts
+  var EMPTY_DELTA = Object.freeze({});
+
+  // src/engine/types/AgentArchetype.ts
+  var ALL_ARCHETYPES = [
+    "tit_for_tat",
+    "grudger",
+    "always_defect",
+    "generous_tit_for_tat",
+    "opportunist"
+  ];
+
+  // src/engine/types/SocialGraph.ts
+  var PLAYER_NODE_ID = "player", edgeKey = (from, to) => `${from}->${to}`;
+
+  // src/engine/core/Rng.ts
+  function createRng(seed) {
+    let s = seed >>> 0, next = () => {
+      s = s + 1831565813 | 0;
+      let t = Math.imul(s ^ s >>> 15, 1 | s);
+      return t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t, ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+    return {
+      next,
+      normal(mu = 0, sd = 1) {
+        let u = 0, v = 0;
+        for (; u === 0; ) u = next();
+        for (; v === 0; ) v = next();
+        return mu + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      },
+      chance: (p) => next() < p,
+      pick: (arr) => {
+        let x = arr[Math.floor(next() * arr.length)];
+        if (x === void 0) throw new Error("pick() on empty array");
+        return x;
+      },
+      int: (m) => Math.floor(next() * m)
+    };
+  }
+  var clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+
+  // src/engine/gametheory/SocialLedger.ts
+  var DAMPING = 0.7, NEGATIVITY_BIAS = 2;
+  function createGraph() {
+    let g = { nodes: /* @__PURE__ */ new Map(), edges: /* @__PURE__ */ new Map() };
+    return g.nodes.set(PLAYER_NODE_ID, { id: PLAYER_NODE_ID, weight: 0.5 }), g;
+  }
+  function addNpcToGraph(g, npc, weight, tick2, initialTrust = 0) {
+    g.nodes.set(npc.id, { id: npc.id, weight: clamp(weight, 0, 1) }), setEdge(g, npc.id, PLAYER_NODE_ID, initialTrust, tick2), setEdge(g, PLAYER_NODE_ID, npc.id, initialTrust, tick2);
+  }
+  function connectNpcs(g, a, b, trust, tick2) {
+    setEdge(g, a, b, trust, tick2), setEdge(g, b, a, trust, tick2);
+  }
+  function getEdge(g, from, to) {
+    return g.edges.get(edgeKey(from, to));
+  }
+  function setEdge(g, from, to, trust, tick2) {
+    let k = edgeKey(from, to), existing = g.edges.get(k);
+    if (existing)
+      return existing.severed || (existing.trust = clamp(trust, -1, 1)), existing.last_interaction_tick = tick2, existing;
+    let e = { from, to, trust: clamp(trust, -1, 1), last_interaction_tick: tick2, severed: !1 };
+    return g.edges.set(k, e), e;
+  }
+  function severEdge(g, from, to, tick2) {
+    let e = setEdge(g, from, to, -1, tick2);
+    e.trust = -1, e.severed = !0;
+  }
+  function listeners(g, id) {
+    let out = [];
+    for (let e of g.edges.values())
+      e.from === id && e.to !== PLAYER_NODE_ID && e.trust > 0 && out.push({ to: e.to, trust: e.trust });
+    return out;
+  }
+  function propagate(g, npcId, primary, tick2, sever = !1) {
+    let direct = getEdge(g, npcId, PLAYER_NODE_ID) ?? setEdge(g, npcId, PLAYER_NODE_ID, 0, tick2);
+    if (sever)
+      severEdge(g, npcId, PLAYER_NODE_ID, tick2), severEdge(g, PLAYER_NODE_ID, npcId, tick2);
+    else if (!direct.severed) {
+      direct.trust = clamp(direct.trust + primary, -1, 1), direct.last_interaction_tick = tick2;
+      let mine = setEdge(g, PLAYER_NODE_ID, npcId, getEdge(g, PLAYER_NODE_ID, npcId)?.trust ?? 0, tick2);
+      mine.last_interaction_tick = tick2;
+    }
+    let srcWeight = g.nodes.get(npcId)?.weight ?? 0.3, force = primary < 0 ? primary * NEGATIVITY_BIAS : primary, ripples = [];
+    for (let n of listeners(g, npcId)) {
+      let e = getEdge(g, n.to, PLAYER_NODE_ID);
+      if (!e || e.severed) continue;
+      let delta = force * n.trust * srcWeight * DAMPING;
+      Math.abs(delta) < 1e-4 || (e.trust = clamp(e.trust + delta, -1, 1), ripples.push({ npc: n.to, delta }));
+    }
+    return { tick: tick2, source_npc: npcId, primary_delta: sever ? -1 : primary, ripples };
+  }
+  function reputationOf(g, id) {
+    let num = 0, den = 0;
+    for (let e of g.edges.values()) {
+      if (e.to !== id) continue;
+      let w = g.nodes.get(e.from)?.weight ?? 0.3;
+      num += e.trust * w, den += w;
+    }
+    return den === 0 ? 50 : clamp(50 + 50 * (num / den), 0, 100);
+  }
+  function allianceCount(g, id) {
+    let n = 0;
+    for (let e of g.edges.values()) e.to === id && !e.severed && e.trust >= 0.5 && n++;
+    return n;
+  }
+  function trustToward(g, npcId) {
+    return getEdge(g, npcId, PLAYER_NODE_ID)?.trust ?? 0;
+  }
+
+  // src/engine/core/CapitalStore.ts
+  var BASE_INCOME_QUARTERLY = 26;
+  function initialCapitals(spawn, graph) {
+    let b = spawn.bloodline, m = spawn.macro, inherit = Math.log10(1 + Math.max(0, b.economic_net_worth)) / 3, cultural = 0.04 * b.cultural_capital.length, incomeMult = 1 + (1 - m.social_mobility_idx) * inherit * 0.4 + cultural + 0.02 * b.social_network_nodes, caps = {
+      bioEnergy: { value: 85, cap: 100 },
+      cognitiveBandwidth: { value: 70, cap: 100 },
+      capitalAssets: {
+        liquid: Math.max(0, b.economic_net_worth * 0.3),
+        illiquid: Math.max(0, b.economic_net_worth * 0.7),
+        debt: Math.max(0, b.debt_inherited),
+        income_quarterly: BASE_INCOME_QUARTERLY * incomeMult * (m.survival_cost_quarterly / 25)
+      },
+      socialLedger: { reputation: 50, alliances: 0, transaction_cost_multiplier: 1 },
+      agency: clamp(spawn.agency_initial, 0, 1)
+    };
+    return caps.socialLedger = socialSummary(graph), caps;
+  }
+  function socialSummary(graph) {
+    let reputation = reputationOf(graph, PLAYER_NODE_ID), alliances = allianceCount(graph, PLAYER_NODE_ID), transaction_cost_multiplier = 1 - 0.3 * (reputation / 100);
+    return { reputation, alliances, transaction_cost_multiplier };
+  }
+  function applyDelta(c, d) {
+    let bioCap = clamp(c.bioEnergy.cap + (d.bio_cap ?? 0), 0, 100), bwCap = clamp(c.cognitiveBandwidth.cap + (d.bandwidth_cap ?? 0), 0, 100);
+    return {
+      bioEnergy: { cap: bioCap, value: clamp(c.bioEnergy.value + (d.bio ?? 0), 0, bioCap) },
+      cognitiveBandwidth: { cap: bwCap, value: clamp(c.cognitiveBandwidth.value + (d.bandwidth ?? 0), 0, bwCap) },
+      capitalAssets: {
+        liquid: c.capitalAssets.liquid + (d.liquid ?? 0),
+        illiquid: Math.max(0, c.capitalAssets.illiquid + (d.illiquid ?? 0)),
+        debt: Math.max(0, c.capitalAssets.debt + (d.debt ?? 0)),
+        income_quarterly: c.capitalAssets.income_quarterly
+      },
+      socialLedger: c.socialLedger,
+      // recomputed from the graph by TickManager
+      agency: clamp(c.agency + (d.agency ?? 0), 0, 1)
+    };
+  }
+  function mergeDeltas(...ds) {
+    let out = {};
+    for (let d of ds)
+      for (let k of Object.keys(d))
+        out[k] = (out[k] ?? 0) + (d[k] ?? 0);
+    return out;
+  }
+  function snapshot(s) {
+    let c = s.capitals, a = c.capitalAssets;
+    return `age ${s.age.toFixed(2)} | bio ${c.bioEnergy.value.toFixed(0)}/${c.bioEnergy.cap.toFixed(0)} | bw ${c.cognitiveBandwidth.value.toFixed(0)}/${c.cognitiveBandwidth.cap.toFixed(0)} | liq ${a.liquid.toFixed(0)} illiq ${a.illiquid.toFixed(0)} debt ${a.debt.toFixed(0)} inc ${a.income_quarterly.toFixed(1)}/q | rep ${c.socialLedger.reputation.toFixed(0)} ally ${c.socialLedger.alliances} | agency ${c.agency.toFixed(2)} | stress ${s.stress.value.toFixed(0)} wl ${s.stress.workload.toFixed(2)} | ${s.perception.phase}${s.perception.in_rat_race ? " [RAT RACE]" : ""}`;
+  }
+
+  // src/engine/core/EntropyDecay.ts
+  var TICKS_PER_YEAR = 4;
+  function ageingCapLoss(age) {
+    return age <= 30 ? 0 : 0.045 * Math.pow((age - 30) / 10, 1.3);
+  }
+  function stressCapLoss(stress, threshold, workload, chronic) {
+    let loss = 0;
+    stress > threshold && (loss += 0.02 * (stress - threshold) / 10), workload > 1.25 && (loss += 0.05 * (workload - 1.25) / 0.25);
+    let chronicMult = chronic.some((g) => g === "cardiometabolic" || g === "autoimmune") ? 1.35 : 1;
+    return loss * chronicMult;
+  }
+  function bioEnergyDelta(s) {
+    let g = s.capitals.bioEnergy, bio = s.spawn.biology, regen = bio.base_metabolism * 0.25 * (0.85 * g.cap - g.value), drain = 4 * Math.max(0, s.stress.workload - 1) + 0.06 * s.stress.value + (s.age > 45 ? 0.15 : 0), capLoss = ageingCapLoss(s.age) + stressCapLoss(s.stress.value, bio.cortisol_threshold, s.stress.workload, bio.chronic_genetics);
+    return { bio: regen - drain, bio_cap: -capLoss };
+  }
+  function bandwidthRegenDelta(s) {
+    let g = s.capitals.cognitiveBandwidth, bioRatio = s.capitals.bioEnergy.value / Math.max(1, s.capitals.bioEnergy.cap), regen = 0.5 * (g.cap - g.value) * (bioRatio < 0.3 ? 0.5 : 1), burnout = s.stress.workload > 1.4 && s.stress.value > 80 ? 0.1 : 0;
+    return { bandwidth: regen, bandwidth_cap: -burnout };
+  }
+  function macroShock(s, roll) {
+    switch (s.economic_phase) {
+      case "boom":
+        return { asset_multiplier: 1.015, income_multiplier: 1.005, label: null };
+      case "stagnation":
+        return { asset_multiplier: 1, income_multiplier: 1, label: null };
+      case "crisis": {
+        let jobShock = roll < 0.06;
+        return { asset_multiplier: 0.96, income_multiplier: jobShock ? 0.4 : 0.97, label: jobShock ? "job_loss_shock" : null };
+      }
+    }
+  }
+  function financialEntropyDelta(s) {
+    let a = s.capitals.capitalAssets, m = s.spawn.macro, qInterest = m.interest_rate / TICKS_PER_YEAR, qInflation = m.inflation_rate / TICKS_PER_YEAR;
+    return {
+      debt: a.debt * qInterest,
+      liquid: -Math.max(0, a.liquid) * qInflation
+    };
+  }
+  function lifeShock(s, u1, u2) {
+    let surv = s.spawn.macro.survival_cost_quarterly, bioRatio = s.capitals.bioEnergy.value / Math.max(1, s.capitals.bioEnergy.cap), pHealth = 0.01 + 6e-4 * Math.max(0, s.age - 30) + (bioRatio < 0.4 ? 0.02 : 0) + 0.01 * s.spawn.biology.chronic_genetics.length;
+    if (u1 < pHealth) {
+      let oop = 1.2 - 0.6 * s.spawn.macro.institutional_trust;
+      return { kind: "health", liquid: -surv * (1 + 2 * u2) * oop, bio: -10, bandwidth: -10 };
+    }
+    return u1 < pHealth + 0.02 ? { kind: "family_obligation", liquid: -surv * (0.5 + u2), bio: 0, bandwidth: -3 } : u1 < pHealth + 0.03 ? { kind: "windfall", liquid: surv * (1 + 2 * u2), bio: 0, bandwidth: 0 } : null;
+  }
+  function socialFadeInPlace(s) {
+    for (let e of s.graph.edges.values()) {
+      if (e.severed) continue;
+      s.tick - e.last_interaction_tick >= 2 && (e.trust *= 0.98), Math.abs(e.trust) < 5e-3 && (e.trust = 0);
+    }
+  }
+  function agencyDriftDelta(s) {
+    let A2 = s.capitals.agency, dop = s.spawn.biology.baseline_dopamine_sensitivity, A0 = s.perception.agency_start, d = -47e-4 * (1 - A2) * (1 + 0.8 * dop) * (1 + 0.015 * Math.max(0, s.age - 25)), bw = s.capitals.cognitiveBandwidth.value;
+    return s.perception.in_rat_race || (d += 0.06 * A2 * Math.max(0, 0.82 - A2) * clamp((bw - 40) / 60, 0, 1)), d = clamp(d, -0.02, 0.02), A2 + d < A0 && (d = A0 - A2), { agency: d };
+  }
+
+  // src/engine/core/ScarcityTrap.ts
+  function survivalThreshold(s) {
+    return 2 * s.spawn.macro.survival_cost_quarterly;
+  }
+  var BANDWIDTH_LOCK_LEVEL = 30, CRITICAL_STRESS = 70;
+  function scarcityTax(s) {
+    let thr = survivalThreshold(s), a = s.capitals.capitalAssets, liqTerm = 25 * clamp(1 - a.liquid / thr, 0, 1), stressTerm = 0.5 * Math.max(0, s.stress.value - CRITICAL_STRESS), debtTerm = a.liquid - a.debt < 0 ? 5 : 0, tax = liqTerm + stressTerm + debtTerm, byLiq = liqTerm > 0 || debtTerm > 0, byStress = stressTerm > 0, reason = byLiq && byStress ? "both" : byLiq ? "liquidity" : byStress ? "stress" : null, after = s.capitals.cognitiveBandwidth.value - tax;
+    return { triggered: tax > 0, bandwidth_tax: tax, reason, locked: after < BANDWIDTH_LOCK_LEVEL };
+  }
+  function ratRace(s) {
+    let a = s.capitals.capitalAssets, qRate = s.spawn.macro.interest_rate / 4, service = a.debt * (qRate + 0.05), ratio = a.income_quarterly > 0 ? service / a.income_quarterly : a.debt > 0 ? 1 / 0 : 0;
+    return ratio > 0.4 ? { active: !0, debt_service_ratio: ratio, reason: "debt_service" } : s.stress.ticks_in_scarcity >= 4 ? { active: !0, debt_service_ratio: ratio, reason: "chronic_scarcity" } : { active: !1, debt_service_ratio: ratio, reason: null };
+  }
+  function nextStress(s) {
+    let thr = survivalThreshold(s), a = s.capitals.capitalAssets, rr = ratRace(s), bioRatio = s.capitals.bioEnergy.value / Math.max(1, s.capitals.bioEnergy.cap), target = 20 + 35 * clamp((s.stress.workload - 1) / 0.4, 0, 1.5) + 30 * clamp(1 - a.liquid / thr, 0, 1) + (rr.debt_service_ratio > 0.4 ? 15 : 0) + (bioRatio < 0.3 ? 10 : 0), gain = 0.85 + 0.3 * s.spawn.biology.baseline_dopamine_sensitivity;
+    return clamp(s.stress.value + 0.4 * (target * gain - s.stress.value), 0, 100);
+  }
+
+  // src/engine/perception/AwakeningMechanic.ts
+  function phaseFor(agency, phaseChanged, dead) {
+    return dead ? "topology_endgame" : agency > 0.7 ? "strategic_meta_view" : agency >= 0.3 || phaseChanged ? "phase_change" : "autopilot";
+  }
+  var RELAPSE_AGENCY = 0.2, RELAPSE_TICKS = 8;
+  function checkRelapse(s) {
+    return s.perception.phase_changed ? (s.capitals.agency < RELAPSE_AGENCY ? s.perception.low_agency_streak += 1 : s.perception.low_agency_streak = 0, s.perception.low_agency_streak >= RELAPSE_TICKS ? (s.perception.phase_changed = !1, s.perception.low_agency_streak = 0, s.perception.relapses += 1, !0) : !1) : (s.perception.low_agency_streak = 0, !1);
+  }
+  function detectCrisis(s, flags) {
+    let c = s.capitals;
+    if (c.bioEnergy.value < 0.3 * c.bioEnergy.cap) return "bio_collapse";
+    let a = c.capitalAssets, surv = s.spawn.macro.survival_cost_quarterly;
+    return flags.overdraft > 0.5 * surv || a.liquid + 0.8 * a.illiquid - a.debt < -2 * surv ? "insolvency" : flags.betrayal ? "betrayal" : flags.job_loss ? "job_loss" : s.stress.ticks_in_scarcity > 0 && s.stress.ticks_in_scarcity % 8 === 0 ? "chronic_scarcity" : null;
+  }
+  var lastPhaseChangeTick = /* @__PURE__ */ new WeakMap();
+  function awaken(s, flags, rng) {
+    let before = s.perception.phase, relapse = checkRelapse(s), crisis = detectCrisis(s, flags), jump = 0, changed = !1;
+    if (crisis) {
+      let last = lastPhaseChangeTick.get(s) ?? -1 / 0;
+      if (s.tick - last >= 4) {
+        let bw = s.capitals.cognitiveBandwidth.value;
+        jump = (0.08 + 0.16 * rng.next()) * Math.pow(bw / 100, 1.5) / (1 + 0.5 * s.perception.crises_survived);
+        let before2 = s.capitals.agency;
+        s.capitals = { ...s.capitals, agency: clamp(before2 + jump, 0, 1) }, s.perception.crises_survived += 1, lastPhaseChangeTick.set(s, s.tick);
+        let crossed = before2 < 0.3 && s.capitals.agency >= 0.3;
+        !s.perception.phase_changed && (crossed || s.perception.crises_survived >= 3 && s.capitals.agency >= 0.22) && (s.perception.phase_changed = !0, changed = !0);
+      }
+    }
+    let after = phaseFor(s.capitals.agency, s.perception.phase_changed, s.dead);
+    return s.perception.phase = after, { crisis, phase_change: changed, relapse, agency_jump: jump, phase_before: before, phase_after: after };
+  }
+
+  // src/engine/gametheory/Archetypes.ts
+  var GOSSIP_DEFECT_TRUST = -0.2;
+  function lastPlayerMove(npc, priorTrust) {
+    let h2 = npc.history[npc.history.length - 1];
+    return h2 ? h2.playerMove === "defect" ? "defect" : "cooperate" : priorTrust <= GOSSIP_DEFECT_TRUST ? "defect" : null;
+  }
+  var policies = {
+    /** Cooperate first (unless gossip says otherwise); then copy the opponent's previous move exactly. */
+    tit_for_tat: (npc, ctx) => lastPlayerMove(npc, ctx.prior_trust) ?? "cooperate",
+    /** Cooperate until the first betrayal, then defect forever. A severed ledger edge counts as a betrayal. */
+    grudger: (npc, ctx) => npc.memory_defect || ctx.prior_trust <= -0.6 ? "defect" : "cooperate",
+    always_defect: () => "defect",
+    /** TfT, but forgives an isolated defection with probability forgiveness_prob (0.15–0.20). */
+    generous_tit_for_tat: (npc, ctx) => {
+      if (lastPlayerMove(npc, ctx.prior_trust) !== "defect") return "cooperate";
+      let prev = npc.history[npc.history.length - 2];
+      return (!prev || prev.playerMove !== "defect") && ctx.rng.chance(npc.forgiveness_prob) ? "cooperate" : "defect";
+    },
+    /**
+     * Predatory Defector. Defects when the marginal benefit is highest:
+     *   p_defect = sigmoid(2.2 · (stake / (liquid·0.25) − 1)) · (0.55 + 0.45·trust_lure)
+     * where trust_lure = (prior_trust + 1)/2 — the more the player trusts them, the richer the kill.
+     * A costly signal from the player marks prey: p_defect += 0.15.
+     * Floor 0.2, cap 0.95 (spec §7 uses a flat 0.8; here it is stake-aware around that mean).
+     * On the very first round against a stranger they cooperate 60 % of the time to build the fake signal.
+     */
+    opportunist: (npc, ctx) => {
+      if (npc.history.length === 0 && ctx.rng.chance(0.6)) return "cooperate";
+      let relStake = ctx.stake / Math.max(10, npc.liquid * 0.25), sig = 1 / (1 + Math.exp(-2.2 * (relStake - 1))), lure = (ctx.prior_trust + 1) / 2, p = sig * (0.55 + 0.45 * lure) + (ctx.costly_signal ? 0.15 : 0);
+      return p = clamp(p, 0.2, 0.95), ctx.rng.chance(p) ? "defect" : "cooperate";
+    }
+  };
+  function npcDecide(npc, ctx) {
+    return policies[npc.true_archetype](npc, ctx);
+  }
+  function surfaceSignal(a) {
+    switch (a) {
+      case "tit_for_tat":
+        return 0.85;
+      case "generous_tit_for_tat":
+        return 0.9;
+      case "grudger":
+        return 0.8;
+      case "opportunist":
+        return 0.85;
+      case "always_defect":
+        return 0.35;
+    }
+  }
+  var ARCHETYPE_PRIOR = Object.freeze({
+    tit_for_tat: 0.3,
+    generous_tit_for_tat: 0.2,
+    grudger: 0.2,
+    opportunist: 0.22,
+    always_defect: 0.08
+  });
+  function makeNpc(id, name, archetype, rng, liquid) {
+    let deception = archetype === "opportunist" ? 0.6 + 0.3 * rng.next() : archetype === "always_defect" ? 0.2 + 0.3 * rng.next() : 0.05 + 0.2 * rng.next();
+    return {
+      id,
+      name,
+      true_archetype: archetype,
+      deception_skill: deception,
+      forgiveness_prob: 0.15 + 0.05 * rng.next(),
+      memory_defect: !1,
+      history: [],
+      liquid,
+      cumulative_payoff: 0
+    };
+  }
+
+  // src/engine/gametheory/Signaling.ts
+  var BREACH_DD_THRESHOLD = 35;
+  function rawAccuracy(bwSpent) {
+    return 1 - Math.exp(-Math.max(0, bwSpent) / 20);
+  }
+  function effectiveAccuracy(bwSpent, deception) {
+    let acc = rawAccuracy(bwSpent);
+    return clamp(acc * (1 - 0.6 * deception * (1 - acc)), 0, 1);
+  }
+  function coopLikelihood(a, prevPlayerDefected) {
+    switch (a) {
+      case "tit_for_tat":
+        return prevPlayerDefected ? 0.05 : 0.95;
+      case "generous_tit_for_tat":
+        return prevPlayerDefected ? 0.2 : 0.95;
+      case "grudger":
+        return prevPlayerDefected ? 0.02 : 0.95;
+      case "opportunist":
+        return 0.45;
+      case "always_defect":
+        return 0.03;
+    }
+  }
+  function beliefAbout(npc, ddSpentTotal) {
+    let acc = effectiveAccuracy(ddSpentTotal, npc.deception_skill), post = { ...ARCHETYPE_PRIOR };
+    for (let a of ALL_ARCHETYPES) {
+      let surfaceFit = 0.5 + 0.5 * surfaceSignal(a), truth = a === npc.true_archetype ? 1 : 0.02;
+      post[a] = post[a] * ((1 - acc) * surfaceFit + acc * truth);
+    }
+    for (let i = 0; i < npc.history.length; i++) {
+      let h2 = npc.history[i], prev = npc.history[i - 1], prevDefect = prev ? prev.playerMove === "defect" : !1;
+      for (let a of ALL_ARCHETYPES) {
+        let pc = coopLikelihood(a, prevDefect);
+        post[a] *= h2.npcMove === "cooperate" ? pc : 1 - pc;
+      }
+    }
+    let z = 0;
+    for (let a of ALL_ARCHETYPES) z += post[a];
+    for (let a of ALL_ARCHETYPES) post[a] = post[a] / z;
+    return post;
+  }
+  function predictedCoopProb(npc, belief) {
+    let last = npc.history[npc.history.length - 1], playerDefectedLast = last ? last.playerMove === "defect" : !1, everDefected = npc.history.some((h2) => h2.playerMove === "defect"), p = 0;
+    for (let a of ALL_ARCHETYPES) {
+      let pa;
+      switch (a) {
+        case "tit_for_tat":
+          pa = playerDefectedLast ? 0.05 : 0.95;
+          break;
+        case "generous_tit_for_tat":
+          pa = playerDefectedLast ? 0.25 : 0.95;
+          break;
+        case "grudger":
+          pa = everDefected ? 0.02 : 0.95;
+          break;
+        case "opportunist":
+          pa = 0.4;
+          break;
+        case "always_defect":
+          pa = 0.02;
+          break;
+      }
+      p += belief[a] * pa;
+    }
+    return clamp(p, 0, 1);
+  }
+  function checkBreach(npc, intendedNpcMove, ddSpentThisRound, rng) {
+    let accuracy = effectiveAccuracy(ddSpentThisRound, npc.deception_skill);
+    return ddSpentThisRound <= BREACH_DD_THRESHOLD || intendedNpcMove !== "defect" ? { detected: !1, accuracy } : { detected: rng.chance(accuracy), accuracy };
+  }
+  function costlySignalTrustDelta(cost) {
+    return 0.25 * (1 - Math.exp(-Math.max(0, cost) / 30));
+  }
+
+  // src/engine/gametheory/PayoffMatrix.ts
+  function cellPayoff(a, b, ctx) {
+    let k = ctx.stake / 100, clawback = 1 - 0.4 * ctx.institutional_trust;
+    if (a === "arbitrage") {
+      let p = arbitragePayoff(b, ctx);
+      return { A: p.A, B: p.B, cell: "arbitrage" };
+    }
+    return a === "cooperate" && b === "cooperate" ? {
+      A: { capital: 25 * k, bandwidth: 0, bio: -5, social: 10, severed: !1 },
+      B: { capital: 25 * k, bandwidth: 0, bio: -5, social: 10, severed: !1 },
+      cell: "win_win"
+    } : a === "cooperate" && b === "defect" ? {
+      A: { capital: -40 * k, bandwidth: -20, bio: 0, social: 0, severed: !1 },
+      B: { capital: 60 * k * clawback, bandwidth: 0, bio: 0, social: -10, severed: !1 },
+      cell: "sucker"
+    } : a === "defect" && b === "cooperate" ? {
+      A: { capital: 60 * k * clawback, bandwidth: 0, bio: 0, social: -10, severed: !1 },
+      B: { capital: -40 * k, bandwidth: -20, bio: 0, social: 0, severed: !1 },
+      cell: "exploitation"
+    } : {
+      A: { capital: -20 * k, bandwidth: 0, bio: 0, social: -10, severed: !0 },
+      B: { capital: -20 * k, bandwidth: 0, bio: 0, social: -10, severed: !0 },
+      cell: "mutual_destruction"
+    };
+  }
+  function arbitragePayoff(b, ctx) {
+    let k = ctx.stake / 100;
+    return b === "cooperate" ? {
+      A: { capital: 15 * k, bandwidth: -10, bio: -2, social: 6, severed: !1 },
+      B: { capital: 15 * k, bandwidth: 0, bio: -2, social: 6, severed: !1 }
+    } : {
+      A: { capital: 0, bandwidth: -10, bio: 0, social: 5, severed: !1 },
+      B: { capital: -10 * k, bandwidth: -5, bio: 0, social: -8, severed: !1 }
+    };
+  }
+  function isNashCell(a, b, ctx) {
+    if (a === "arbitrage") return !1;
+    let moves = ["cooperate", "defect"], payA = (x, y) => cellPayoff(x, y, ctx).A.capital, payB = (x, y) => cellPayoff(x, y, ctx).B.capital, aBest = moves.every((alt) => payA(a, b) >= payA(alt, b)), bBest = moves.every((alt) => payB(a, b) >= payB(a, alt));
+    return aBest && bBest;
+  }
+  function expectedCapital(a, pCoop, ctx) {
+    return pCoop * cellPayoff(a, "cooperate", ctx).A.capital + (1 - pCoop) * cellPayoff(a, "defect", ctx).A.capital;
+  }
+
+  // src/engine/perception/ChoiceFilter.ts
+  function tierOf(s) {
+    let A2 = s.capitals.agency, pc = s.perception.phase_changed;
+    return A2 >= 0.6 || pc && A2 >= 0.5 ? "sovereign" : A2 >= 0.3 || pc ? "awakened" : "autopilot";
+  }
+  function isBandwidthLocked(s) {
+    return s.capitals.cognitiveBandwidth.value < BANDWIDTH_LOCK_LEVEL;
+  }
+  function tickChoices(s) {
+    let tier = tierOf(s), locked = isBandwidthLocked(s), out = [
+      { id: "work_standard", tier: "autopilot", label: "Work the standard week" },
+      { id: "work_overtime", tier: "autopilot", label: "Take overtime (+30 % income, +stress)" },
+      { id: "take_consumer_loan", tier: "autopilot", label: "Take a consumer loan" },
+      { id: "buy_status_asset", tier: "autopilot", label: "Buy the house / vehicle everyone your age has (50 % financed)" }
+    ];
+    return tier !== "autopilot" && !locked && (out.push({ id: "deleverage", tier: "awakened", label: "Pay down debt aggressively" }), out.push({ id: "rest_recover", tier: "awakened", label: "Reduce workload to recover" }), out.push({ id: "live_below_means", tier: "awakened", label: "Live below your means (cut lifestyle spend to 35 %)" })), tier === "sovereign" && !locked && out.push({ id: "coalition", tier: "sovereign", label: "Form a coalition with allies (pool stakes, share diligence)" }), out;
+  }
+  function dealChoices(s, npc, stake, ddSpentTotal) {
+    let tier = tierOf(s), locked = isBandwidthLocked(s), ctx = { stake: stake * s.capitals.socialLedger.transaction_cost_multiplier, institutional_trust: s.spawn.macro.institutional_trust }, belief = tier === "autopilot" ? null : beliefAbout(npc, ddSpentTotal), pCoop = belief ? predictedCoopProb(npc, belief) : null, choices = [
+      { id: "deal_cooperate_blind", tier: "autopilot", label: "Go in on trust", move: "cooperate" },
+      { id: "deal_decline", tier: "autopilot", label: "Decline politely" }
+    ];
+    tier !== "autopilot" && !locked && (choices.push({ id: "due_diligence", tier: "awakened", label: "Spend bandwidth on due diligence first" }), choices.push({ id: "deal_defect", tier: "awakened", label: "Take the upside and leave them holding the risk", move: "defect" }), choices.push({ id: "negotiate_terms", tier: "awakened", label: "Negotiate a smaller stake" })), tier === "sovereign" && !locked && (choices.push({ id: "deal_arbitrage", tier: "sovereign", label: "Restructure: escrow + milestones (exit the zero-sum frame)", move: "arbitrage" }), choices.push({ id: "walk_away_better_alt", tier: "sovereign", label: "Walk away to a better alternative (BATNA)" }), choices.push({ id: "rule_maker_escrow", tier: "sovereign", label: "Write the rules: propose a repeated-game contract with penalties" }));
+    let meta = tier === "sovereign";
+    if (meta && pCoop !== null)
+      for (let c of choices) c.move && (c.expected_capital = expectedCapital(c.move, pCoop, ctx));
+    let rounds = npc.history.length, npcWins = npc.history.filter((h2) => {
+      let cell = cellPayoff(h2.playerMove, h2.npcMove, { stake: h2.stake, institutional_trust: ctx.institutional_trust });
+      return cell.B.capital >= cell.A.capital;
+    }).length, info = {
+      tier,
+      bandwidth_locked: locked,
+      payoff_matrix: meta ? {
+        cc: cellPayoff("cooperate", "cooperate", ctx).A.capital,
+        cd: cellPayoff("cooperate", "defect", ctx).A.capital,
+        dc: cellPayoff("defect", "cooperate", ctx).A.capital,
+        dd: cellPayoff("defect", "defect", ctx).A.capital
+      } : null,
+      npc_win_rate: meta && rounds > 0 ? npcWins / rounds : null,
+      belief,
+      predicted_coop: tier === "sovereign" ? pCoop : null
+    };
+    return { choices, info };
+  }
+
+  // src/engine/core/TickManager.ts
+  function purchaseDelta(price) {
+    return price <= 0 ? {} : { liquid: -price * 0.5, debt: price * 0.5, illiquid: price * 0.85 };
+  }
+  function lifestyleSpend(s, income, frugal) {
+    let dop = s.spawn.biology.baseline_dopamine_sensitivity, surplus = Math.max(0, income - s.spawn.macro.survival_cost_quarterly);
+    return dop * 0.9 * surplus * (frugal ? 0.35 : 1);
+  }
+  function createWorld(spawn) {
+    let rng = createRng(spawn.seed), graph = createGraph(), state = {
+      spawn,
+      tick: 0,
+      age: spawn.age_initial,
+      capitals: initialCapitals(spawn, graph),
+      stress: { value: 25, workload: 1, ticks_in_scarcity: 0 },
+      perception: { phase: "autopilot", crises_survived: 0, phase_changed: !1, rat_race_ticks: 0, in_rat_race: !1, low_agency_streak: 0, relapses: 0, tier_ticks: { autopilot: 0, awakened: 0, sovereign: 0 }, agency_peak: clamp(spawn.agency_initial, 0, 1), agency_start: clamp(spawn.agency_initial, 0, 1) },
+      npcs: /* @__PURE__ */ new Map(),
+      graph,
+      economic_phase: spawn.macro.economic_phase,
+      dead: !1
+    };
+    return state.perception.phase = state.capitals.agency >= 0.3 ? "phase_change" : "autopilot", { state, rng };
+  }
+  var PHASE_TRANSITIONS = {
+    boom: [["boom", 0.958], ["stagnation", 0.035], ["crisis", 7e-3]],
+    stagnation: [["stagnation", 0.94], ["boom", 0.04], ["crisis", 0.02]],
+    crisis: [["crisis", 0.83], ["stagnation", 0.15], ["boom", 0.02]]
+  };
+  function nextPhase(p, rng) {
+    let r = rng.next();
+    for (let [q, pr] of PHASE_TRANSITIONS[p])
+      if (r -= pr, r <= 0) return q;
+    return p;
+  }
+  function mortalityQuarter(age, bioCap) {
+    let bioAge = age + 0.6 * (100 - bioCap);
+    return 1 - Math.exp(-(16e-6 * Math.exp(0.085 * bioAge)));
+  }
+  function tick(s, input, rng) {
+    s.tick += 1, s.age = Math.round((s.age + 0.25) * 4) / 4, s.economic_phase = nextPhase(s.economic_phase, rng), s.stress.workload = input.work === "overtime" ? 1.3 : input.work === "recover" ? 0.8 : 1;
+    let shock = macroShock(s, rng.next()), a = s.capitals.capitalAssets, incomeMult = input.work === "overtime" ? 1.3 : input.work === "recover" ? 0.8 : 1, income = a.income_quarterly * shock.income_multiplier * incomeMult, survival = s.spawn.macro.survival_cost_quarterly + lifestyleSpend(s, income, input.frugal), mandatoryPrincipal = a.debt * 0.05, labour = {
+      liquid: income - survival + input.borrow - mandatoryPrincipal - input.repay,
+      debt: input.borrow - mandatoryPrincipal - input.repay,
+      illiquid: a.illiquid * (shock.asset_multiplier - 1)
+    }, growth = s.age < 50 ? 1.004 : 1;
+    s.economic_phase === "boom" && (growth *= 1.005), shock.label === "job_loss_shock" && (growth *= 0.95), s.capitals.capitalAssets.income_quarterly = a.income_quarterly * growth;
+    let fin = financialEntropyDelta(s), shk = lifeShock(s, rng.next(), rng.next()), shockDelta = shk ? { liquid: shk.liquid, bio: shk.bio, bandwidth: shk.bandwidth } : {}, bio = bioEnergyDelta(s), bw = bandwidthRegenDelta(s);
+    socialFadeInPlace(s), s.stress.value = nextStress(s);
+    let scarcity = scarcityTax(s), agency = agencyDriftDelta(s), delta = mergeDeltas(labour, fin, shockDelta, purchaseDelta(input.purchase), bio, bw, { bandwidth: -scarcity.bandwidth_tax }, agency);
+    s.capitals = applyDelta(s.capitals, delta);
+    let overdraft = 0;
+    if (s.capitals.capitalAssets.liquid < 0) {
+      let shortfall = -s.capitals.capitalAssets.liquid;
+      overdraft = shortfall, s.capitals.capitalAssets.debt += shortfall, s.capitals.capitalAssets.liquid = 0, delta = mergeDeltas(delta, { debt: shortfall, liquid: shortfall });
+    }
+    let thr = survivalThreshold(s);
+    s.stress.ticks_in_scarcity = s.capitals.capitalAssets.liquid < thr ? s.stress.ticks_in_scarcity + 1 : 0;
+    let rr = ratRace(s);
+    s.perception.in_rat_race = rr.active, rr.active && (s.perception.rat_race_ticks += 1), s.capitals.socialLedger = socialSummary(s.graph);
+    let awakening = awaken(s, { betrayal: input.betrayed, job_loss: shock.label === "job_loss_shock", overdraft }, rng);
+    s.perception.tier_ticks[tierOf(s)] += 1, s.perception.agency_peak = Math.max(s.perception.agency_peak, s.capitals.agency);
+    let q = mortalityQuarter(s.age, s.capitals.bioEnergy.cap);
+    return (s.capitals.bioEnergy.value <= 0 || rng.chance(q)) && (s.dead = !0), s.dead && (s.perception.phase = "topology_endgame"), {
+      tick: s.tick,
+      age: s.age,
+      phase: s.economic_phase,
+      macro_label: shock.label,
+      shock: shk,
+      income_received: income,
+      survival_paid: survival,
+      scarcity,
+      rat_race: rr,
+      awakening,
+      delta,
+      died: s.dead
+    };
+  }
+
+  // src/engine/core/TopologyEndgame.ts
+  function npcFate(npc, startLiquid) {
+    return npc.liquid <= 0 ? "bankrupt" : npc.liquid >= startLiquid * 1.25 && npc.cumulative_payoff > 0 ? "prospered" : "neutral";
+  }
+  function npcShift(npc, trust) {
+    let reciprocal = npc.true_archetype === "tit_for_tat" || npc.true_archetype === "generous_tit_for_tat" || npc.true_archetype === "grudger";
+    return npc.true_archetype === "grudger" && npc.memory_defect || reciprocal && trust <= GOSSIP_DEFECT_TRUST ? "turned_hostile" : npc.true_archetype === "opportunist" && npc.history.length >= 3 && npc.history.slice(-3).every((h2) => h2.npcMove === "cooperate") ? "turned_cooperative" : "unchanged";
+  }
+  function lifeTopology(s, npcStartLiquid) {
+    let cells = { win_win: 0, sucker: 0, exploitation: 0, mutual_destruction: 0, arbitrage: 0 }, playerCap = 0, npcCap = 0, potential = 0, destroyed = 0, rounds = 0, inst = s.spawn.macro.institutional_trust, rows = [], shiftedHostile = 0, shiftedCoop = 0, bankrupt = 0, prospered = 0, severed = 0, allies = 0, enemies = 0, rippleOnly = 0;
+    for (let npc of s.npcs.values()) {
+      let fromPlayer = 0;
+      for (let h2 of npc.history) {
+        let ctx = { stake: h2.stake, institutional_trust: inst }, c = cellPayoff(h2.playerMove, h2.npcMove, ctx);
+        playerCap += c.A.capital, npcCap += c.B.capital, fromPlayer += c.B.capital, potential += 2 * cellPayoff("cooperate", "cooperate", ctx).A.capital, cells[c.cell] += 1, rounds += 1, c.cell === "mutual_destruction" && (destroyed += -(c.A.capital + c.B.capital)), (c.cell === "exploitation" || c.cell === "sucker") && (destroyed += 0.6 * h2.stake * (0.4 * inst));
+      }
+      let e = getEdge(s.graph, npc.id, PLAYER_NODE_ID), trust = e?.trust ?? 0, fate = npcFate(npc, npcStartLiquid.get(npc.id) ?? npc.liquid), shift = npcShift(npc, trust);
+      e?.severed && severed++, trust >= 0.5 && allies++, trust <= -0.5 && enemies++, shift === "turned_hostile" && shiftedHostile++, shift === "turned_cooperative" && shiftedCoop++, fate === "bankrupt" && bankrupt++, fate === "prospered" && prospered++, npc.history.length === 0 && Math.abs(trust) >= 0.05 && rippleOnly++, rows.push({ id: npc.id, name: npc.name, true_archetype: npc.true_archetype, rounds_with_player: npc.history.length, capital_from_player: fromPlayer, trust_final: trust, severed: !!e?.severed, fate, shift });
+    }
+    rows.sort((a, b) => b.rounds_with_player - a.rounds_with_player || Math.abs(b.trust_final) - Math.abs(a.trust_final));
+    let net = playerCap + npcCap, p = s.perception, total = Math.max(1, p.tier_ticks.autopilot + p.tier_ticks.awakened + p.tier_ticks.sovereign), sovereignty = {
+      agency_start: p.agency_start,
+      agency_peak: p.agency_peak,
+      agency_end: s.capitals.agency,
+      ticks_autopilot: p.tier_ticks.autopilot,
+      ticks_awakened: p.tier_ticks.awakened,
+      ticks_sovereign: p.tier_ticks.sovereign,
+      ticks_rat_race: p.rat_race_ticks,
+      crises_survived: p.crises_survived,
+      relapses: p.relapses,
+      sovereign_share: p.tier_ticks.sovereign / total,
+      final_phase: p.phase
+    }, surplus = {
+      net_systemic_surplus: net,
+      player_capital_from_deals: playerCap,
+      npc_capital_from_deals: npcCap,
+      potential_surplus: potential,
+      realisation_ratio: potential > 0 ? net / potential : 0,
+      rounds,
+      cells,
+      capital_destroyed: destroyed
+    }, ripple = {
+      reputation_final: reputationOf(s.graph, PLAYER_NODE_ID),
+      allies,
+      enemies,
+      severed_edges: severed,
+      npcs_shifted_hostile: shiftedHostile,
+      npcs_shifted_cooperative: shiftedCoop,
+      npcs_bankrupt: bankrupt,
+      npcs_prospered: prospered,
+      npcs_reached_only_by_ripple: rippleOnly,
+      rows
+    }, positiveSum = net > 0 && npcCap >= 0, sovereign = sovereignty.sovereign_share >= 0.25 || s.capitals.agency >= 0.6, quadrant = positiveSum && sovereign ? "builder" : !positiveSum && sovereign ? "extractor" : positiveSum ? "sleeper" : "casualty";
+    return { age: s.age, dead: s.dead, surplus, sovereignty, ripple, quadrant };
+  }
+
+  // src/engine/gametheory/InteractionResolver.ts
+  function resolveInteraction(s, npc, action, rng) {
+    let stakeEff = action.stake * s.capitals.socialLedger.transaction_cost_multiplier, ctx = { stake: stakeEff, institutional_trust: s.spawn.macro.institutional_trust };
+    if (action.costly_signal_spent > 0) {
+      let d = costlySignalTrustDelta(action.costly_signal_spent), e = getEdge(s.graph, npc.id, PLAYER_NODE_ID);
+      setEdge(s.graph, npc.id, PLAYER_NODE_ID, (e?.trust ?? 0) + d, s.tick);
+    }
+    let intended = npcDecide(npc, {
+      stake: stakeEff,
+      prior_trust: trustToward(s.graph, npc.id),
+      costly_signal: action.costly_signal_spent > 0,
+      rng
+    }), breach = checkBreach(npc, intended, action.due_diligence_spent, rng), actualMoveA = breach.detected ? "defect" : action.move, cell = cellPayoff(actualMoveA, intended, ctx), nash = isNashCell(actualMoveA, intended, ctx), gain = cell.A.capital, equityShare = (cell.cell === "win_win" || cell.cell === "arbitrage") && gain > 0 ? 0.6 : 0, base = {
+      liquid: gain * (1 - equityShare) - action.costly_signal_spent,
+      illiquid: gain * equityShare,
+      bandwidth: cell.A.bandwidth - action.due_diligence_spent,
+      bio: cell.A.bio
+    }, agency_delta = 0;
+    cell.cell === "sucker" && (agency_delta = 0.03), breach.detected && (agency_delta += 0.02), actualMoveA === "arbitrage" && (agency_delta += 0.01);
+    let delta = mergeDeltas(base, { agency: agency_delta });
+    s.capitals = applyDelta(s.capitals, delta), npc.liquid += cell.B.capital, npc.cumulative_payoff += cell.B.capital, actualMoveA === "defect" && (npc.memory_defect = !0), npc.history.push({ tick: s.tick, playerMove: actualMoveA, npcMove: intended, stake: stakeEff, breach_detected: breach.detected });
+    let primary = 0, sever = !1;
+    switch (cell.cell) {
+      case "win_win":
+        primary = 0.15;
+        break;
+      case "arbitrage":
+        primary = intended === "cooperate" ? 0.1 : 0.05;
+        break;
+      case "sucker":
+        primary = -0.05;
+        break;
+      case "exploitation":
+        primary = -0.8;
+        break;
+      case "mutual_destruction":
+        sever = !0;
+        break;
+    }
+    let propagation = propagate(s.graph, npc.id, primary, s.tick, sever);
+    return {
+      outcome: { playerMove: actualMoveA, npcMove: intended, breach_detected: breach.detected, payoffA: cell.A, payoffB: cell.B, nash_equilibrium: nash, cell: cell.cell },
+      delta,
+      propagation,
+      agency_delta,
+      stake_effective: stakeEff
+    };
+  }
+
+  // src/engine/narrative/Matcher.ts
+  function groupIndex(pool) {
+    let m = /* @__PURE__ */ new Map();
+    for (let s of pool) s.group !== void 0 && m.set(s.id, s.group);
+    return m;
+  }
+  function eligible(pool, ctx, opts) {
+    let out = [], groupOf = opts.groups ?? groupIndex(pool);
+    for (let s of pool) {
+      if (s.urgency < opts.minUrgency) continue;
+      let g = s.group, last;
+      for (let i = opts.history.length - 1; i >= 0; i--) {
+        let h2 = opts.history[i];
+        if (h2.id === s.id || g !== void 0 && groupOf.get(h2.id) === g) {
+          last = h2;
+          break;
+        }
+      }
+      if (last && (s.once || opts.age - last.age < s.cooldownYears) || s.requires_open && s.requires_open.some((d) => ctx.doors.has(d))) continue;
+      let ok = !1;
+      try {
+        ok = s.prerequisites(ctx);
+      } catch {
+        ok = !1;
+      }
+      if (!ok) continue;
+      let spec = 0;
+      try {
+        spec = s.specificity(ctx);
+      } catch {
+        spec = 0;
+      }
+      out.push({ s, spec });
+    }
+    return out;
+  }
+  function selectStorylet(pool, ctx, opts, rng) {
+    let cands = eligible(pool, ctx, opts);
+    if (!cands.length) return null;
+    let band = (u) => u >= 80 ? 2 : u >= 40 ? 1 : 0;
+    cands.sort((a, b) => band(b.s.urgency) - band(a.s.urgency) || b.spec - a.spec);
+    let top = cands[0], ties = cands.filter((c) => band(c.s.urgency) === band(top.s.urgency) && c.spec === top.spec);
+    return rng.pick(ties).s;
+  }
+  function selectVignette(rules, ctx, rng, recent) {
+    let best = [], bestSpec = -1;
+    for (let r of rules) {
+      if (recent.includes(r.id)) continue;
+      let ok = !1;
+      try {
+        ok = r.when(ctx);
+      } catch {
+        ok = !1;
+      }
+      ok && (r.specificity > bestSpec ? (bestSpec = r.specificity, best = [r]) : r.specificity === bestSpec && best.push(r));
+    }
+    return best.length ? rng.pick(best) : null;
+  }
+  function countTrue(...preds) {
+    return preds.filter(Boolean).length;
+  }
+
+  // src/engine/narrative/Causality.ts
+  var DOORS = {
+    inheritance: { vi: "Th\u1EEBa k\u1EBF", desc: "Ph\u1EA7n nh\xE0 \u0111\u1EA5t c\u1EE7a cha m\u1EB9 s\u1EBD kh\xF4ng c\xF2n t\xEAn b\u1EA1n." },
+    partner_circle: { vi: "V\xF2ng l\xE0m \u0103n", desc: "Nh\u1EEFng ng\u01B0\u1EDDi t\u1EEBng r\u1EE7 b\u1EA1n v\xE0o k\xE8o s\u1EBD kh\xF4ng r\u1EE7 n\u1EEFa, v\xE0 b\u1EA1n b\xE8 c\u1EE7a h\u1ECD c\u0169ng th\u1EBF." },
+    village_trust: { vi: "T\xEDn nhi\u1EC7m l\xE0ng", desc: "Nh\u1EEFng vi\u1EC7c chung c\u1EE7a x\xF3m s\u1EBD kh\xF4ng c\xF2n ch\u1ED7 cho b\u1EA1n." },
+    family_table: { vi: "M\xE2m c\u01A1m gia \u0111\xECnh", desc: "Anh ch\u1ECB em s\u1EBD kh\xF4ng chia s\u1EBB v\u1EDBi b\u1EA1n ph\u1EA7n g\xE1nh n\u1EB7ng, v\xE0 c\u1EA3 ph\u1EA7n th\u1EEBa h\u01B0\u1EDFng." },
+    clean_record: { vi: "Qu\xE1 kh\u1EE9 s\u1EA1ch", desc: "T\u1EEB nay c\xF3 m\u1ED9t chuy\u1EC7n ng\u01B0\u1EDDi ta c\xF3 th\u1EC3 d\xF9ng \u0111\u1EC3 n\u1EAFm th\xF3p b\u1EA1n." },
+    return_home: { vi: "\u0110\u01B0\u1EDDng v\u1EC1", desc: "Qu\xEA kh\xF4ng c\xF2n l\xE0 n\u01A1i b\u1EA1n c\xF3 th\u1EC3 quay l\u1EA1i nh\u01B0 ch\u01B0a t\u1EEBng \u0111i." }
+  }, prov = {
+    flag: (f4) => `flag:${f4}`,
+    memory: (npc, tag) => `memory:${npc}:${tag}`,
+    secret: (tag) => `secret:${tag}`,
+    door: (d) => `door:${d}`,
+    opinion: (npc) => `opinion:${npc}`
+    // resolved by the host to the strongest memory of that NPC
+  };
+  function createCausality() {
+    return { marks: [], origin: /* @__PURE__ */ new Map(), doors: /* @__PURE__ */ new Set(), nextId: 1 };
+  }
+  function addMark(c, m) {
+    let mark = { ...m, id: `m${c.nextId++}`, consequences: [] };
+    return c.marks.push(mark), mark;
+  }
+  function stamp(c, key, markId) {
+    c.origin.has(key) || c.origin.set(key, markId);
+  }
+  function closeDoor(c, d, markId) {
+    if (c.doors.has(d)) return !1;
+    c.doors.add(d), stamp(c, prov.door(d), markId);
+    let m = c.marks.find((x) => x.id === markId);
+    return m && !m.doors_closed.includes(d) && m.doors_closed.push(d), !0;
+  }
+  function markById(c, id) {
+    return c.marks.find((m) => m.id === id);
+  }
+  function resolveCauses(c, keys) {
+    let seen = /* @__PURE__ */ new Set(), out = [];
+    for (let k of keys) {
+      let id = c.origin.get(k);
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      let m = markById(c, id);
+      m && out.push(m);
+    }
+    return out.sort((a, b) => a.age - b.age);
+  }
+  function attachConsequence(marks, age, storylet, text) {
+    for (let m of marks) m.consequences.some((x) => x.age === age && x.storylet === storylet) || m.consequences.push({ age, storylet, text });
+  }
+  function pivotalMarks(c, n, extraScore = () => 0) {
+    return [...c.marks].filter((m) => m.alternatives.length >= 2).map((m) => ({ m, s: m.doors_closed.length * 3 + m.consequences.length + extraScore(m) })).sort((a, b) => b.s - a.s || a.m.age - b.m.age).slice(0, n).map((x) => x.m);
+  }
+  function doorOpen(ctx, d) {
+    return !ctx.doors.has(d);
+  }
+
+  // src/engine/narrative/storylets.ts
+  var C = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), pd = (who, a = "H\u1EE3p t\xE1c", b = "Ph\u1EA3n b\u1ED9i") => ({ me: [a, b], them: [a, b], cells: [[[2, 2], [-2.7, 4]], [[4, -2.7], [-1.3, -1.3]]], unit: "u" }), role = (ctx, r) => ctx.cast[r], op = (ctx, id) => id ? ctx.opinion[id] ?? 0 : 0, hasHook = (ctx, id) => !!id && (ctx.hooks[id]?.length ?? 0) > 0, nonFamily = (r) => !["mother", "father", "sibling", "spouse", "child"].includes(r), STORYLETS = [
+    /* ---------------------------------------------------------------- Tuổi thơ */
+    {
+      id: "candy",
+      category: "childhood",
+      urgency: 30,
+      cooldownYears: 99,
+      once: !0,
+      tension: 4,
+      prerequisites: (c) => c.age >= 6 && c.age <= 10 && !!role(c, "sibling"),
+      specificity: (c) => countTrue(c.poor_country, c.family_wealth < 0.4),
+      build: (c, N) => {
+        let s = role(c, "sibling");
+        return {
+          title: `${N(s)} chia k\u1EB9o`,
+          concept: "ultimatum",
+          npc: s,
+          text: `${N(s)} \u0111\u01B0\u1EE3c cho 10 c\xE1i k\u1EB9o v\xE0 b\u1EA3o: "Tao 8, m\xE0y 2. Kh\xF4ng ch\u1ECBu th\xEC tao tr\u1EA3 l\u1EA1i, c\u1EA3 hai kh\xF4ng ai c\xF3."`,
+          choices: [
+            C("Nh\u1EADn 2 c\xE1i", { happy: 1, trait: { fair: -1 }, memory: { npc: s, tag: "GOSSIP_HEARD_GOOD", weight: 0.05, note: "em d\u1EC5 b\u1EA3o" }, log: "B\u1EA1n nh\u1EADn 2 c\xE1i k\u1EB9o." }, "C\xF3 c\xF2n h\u01A1n kh\xF4ng"),
+            C("T\u1EEB ch\u1ED1i", { happy: -1, trait: { fair: 2 }, memory: { npc: s, tag: "STOOD_UP_FOR_ME", weight: 0.15, note: "v\u1EE5 chia k\u1EB9o" }, log: "B\u1EA1n t\u1EEB ch\u1ED1i. L\u1EA7n sau chia 5\u20135." }, "C\u1EA3 hai tr\u1EAFng tay, nh\u01B0ng ch\u1ECB bi\u1EBFt b\u1EA1n kh\xF4ng ch\u1ECBu thi\u1EC7t", { longterm: !0 }),
+            C("M\u1EB7c c\u1EA3 4 c\xE1i", { gamble: { p: 0.6, win: { happy: 2, log: "Ch\u1ECB l\u1EA7m b\u1EA7m r\u1ED3i \u0111\u01B0a 4 c\xE1i." }, lose: { happy: -2, log: "Ch\u1ECB tr\u1EA3 k\u1EB9o l\u1EA1i cho c\xF4. Kh\xF4ng ai \u0111\u01B0\u1EE3c g\xEC." } }, trait: { bold: 1 } }, "Ch\u1ECB c\xF3 th\u1EC3 \u0111\u1ED3ng \xFD ho\u1EB7c kh\xF4ng")
+          ],
+          def: 2
+        };
+      }
+    },
+    {
+      id: "bully_school",
+      category: "childhood",
+      urgency: 45,
+      cooldownYears: 99,
+      once: !0,
+      tension: 8,
+      prerequisites: (c) => c.age >= 10 && c.age <= 14 && c.in_school && !!role(c, "bully"),
+      specificity: (c) => countTrue(c.rel < 45, c.family_wealth < 0.4),
+      build: (c, N) => {
+        let b = role(c, "bully");
+        return {
+          title: `${N(b)} ch\u1EB7n b\u1EA1n \u1EDF c\u1ED5ng tr\u01B0\u1EDDng`,
+          concept: "hawkdove",
+          npc: b,
+          text: `${N(b)}, l\u1EDBn h\u01A1n b\u1EA1n hai tu\u1ED5i, \u0111\xF2i ti\u1EC1n \u0103n s\xE1ng. N\xF3 c\u0169ng kh\xF4ng ch\u1EAFc b\u1EA1n c\xF3 \u0111\xE1nh tr\u1EA3 hay kh\xF4ng. \u0110\u1EE9a n\xE0y s\u1EBD c\xF2n \u1EDF quanh b\u1EA1n r\u1EA5t l\xE2u.`,
+          matrix: { me: ["\u0110\xE1nh tr\u1EA3", "Nh\u01B0\u1EDDng"], them: ["\u0110\xE1nh", "L\xF9i"], cells: [[[-4, -4], [3, -1]], [[-2, 2], [0, 0]]], unit: "\u0111i\u1EC3m" },
+          choices: [
+            C("\u0110\xE1nh tr\u1EA3", { trait: { bold: 2 }, gamble: { p: 0.55, win: { happy: 4, rel: 3, memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.4, note: "b\u1ECB b\u1EA1n \u0111\xE1nh tr\u1EA3 tr\u01B0\u1EDBc c\u1ED5ng tr\u01B0\u1EDDng" }, log: `${N(b)} kh\xF4ng ng\u1EDD b\u1EA1n ph\u1EA3n \u1EE9ng, b\u1ECF \u0111i.` }, lose: { health: -6, happy: -4, memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.2, note: "tr\u1EADn \u0111\xE1nh \u1EDF c\u1ED5ng tr\u01B0\u1EDDng" }, log: "Hai \u0111\u1EE9a \u0111\xE1nh nhau, c\u1EA3 hai b\u1ECB ph\u1EA1t v\xE0 mang s\u1EB9o." } } }, "N\u1EBFu n\xF3 c\u0169ng \u0111\xE1nh, c\u1EA3 hai c\xF9ng \u0111au"),
+            C("Nh\u01B0\u1EDDng ti\u1EC1n", { trait: { coop: -1 }, happy: -3, flags: ["yielded_bully"], memory: { npc: b, tag: "GOSSIP_HEARD_GOOD", weight: 0.1, note: "b\u1EA1n l\xE0 con m\u1ED3i d\u1EC5" }, log: `B\u1EA1n \u0111\u01B0a ti\u1EC1n. ${N(b)} quay l\u1EA1i m\u1ED7i tu\u1EA7n su\u1ED1t n\u0103m h\u1ECDc.` }, "Y\xEAn th\xE2n h\xF4m nay, nh\u01B0ng n\xF3 s\u1EBD quay l\u1EA1i"),
+            C("B\xE1o th\u1EA7y c\xF4", { gamble: { p: 0.65, win: { happy: 2, memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.5, note: "b\u1ECB b\u1EA1n m\xE1ch th\u1EA7y, b\u1ECB \u0111\xECnh ch\u1EC9" }, log: "Nh\xE0 tr\u01B0\u1EDDng can thi\u1EC7p. Chuy\u1EC7n ch\u1EA5m d\u1EE9t, v\xE0 n\xF3 kh\xF4ng qu\xEAn." }, lose: { happy: -4, rel: -3, memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.3, note: "b\u1EA1n \u0111\xE3 m\xE1ch" }, log: "Th\u1EA7y c\xF4 b\u1ECF qua, v\xE0 n\xF3 bi\u1EBFt b\u1EA1n \u0111\xE3 m\xE1ch." } } }, "\u0110\u01B0a chuy\u1EC7n ra kh\u1ECFi tr\xF2 ch\u01A1i hai ng\u01B0\u1EDDi", { longterm: !0 })
+          ],
+          def: 2
+        };
+      }
+    },
+    {
+      id: "cheat_exam",
+      category: "childhood",
+      urgency: 40,
+      cooldownYears: 99,
+      once: !0,
+      tension: 6,
+      prerequisites: (c) => c.age >= 13 && c.age <= 17 && c.in_school && !!role(c, "childhood_friend"),
+      specificity: (c) => countTrue(c.know < 45, c.bandwidth < 50),
+      build: (c, N) => {
+        let f4 = role(c, "childhood_friend");
+        return {
+          title: "B\xE0i thi cu\u1ED1i n\u0103m",
+          concept: "ev",
+          npc: f4,
+          text: `${N(f4)} ng\u1ED3i c\u1EA1nh \u0111\u1EA9y t\u1EDD gi\u1EA5y sang. Kho\u1EA3ng 1 trong 4 l\u1EA7n ch\xE9p b\xE0i l\xE0 b\u1ECB b\u1EAFt. V\xE0 ${N(f4)} s\u1EBD l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t bi\u1EBFt chuy\u1EC7n n\xE0y.`,
+          choices: [
+            C("Ch\xE9p b\xE0i", { trait: { risk: 2, fair: -1 }, gamble: { p: 0.75, win: { happy: 3, secret: { tag: "CHEATED_EXAM", severity: 0.35, fuse_years: [10, 25], note: "ch\xE9p b\xE0i thi cu\u1ED1i n\u0103m", known_by: [f4] }, log: "B\u1EA1n qua k\u1EF3 thi v\xE0 kh\xF4ng ai bi\u1EBFt, tr\u1EEB m\u1ED9t ng\u01B0\u1EDDi." }, lose: { happy: -8, rel: -5, counters: { lost_school_year: 1 }, log: "B\u1EA1n b\u1ECB b\u1EAFt qu\u1EA3 tang v\xE0 ph\u1EA3i h\u1ECDc l\u1EA1i m\u1ED9t n\u0103m." } } }, "75%: qua d\u1EC5 d\xE0ng \xB7 25%: b\u1ECB \u0111\xECnh ch\u1EC9"),
+            C("T\u1EF1 l\xE0m", { know: 3, memory: { npc: f4, tag: "KEPT_PROMISE", weight: 0.1, note: "kh\xF4ng ch\xE9p b\xE0i" }, log: "B\u1EA1n t\u1EF1 l\xE0m b\xE0i, \u0111i\u1EC3m kh\xF4ng cao nh\u01B0ng l\xE0 c\u1EE7a m\xECnh." }, "\u0110i\u1EC3m th\u1EA5p h\u01A1n m\u1ED9t ch\xFAt, ki\u1EBFn th\u1EE9c th\u1EADt", { longterm: !0 })
+          ],
+          def: 1
+        };
+      }
+    },
+    /* ---------------------------------------------------------------- Làng, tiền, bạn bè */
+    {
+      id: "well",
+      category: "money",
+      urgency: 35,
+      cooldownYears: 99,
+      once: !0,
+      tension: 6,
+      prerequisites: (c) => c.age >= 18 && c.age <= 45 && c.poor_country && !!role(c, "neighbor"),
+      specificity: (c) => countTrue(c.health < 60, c.broke, op(c, role(c, "neighbor")) > 0.2),
+      build: (c, N) => {
+        let nb = role(c, "neighbor");
+        return {
+          title: "Gi\u1EBFng l\xE0ng",
+          concept: "public",
+          npc: nb,
+          text: `${N(nb)} \u0111i t\u1EEBng nh\xE0 b\xE0n chuy\u1EC7n g\xF3p ti\u1EC1n \u0111\xE0o gi\u1EBFng chung. C\u1EA7n \xEDt nh\u1EA5t ba h\u1ED9 g\xF3p. Gi\u1EBFng xong th\xEC ai c\u0169ng \u0111\u01B0\u1EE3c d\xF9ng, k\u1EC3 c\u1EA3 nh\xE0 kh\xF4ng g\xF3p.`,
+          choices: [
+            C("G\xF3p ti\u1EC1n", { trait: { coop: 2 }, money: -0.15, gamble: { p: 0.6, win: { health: 8, rel: 5, memory: { npc: nb, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "g\xF3p ti\u1EC1n \u0111\xE0o gi\u1EBFng" }, log: "\u0110\u1EE7 h\u1ED9 g\xF3p. Gi\u1EBFng \u0111\xE0o xong, c\u1EA3 x\xF3m c\xF3 n\u01B0\u1EDBc s\u1EA1ch." }, lose: { happy: -4, log: "Kh\xF4ng \u0111\u1EE7 h\u1ED9 g\xF3p. Ti\u1EC1n tr\u1EA3 l\u1EA1i m\u1ED9t ph\u1EA7n, gi\u1EBFng kh\xF4ng th\xE0nh." } } }, "M\u1EA5t ti\u1EC1n; gi\u1EBFng c\xF3 hay kh\xF4ng c\xF2n t\xF9y ng\u01B0\u1EDDi kh\xE1c", { longterm: !0 }),
+            C("Kh\xF4ng g\xF3p", { trait: { coop: -2 }, gamble: { p: 0.45, win: { health: 6, rel: -4, close_doors: ["village_trust"], memory: { npc: nb, tag: "REFUSED_HELP", weight: -0.25, note: "kh\xF4ng g\xF3p ti\u1EC1n gi\u1EBFng m\xE0 v\u1EABn d\xF9ng" }, log: "Gi\u1EBFng v\u1EABn th\xE0nh. B\u1EA1n d\xF9ng n\u01B0\u1EDBc chung, v\xE0 h\xE0ng x\xF3m nh\u1EDB ai kh\xF4ng g\xF3p." }, lose: { happy: -2, log: "Kh\xF4ng \u0111\u1EE7 h\u1ED9 g\xF3p. C\u1EA3 x\xF3m ti\u1EBFp t\u1EE5c g\xE1nh n\u01B0\u1EDBc xa." } } }, "N\u1EBFu \u0111\u1EE7 h\u1ED9 kh\xE1c, b\u1EA1n v\u1EABn c\xF3 n\u01B0\u1EDBc")
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "loan_friend",
+      category: "social",
+      urgency: 40,
+      cooldownYears: 12,
+      tension: 8,
+      prerequisites: (c) => c.age >= 18 && c.age <= 55 && !!role(c, "childhood_friend") && c.savings > 0.3 * c.income,
+      specificity: (c) => countTrue(op(c, role(c, "childhood_friend")) > 0.3, c.rich, c.poor_country),
+      build: (c, N) => {
+        let f4 = role(c, "childhood_friend");
+        return {
+          title: `${N(f4)} h\u1ECFi m\u01B0\u1EE3n ti\u1EC1n`,
+          concept: "trust",
+          npc: f4,
+          text: `${N(f4)}, b\u1EA1n t\u1EEB nh\u1ECF, c\u1EA7n m\u1ED9t kho\u1EA3n b\u1EB1ng v\xE0i th\xE1ng l\u01B0\u01A1ng c\u1EE7a b\u1EA1n \u0111\u1EC3 xoay x\u1EDF vi\u1EC7c nh\xE0, h\u1EE9a sang n\u0103m tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i. Kh\xF4ng gi\u1EA5y t\u1EDD g\xEC c\u1EA3.`,
+          choices: [
+            C("Cho m\u01B0\u1EE3n", { trait: { coop: 2 }, game: { npc: f4, move: "cooperate", stake_frac: 0.3 }, log: "B\u1EA1n cho m\u01B0\u1EE3n kh\xF4ng gi\u1EA5y t\u1EDD" }, "C\xF3 th\u1EC3 \u0111\u01B0\u1EE3c tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i, ho\u1EB7c m\u1EA5t tr\u1EAFng"),
+            C("Cho m\u1ED9t n\u1EEDa, kh\xF4ng c\u1EA7n tr\u1EA3", { money: -0.12, rel: 4, memory: { npc: f4, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "cho ti\u1EC1n l\xFAc t\xFAng" }, log: `B\u1EA1n \u0111\u01B0a ${N(f4)} m\u1ED9t n\u1EEDa v\xE0 n\xF3i kh\xF4ng c\u1EA7n tr\u1EA3.` }, "M\u1EA5t \xEDt, gi\u1EEF \u0111\u01B0\u1EE3c t\xECnh b\u1EA1n"),
+            C("Cho m\u01B0\u1EE3n c\xF3 gi\u1EA5y t\u1EDD v\xE0 ng\u01B0\u1EDDi l\xE0m ch\u1EE9ng", { trait: { coop: 1 }, game: { npc: f4, move: "arbitrage", stake_frac: 0.3 }, log: "B\u1EA1n cho m\u01B0\u1EE3n c\xF3 gi\u1EA5y t\u1EDD" }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: gi\u1EEF l\xF2ng tin b\u1EB1ng c\u1EA5u tr\xFAc, kh\xF4ng b\u1EB1ng hy v\u1ECDng", { tier: "sovereign", longterm: !0 }),
+            C("T\u1EEB ch\u1ED1i", { trait: { coop: -1 }, rel: -5, memory: { npc: f4, tag: "REFUSED_HELP", weight: -0.3, note: "t\u1EEB ch\u1ED1i cho m\u01B0\u1EE3n l\xFAc t\xFAng" }, log: `${N(f4)} n\xF3i kh\xF4ng sao, nh\u01B0ng \xEDt gh\xE9 ch\u01A1i h\u01A1n.` }, "Gi\u1EEF ti\u1EC1n")
+          ],
+          def: 0
+        };
+      }
+    },
+    /* ---- Hùn vốn: chuỗi 4 năm với đối tác cố định ---- */
+    {
+      id: "shop_offer",
+      category: "arc",
+      urgency: 45,
+      cooldownYears: 99,
+      once: !0,
+      tension: 10,
+      prerequisites: (c) => c.age >= 22 && c.age <= 50 && c.has_job && !!role(c, "partner") && !c.flags.has("shop_active"),
+      specificity: (c) => countTrue(op(c, role(c, "partner")) > 0.2, c.savings > c.income, c.tier !== "autopilot"),
+      build: (c, N) => {
+        let p = role(c, "partner"), kind = c.poor_country ? "qu\xE1n \u0103n nh\u1ECF" : "ti\u1EC7m s\u1EEDa \u0111i\u1EC7n tho\u1EA1i";
+        return {
+          title: `${N(p)} r\u1EE7 h\xF9n v\u1ED1n m\u1EDF ${kind}`,
+          concept: "pd",
+          npc: p,
+          matrix: pd(N(p), "Khai th\u1EADt", "Gi\u1EA5u b\u1EDBt"),
+          text: `M\u1ED7i ng\u01B0\u1EDDi g\xF3p v\xE0i th\xE1ng l\u01B0\u01A1ng. Cu\u1ED1i m\u1ED7i n\u0103m hai ng\u01B0\u1EDDi t\u1EF1 khai doanh thu ph\u1EA7n m\xECnh thu v\xE0 chia \u0111\xF4i. Khai th\u1EADt th\xEC c\u1EA3 hai c\xF9ng l\u1EE3i; gi\u1EA5u b\u1EDBt th\xEC m\xECnh l\u1EE3i h\u01A1n, n\u1EBFu ng\u01B0\u1EDDi kia th\u1EADt th\xE0. B\u1EA1n ch\u01B0a bi\u1EBFt ${N(p)} l\xE0 ng\u01B0\u1EDDi th\u1EBF n\xE0o.`,
+          choices: [
+            C("H\xF9n v\u1ED1n", { money: -0.45, flags: ["shop_active"], counters: { shop_round: 0 }, later: { years: 1, storylet: "shop_round" }, log: `B\u1EA1n v\xE0 ${N(p)} m\u1EDF ${kind}.` }, "Ch\u01A1i 4 n\u0103m v\u1EDBi m\u1ED9t ng\u01B0\u1EDDi b\u1EA1n ch\u01B0a bi\u1EBFt t\xEDnh"),
+            C("T\u1EEB ch\u1ED1i", { log: `B\u1EA1n t\u1EEB ch\u1ED1i. ${N(p)} m\u1EDF ${kind} m\u1ED9t m\xECnh.` }, "Gi\u1EEF ti\u1EC1n, gi\u1EEF b\u1EA1n")
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "shop_round",
+      category: "arc",
+      urgency: 90,
+      cooldownYears: 0,
+      tension: 6,
+      prerequisites: (c) => c.flags.has("shop_active") && (c.counters.shop_round ?? 0) < 4,
+      specificity: () => 5,
+      build: (c, N) => {
+        let p = role(c, "partner") ?? "cast_partner", r = (c.counters.shop_round ?? 0) + 1;
+        return {
+          title: `Cu\u1ED1i n\u0103m th\u1EE9 ${r} \u1EDF ti\u1EC7m chung`,
+          concept: "repeated",
+          npc: p,
+          matrix: pd(N(p), "Khai th\u1EADt", "Gi\u1EA5u b\u1EDBt"),
+          text: `Hai ng\u01B0\u1EDDi ng\u1ED3i ki\u1EC3m ti\u1EC1n.${c.last_move[p] ? ` N\u0103m ngo\xE1i ${N(p)} \u0111\xE3 ${c.last_move[p] === "cooperate" ? "khai th\u1EADt" : "gi\u1EA5u b\u1EDBt"}.` : ""}${r === 4 ? " \u0110\xE2y l\xE0 n\u0103m cu\u1ED1i c\u1EE7a h\u1EE3p \u0111\u1ED3ng." : ""}`,
+          choices: [
+            C("Khai th\u1EADt", { game: { npc: p, move: "cooperate", stake_frac: 0.6 }, counters: { shop_round: 1 }, later: { years: 1, storylet: r < 4 ? "shop_round" : "shop_end" }, log: "B\u1EA1n khai th\u1EADt" }, void 0, { longterm: !0 }),
+            C("Gi\u1EA5u b\u1EDBt", { game: { npc: p, move: "defect", stake_frac: 0.6 }, counters: { shop_round: 1 }, later: { years: 1, storylet: r < 4 ? "shop_round" : "shop_end" }, log: "B\u1EA1n gi\u1EA5u b\u1EDBt" }),
+            C("K\xFD qu\u1EF9, chia theo t\u1EEBng m\u1ED1c", { game: { npc: p, move: "arbitrage", stake_frac: 0.6 }, counters: { shop_round: 1 }, later: { years: 1, storylet: r < 4 ? "shop_round" : "shop_end" }, log: "B\u1EA1n \u0111\u1EC1 ngh\u1ECB k\xFD qu\u1EF9" }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: ti\u1EC1n v\xE0o t\xE0i kho\u1EA3n chung, ai gi\u1EA5u b\u1EDBt th\xEC m\u1EA5t ph\u1EA7n k\xFD qu\u1EF9", { tier: "sovereign" })
+          ],
+          def: c.last_move[p] === "defect" ? 1 : 0
+        };
+      }
+    },
+    {
+      id: "shop_end",
+      category: "arc",
+      urgency: 95,
+      cooldownYears: 0,
+      once: !0,
+      tension: 0,
+      prerequisites: (c) => c.flags.has("shop_active") && (c.counters.shop_round ?? 0) >= 4,
+      specificity: () => 5,
+      causes: (c) => [prov.opinion(role(c, "partner") ?? "cast_partner")],
+      build: (c, N) => {
+        let p = role(c, "partner") ?? "cast_partner";
+        return {
+          title: "H\u1EBFt h\u1EE3p \u0111\u1ED3ng b\u1ED1n n\u0103m",
+          concept: "strategy",
+          npc: p,
+          text: `B\u1ED1n n\u0103m \u0111\xE3 qua. Gi\u1EDD b\u1EA1n bi\u1EBFt ${N(p)} l\xE0 ng\u01B0\u1EDDi th\u1EBF n\xE0o, v\xE0 ${N(p)} c\u0169ng bi\u1EBFt b\u1EA1n.`,
+          choices: [C("T\u1ED5ng k\u1EBFt", { unflags: ["shop_active"], flags: ["shop_done"], custom: "shop_end" })],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "salary",
+      category: "work",
+      urgency: 35,
+      cooldownYears: 8,
+      tension: 5,
+      prerequisites: (c) => c.age >= 22 && c.age <= 52 && c.has_job && !c.farmer && !c.retired,
+      specificity: (c) => countTrue(c.broke, c.know > 60, c.rat_race),
+      build: (c) => ({
+        title: "Xin t\u0103ng l\u01B0\u01A1ng",
+        concept: "batna",
+        text: `B\u1EA1n \u0111\xE3 l\xE0m \u1EDF \u0111\xE2y v\xE0i n\u0103m. ${c.know > 55 ? "M\u1ED9t c\xF4ng ty kh\xE1c v\u1EEBa m\u1EDDi b\u1EA1n v\u1EDBi l\u01B0\u01A1ng cao h\u01A1n 15 %." : "B\u1EA1n ch\u01B0a c\xF3 l\u1EDDi m\u1EDDi n\xE0o kh\xE1c."} S\u1EBFp kh\xF4ng bi\u1EBFt \u0111i\u1EC1u \u0111\xF3.`,
+        choices: [
+          C("\u0110\xF2i t\u0103ng 25 %", { trait: { bold: 2 }, gamble: { p: c.know > 55 ? 0.7 : 0.3, win: { income_mult: 1.25, log: "S\u1EBFp \u0111\u1ED3ng \xFD t\u0103ng 25 %." }, lose: c.know > 55 ? { income_mult: 1.15, log: "S\u1EBFp t\u1EEB ch\u1ED1i. B\u1EA1n nh\u1EADn l\u1EDDi c\xF4ng ty kia." } : { happy: -4, log: "S\u1EBFp t\u1EEB ch\u1ED1i v\xE0 nh\xECn b\u1EA1n kh\xE1c \u0111i t\u1EEB \u0111\xF3." } } }, c.know > 55 ? "C\xF3 \u0111\u01B0\u1EDDng lui n\u1EBFu b\u1ECB t\u1EEB ch\u1ED1i" : "N\u1EBFu b\u1ECB t\u1EEB ch\u1ED1i, ch\u1EC9 c\xF2n c\xE1ch nh\u1ECBn", { tier: "awakened" }),
+          C("\u0110\xF2i t\u0103ng 10 %", { gamble: { p: 0.7, win: { income_mult: 1.1, log: "S\u1EBFp \u0111\u1ED3ng \xFD t\u0103ng 10 %." }, lose: { log: "S\u1EBFp h\u1EE9a h\u1EB9n r\u1ED3i qu\xEAn." } } }, "D\u1EC5 \u0111\u01B0\u1EE3c ch\u1EA5p nh\u1EADn h\u01A1n"),
+          C("Kh\xF4ng \u0111\xF2i", { trait: { bold: -1 }, log: "B\u1EA1n im l\u1EB7ng l\xE0m ti\u1EBFp." }, "Gi\u1EEF nguy\xEAn"),
+          C("\u0110\u1EC1 xu\u1EA5t l\u01B0\u01A1ng g\u1EAFn v\u1EDBi k\u1EBFt qu\u1EA3", { trait: { bold: 1, coop: 1 }, gamble: { p: 0.65, win: { income_mult: 1.35, health: -2, log: "S\u1EBFp \u0111\u1ED3ng \xFD. N\u0103m sau b\u1EA1n l\xE0m nhi\u1EC1u h\u01A1n, v\xE0 l\u01B0\u01A1ng t\u0103ng 35 %." }, lose: { income_mult: 1.1, log: "S\u1EBFp kh\xF4ng quen c\xE1ch n\xE0y nh\u01B0ng v\u1EABn t\u0103ng 10 % v\xEC b\u1EA1n d\xE1m \u0111\u1EC1 xu\u1EA5t." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: kh\xF4ng m\u1EB7c c\u1EA3 mi\u1EBFng b\xE1nh, l\xE0m b\xE1nh to h\u01A1n r\u1ED3i chia", { tier: "sovereign" })
+        ],
+        def: 1
+      })
+    },
+    {
+      id: "stag",
+      category: "work",
+      urgency: 35,
+      cooldownYears: 10,
+      tension: 5,
+      requires_open: ["village_trust"],
+      prerequisites: (c) => c.farmer && c.age >= 20 && c.age <= 60 && !!role(c, "neighbor"),
+      specificity: (c) => countTrue(op(c, role(c, "neighbor")) > 0.2, c.econ_phase === "crisis"),
+      build: (c, N) => {
+        let nb = role(c, "neighbor");
+        return {
+          title: "G\u1EB7t chung hay g\u1EB7t ri\xEAng",
+          concept: "stag",
+          npc: nb,
+          matrix: { me: ["G\u1EB7t chung", "G\u1EB7t ri\xEAng"], them: ["G\u1EB7t chung", "G\u1EB7t ri\xEAng"], cells: [[[3, 3], [0, 1]], [[1, 0], [1, 1]]], unit: "u" },
+          text: `${N(nb)} b\xE0n chuy\u1EC7n \u0111\u1ED5i c\xF4ng, g\u1EB7t chung t\u1EEBng ru\u1ED9ng \u0111\u1EC3 k\u1ECBp tr\u01B0\u1EDBc m\u01B0a. N\u1EBFu \u0111\u1EE7 ng\u01B0\u1EDDi th\xEC nhanh g\u1EA5p \u0111\xF4i; n\u1EBFu c\xF3 nh\xE0 b\u1ECF \u0111i g\u1EB7t ri\xEAng, nh\xE0 c\xF2n l\u1EA1i l\u1EE1 v\u1EE5.`,
+          choices: [
+            C("G\u1EB7t chung", { trait: { coop: 2 }, gamble: { p: 0.5 + op(c, nb) * 0.4, win: { money: 0.45, rel: 5, memory: { npc: nb, tag: "WIN_WIN_DEAL", weight: 0.25, note: "m\xF9a g\u1EB7t chung" }, log: "C\u1EA3 x\xF3m g\u1EB7t xong tr\u01B0\u1EDBc m\u01B0a. M\xF9a n\xE0y b\u1ED9i thu." }, lose: { happy: -5, money: -0.1, log: "Hai nh\xE0 b\u1ECF v\u1EC1 g\u1EB7t ri\xEAng. Ru\u1ED9ng b\u1EA1n ng\u1EADp trong m\u01B0a." } } }, "\u0110\u01B0\u1EE3c nhi\u1EC1u n\u1EBFu h\u1ECD c\u0169ng \u0111\u1EBFn", { longterm: !0 }),
+            C("G\u1EB7t ri\xEAng", { money: 0.15, trait: { risk: -1 }, log: "B\u1EA1n g\u1EB7t ri\xEAng, \u0111\u01B0\u1EE3c nh\u01B0 m\u1ECDi n\u0103m." }, "Ch\u1EAFc ch\u1EAFn, \xEDt"),
+            C("L\u1EADp t\u1ED5 \u0111\u1ED5i c\xF4ng c\xF3 quy \u01B0\u1EDBc ph\u1EA1t", { trait: { coop: 3 }, gamble: { p: 0.75, win: { money: 0.45, rel: 8, flags: ["coop_group"], memory: { npc: nb, tag: "WIN_WIN_DEAL", weight: 0.35, note: "l\u1EADp t\u1ED5 \u0111\u1ED5i c\xF4ng" }, log: "C\xF3 quy \u01B0\u1EDBc, kh\xF4ng nh\xE0 n\xE0o d\xE1m b\u1ECF v\u1EC1. T\u1ED5 \u0111\u1ED5i c\xF4ng c\xF2n m\xE3i v\u1EC1 sau." }, lose: { money: 0.15, log: "M\u1EA5y nh\xE0 ng\u1EA1i r\xE0ng bu\u1ED9c. B\u1EA1n g\u1EB7t ri\xEAng nh\u01B0 m\u1ECDi n\u0103m." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: \u0111\u1ED5i tr\xF2 s\u0103n h\u01B0\u01A1u th\xE0nh tr\xF2 c\xF3 lu\u1EADt", { tier: "sovereign" })
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "commons",
+      category: "work",
+      urgency: 35,
+      cooldownYears: 15,
+      once: !0,
+      tension: 8,
+      prerequisites: (c) => (c.farmer || c.poor_country) && c.age >= 22 && c.age <= 55 && !c.flags.has("commons_done"),
+      specificity: (c) => countTrue(c.broke, c.rat_race),
+      build: (c) => ({
+        title: `${c.poor_country ? "C\xE1 \u1EDF \u0111\u1EA7m" : "C\u1ECF tr\xEAn \u0111\u1ED3i"}: m\xF9a n\xE0y l\u1EA5y bao nhi\xEAu`,
+        concept: "commons",
+        text: "N\u0103m h\u1ED9 c\xF9ng khai th\xE1c ngu\u1ED3n chung. M\u1ED7i h\u1ED9 l\u1EA5y v\u1EEBa ph\u1EA3i th\xEC ngu\u1ED3n c\xF2n m\xE3i; ch\u1EC9 c\u1EA7n hai h\u1ED9 l\u1EA5y t\u1ED1i \u0111a v\xE0i m\xF9a l\xE0 c\u1EA1n. Kh\xF4ng ai gi\xE1m s\xE1t ai.",
+        choices: [
+          C("L\u1EA5y v\u1EEBa ph\u1EA3i", { trait: { coop: 1 }, money: 0.15, flags: ["commons_done"], gamble: { p: 0.55, win: { log: "C\xE1c h\u1ED9 kh\xE1c c\u0169ng l\u1EA5y v\u1EEBa. Ngu\u1ED3n c\xF2n cho \u0111\u1EDDi sau." }, lose: { money: -0.05, counters: { commons_depleted: 1 }, log: "Hai h\u1ED9 kh\xE1c l\u1EA5y t\u1ED1i \u0111a. Ngu\u1ED3n hao \u0111i th\u1EA5y r\xF5." } } }, "\xCDt h\u01A1n, b\u1EC1n h\u01A1n", { longterm: !0 }),
+          C("L\u1EA5y t\u1ED1i \u0111a", { trait: { coop: -1 }, money: 0.3, flags: ["commons_done", "commons_max"], close_doors: ["village_trust"], later: { years: 4, storylet: "commons_collapse" }, log: "B\u1EA1n l\u1EA5y t\u1ED1i \u0111a, v\xE0 c\xE1c h\u1ED9 kh\xE1c h\u1ECDc theo." }, "Nhi\u1EC1u h\u01A1n ngay, ngu\u1ED3n c\u1EA1n nhanh"),
+          C("\u0110\u1EE9ng ra l\u1EADp l\u1EC7 l\xE0ng", { trait: { coop: 3 }, flags: ["commons_done"], gamble: { p: 0.45 + c.rel / 150, win: { rel: 8, money: 0.15, flags: ["village_rules"], log: "L\xE0ng h\u1ECDp v\xE0 \u0111\u1ED3ng \xFD \u0111\u1EB7t l\u1EC7. B\u1EA1n \u0111\u01B0\u1EE3c tin c\u1EADy." }, lose: { happy: -3, money: 0.15, log: "Ch\u1EB3ng ai nghe. Ng\u01B0\u1EDDi ta b\u1EA3o b\u1EA1n lo chuy\u1EC7n bao \u0111\u1ED3ng." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: thay v\xEC ch\u01A1i trong lu\u1EADt c\u0169, vi\u1EBFt lu\u1EADt m\u1EDBi", { tier: "sovereign" })
+        ],
+        def: 0
+      })
+    },
+    {
+      id: "commons_collapse",
+      category: "fuse",
+      urgency: 85,
+      cooldownYears: 99,
+      once: !0,
+      tension: 10,
+      prerequisites: (c) => c.flags.has("commons_max") && !c.flags.has("village_rules"),
+      specificity: () => 3,
+      causes: () => [prov.flag("commons_max")],
+      build: () => ({
+        title: "Ngu\u1ED3n chung c\u1EA1n ki\u1EC7t",
+        concept: "commons",
+        text: "\u0110\u1EA7m c\u1EA1n, \u0111\u1ED3i tr\u1ECDc. C\u1EA3 x\xF3m ngh\xE8o \u0111i, v\xE0 ng\u01B0\u1EDDi ta nh\u1EDB ai \u0111\xE3 l\u1EA5y nhi\u1EC1u nh\u1EA5t.",
+        choices: [C("Ch\u1ECBu", { income_mult: 0.85, rel: -4, happy: -5, unflags: ["commons_max"], log: "Thu nh\u1EADp c\u1EE7a b\u1EA1n gi\u1EA3m h\u1EB3n." })],
+        def: 0
+      })
+    },
+    {
+      id: "land",
+      category: "social",
+      urgency: 40,
+      cooldownYears: 99,
+      once: !0,
+      tension: 10,
+      prerequisites: (c) => c.age >= 28 && c.age <= 60 && (c.farmer || c.rich) && !!role(c, "neighbor"),
+      specificity: (c) => countTrue(op(c, role(c, "neighbor")) < 0, c.bandwidth_locked),
+      build: (c, N) => {
+        let nb = role(c, "neighbor");
+        return {
+          title: "Tranh ch\u1EA5p ranh \u0111\u1EA5t",
+          concept: "chicken",
+          npc: nb,
+          matrix: { me: ["C\u1EE9ng r\u1EAFn", "Nh\u01B0\u1EDDng"], them: ["C\u1EE9ng r\u1EAFn", "Nh\u01B0\u1EDDng"], cells: [[[-6, -6], [4, -2]], [[-2, 4], [0, 0]]], unit: "u" },
+          text: `${N(nb)} d\u1EDDi h\xE0ng r\xE0o l\u1EA5n sang \u0111\u1EA5t nh\xE0 b\u1EA1n m\u1ED9t d\u1EA3i. C\u1EA3 hai \u0111\u1EC1u n\xF3i m\xECnh \u0111\xFAng. N\u1EBFu c\u1EA3 hai c\u1EE9ng r\u1EAFn, chuy\u1EC7n \u0111i t\u1EDBi ki\u1EC7n t\u1EE5ng t\u1ED1n k\xE9m cho c\u1EA3 hai.`,
+          choices: [
+            C("C\u1EE9ng r\u1EAFn \u0111\u1EBFn c\xF9ng", { trait: { bold: 2 }, gamble: { p: 0.55, win: { money: 0.3, memory: { npc: nb, tag: "TOOK_MY_LAND", weight: -0.5, note: "v\u1EE5 h\xE0ng r\xE0o" }, log: `${N(nb)} l\xF9i. B\u1EA1n gi\u1EEF \u0111\u01B0\u1EE3c \u0111\u1EA5t, v\xE0 m\u1ED9t m\u1ED1i th\xF9.` }, lose: { money: -0.6, happy: -8, rel: -10, memory: { npc: nb, tag: "TOOK_MY_LAND", weight: -0.6, note: "ba n\u0103m ki\u1EC7n t\u1EE5ng" }, log: "Hai nh\xE0 ki\u1EC7n nhau ba n\u0103m. Lu\u1EADt s\u01B0 \u0103n g\u1EA7n h\u1EBFt." } } }, "Th\u1EAFng n\u1EBFu h\u1ECD l\xF9i, thi\u1EC7t n\u1EB7ng n\u1EBFu c\u1EA3 hai kh\xF4ng l\xF9i"),
+            C("Nh\u01B0\u1EDDng d\u1EA3i \u0111\u1EA5t", { money: -0.15, happy: -2, memory: { npc: nb, tag: "GOSSIP_HEARD_GOOD", weight: 0.1, note: "nh\u01B0\u1EDDng \u0111\u1EA5t" }, log: "B\u1EA1n nh\u01B0\u1EDDng. Hai nh\xE0 v\u1EABn ch\xE0o nhau." }, "M\u1EA5t \xEDt, y\xEAn chuy\u1EC7n"),
+            C("Nh\u1EDD tr\u01B0\u1EDFng th\xF4n ph\xE2n x\u1EED", { gamble: { p: 0.6, win: { rel: 3, log: "Tr\u01B0\u1EDFng th\xF4n \u0111o l\u1EA1i, h\xE0ng r\xE0o v\u1EC1 ch\u1ED7 c\u0169." }, lose: { money: -0.08, log: "Tr\u01B0\u1EDFng th\xF4n chia \u0111\xF4i d\u1EA3i \u0111\u1EA5t. Kh\xF4ng ai vui h\u1EB3n, nh\u01B0ng xong chuy\u1EC7n." } } }, "Chuy\u1EC3n tr\xF2 ch\u01A1i g\xE0 th\xE0nh tr\u1ECDng t\xE0i", { longterm: !0 }),
+            C("\u0110\u1EC1 ngh\u1ECB m\u1EDF l\u1ED1i \u0111i chung tr\xEAn d\u1EA3i \u0111\u1EA5t", { trait: { coop: 2 }, gamble: { p: 0.7, win: { money: 0.15, rel: 8, memory: { npc: nb, tag: "WIN_WIN_DEAL", weight: 0.4, note: "l\u1ED1i \u0111i chung" }, log: "Hai nh\xE0 m\u1EDF l\u1ED1i \u0111i chung, \u0111\u1EA5t c\u1EA3 hai b\xEAn \u0111\u1EC1u l\xEAn gi\xE1." }, lose: { rel: -2, log: `${N(nb)} nghi ng\u1EDD \xFD t\u1ED1t c\u1EE7a b\u1EA1n v\xE0 t\u1EEB ch\u1ED1i.` } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: bi\u1EBFn th\u1EE9 hai nh\xE0 gi\xE0nh nhau th\xE0nh th\u1EE9 hai nh\xE0 c\xF9ng d\xF9ng", { tier: "sovereign" })
+          ],
+          def: 2
+        };
+      }
+    },
+    {
+      id: "strike",
+      category: "work",
+      urgency: 45,
+      cooldownYears: 99,
+      once: !0,
+      tension: 10,
+      prerequisites: (c) => c.worker && c.age >= 22 && c.age <= 55 && !!role(c, "first_boss"),
+      specificity: (c) => countTrue(c.econ_phase === "crisis", c.broke),
+      build: (c, N) => {
+        let b = role(c, "first_boss");
+        return {
+          title: "\u0110\xECnh c\xF4ng",
+          concept: "attrition",
+          npc: b,
+          text: `Nh\xE0 m\xE1y c\u1EE7a ${N(b)} n\u1EE3 l\u01B0\u01A1ng hai th\xE1ng. C\xF4ng nh\xE2n b\xE0n chuy\u1EC7n \u0111\xECnh c\xF4ng. M\u1ED7i tu\u1EA7n \u0111\xECnh c\xF4ng l\xE0 m\u1ED9t tu\u1EA7n kh\xF4ng l\u01B0\u01A1ng, v\xE0 kh\xF4ng ai bi\u1EBFt ch\u1EE7 ch\u1ECBu \u0111\u01B0\u1EE3c bao l\xE2u.`,
+          choices: [
+            C("\u0110\xECnh c\xF4ng \u0111\u1EBFn c\xF9ng", { trait: { bold: 2, coop: 1 }, money: -0.3, gamble: { p: 0.7, win: { income_mult: 1.15, rel: 6, memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.3, note: "c\u1EA7m \u0111\u1EA7u \u0111\xECnh c\xF4ng" }, log: "Sau b\u1EA3y tu\u1EA7n, ch\u1EE7 tr\u1EA3 n\u1EE3 l\u01B0\u01A1ng v\xE0 t\u0103ng l\u01B0\u01A1ng 15 %." }, lose: { happy: -8, custom: "job_lose", log: "Ch\u1EE7 \u0111\xF3ng c\u1EEDa nh\xE0 m\xE1y. B\u1EA1n m\u1EA5t vi\u1EC7c." } } }, "Kho\u1EA3ng 70 % ch\u1EE7 nh\u01B0\u1EE3ng b\u1ED9, nh\u01B0ng t\u1ED1n nhi\u1EC1u tu\u1EA7n", { longterm: !0 }),
+            C("\u0110\xECnh c\xF4ng m\u1ED9t th\xE1ng r\u1ED3i v\u1EC1", { money: -0.12, gamble: { p: 0.35, win: { income_mult: 1.08, log: "Ch\u1EE7 nh\u01B0\u1EE3ng b\u1ED9 m\u1ED9t ph\u1EA7n." }, lose: { log: "B\u1EA1n v\u1EC1 l\xE0m, n\u1EE3 l\u01B0\u01A1ng tr\u1EA3 d\u1EA7n." } } }, "Thi\u1EC7t \xEDt, \xEDt hy v\u1ECDng"),
+            C("Kh\xF4ng tham gia", { trait: { coop: -2 }, gamble: { p: 0.5, win: { income_mult: 1.1, rel: -8, log: "\u0110\xECnh c\xF4ng th\u1EAFng. B\u1EA1n \u0111\u01B0\u1EE3c t\u0103ng l\u01B0\u01A1ng theo, v\xE0 \u0111\u1ED3ng nghi\u1EC7p kh\xF4ng qu\xEAn." }, lose: { log: "\u0110\xECnh c\xF4ng th\u1EA5t b\u1EA1i. B\u1EA1n gi\u1EEF \u0111\u01B0\u1EE3c vi\u1EC7c." } } }, "N\u1EBFu ng\u01B0\u1EDDi kh\xE1c th\u1EAFng, b\u1EA1n v\u1EABn h\u01B0\u1EDFng")
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "cert",
+      category: "work",
+      urgency: 25,
+      cooldownYears: 99,
+      once: !0,
+      tension: 3,
+      prerequisites: (c) => c.age >= 22 && c.age <= 45 && c.has_job && !c.has_degree && !c.poor_country,
+      specificity: (c) => countTrue(c.know > 50, c.savings > c.income),
+      build: () => ({
+        title: "H\u1ECDc ch\u1EE9ng ch\u1EC9 bu\u1ED5i t\u1ED1i",
+        concept: "signal",
+        text: "M\u1ED9t kh\xF3a ch\u1EE9ng ch\u1EC9 ngh\u1EC1 t\u1ED1n kho\u1EA3ng m\u1ED9t ph\u1EA7n ba thu nh\u1EADp n\u0103m v\xE0 m\u1ED9t n\u0103m bu\u1ED5i t\u1ED1i. Th\u1EE9 b\u1EA1n h\u1ECDc kh\xF4ng nhi\u1EC1u h\u01A1n t\u1EF1 h\u1ECDc, nh\u01B0ng t\u1EDD gi\u1EA5y khi\u1EBFn nh\xE0 tuy\u1EC3n d\u1EE5ng tin b\u1EA1n h\u01A1n.",
+        choices: [
+          C("\u0110i h\u1ECDc", { money: -0.3, health: -3, flags: ["cert_pending"], later: { years: 1, storylet: "cert_done" }, log: "B\u1EA1n \u0111i h\u1ECDc bu\u1ED5i t\u1ED1i." }, "T\u1ED1n ti\u1EC1n v\xE0 s\u1EE9c, l\u01B0\u01A1ng t\u0103ng v\u1EC1 sau", { longterm: !0 }),
+          C("T\u1EF1 h\u1ECDc, kh\xF4ng l\u1EA5y b\u1EB1ng", { know: 3, gamble: { p: 0.3, win: { income_mult: 1.08, log: "M\u1ED9t s\u1EBFp nh\u1EADn ra n\u0103ng l\u1EF1c c\u1EE7a b\u1EA1n d\xF9 kh\xF4ng c\xF3 gi\u1EA5y." }, lose: { log: "B\u1EA1n gi\u1ECFi h\u01A1n nh\u01B0ng l\u01B0\u01A1ng v\u1EABn th\u1EBF." } } }, "Mi\u1EC5n ph\xED, nh\u01B0ng kh\xF3 ch\u1EE9ng minh"),
+          C("B\u1ECF qua", { log: "B\u1EA1n \u0111\u1EC3 vi\u1EC7c \u0111\xF3 qua." })
+        ],
+        def: 0
+      })
+    },
+    {
+      id: "cert_done",
+      category: "work",
+      urgency: 85,
+      cooldownYears: 99,
+      once: !0,
+      tension: 0,
+      prerequisites: (c) => c.flags.has("cert_pending"),
+      specificity: () => 0,
+      causes: () => [prov.flag("cert_pending")],
+      build: () => ({ title: "C\xF3 ch\u1EE9ng ch\u1EC9", text: "T\u1EDD gi\u1EA5y v\u1EC1 tay.", choices: [C("Nh\u1EADn", { income_mult: 1.15, know: 4, unflags: ["cert_pending"], log: "C\xF3 ch\u1EE9ng ch\u1EC9, b\u1EA1n \u0111\u01B0\u1EE3c l\xEAn l\u01B0\u01A1ng." })], def: 0 })
+    },
+    {
+      id: "bribe",
+      category: "money",
+      urgency: 45,
+      cooldownYears: 99,
+      once: !0,
+      tension: 8,
+      prerequisites: (c) => c.age >= 26 && c.age <= 55 && !!role(c, "official") && c.savings > 0.2 * c.income && c.gdp < 3e4,
+      specificity: (c) => countTrue(op(c, role(c, "official")) < 0, hasHook(c, role(c, "official")), c.bandwidth_locked),
+      build: (c, N) => {
+        let o = role(c, "official");
+        return {
+          title: "Gi\u1EA5y ph\xE9p x\xE2y nh\xE0",
+          concept: "nash",
+          npc: o,
+          text: `H\u1ED3 s\u01A1 c\u1EE7a b\u1EA1n n\u1EB1m im ba th\xE1ng tr\xEAn b\xE0n ${N(o)}. ${N(o)} g\u1EE3i \xFD m\u1ED9t kho\u1EA3n "b\xF4i tr\u01A1n". Ai c\u0169ng \u0111\u01B0a, n\xEAn kh\xF4ng \u0111\u01B0a th\xEC b\u1ECB x\u1EBFp cu\u1ED1i.`,
+          choices: [
+            C("\u0110\u01B0a ti\u1EC1n", { trait: { fair: -2 }, money: -0.1, secret: { tag: "PAID_BRIBE", severity: 0.5, fuse_years: [8, 22], note: "kho\u1EA3n b\xF4i tr\u01A1n cho gi\u1EA5y ph\xE9p", known_by: [o] }, log: "Gi\u1EA5y ph\xE9p v\u1EC1 trong m\u1ED9t tu\u1EA7n. B\u1EA1n g\xF3p ph\u1EA7n gi\u1EEF c\xE1i l\u1EC7 \u1EA5y." }, "Xong ngay, v\xE0 m\u1ED9t ng\u01B0\u1EDDi n\u1EAFm \u0111\u01B0\u1EE3c chuy\u1EC7n n\xE0y"),
+            C("Ch\u1EDD \u0111\xFAng lu\u1EADt", { trait: { fair: 2 }, money: -0.2, happy: -3, log: "M\u1ED9t n\u0103m sau gi\u1EA5y ph\xE9p m\u1EDBi v\u1EC1." }, "Ch\u1EADm c\u1EA3 n\u0103m, thi\u1EC7t ti\u1EC1n thu\xEA nh\xE0", { longterm: !0 }),
+            C("T\u1ED1 c\xE1o", { trait: { bold: 2, fair: 2 }, gamble: { p: 0.3, win: { happy: 6, rel: 4, memory: { npc: o, tag: "HUMILIATED_ME", weight: -0.7, note: "b\u1ECB b\u1EA1n t\u1ED1 c\xE1o" }, log: `${N(o)} b\u1ECB k\u1EF7 lu\u1EADt. V\xE0i ng\u01B0\u1EDDi trong x\xF3m \xE2m th\u1EA7m c\u1EA3m \u01A1n b\u1EA1n.` }, lose: { money: -0.2, happy: -6, memory: { npc: o, tag: "HUMILIATED_ME", weight: -0.6, note: "b\u1ECB b\u1EA1n t\u1ED1 c\xE1o, kh\xF4ng th\xE0nh" }, log: "H\u1ED3 s\u01A1 c\u1EE7a b\u1EA1n b\u1ECB l\xE0m kh\xF3 th\xEAm hai n\u0103m." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: 30 % c\xF3 k\u1EBFt qu\u1EA3, 70 % b\u1ECB l\xE0m kh\xF3", { tier: "sovereign" })
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "auction",
+      category: "money",
+      urgency: 30,
+      cooldownYears: 99,
+      once: !0,
+      tension: 5,
+      prerequisites: (c) => c.age >= 28 && c.age <= 60 && c.savings >= 1.5 * c.income,
+      specificity: (c) => countTrue(c.tier === "sovereign", c.traits.risk > 1),
+      build: () => ({
+        title: "\u0110\u1EA5u gi\xE1 m\u1EA3nh \u0111\u1EA5t",
+        concept: "winner",
+        text: "M\u1ED9t m\u1EA3nh \u0111\u1EA5t \u0111\u01B0\u1EE3c \u0111\u1EA5u gi\xE1. Kh\xF4ng ai bi\u1EBFt ch\u1EAFc gi\xE1 tr\u1ECB th\u1EADt; b\u1EA1n \u01B0\u1EDBc l\u01B0\u1EE3ng kho\u1EA3ng hai n\u0103m thu nh\u1EADp. Ba ng\u01B0\u1EDDi kh\xE1c c\u0169ng tham gia, m\u1ED7i ng\u01B0\u1EDDi c\xF3 \u01B0\u1EDBc l\u01B0\u1EE3ng ri\xEAng.",
+        choices: [
+          C("Tr\u1EA3 110 % \u01B0\u1EDBc l\u01B0\u1EE3ng", { trait: { risk: 2 }, gamble: { p: 0.75, win: { money: -0.4, log: "B\u1EA1n th\u1EAFng \u0111\u1EA5u gi\xE1. Gi\xE1 tr\u1ECB th\u1EADt th\u1EA5p h\u01A1n: l\u1ED7." }, lose: { money: 0.4, log: "B\u1EA1n th\u1EAFng, v\xE0 \u0111\u1EA5t l\xEAn gi\xE1." } } }, "Ch\u1EAFc th\u1EAFng, d\u1EC5 tr\u1EA3 qu\xE1 gi\xE1"),
+          C("Tr\u1EA3 90 % \u01B0\u1EDBc l\u01B0\u1EE3ng", { gamble: { p: 0.5, win: { money: 0.3, log: "B\u1EA1n th\u1EAFng v\u1EDBi gi\xE1 h\u1EE3p l\xFD." }, lose: { log: "C\xF3 ng\u01B0\u1EDDi tr\u1EA3 cao h\u01A1n." } } }, "C\xE2n b\u1EB1ng"),
+          C("Tr\u1EA3 70 % \u01B0\u1EDBc l\u01B0\u1EE3ng", { gamble: { p: 0.2, win: { money: 0.6, log: "Kh\xF4ng ai tr\u1EA3 cao. B\u1EA1n mua r\u1EBB." }, lose: { log: "C\xF3 ng\u01B0\u1EDDi tr\u1EA3 cao h\u01A1n, v\xE0 sau \u0111\xF3 h\u1ECD l\u1ED7." } } }, "Ch\u1EC9 th\u1EAFng n\u1EBFu ng\u01B0\u1EDDi kh\xE1c bi quan", { longterm: !0 }),
+          C("B\u1ECF qua", { log: "B\u1EA1n kh\xF4ng tham gia." })
+        ],
+        def: 1
+      })
+    },
+    {
+      id: "flood",
+      category: "social",
+      urgency: 55,
+      cooldownYears: 99,
+      once: !0,
+      tension: 6,
+      prerequisites: (c) => c.age >= 18 && c.age <= 65 && !!role(c, "neighbor"),
+      specificity: (c) => countTrue(c.poor_country, c.econ_phase === "crisis"),
+      build: (c, N) => {
+        let nb = role(c, "neighbor");
+        return {
+          title: "Nh\xE0 h\xE0ng x\xF3m ng\u1EADp",
+          concept: "volunteer",
+          npc: nb,
+          text: `N\u1EEDa \u0111\xEAm, n\u01B0\u1EDBc tr\xE0n v\xE0o nh\xE0 ${N(nb)}. C\u1EA3 x\xF3m \u0111\u1EC1u nghe ti\u1EBFng k\xEAu. Ch\u1EC9 c\u1EA7n v\xE0i ng\u01B0\u1EDDi l\xE0 \u0111\u1EE7, nh\u01B0ng ai c\u0169ng ngh\u0129 s\u1EBD c\xF3 ng\u01B0\u1EDDi kh\xE1c \u0111i.`,
+          choices: [
+            C("Ch\u1EA1y sang gi\xFAp", { trait: { coop: 2 }, health: -2, rel: 7, happy: 3, memory: { npc: nb, tag: "HELPED_IN_CRISIS", weight: 0.5, note: "\u0111\xEAm n\u01B0\u1EDBc ng\u1EADp" }, log: `B\u1EA1n v\xE0 hai ng\u01B0\u1EDDi n\u1EEFa c\u1EE9u \u0111\u01B0\u1EE3c ${N(nb)} v\xE0 \u0111\u1ED3 \u0111\u1EA1c.` }, "M\u1EA5t ng\u1EE7, c\xF3 th\u1EC3 \u1ED1m", { longterm: !0 }),
+            C("\u0110\u1EE3i xem c\xF3 ai \u0111i kh\xF4ng", { trait: { coop: -1 }, gamble: { p: 0.3, win: { happy: -7, close_doors: ["village_trust"], memory: { npc: nb, tag: "REFUSED_HELP", weight: -0.4, note: "\u0111\xEAm n\u01B0\u1EDBc ng\u1EADp kh\xF4ng ai sang" }, log: "Kh\xF4ng ai \u0111i. S\xE1ng ra c\u1EA3 x\xF3m im l\u1EB7ng." }, lose: { log: "C\xF3 ng\u01B0\u1EDDi kh\xE1c \u0111\xE3 \u0111i. B\u1EA1n ng\u1EE7 ti\u1EBFp." } } }, "C\xF3 th\u1EC3 kh\xF4ng ai \u0111i")
+          ],
+          def: 0
+        };
+      }
+    },
+    /* ---------------------------------------------------------------- Gia đình & người phụ thuộc */
+    {
+      id: "bos",
+      category: "family",
+      urgency: 50,
+      cooldownYears: 99,
+      once: !0,
+      tension: 4,
+      prerequisites: (c) => c.married && (c.counters.married_years ?? 0) <= 2 && !!role(c, "spouse"),
+      specificity: () => 2,
+      build: (c, N) => {
+        let sp = role(c, "spouse");
+        return {
+          title: "S\u1ED1ng g\u1EA7n nh\xE0 ai",
+          concept: "bos",
+          npc: sp,
+          matrix: { me: ["Nh\xE0 b\u1EA1n", "Nh\xE0 h\u1ECD"], them: ["Nh\xE0 b\u1EA1n", "Nh\xE0 h\u1ECD"], cells: [[[3, 2], [0, 0]], [[0, 0], [2, 3]]], unit: "\u0111i\u1EC3m" },
+          text: `B\u1EA1n mu\u1ED1n \u1EDF g\u1EA7n nh\xE0 m\xECnh; ${N(sp)} mu\u1ED1n \u1EDF g\u1EA7n nh\xE0 ${N(sp)}. C\u1EA3 hai \u0111\u1EC1u mu\u1ED1n \u1EDF c\xF9ng nhau h\u01A1n l\xE0 m\u1ED7i ng\u01B0\u1EDDi m\u1ED9t n\u01A1i.`,
+          choices: [
+            C("Thuy\u1EBFt ph\u1EE5c \u1EDF g\u1EA7n nh\xE0 b\u1EA1n", { trait: { bold: 1 }, happy: 3, trust: { npc: sp, delta: -0.1 }, log: `${N(sp)} nh\u01B0\u1EDDng, nh\u01B0ng nh\u1EDB nh\xE0.` }),
+            C("Theo \xFD v\u1EE3/ch\u1ED3ng", { trait: { coop: 1 }, happy: -1, trust: { npc: sp, delta: 0.15 }, log: `B\u1EA1n chuy\u1EC3n v\u1EC1 g\u1EA7n nh\xE0 ${N(sp)}.` }),
+            C("Lu\xE2n phi\xEAn v\xE0i n\u0103m m\u1ED9t l\u1EA7n", { trait: { fair: 2 }, happy: 2, trust: { npc: sp, delta: 0.1 }, log: "Hai ng\u01B0\u1EDDi th\u1ECFa thu\u1EADn lu\xE2n phi\xEAn. H\u01A1i m\u1EC7t, nh\u01B0ng c\xF4ng b\u1EB1ng." }, void 0, { longterm: !0 })
+          ],
+          def: 2
+        };
+      }
+    },
+    {
+      id: "parent_sick",
+      group: "parent_sick",
+      category: "family",
+      urgency: 90,
+      cooldownYears: 6,
+      tension: 14,
+      prerequisites: (c) => c.parent_sick && c.age >= 20 && (!!role(c, "mother") || !!role(c, "father")),
+      specificity: (c) => countTrue(c.broke, c.rat_race, !!role(c, "sibling"), c.poor_country),
+      build: (c, N) => {
+        let p = role(c, "mother") ?? role(c, "father"), sib = role(c, "sibling");
+        return {
+          title: `${N(p)} \u1ED1m n\u1EB7ng`,
+          npc: p,
+          text: `${N(p)} n\u1EB1m vi\u1EC7n. ${c.poor_country ? "Ph\u1EA7n l\u1EDBn vi\u1EC7n ph\xED ph\u1EA3i t\u1EF1 tr\u1EA3." : "B\u1EA3o hi\u1EC3m chi tr\u1EA3 m\u1ED9t ph\u1EA7n."} ${sib ? `${N(sib)} n\xF3i m\xECnh c\u0169ng \u0111ang kh\xF3.` : "Kh\xF4ng c\xF2n ai kh\xE1c \u0111\u1EC3 chia."} ${c.rat_race ? "B\u1EA1n \u0111ang ng\u1EADp trong n\u1EE3." : ""}`,
+          choices: [
+            C("Tr\u1EA3 vi\u1EC7n ph\xED", { money: -0.35, happy: -3, trust: { npc: p, delta: 0.2 }, ...sib ? { memory: { npc: sib, tag: "KEPT_PROMISE", weight: 0.2, note: "lo cho cha m\u1EB9 l\xFAc \u1ED1m" } } : {}, log: `B\u1EA1n g\xE1nh vi\u1EC7n ph\xED cho ${N(p)}.` }, "M\u1EA5t v\xE0i th\xE1ng thu nh\u1EADp", { longterm: !0 }),
+            C("\u0110\u01B0a v\u1EC1 nh\xE0 t\u1EF1 ch\u0103m", { income_mult: 0.88, rel: 4, health: -4, trust: { npc: p, delta: 0.25 }, log: `B\u1EA1n ngh\u1EC9 b\u1EDBt vi\u1EC7c \u0111\u1EC3 ch\u0103m ${N(p)}.` }, "Thu nh\u1EADp gi\u1EA3m l\xE2u d\xE0i, nh\u01B0ng g\u1EA7n nhau"),
+            C("\u0110\u1EC3 anh ch\u1ECB em lo", { happy: -6, close_doors: ["family_table"], secret: { tag: "ABANDONED_PARENT", severity: 0.4, fuse_years: [3, 12], note: `kh\xF4ng lo cho ${N(p)} l\xFAc \u1ED1m`, known_by: sib ? [sib] : [] }, ...sib ? { memory: { npc: sib, tag: "REFUSED_HELP", weight: -0.5, note: "b\u1ECF m\u1EB7c cha m\u1EB9 l\xFAc \u1ED1m" } } : {}, log: "B\u1EA1n n\xF3i m\xECnh kh\xF4ng lo n\u1ED5i. Trong nh\xE0 ai c\u0169ng bi\u1EBFt." }, "Gi\u1EEF ti\u1EC1n, m\u1EA5t nhi\u1EC1u th\u1EE9 kh\xE1c")
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "child_tuition",
+      category: "family",
+      urgency: 80,
+      cooldownYears: 5,
+      tension: 10,
+      prerequisites: (c) => c.kids_school > 0 && (c.broke || c.rat_race) && !!role(c, "child"),
+      specificity: (c) => countTrue(c.rat_race, c.poor_country, c.bandwidth_locked),
+      build: (c, N) => {
+        let k = role(c, "child");
+        return {
+          title: `H\u1ECDc ph\xED c\u1EE7a ${N(k)}`,
+          npc: k,
+          text: `\u0110\u1EA7u n\u0103m h\u1ECDc, tr\u01B0\u1EDDng g\u1ECDi. Ti\u1EC1n h\u1ECDc c\u1EE7a ${N(k)} b\u1EB1ng m\u1EA5y th\xE1ng \u0103n. ${c.rat_race ? "Ch\u1EE7 n\u1EE3 c\u0169ng v\u1EEBa g\u1ECDi." : ""}`,
+          choices: [
+            C("Vay \u0111\u1EC3 \u0111\xF3ng", { custom: "borrow:0.25", trust: { npc: k, delta: 0.15 }, log: `B\u1EA1n vay \u0111\u1EC3 ${N(k)} ti\u1EBFp t\u1EE5c \u0111i h\u1ECDc.` }, "N\u1EE3 th\xEAm, con \u0111i h\u1ECDc", { longterm: !0 }),
+            C("Cho ngh\u1EC9 h\u1ECDc m\u1ED9t n\u0103m", { happy: -6, flags: ["child_dropout"], memory: { npc: k, tag: "REFUSED_HELP", weight: -0.3, note: "ph\u1EA3i ngh\u1EC9 h\u1ECDc v\xEC nh\xE0 h\u1EBFt ti\u1EC1n" }, log: `${N(k)} ngh\u1EC9 h\u1ECDc, \u0111i ph\u1EE5 vi\u1EC7c.` }, "H\u1EBFt n\u1EE3, con m\u1EA5t m\u1ED9t n\u0103m"),
+            C("Xin nh\xE0 tr\u01B0\u1EDDng cho tr\u1EA3 g\xF3p", { gamble: { p: 0.5, win: { money: -0.1, trust: { npc: k, delta: 0.1 }, log: "Tr\u01B0\u1EDDng \u0111\u1ED3ng \xFD tr\u1EA3 g\xF3p." }, lose: { custom: "borrow:0.25", log: "Tr\u01B0\u1EDDng kh\xF4ng \u0111\u1ED3ng \xFD. B\u1EA1n \u0111\xE0nh vay." } } }, "C\xF3 th\u1EC3 \u0111\u01B0\u1EE3c, c\xF3 th\u1EC3 kh\xF4ng", { tier: "awakened" })
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "sibling_wedding",
+      group: "sibling_wedding",
+      category: "family",
+      urgency: 60,
+      cooldownYears: 99,
+      once: !0,
+      tension: 4,
+      prerequisites: (c) => c.age >= 22 && c.age <= 45 && !!role(c, "sibling"),
+      specificity: (c) => countTrue(c.broke, c.poor_country),
+      build: (c, N) => {
+        let s = role(c, "sibling");
+        return {
+          title: `${N(s)} c\u01B0\u1EDBi`,
+          npc: s,
+          text: `${N(s)} c\u01B0\u1EDBi. Theo l\u1EC7, anh ch\u1ECB em g\xF3p m\u1ED9t kho\u1EA3n l\u1EDBn. C\u1EA3 h\u1ECD s\u1EBD bi\u1EBFt ai g\xF3p bao nhi\xEAu.`,
+          choices: [
+            C("G\xF3p \u0111\xFAng l\u1EC7", { money: -0.2, rel: 3, memory: { npc: s, tag: "KEPT_PROMISE", weight: 0.25, note: "g\xF3p \u0111\xE1m c\u01B0\u1EDBi" }, log: "B\u1EA1n g\xF3p \u0111\xFAng l\u1EC7. Nh\xE0 vui." }, "M\u1EA5t hai th\xE1ng thu nh\u1EADp"),
+            C("G\xF3p \xEDt", { money: -0.05, rel: -3, memory: { npc: s, tag: "REFUSED_HELP", weight: -0.2, note: "g\xF3p \xEDt trong \u0111\xE1m c\u01B0\u1EDBi" }, log: "B\u1EA1n g\xF3p \xEDt. C\xF3 ng\u01B0\u1EDDi nh\u1EAFc." }, "Gi\u1EEF ti\u1EC1n, m\u1EA5t l\xF2ng")
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "teen",
+      category: "family",
+      urgency: 50,
+      cooldownYears: 99,
+      once: !0,
+      tension: 4,
+      prerequisites: (c) => c.kids_teen > 0 && !!role(c, "child"),
+      specificity: (c) => countTrue(c.rel > 60),
+      build: (c, N) => {
+        let k = role(c, "child");
+        return {
+          title: `${N(k)} 15 tu\u1ED5i`,
+          concept: "trust",
+          npc: k,
+          text: `${N(k)} xin \u0111i ch\u01A1i xa ba ng\xE0y v\u1EDBi b\u1EA1n b\xE8, kh\xF4ng c\xF3 ng\u01B0\u1EDDi l\u1EDBn. B\u1EA1n t\u1EEBng \u1EDF tu\u1ED5i \u0111\xF3.`,
+          choices: [
+            C("Tin v\xE0 cho \u0111i", { gamble: { p: 0.75, win: { trust: { npc: k, delta: 0.2 }, rel: 5, log: `${N(k)} v\u1EC1 nh\xE0 r\xE1m n\u1EAFng v\xE0 k\u1EC3 chuy\u1EC7n su\u1ED1t b\u1EEFa c\u01A1m.` }, lose: { happy: -4, log: `C\xF3 chuy\u1EC7n x\u1EA3y ra. ${N(k)} kh\xF4ng sao, nh\u01B0ng b\u1EA1n m\u1EA5t m\u1EA5y \u0111\xEAm.` } } }, "Ph\u1EA7n l\u1EDBn \u1ED5n; \u0111\xF4i khi c\xF3 chuy\u1EC7n"),
+            C("Kh\xF4ng cho", { trust: { npc: k, delta: -0.15 }, rel: -4, log: `${N(k)} \u1EDF nh\xE0 v\xE0 \u0111\xF3ng c\u1EEDa ph\xF2ng c\u1EA3 tu\u1EA7n.` }, "An to\xE0n, con xa c\xE1ch"),
+            C("Cho \u0111i, v\u1EDBi \u0111i\u1EC1u ki\u1EC7n g\u1ECDi m\u1ED7i t\u1ED1i", { trust: { npc: k, delta: 0.1 }, rel: 2, log: `${N(k)} g\u1ECDi hai t\u1ED1i \u0111\u1EA7u, t\u1ED1i th\u1EE9 ba qu\xEAn. Nh\u01B0ng v\u1EC1 an to\xE0n.` }, void 0, { longterm: !0 })
+          ],
+          def: 2
+        };
+      }
+    },
+    {
+      id: "estate",
+      category: "family",
+      urgency: 75,
+      cooldownYears: 99,
+      once: !0,
+      tension: 10,
+      requires_open: ["inheritance", "family_table"],
+      prerequisites: (c) => c.flags.has("parent_died") && !!role(c, "sibling") && c.parents_alive === 0,
+      specificity: (c) => countTrue(op(c, role(c, "sibling")) < 0, c.broke),
+      causes: (c) => [prov.opinion(role(c, "sibling"))],
+      build: (c, N) => {
+        let s = role(c, "sibling"), grudge = op(c, s) < 0;
+        return {
+          title: "Chia t\xE0i s\u1EA3n cha m\u1EB9 \u0111\u1EC3 l\u1EA1i",
+          concept: "ultimatum",
+          npc: s,
+          text: `C\u0103n nh\xE0 v\xE0 m\u1EA3nh v\u01B0\u1EDDn. ${N(s)} \u0111\u1EC1 ngh\u1ECB gi\u1EEF 70 % v\xEC "\u0111\xE3 \u1EDF nh\xE0 ch\u0103m cha m\u1EB9".${grudge ? ` ${N(s)} nh\u1EAFc l\u1EA1i chuy\u1EC7n c\u0169 gi\u1EEFa hai ng\u01B0\u1EDDi.` : ""} N\u1EBFu kh\xF4ng th\u1ECFa thu\u1EADn \u0111\u01B0\u1EE3c, ra t\xF2a v\xE0 lu\u1EADt s\u01B0 \u0103n m\u1ED9t n\u1EEDa.`,
+          choices: [
+            C("Nh\u1EADn 30 %", { money: 0.5, trait: { fair: -1 }, log: "B\u1EA1n nh\u1EADn ph\u1EA7n nh\u1ECF. Anh em v\u1EABn qua l\u1EA1i." }, "Xong chuy\u1EC7n"),
+            C("\u0110\xF2i chia \u0111\xF4i", { trait: { fair: 2 }, gamble: { p: grudge ? 0.35 : 0.6, win: { money: 0.9, log: "Sau nhi\u1EC1u l\u1EA7n n\xF3i chuy\u1EC7n, chia \u0111\xF4i." }, lose: { money: 0.4, rel: -12, happy: -6, memory: { npc: s, tag: "CHEATED_ME", weight: -0.6, note: "ki\u1EC7n nhau v\xEC nh\xE0 cha m\u1EB9" }, log: "Ra t\xF2a. M\u1ED7i ng\u01B0\u1EDDi c\xF2n m\u1ED9t ph\u1EA7n t\u01B0, v\xE0 kh\xF4ng n\xF3i chuy\u1EC7n v\u1EDBi nhau n\u1EEFa." } } }, "60 % h\u1ECD \u0111\u1ED3ng \xFD, 40 % ra t\xF2a", { tier: "awakened" }),
+            C("T\u1EEB ch\u1ED1i t\u1EA5t c\u1EA3", { rel: 4, close_doors: ["inheritance"], memory: { npc: s, tag: "HELPED_IN_CRISIS", weight: 0.4, note: "nh\u01B0\u1EDDng h\u1EBFt ph\u1EA7n th\u1EEBa k\u1EBF" }, log: `B\u1EA1n nh\u01B0\u1EDDng h\u1EBFt. ${N(s)} bi\u1EBFt \u01A1n, v\xE0 c\u0169ng h\u01A1i x\u1EA5u h\u1ED5.` }, "Kh\xF4ng nh\u1EADn g\xEC, kh\xF4ng m\u1EA5t t\xECnh")
+          ],
+          def: 1
+        };
+      }
+    },
+    {
+      id: "care",
+      category: "family",
+      urgency: 70,
+      cooldownYears: 99,
+      once: !0,
+      tension: 6,
+      prerequisites: (c) => c.age >= 68 && c.kids_alive >= 1 && !!role(c, "child"),
+      specificity: (c) => countTrue(c.kids_alive >= 2, op(c, role(c, "child")) > 0.3, c.health < 50),
+      causes: (c) => [prov.opinion(role(c, "child"))],
+      build: (c, N) => {
+        let k = role(c, "child"), warm = op(c, k) > 0.3;
+        return {
+          title: "Ai s\u1EBD \u1EDF c\xF9ng b\u1EA1n",
+          concept: "volunteer",
+          npc: k,
+          text: `B\u1EA1n y\u1EBFu \u0111i. ${c.kids_alive} \u0111\u1EE9a con, ai c\u0169ng b\u1EADn. ${warm ? `${N(k)} v\u1EABn g\u1ECDi m\u1ED7i tu\u1EA7n.` : `${N(k)} \u0111\xE3 l\xE2u kh\xF4ng g\u1ECDi.`}`,
+          choices: [
+            C("\u0110\u1EC3 c\xE1c con t\u1EF1 b\xE0n", { gamble: { p: warm ? 0.8 : 0.4, win: { rel: 5, log: `${N(k)} d\u1ECDn v\u1EC1 \u1EDF c\xF9ng b\u1EA1n.` }, lose: { happy: -8, health: -4, log: "C\xE1c con \u0111\xF9n \u0111\u1EA9y nhau. B\u1EA1n s\u1ED1ng m\u1ED9t m\xECnh." } } }, "C\xF3 th\u1EC3 kh\xF4ng ai nh\u1EADn"),
+            C("Chia t\xE0i s\u1EA3n cho \u0111\u1EE9a n\xE0o v\u1EC1 ch\u0103m", { money: -0.5, rel: 2, log: `${N(k)} v\u1EC1 \u1EDF c\xF9ng, v\xE0 c\xE1c anh ch\u1ECB em c\xF3 ch\xFAt l\u1EDDi ra ti\u1EBFng v\xE0o.` }, "\u0110\u1ED5i l\u1EE3i \xEDch l\u1EA5y cam k\u1EBFt"),
+            C("T\u1EF1 lo", { gamble: { p: c.rich ? 0.9 : 0.3, win: { happy: -1, log: "B\u1EA1n t\u1EF1 lo b\u1EB1ng ti\u1EC1n ti\u1EBFt ki\u1EC7m." }, lose: { health: -5, happy: -5, log: "Kh\xF4ng c\xF3 n\u01A1i n\xE0o nh\u1EADn. B\u1EA1n xoay x\u1EDF m\u1ED9t m\xECnh." } } }, c.rich ? "C\xF3 ti\u1EC1n th\xEC c\xF3 ng\u01B0\u1EDDi ch\u0103m" : "\xCDt n\u01A1i nh\u1EADn")
+          ],
+          def: 0
+        };
+      }
+    },
+    /* ---------------------------------------------------------------- Sổ cái chủ động: kẻ thù, đồng minh, chủ nợ */
+    {
+      id: "creditor_knock",
+      category: "ledger",
+      urgency: 88,
+      cooldownYears: 4,
+      tension: 14,
+      prerequisites: (c) => c.debt_ratio >= 1.2 && !!role(c, "creditor") && c.age >= 20,
+      specificity: (c) => countTrue(c.scarcity, c.bandwidth_locked, op(c, role(c, "creditor")) < -0.2, c.econ_phase === "crisis"),
+      build: (c, N) => {
+        let cr = role(c, "creditor"), angry = op(c, cr) < -0.2;
+        return {
+          title: `${N(cr)} \u0111\u1EADp c\u1EEDa \u0111\xF2i n\u1EE3`,
+          npc: cr,
+          text: `N\u1EE3 c\u1EE7a b\u1EA1n \u0111\xE3 b\u1EB1ng ${c.debt_ratio.toFixed(1)} n\u0103m thu nh\u1EADp. ${N(cr)} \u0111\u1EE9ng ngo\xE0i c\u1EEDa${angry ? ", v\xE0 l\u1EA7n n\xE0y kh\xF4ng c\xF2n l\u1ECBch s\u1EF1" : ""}. H\xE0ng x\xF3m nh\xECn.`,
+          choices: [
+            C("Tr\u1EA3 m\u1ED9t ph\u1EA7n ngay", { money: -0.3, custom: "repay:0.3", trust: { npc: cr, delta: 0.1 }, happy: -3, log: "B\u1EA1n tr\u1EA3 m\u1ED9t ph\u1EA7n. Y\xEAn \u0111\u01B0\u1EE3c v\xE0i th\xE1ng." }, "V\xE9t s\u1EA1ch ti\u1EC1n m\u1EB7t"),
+            C("Xin kh\u1EA5t", { gamble: { p: angry ? 0.3 : 0.6, win: { promise: { to: cr, what: "tr\u1EA3 \u0111\u1EE7 ph\u1EA7n n\u1EE3 \u0111\xE3 kh\u1EA5t", years: 1, cost_money: 0.3 }, log: `${N(cr)} cho kh\u1EA5t th\xEAm m\u1ED9t n\u0103m, l\xE3i c\u1ED9ng d\u1ED3n. B\u1EA1n h\u1EE9a.` }, lose: { money: -0.2, happy: -6, rel: -4, memory: { npc: cr, tag: "CHEATED_ME", weight: -0.2, note: "kh\u1EA5t n\u1EE3" }, log: `${N(cr)} l\u1EA5y \u0111\u1ED3 trong nh\xE0 tr\u1EEB n\u1EE3.` } } }, angry ? "Kh\xF3, h\u1ECD \u0111\xE3 m\u1EA5t ki\xEAn nh\u1EABn" : "C\xF3 th\u1EC3 \u0111\u01B0\u1EE3c"),
+            C("Vay ch\u1ED7 kh\xE1c \u0111\u1EADp v\xE0o", { custom: "borrow:0.4", happy: -2, trait: { risk: 1 }, log: "B\u1EA1n vay n\xF3ng ch\u1ED7 kh\xE1c \u0111\u1EC3 tr\u1EA3. N\u1EE3 ch\u1ED3ng n\u1EE3." }, "H\u1EBFt chuy\u1EC7n h\xF4m nay, n\u1EB7ng h\u01A1n n\u0103m sau"),
+            C("\u0110\u1EC1 ngh\u1ECB c\u01A1 c\u1EA5u l\u1EA1i n\u1EE3, tr\u1EA3 theo thu nh\u1EADp", { gamble: { p: 0.55, win: { custom: "restructure", trust: { npc: cr, delta: 0.2 }, log: `${N(cr)} \u0111\u1ED3ng \xFD gi\xE3n n\u1EE3. L\xE3i gi\u1EA3m, k\u1EF3 h\u1EA1n d\xE0i ra.` }, lose: { log: `${N(cr)} kh\xF4ng ch\u1ECBu. B\u1EA1n tr\u1EA3 nh\u01B0 c\u0169.` } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: \u0111\u1ED5i tr\xF2 \u0111\xF2i n\u1EE3 th\xE0nh h\u1EE3p \u0111\u1ED3ng m\u1EDBi", { tier: "sovereign", longterm: !0 })
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "reckless",
+      category: "money",
+      urgency: 70,
+      cooldownYears: 6,
+      tension: 12,
+      prerequisites: (c) => c.debt_ratio >= 1 && c.bandwidth < 40 && c.age >= 20 && c.age <= 60,
+      specificity: (c) => countTrue(c.scarcity, c.rat_race, c.traits.risk > 0),
+      build: (c, N) => {
+        let r = role(c, "rival") ?? role(c, "childhood_friend");
+        return {
+          title: "M\u1ED9t \u0111\u01B0\u1EDDng t\u1EAFt",
+          concept: "ev",
+          ...r ? { npc: r } : {},
+          text: `${r ? N(r) : "M\u1ED9t ng\u01B0\u1EDDi quen"} b\xE0y cho m\u1ED9t \u0111\u01B0\u1EDDng ki\u1EBFm nhanh: ${c.poor_country ? "v\u1EADn chuy\u1EC3n h\xE0ng kh\xF4ng r\xF5 ngu\u1ED3n" : "l\xE0m gi\u1EA3 h\u1ED3 s\u01A1 vay"}. Khi \u0111\u1EA7u \xF3c ch\u1EC9 c\xF2n lo tu\u1EA7n t\u1EDBi, \u0111\u01B0\u1EDDng t\u1EAFt tr\xF4ng nh\u01B0 l\u1ED1i tho\xE1t duy nh\u1EA5t.`,
+          choices: [
+            C("L\xE0m li\u1EC1u", { trait: { risk: 3, fair: -2 }, gamble: { p: 0.55, win: { money: 0.8, secret: { tag: "FORGED_PAPERS", severity: 0.7, fuse_years: [5, 20], note: "v\u1EE5 l\xE0m li\u1EC1u n\u0103m ngh\xE8o", known_by: r ? [r] : [] }, log: "Tr\xF3t l\u1ECDt. B\u1EA1n tr\u1EA3 \u0111\u01B0\u1EE3c n\u1EE3, v\xE0 mang theo m\u1ED9t b\xED m\u1EADt." }, lose: { money: -0.5, health: -8, happy: -10, secret: { tag: "FORGED_PAPERS", severity: 0.8, fuse_years: [1, 3], note: "v\u1EE5 l\xE0m li\u1EC1u b\u1ECB l\u1ED9", known_by: r ? [r] : [] }, log: "V\u1EE1 l\u1EDF. B\u1EA1n m\u1EA5t ti\u1EC1n, m\u1EA5t s\u1EE9c, v\xE0 c\u1EA3 x\xF3m bi\u1EBFt." } } }, "55 % tho\xE1t n\u1EE3 \xB7 45 % tan n\xE1t"),
+            C("Kh\xF4ng", { happy: -2, log: "B\u1EA1n t\u1EEB ch\u1ED1i, v\xE0 ti\u1EBFp t\u1EE5c c\xE0y." }, "Ti\u1EBFp t\u1EE5c c\xE0y", { longterm: !0 })
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "isolation",
+      category: "ledger",
+      urgency: 65,
+      cooldownYears: 6,
+      tension: 8,
+      prerequisites: (c) => c.reputation < 35 && c.age >= 22,
+      specificity: (c) => countTrue(c.enemies >= 2, c.has_job, c.poor_country),
+      causes: (c) => Object.entries(c.opinion).filter(([, v]) => v <= -0.35).map(([id]) => prov.opinion(id)),
+      build: (c) => ({
+        title: "B\u1ECB g\u1EA1t ra",
+        text: `M\u1ED9t h\u1EE3p \u0111\u1ED3ng t\u1ED1t \u0111\u01B0\u1EE3c trao cho ng\u01B0\u1EDDi kh\xE1c. Khi h\u1ECFi, ng\u01B0\u1EDDi ta n\xF3i th\u1EB3ng: "Ai c\u0169ng bi\u1EBFt chuy\u1EC7n c\u1EE7a anh." Danh ti\u1EBFng c\u1EE7a b\u1EA1n \u0111ang \u1EDF m\u1EE9c ${Math.round(c.reputation)}/100.`,
+        choices: [
+          C("Ch\u1ECBu", { money: -0.15, happy: -4, log: "B\u1EA1n m\u1EA5t m\u1ED1i l\xE0m \u0103n." }),
+          C("Xin l\u1ED7i c\xF4ng khai ng\u01B0\u1EDDi m\xECnh t\u1EEBng l\xE0m h\u1EA1i", { trait: { fair: 2 }, custom: "apologize", happy: -2, log: "B\u1EA1n t\xECm \u0111\u1EBFn t\u1EEBng ng\u01B0\u1EDDi. Kh\xF4ng ph\u1EA3i ai c\u0169ng nghe." }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: tr\u1EA3 n\u1EE3 danh ti\u1EBFng b\u1EB1ng h\xE0nh \u0111\u1ED9ng", { tier: "sovereign", longterm: !0 })
+        ],
+        def: 0
+      })
+    },
+    {
+      id: "mistake",
+      category: "work",
+      urgency: 70,
+      cooldownYears: 4,
+      tension: 8,
+      prerequisites: (c) => c.bandwidth_locked && c.has_job && c.age >= 18,
+      specificity: (c) => countTrue(c.worker, c.farmer, c.health < 50),
+      build: (c) => ({
+        title: "Sai m\u1ED9t ly",
+        text: `\u0110\u1EA7u \xF3c b\u1EA1n \u1EDF ch\u1ED7 kh\xE1c su\u1ED1t m\u1EA5y th\xE1ng nay. ${c.worker ? "Tay k\u1EB9t v\xE0o m\xE1y." : c.farmer ? "Phun nh\u1EA7m thu\u1ED1c c\u1EA3 th\u1EEDa ru\u1ED9ng." : "B\u1EA1n g\u1EEDi nh\u1EA7m s\u1ED1 li\u1EC7u cho kh\xE1ch l\u1EDBn."}`,
+        choices: [C("Ch\u1ECBu h\u1EADu qu\u1EA3", { gamble: { p: 0.5, win: { health: -8, money: -0.15, log: "B\u1EA1n ngh\u1EC9 hai th\xE1ng." }, lose: { money: -0.3, happy: -5, custom: "job_lose_maybe", log: "Thi\u1EC7t h\u1EA1i l\u1EDBn. S\u1EBFp c\xE2n nh\u1EAFc cho b\u1EA1n ngh\u1EC9." } } })],
+        def: 0
+      })
+    },
+    {
+      id: "bully_rises",
+      category: "ledger",
+      urgency: 60,
+      cooldownYears: 99,
+      once: !0,
+      tension: 4,
+      prerequisites: (c) => c.age >= 24 && c.age <= 36 && !!role(c, "bully") && !c.roles[role(c, "bully")]?.includes("official") && (op(c, role(c, "bully")) <= -0.1 || c.flags.has("yielded_bully") || c.flags.has("brawler")),
+      specificity: () => 1,
+      build: (c, N) => {
+        let b = role(c, "bully");
+        return {
+          title: `${N(b)} l\xEAn ch\u1EE9c`,
+          npc: b,
+          text: `B\u1EA1n nghe tin ${N(b)}, \u0111\u1EE9a t\u1EEBng ch\u1EB7n b\u1EA1n \u1EDF c\u1ED5ng tr\u01B0\u1EDDng, gi\u1EDD l\xE0m \u1EDF \u1EE7y ban. T\u1EEB nay gi\u1EA5y t\u1EDD c\u1EE7a b\u1EA1n \u0111i qua b\xE0n ${N(b)}.`,
+          choices: [C("Ghi nh\u1EDB", { role: { npc: b, add: "official" }, log: `${N(b)} gi\u1EDD l\xE0 ng\u01B0\u1EDDi k\xFD gi\u1EA5y.` })],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "enemy_gate",
+      category: "ledger",
+      urgency: 82,
+      cooldownYears: 5,
+      tension: 12,
+      prerequisites: (c) => c.age >= 25 && Object.entries(c.opinion).some(([id, v]) => v <= -0.3 && (c.roles[id] ?? []).includes("official")),
+      specificity: (c) => countTrue(c.savings > c.income, c.tier === "sovereign", c.bandwidth_locked),
+      causes: (c) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v <= -0.3 && (c.roles[i] ?? []).includes("official"))?.[0];
+        return id ? [prov.opinion(id)] : [];
+      },
+      build: (c, N) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v <= -0.3 && (c.roles[i] ?? []).includes("official"))[0];
+        return {
+          title: `${N(id)} ng\xE1ng \u0111\u01B0\u1EDDng`,
+          npc: id,
+          text: `H\u1ED3 s\u01A1 c\u1EE7a b\u1EA1n b\u1ECB tr\u1EA3 l\u1EA1i l\u1EA7n th\u1EE9 ba. ${N(id)} n\xF3i v\u1EDBi ng\u01B0\u1EDDi quen: "T\xF4i ch\u01B0a qu\xEAn chuy\u1EC7n c\u0169." B\u1EA1n hi\u1EC3u chuy\u1EC7n g\xEC.`,
+          choices: [
+            C("\u0110\u01B0a ti\u1EC1n cho qua", { money: -0.2, trait: { fair: -1 }, secret: { tag: "PAID_BRIBE", severity: 0.5, fuse_years: [5, 15], note: "mua \u0111\u01B0\u1EDDng qua ng\u01B0\u1EDDi c\u0169", known_by: [id] }, log: "B\u1EA1n tr\u1EA3 gi\xE1 \u0111\u1EC3 \u0111\u01B0\u1EE3c y\xEAn." }, "Xong, v\xE0 h\u1ECD n\u1EAFm th\xEAm m\u1ED9t chuy\u1EC7n"),
+            C("Ch\u1EDD v\xE0 ch\u1ECBu thi\u1EC7t", { money: -0.25, happy: -4, log: "M\u1EA5t m\u1ED9t n\u0103m v\xE0 m\u1ED9t m\u1ED1i l\xE0m \u0103n." }, "Kh\xF4ng n\u1EE3 ai, m\u1EA5t th\u1EDDi gian"),
+            C("Xin l\u1ED7i chuy\u1EC7n c\u0169, m\u1EB7t \u0111\u1ED1i m\u1EB7t", { trait: { fair: 2, coop: 1 }, gamble: { p: 0.45, win: { memory: { npc: id, tag: "STOOD_UP_FOR_ME", weight: 0.5, note: "\u0111\u1EBFn xin l\u1ED7i chuy\u1EC7n c\u0169" }, rel: 3, log: `${N(id)} im l\u1EB7ng m\u1ED9t l\xFAc, r\u1ED3i k\xFD.` }, lose: { happy: -3, log: `${N(id)} nghe, r\u1ED3i v\u1EABn kh\xF4ng k\xFD.` } } }, "C\xF3 th\u1EC3 g\u1EE1 \u0111\u01B0\u1EE3c m\u1ED1i th\xF9, c\xF3 th\u1EC3 kh\xF4ng", { tier: "awakened", longterm: !0 }),
+            C("Khi\u1EBFu n\u1EA1i c\xF4ng khai k\xE8m h\u1ED3 s\u01A1", { trait: { bold: 2 }, gamble: { p: 0.5, win: { memory: { npc: id, tag: "HUMILIATED_ME", weight: -0.3, note: "b\u1ECB khi\u1EBFu n\u1EA1i" }, rel: 2, log: "C\u1EA5p tr\xEAn can thi\u1EC7p. Gi\u1EA5y v\u1EC1, v\xE0 th\xEAm m\u1ED9t ng\u01B0\u1EDDi gh\xE9t b\u1EA1n." }, lose: { money: -0.2, happy: -5, log: "Khi\u1EBFu n\u1EA1i ch\xECm. H\u1ED3 s\u01A1 ch\xECm theo." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: \u0111\u01B0a chuy\u1EC7n hai ng\u01B0\u1EDDi ra tr\u01B0\u1EDBc nhi\u1EC1u ng\u01B0\u1EDDi", { tier: "sovereign" })
+          ],
+          def: 1
+        };
+      }
+    },
+    {
+      id: "enemy_obstruct",
+      category: "ledger",
+      urgency: 72,
+      cooldownYears: 9,
+      tension: 10,
+      prerequisites: (c) => c.age >= 22 && Object.entries(c.opinion).some(([id, v]) => v <= -0.45 && !(c.roles[id] ?? []).includes("official") && (c.roles[id] ?? []).every(nonFamily)),
+      specificity: (c) => countTrue(c.has_job, c.enemies >= 2),
+      causes: (c) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v <= -0.45 && !(c.roles[i] ?? []).includes("official") && (c.roles[i] ?? []).every(nonFamily))?.[0];
+        return id ? [prov.opinion(id)] : [];
+      },
+      build: (c, N) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v <= -0.45 && !(c.roles[i] ?? []).includes("official") && (c.roles[i] ?? []).every(nonFamily))[0];
+        return {
+          title: `${N(id)} tr\u1EA3 \u0111\u0169a`,
+          npc: id,
+          text: `${N(id)} v\u1EABn ch\u01B0a qu\xEAn. M\u1ED9t m\u1ED1i l\xE0m \u0103n c\u1EE7a b\u1EA1n b\u1ED7ng \u0111\u1ED5 b\u1EC3; ng\u01B0\u1EDDi ta k\u1EC3 c\xF3 ai \u0111\xF3 \u0111\xE3 n\xF3i x\u1EA5u b\u1EA1n tr\u01B0\u1EDBc.`,
+          choices: [
+            C("B\u1ECF qua", { money: -0.15, happy: -3, log: "B\u1EA1n m\u1EA5t m\u1ED1i, v\xE0 \u0111\u1EC3 chuy\u1EC7n tr\xF4i." }),
+            C("Tr\u1EA3 \u0111\u0169a l\u1EA1i", { trait: { bold: 2, coop: -1 }, gamble: { p: 0.5, win: { memory: { npc: id, tag: "HUMILIATED_ME", weight: -0.3, note: "b\u1ECB b\u1EA1n tr\u1EA3 \u0111\u0169a" }, happy: 2, log: "B\u1EA1n l\xE0m h\u1ECD m\u1EA5t m\u1ED9t m\u1ED1i. Hai b\xEAn th\xE0nh th\xF9." }, lose: { money: -0.2, rel: -5, log: "Chuy\u1EC7n lan ra. Ng\u01B0\u1EDDi ngo\xE0i th\u1EA5y c\u1EA3 hai \u0111\u1EC1u x\u1EA5u." } } }, "\u0102n mi\u1EBFng tr\u1EA3 mi\u1EBFng"),
+            C("G\u1EB7p ri\xEAng, \u0111\u1EC1 ngh\u1ECB hu\u1EC1", { trait: { coop: 2 }, gamble: { p: 0.45, win: { memory: { npc: id, tag: "STOOD_UP_FOR_ME", weight: 0.4, note: "\u0111\u1EC1 ngh\u1ECB hu\u1EC1" }, log: "Hai ng\u01B0\u1EDDi n\xF3i chuy\u1EC7n l\xE2u. Kh\xF4ng th\xE0nh b\u1EA1n, nh\u01B0ng h\u1EBFt th\xF9." }, lose: { log: `${N(id)} kh\xF4ng g\u1EB7p.` } } }, "C\xF3 th\u1EC3 g\u1EE1, c\xF3 th\u1EC3 kh\xF4ng", { tier: "awakened", longterm: !0 })
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "ally_rescue",
+      category: "ledger",
+      urgency: 86,
+      cooldownYears: 6,
+      tension: -6,
+      prerequisites: (c) => (c.scarcity || c.rat_race) && c.age >= 20 && Object.entries(c.opinion).some(([id, v]) => v >= 0.5 && (c.roles[id] ?? []).every(nonFamily)),
+      specificity: (c) => countTrue(c.bandwidth_locked, c.debt_ratio > 1),
+      causes: (c) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v >= 0.5 && (c.roles[i] ?? []).every(nonFamily))?.[0];
+        return id ? [prov.opinion(id)] : [];
+      },
+      build: (c, N) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v >= 0.5 && (c.roles[i] ?? []).every(nonFamily))[0];
+        return {
+          title: `${N(id)} t\xECm \u0111\u1EBFn`,
+          npc: id,
+          text: `${N(id)} nghe chuy\u1EC7n b\u1EA1n \u0111ang kh\xF3, \u0111\u1EBFn nh\xE0 v\u1EDBi m\u1ED9t kho\u1EA3n ti\u1EC1n v\xE0 kh\xF4ng n\xF3i g\xEC v\u1EC1 tr\u1EA3 l\u1EA1i. "H\u1ED3i \u0111\xF3 anh gi\xFAp t\xF4i."`,
+          choices: [
+            C("Nh\u1EADn", { money: 0.35, bw: 8, happy: 5, memory: { npc: id, tag: "HELPED_IN_CRISIS", weight: -0.1, note: "nh\u1EADn gi\xFAp l\xFAc kh\xF3" }, log: `${N(id)} gi\xFAp b\u1EA1n qua c\u01A1n kh\xF3.` }, "Qua c\u01A1n n\xE0y"),
+            C("Nh\u1EADn m\u1ED9t n\u1EEDa, h\u1EB9n tr\u1EA3", { money: 0.18, trust: { npc: id, delta: 0.1 }, promise: { to: id, what: "tr\u1EA3 l\u1EA1i kho\u1EA3n \u0111\xE3 m\u01B0\u1EE3n", years: 2, cost_money: 0.18 }, log: "B\u1EA1n nh\u1EADn m\u1ED9t n\u1EEDa v\xE0 h\u1EB9n tr\u1EA3." }, "Gi\u1EEF th\u1EC3 di\u1EC7n", { longterm: !0 }),
+            C("T\u1EEB ch\u1ED1i", { happy: -2, trust: { npc: id, delta: -0.05 }, log: "B\u1EA1n c\u1EA3m \u01A1n v\xE0 t\u1EEB ch\u1ED1i." }, "T\u1EF1 lo")
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "ally_deal",
+      category: "ledger",
+      urgency: 55,
+      cooldownYears: 5,
+      tension: -4,
+      requires_open: ["partner_circle"],
+      prerequisites: (c) => c.age >= 22 && c.age <= 62 && c.has_job && Object.entries(c.opinion).some(([id, v]) => v >= 0.5 && (c.roles[id] ?? []).every(nonFamily)),
+      specificity: (c) => countTrue(c.tier === "sovereign", c.rich, c.allies >= 2),
+      causes: (c) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v >= 0.5 && (c.roles[i] ?? []).every(nonFamily))?.[0];
+        return id ? [prov.opinion(id)] : [];
+      },
+      build: (c, N) => {
+        let id = Object.entries(c.opinion).find(([i, v]) => v >= 0.5 && (c.roles[i] ?? []).every(nonFamily))[0];
+        return {
+          title: `${N(id)} r\u1EE7 m\u1ED9t k\xE8o th\u01A1m`,
+          concept: "repeated",
+          npc: id,
+          matrix: pd(N(id)),
+          text: `${N(id)} c\xF3 m\u1ED9t m\u1ED1i t\u1ED1t v\xE0 mu\u1ED1n chia v\u1EDBi b\u1EA1n tr\u01B0\u1EDBc. Ng\u01B0\u1EDDi ta ch\u1EC9 r\u1EE7 ng\u01B0\u1EDDi m\xECnh tin.`,
+          choices: [
+            C("V\xE0o, ch\u01A1i th\u1EADt", { game: { npc: id, move: "cooperate", stake_frac: 0.5 }, log: "B\u1EA1n v\xE0o k\xE8o v\u1EDBi l\xF2ng tin" }, void 0, { longterm: !0 }),
+            C("V\xE0o, gi\u1EEF ph\u1EA7n m\xECnh", { game: { npc: id, move: "defect", stake_frac: 0.5 }, log: "B\u1EA1n v\xE0o k\xE8o v\xE0 gi\u1EEF ph\u1EA7n m\xECnh" }, "L\u1EE3i tr\u01B0\u1EDBc m\u1EAFt, m\u1EA5t m\u1ED9t ng\u01B0\u1EDDi tin b\u1EA1n"),
+            C("T\u1EEB ch\u1ED1i", { trust: { npc: id, delta: -0.05 }, log: "B\u1EA1n t\u1EEB ch\u1ED1i kh\xE9o." })
+          ],
+          def: c.last_move[id] === "defect" ? 2 : 0
+        };
+      }
+    },
+    {
+      id: "blackmail",
+      category: "fuse",
+      urgency: 88,
+      cooldownYears: 10,
+      tension: 14,
+      prerequisites: (c) => c.age >= 28 && Object.keys(c.hooks).length > 0,
+      specificity: (c) => countTrue(c.rich, c.tier === "sovereign", c.has_job),
+      causes: (c) => {
+        let id = Object.keys(c.hooks)[0], tag = id ? c.hooks[id]?.[0] : void 0;
+        return tag ? [prov.secret(tag)] : [];
+      },
+      build: (c, N) => {
+        let id = Object.keys(c.hooks)[0], tag = c.hooks[id][0], what = { CHEATED_EXAM: "chuy\u1EC7n b\xE0i thi n\u0103m x\u01B0a", PAID_BRIBE: "kho\u1EA3n b\xF4i tr\u01A1n", DEFRAUDED_FRIEND: "v\u1EE5 l\u1EEBa b\u1EA1n", STOLE_SHARED_PROFIT: "v\u1EE5 gi\u1EA5u ti\u1EC1n \u1EDF ti\u1EC7m chung", FORGED_PAPERS: "v\u1EE5 gi\u1EA5y t\u1EDD gi\u1EA3", ABANDONED_PARENT: "chuy\u1EC7n b\u1ECF m\u1EB7c cha m\u1EB9" }[tag];
+        return {
+          title: `${N(id)} bi\u1EBFt chuy\u1EC7n`,
+          npc: id,
+          text: `${N(id)} nh\u1EAFc t\u1EDBi ${what}, r\u1EA5t nh\u1EB9 nh\xE0ng, r\u1ED3i h\u1ECFi b\u1EA1n m\u1ED9t "kho\u1EA3n gi\xFAp \u0111\u1EE1". Ai c\u0169ng hi\u1EC3u \u0111\xF3 l\xE0 g\xEC.`,
+          choices: [
+            C("Tr\u1EA3", { money: -0.4, happy: -6, log: `B\u1EA1n tr\u1EA3. ${N(id)} s\u1EBD c\xF2n quay l\u1EA1i.` }, "Y\xEAn t\u1EA1m th\u1EDDi"),
+            C("T\u1EEB ch\u1ED1i", { trait: { bold: 2 }, gamble: { p: 0.5, win: { log: `${N(id)} d\u1ECDa r\u1ED3i th\xF4i.` }, lose: { custom: "explode_hook", log: `${N(id)} k\u1EC3 cho c\u1EA3 x\xF3m.` } } }, "50 %: h\u1ECD ch\u1EC9 d\u1ECDa \xB7 50 %: n\u1ED5"),
+            C("T\u1EF1 n\xF3i ra tr\u01B0\u1EDBc", { trait: { fair: 3 }, custom: "confess_hook", happy: -4, log: "B\u1EA1n t\u1EF1 k\u1EC3 chuy\u1EC7n c\u0169 v\u1EDBi nh\u1EEFng ng\u01B0\u1EDDi li\xEAn quan. \u0110au, nh\u01B0ng kh\xF4ng c\xF2n ai n\u1EAFm th\xF3p." }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: th\xE1o ng\xF2i b\u1EB1ng ch\xEDnh tay m\xECnh", { tier: "sovereign", longterm: !0 })
+          ],
+          def: 0
+        };
+      }
+    },
+    {
+      id: "scandal",
+      category: "fuse",
+      urgency: 96,
+      cooldownYears: 0,
+      tension: 16,
+      prerequisites: (c) => c.flags.has("scandal_pending"),
+      specificity: () => 9,
+      causes: () => [prov.flag("scandal_pending")],
+      build: (c) => ({
+        title: "Chuy\u1EC7n c\u0169 v\u1EE1 l\u1EDF",
+        text: `M\u1ED9t chuy\u1EC7n b\u1EA1n t\u01B0\u1EDFng \u0111\xE3 ch\xF4n t\u1EEB ${c.counters.scandal_age ?? "l\xE2u"} tu\u1ED5i b\u1ED7ng \u0111\u01B0\u1EE3c k\u1EC3 l\u1EA1i kh\u1EAFp n\u01A1i, \u0111\xFAng l\xFAc b\u1EA1n t\u01B0\u1EDFng m\xECnh \u0111\xE3 an to\xE0n.`,
+        choices: [
+          C("Ch\u1ED1i", { unflags: ["scandal_pending"], gamble: { p: 0.35, win: { happy: -3, log: "Ng\u01B0\u1EDDi ta b\xE1n t\xEDn b\xE1n nghi. Chuy\u1EC7n l\u1EAFng xu\u1ED1ng." }, lose: { income_mult: 0.85, rel: -10, happy: -8, log: "C\xF3 ng\u01B0\u1EDDi \u0111\u01B0a b\u1EB1ng ch\u1EE9ng. B\u1EA1n m\u1EA5t c\u1EA3 danh ti\u1EBFng l\u1EABn vi\u1EC7c." } } }, "35 % tho\xE1t"),
+          C("Nh\u1EADn v\xE0 xin l\u1ED7i", { unflags: ["scandal_pending"], income_mult: 0.92, rel: -4, happy: -5, trait: { fair: 2 }, log: "B\u1EA1n nh\u1EADn. M\u1EA5t m\u1ED9t ph\u1EA7n, gi\u1EEF \u0111\u01B0\u1EE3c ph\u1EA7n c\xF2n l\u1EA1i." }, "M\u1EA5t \xEDt h\u01A1n, ch\u1EAFc ch\u1EAFn", { longterm: !0 })
+        ],
+        def: 1
+      })
+    },
+    /* ---------------------------------------------------------------- Chủ động thức tỉnh */
+    {
+      id: "agency_year",
+      category: "agency",
+      urgency: 20,
+      cooldownYears: 3,
+      tension: -3,
+      prerequisites: (c) => c.age >= 16 && c.age <= 70 && c.tier !== "sovereign",
+      specificity: (c) => countTrue(c.crises_survived > 0, c.bandwidth >= 60, !c.rat_race),
+      build: (c, N) => {
+        let m = role(c, "mentor");
+        return {
+          title: "M\u1ED9t n\u0103m d\xE0nh cho m\xECnh",
+          concept: "ev",
+          text: `Gu\u1ED3ng quay v\u1EABn th\u1EBF. B\u1EA1n c\xF3 th\u1EC3 b\u1ECF ra m\u1ED9t ph\u1EA7n n\u0103m nay \u0111\u1EC3 nh\xECn l\u1EA1i, tr\u1EA3 gi\xE1 b\u1EB1ng ti\u1EC1n v\xE0 s\u1EF1 kh\xF3 ch\u1ECBu c\u1EE7a nh\u1EEFng ng\u01B0\u1EDDi quanh m\xECnh.${m ? ` ${N(m)} t\u1EEBng n\xF3i s\u1EB5n s\xE0ng ch\u1EC9 cho b\u1EA1n v\xE0i \u0111i\u1EC1u.` : ""}`,
+          choices: [
+            C("D\xE0nh th\u1EDDi gian chi\xEAm nghi\u1EC7m", { money: -0.1, rel: -3, bw: 10, agency: 0.035, log: "B\u1EA1n b\u1EDBt vi\u1EC7c, b\u1EDBt g\u1EB7p ng\u01B0\u1EDDi, v\xE0 nh\xECn th\u1EA5y v\xE0i th\u1EE9 r\xF5 h\u01A1n." }, "Ti\u1EC1n v\xE0 quan h\u1EC7 gi\u1EA3m, \u0111\u1EA7u \xF3c tho\xE1ng ra", { longterm: !0 }),
+            C(m ? `T\u1EA7m s\u01B0 ${N(m)}, \u0111\u1ECDc s\xE1ch` : "\u0110\u1ECDc s\xE1ch, h\u1ECDc th\xEAm", { money: -0.15, know: 6, bw: 6, agency: 0.03, ...m ? { trust: { npc: m, delta: 0.2 } } : {}, log: "B\u1EA1n h\u1ECDc \u0111\u01B0\u1EE3c c\xE1ch nh\xECn m\xE0 tr\u01B0\u1EDBc \u0111\xE2y kh\xF4ng c\xF3." }, "T\u1ED1n ti\u1EC1n, bi\u1EBFt th\xEAm", { longterm: !0 }),
+            C("R\u1EDDi qu\xEA m\u1ED9t th\u1EDDi gian", { money: -0.25, rel: -10, happy: -4, bw: 12, agency: 0.06, flags: ["left_home"], close_doors: ["return_home"], promise: { to: role(c, "mother") ?? role(c, "father") ?? "", what: "v\u1EC1 th\u0103m nh\xE0 tr\u01B0\u1EDBc ba n\u0103m", years: 3, cost_money: 0.1 }, log: "B\u1EA1n \u0111i xa. \u1EDE xa, k\u1ECBch b\u1EA3n c\u0169 kh\xF4ng v\u1EDBi t\u1EDBi." }, "Gi\xE1 cao nh\u1EA5t, b\u01B0\u1EDBc xa nh\u1EA5t", { tier: "awakened" }),
+            C("C\u1EAFt b\u1EDBt giao du v\xF4 b\u1ED5", { rel: -8, bw: 8, agency: 0.02, happy: 2, log: "B\u1EA1n ng\u1EEBng m\u1EA5y cu\u1ED9c nh\u1EADu. V\xE0i ng\u01B0\u1EDDi g\u1ECDi b\u1EA1n l\xE0 ki\xEAu." }, "M\u1EA5t v\xE0i ng\u01B0\u1EDDi quen"),
+            C("Kh\xF4ng n\u0103m nay", { log: "B\u1EA1n \u0111\u1EC3 sang n\u0103m." })
+          ],
+          def: 4
+        };
+      }
+    },
+    /* ---------------------------------------------------------------- Khoảng lặng */
+    ...[15, 30, 50, 70].map((age) => ({
+      id: `reflect_${age}`,
+      category: "reflection",
+      urgency: 100,
+      cooldownYears: 99,
+      once: !0,
+      tension: -10,
+      prerequisites: (c) => c.age === age,
+      specificity: () => 10,
+      build: (c, N) => {
+        let q = { 15: "N\u0103m nay b\u1EA1n 15. Nh\xECn quanh: ai trong nh\u1EEFng ng\u01B0\u1EDDi n\xE0y s\u1EBD c\xF2n \u1EDF \u0111\xE2y khi b\u1EA1n 40?", 30: "Ba m\u01B0\u01A1i. Nh\u1EEFng g\xEC b\u1EA1n \u0111ang l\xE0m m\u1ED7i ng\xE0y c\xF3 ph\u1EA3i l\xE0 th\u1EE9 b\u1EA1n ch\u1ECDn, hay l\xE0 th\u1EE9 \u0111\xE3 ch\u1ECDn b\u1EA1n?", 50: "N\u0103m m\u01B0\u01A1i. B\u1EA1n \u0111\xE3 l\xE0m l\u1EE3i cho ai, v\xE0 ai \u0111\xE3 tr\u1EA3 gi\xE1 cho nh\u1EEFng g\xEC b\u1EA1n c\xF3?", 70: "B\u1EA3y m\u01B0\u01A1i. N\u1EBFu \u0111\u01B0\u1EE3c sinh ra l\u1EA7n n\u1EEFa \u1EDF \u0111\xFAng n\u01A1i n\xE0y, b\u1EA1n s\u1EBD \u0111\u1ED5i \u0111i\u1EC1u g\xEC?" }[age], m = role(c, "mother"), f4 = role(c, "childhood_friend");
+        return {
+          title: `Kho\u1EA3ng l\u1EB7ng \xB7 ${age} tu\u1ED5i`,
+          text: `${q} ${age === 15 && m ? `${N(m)} \u0111\u1EE9ng trong b\u1EBFp, kh\xF4ng bi\u1EBFt b\u1EA1n \u0111ang ngh\u0129 g\xEC.` : age === 30 && f4 ? `${N(f4)} v\u1EEBa nh\u1EAFn, l\xE2u r\u1ED3i kh\xF4ng g\u1EB7p.` : ""}`,
+          choices: [C("T\xF4i \u0111\xE3 ch\u1ECDn", { agency: 0.03, happy: 2, log: "B\u1EA1n tin m\xECnh \u0111\xE3 ch\u1ECDn." }), C("N\xF3 \u0111\xE3 ch\u1ECDn t\xF4i", { agency: 0.05, happy: -2, bw: 4, log: "B\u1EA1n th\u1EEBa nh\u1EADn \u0111i\u1EC1u kh\xF3 n\xF3i." }), C("T\xF4i ch\u01B0a bi\u1EBFt", { agency: 0.02, log: "B\u1EA1n \u0111\u1EC3 c\xE2u h\u1ECFi m\u1EDF." })],
+          def: 2
+        };
+      }
+    }))
+  ];
+
+  // src/engine/narrative/micro.ts
+  var C2 = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), role2 = (c, r) => c.cast[r], op2 = (c, id) => id ? c.opinion[id] ?? 0 : 0, h = (c, k) => c.counters[k] ?? 0, vary = (id, age, arr) => {
+    let x = age * 31;
+    for (let ch of id) x = x * 33 + ch.charCodeAt(0) >>> 0;
+    return arr[x % arr.length];
+  };
+  function M(id, ages, when, spec, build, extra = {}) {
+    return { id, category: "micro", urgency: 15, cooldownYears: 7, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && when(c), specificity: spec, build, ...extra };
+  }
+  var any = () => 1, MICRO = [
+    /* =============================== Tuổi thơ 6–12 =============================== */
+    M("m_share_lunch", [6, 12], (c) => !!role2(c, "childhood_friend"), (c) => countTrue(c.poor_country, c.family_wealth < 0.4), (c, N) => {
+      let f4 = role2(c, "childhood_friend");
+      return {
+        npc: f4,
+        title: "H\u1ED9p c\u01A1m tr\u01B0a",
+        text: vary("lunch", c.age, [`${N(f4)} kh\xF4ng mang c\u01A1m, ng\u1ED3i nh\xECn b\u1EA1n \u0103n.`, `Gi\u1EDD ra ch\u01A1i, ${N(f4)} b\u1EA3o h\xF4m nay nh\xE0 h\u1EBFt g\u1EA1o.`]),
+        choices: [C2("Chia m\u1ED9t n\u1EEDa", { happy: -1, counters: { kind: 1 }, memory: { npc: f4, tag: "HELPED_IN_CRISIS", weight: 0.12, note: "n\u1EEDa h\u1ED9p c\u01A1m n\u0103m l\u1EDBp 2" } }), C2("\u0102n h\u1EBFt", { health: 1 })],
+        def: 0
+      };
+    }),
+    M("m_broke_vase", [6, 11], (c) => !!role2(c, "mother"), any, (c, N) => {
+      let m = role2(c, "mother");
+      return {
+        npc: m,
+        title: "C\xE1i b\xECnh v\u1EE1",
+        text: `B\u1EA1n l\xE0m v\u1EE1 c\xE1i b\xECnh ${N(m)} qu\xFD nh\u1EA5t. ${N(m)} h\u1ECFi ai l\xE0m.`,
+        choices: [C2("Nh\u1EADn", { happy: -2, counters: { honest: 1 }, trust: { npc: m, delta: 0.05 } }), C2("\u0110\u1ED5 cho con m\xE8o", { counters: { honest: -1 }, flags: ["lied_vase"] })],
+        def: 0
+      };
+    }),
+    M("m_homework", [7, 12], (c) => c.in_school, (c) => countTrue(c.know < 40), (c) => ({
+      title: "B\xE0i t\u1EADp hay ra \u0111\u1ED3ng ch\u01A1i",
+      text: vary("hw", c.age, ["L\u0169 b\u1EA1n g\u1ECDi \xED \u1EDBi ngo\xE0i ng\xF5.", "Tr\u1EDDi v\u1EEBa t\u1EA1nh m\u01B0a, ngo\xE0i s\xE2n \u0111\u1EA7y \u1EBFch."]),
+      choices: [C2("L\xE0m b\xE0i", { know: 2, happy: -1, counters: { read: 1 } }), C2("Ch\u1EA1y ra ch\u01A1i", { happy: 3, rel: 1 })],
+      def: 1
+    })),
+    M("m_teased_kid", [7, 12], (c) => c.in_school, (c) => countTrue(c.traits.bold > 0), (c) => ({
+      title: "\u0110\u1EE9a b\u1ECB tr\xEAu",
+      text: "M\u1ED9t \u0111\u1EE9a m\u1EDBi chuy\u1EC3n \u0111\u1EBFn b\u1ECB c\u1EA3 l\u1EDBp tr\xEAu v\xEC gi\u1ECDng n\xF3i l\u1EA1.",
+      choices: [C2("\u0110\u1EE9ng ra b\xEAnh", { rel: -1, happy: 1, counters: { kind: 1 }, trait: { bold: 1, fair: 1 } }, "C\xF3 th\u1EC3 b\u1ECB tr\xEAu l\xE2y"), C2("C\u01B0\u1EDDi theo", { rel: 1, trait: { coop: -1 } }), C2("Im l\u1EB7ng", {})],
+      def: 2
+    })),
+    M("m_fruit_tree", [6, 12], (c) => !!role2(c, "neighbor"), any, (c, N) => {
+      let nb = role2(c, "neighbor");
+      return {
+        npc: nb,
+        title: "C\xE2y xo\xE0i nh\xE0 b\xEAn",
+        text: `Xo\xE0i nh\xE0 ${N(nb)} ch\xEDn v\xE0ng, c\xE0nh ch\xECa sang ng\xF5.`,
+        choices: [C2("H\xE1i tr\u1ED9m", { happy: 2, counters: { honest: -1 }, gamble: { p: 0.7, win: {}, lose: { memory: { npc: nb, tag: "GOSSIP_HEARD_BAD", weight: -0.1, note: "th\u1EB1ng b\xE9 h\xE1i tr\u1ED9m xo\xE0i" }, log: `${N(nb)} b\u1EAFt qu\u1EA3 tang, m\xE1ch c\u1EA3 nh\xE0.` } } }), C2("Xin", { gamble: { p: 0.6, win: { happy: 2, memory: { npc: nb, tag: "GOSSIP_HEARD_GOOD", weight: 0.08, note: "\u0111\u1EE9a b\xE9 l\u1EC5 ph\xE9p" } }, lose: {} } })],
+        def: 1
+      };
+    }),
+    M("m_found_coin", [6, 12], any, any, (c) => ({
+      title: "T\u1EDD ti\u1EC1n r\u01A1i",
+      text: "B\u1EA1n nh\u1EB7t \u0111\u01B0\u1EE3c m\u1ED9t t\u1EDD ti\u1EC1n tr\u01B0\u1EDBc c\u1ED5ng tr\u01B0\u1EDDng.",
+      choices: [C2("N\u1ED9p c\xF4 gi\xE1o", { counters: { honest: 1 }, happy: 1 }), C2("Mua k\u1EB9o", { happy: 2, counters: { honest: -1 } })],
+      def: 0
+    })),
+    M("m_tell_sibling", [6, 12], (c) => !!role2(c, "sibling"), any, (c, N) => {
+      let s = role2(c, "sibling");
+      return {
+        npc: s,
+        title: `${N(s)} tr\u1ED1n h\u1ECDc`,
+        text: `B\u1EA1n th\u1EA5y ${N(s)} tr\u1ED1n h\u1ECDc ra qu\xE1n \u0111i\u1EC7n t\u1EED. B\u1ED1 m\u1EB9 ch\u01B0a bi\u1EBFt.`,
+        choices: [C2("M\xE1ch b\u1ED1 m\u1EB9", { memory: { npc: s, tag: "HUMILIATED_ME", weight: -0.15, note: "b\u1ECB m\xE1ch v\u1EE5 tr\u1ED1n h\u1ECDc" } }), C2("Gi\u1EEF b\xED m\u1EADt", { memory: { npc: s, tag: "STOOD_UP_FOR_ME", weight: 0.15, note: "gi\u1EEF b\xED m\u1EADt v\u1EE5 tr\u1ED1n h\u1ECDc" } })],
+        def: 1
+      };
+    }),
+    M("m_help_father", [8, 14], (c) => !!role2(c, "father"), (c) => countTrue(c.poor_country, c.farmer), (c, N) => {
+      let f4 = role2(c, "father");
+      return {
+        npc: f4,
+        title: `Ph\u1EE5 ${N(f4)}`,
+        text: `${N(f4)} c\u1EA7n ng\u01B0\u1EDDi ph\u1EE5 vi\u1EC7c cu\u1ED1i tu\u1EA7n.`,
+        choices: [C2("\u0110i ph\u1EE5", { health: -1, trust: { npc: f4, delta: 0.06 }, know: 1 }), C2("\u1EDE nh\xE0 ch\u01A1i", { happy: 2 })],
+        def: 0
+      };
+    }),
+    M("m_fight_toy", [6, 10], (c) => !!role2(c, "sibling"), any, (c, N) => {
+      let s = role2(c, "sibling");
+      return {
+        npc: s,
+        title: "M\xF3n \u0111\u1ED3 ch\u01A1i",
+        text: `B\u1EA1n v\xE0 ${N(s)} gi\xE0nh nhau m\xF3n \u0111\u1ED3 ch\u01A1i duy nh\u1EA5t trong nh\xE0.`,
+        choices: [C2("Nh\u01B0\u1EDDng", { happy: -1, trust: { npc: s, delta: 0.05 }, counters: { kind: 1 } }), C2("Gi\xE0nh b\u1EB1ng \u0111\u01B0\u1EE3c", { happy: 2, trust: { npc: s, delta: -0.05 }, trait: { bold: 1 } })],
+        def: 0
+      };
+    }),
+    M("m_festival", [6, 14], any, (c) => countTrue(c.poor_country), (c) => ({
+      title: "Ng\xE0y h\u1ED9i",
+      text: "L\xE0ng m\u1EDF h\u1ED9i. Ng\u01B0\u1EDDi l\u1EDBn \u0111i l\u1EC5, tr\u1EBB con ch\u1EA1y theo \u0111o\xE0n m\xFAa.",
+      choices: [C2("Theo ng\u01B0\u1EDDi l\u1EDBn \u0111i l\u1EC5", { counters: { faith: 1 }, rel: 1 }), C2("Ch\u1EA1y theo \u0111o\xE0n m\xFAa", { happy: 3 })],
+      def: 1
+    })),
+    M("m_hobby", [7, 13], any, any, (c) => ({
+      title: "M\u1ED9t th\u1EE9 m\xECnh th\xEDch",
+      text: vary("hob", c.age, ["B\u1EA1n t\xECm th\u1EA5y c\xE2y \u0111\xE0n c\u0169 trong kho.", "\xD4ng h\xE0ng x\xF3m cho b\u1EA1n m\u01B0\u1EE3n b\u1ED9 c\u1EDD.", "C\xF3 l\u1EDBp v\xF5 m\u1EDF \u1EDF \u0111\xECnh l\xE0ng."]),
+      choices: [C2("T\u1EADp m\u1ED7i ng\xE0y", { counters: { exercise: 1, read: 1 }, happy: 1, flags: ["hobby"] }), C2("Ch\u01A1i v\xE0i h\xF4m r\u1ED3i th\xF4i", { happy: 1 })],
+      def: 0
+    })),
+    /* =============================== Thiếu niên 13–19 =============================== */
+    M("m_first_smoke", [13, 19], (c) => !!role2(c, "childhood_friend") && h(c, "smoke") === 0, any, (c, N) => {
+      let f4 = role2(c, "childhood_friend");
+      return {
+        npc: f4,
+        title: "\u0110i\u1EBFu thu\u1ED1c \u0111\u1EA7u ti\xEAn",
+        text: `Sau gi\u1EDD h\u1ECDc, ${N(f4)} ch\xECa ra m\u1ED9t \u0111i\u1EBFu thu\u1ED1c. "Th\u1EED \u0111i, c\xF3 sao \u0111\xE2u."`,
+        choices: [C2("Th\u1EED", { counters: { smoke: 2 }, rel: 2, flags: ["habit_smoke"] }, "B\u1EAFt \u0111\u1EA7u m\u1ED9t th\xF3i quen"), C2("L\u1EAFc \u0111\u1EA7u", { rel: -1 })],
+        def: 1
+      };
+    }),
+    M("m_skip_class", [13, 18], (c) => c.in_school, (c) => countTrue(c.know < 45, c.happy < 40), (c) => ({
+      title: "Tr\u1ED1n ti\u1EBFt",
+      text: "C\u1EA3 nh\xF3m r\u1EE7 nhau tr\u1ED1n ti\u1EBFt chi\u1EC1u ra b\u1EDD s\xF4ng.",
+      choices: [C2("\u0110i", { happy: 3, know: -2, rel: 2 }), C2("\u1EDE l\u1EA1i h\u1ECDc", { know: 2, rel: -1 })],
+      def: 1
+    })),
+    M("m_crush", [14, 19], any, any, (c) => ({
+      title: "Ng\u01B0\u1EDDi \u1EA5y",
+      text: "C\xF3 m\u1ED9t ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EC3 \xFD su\u1ED1t m\u1EA5y th\xE1ng. H\xF4m nay hai ng\u01B0\u1EDDi \u0111\u1EE9ng ch\u1EDD xe bu\xFDt c\xF9ng nhau.",
+      choices: [C2("B\u1EAFt chuy\u1EC7n", { gamble: { p: 0.5, win: { happy: 6, rel: 3, flags: ["first_love"], log: "Hai ng\u01B0\u1EDDi n\xF3i chuy\u1EC7n \u0111\u1EBFn l\xFAc xe t\u1EDBi, r\u1ED3i h\u1EB9n nhau h\xF4m sau." }, lose: { happy: -4, log: "B\u1EA1n l\u1EAFp b\u1EAFp, ng\u01B0\u1EDDi \u1EA5y c\u01B0\u1EDDi l\u1ECBch s\u1EF1 r\u1ED3i l\xEAn xe." } } }), C2("Im l\u1EB7ng", { happy: -1, flags: ["unspoken"] })],
+      def: 1
+    })),
+    M("m_parttime", [14, 19], (c) => c.in_school, (c) => countTrue(c.broke, c.family_wealth < 0.4), (c) => ({
+      title: "Vi\u1EC7c l\xE0m th\xEAm",
+      text: "Qu\xE1n c\u01A1m \u0111\u1EA7u ng\xF5 c\u1EA7n ng\u01B0\u1EDDi r\u1EEDa b\xE1t bu\u1ED5i t\u1ED1i.",
+      choices: [C2("Nh\u1EADn vi\u1EC7c", { money: 0.05, know: -2, health: -1, counters: { save: 1 } }), C2("T\u1EADp trung h\u1ECDc", { know: 2 })],
+      def: 0
+    })),
+    M("m_father_future", [15, 19], (c) => !!role2(c, "father"), any, (c, N) => {
+      let f4 = role2(c, "father");
+      return {
+        npc: f4,
+        title: "Chuy\u1EC7n t\u01B0\u01A1ng lai",
+        text: `${N(f4)} mu\u1ED1n b\u1EA1n theo ngh\u1EC1 \u1ED5n \u0111\u1ECBnh. B\u1EA1n mu\u1ED1n th\u1EE9 kh\xE1c.`,
+        choices: [C2("Nghe l\u1EDDi", { trust: { npc: f4, delta: 0.1 }, happy: -2 }), C2("C\xE3i l\u1EA1i", { trust: { npc: f4, delta: -0.12 }, agency: 0.02, trait: { bold: 1 }, memory: { npc: f4, tag: "HUMILIATED_ME", weight: -0.08, note: "con c\xE3i l\u1EDDi chuy\u1EC7n t\u01B0\u01A1ng lai" } })],
+        def: 0
+      };
+    }),
+    M("m_teen_drink", [15, 19], (c) => !!role2(c, "childhood_friend"), any, (c, N) => {
+      let f4 = role2(c, "childhood_friend");
+      return {
+        npc: f4,
+        title: "Chai r\u01B0\u1EE3u \u0111\u1EA7u ti\xEAn",
+        text: `${N(f4)} mang r\u01B0\u1EE3u \u0111\u1EBFn bu\u1ED5i li\xEAn hoan cu\u1ED1i n\u0103m.`,
+        choices: [C2("U\u1ED1ng c\xF9ng", { counters: { drink: 1 }, rel: 2, happy: 2 }), C2("Kh\xF4ng u\u1ED1ng", { rel: -1 })],
+        def: 1
+      };
+    }),
+    M("m_mentor_book", [13, 19], (c) => !!role2(c, "mentor"), any, (c, N) => {
+      let m = role2(c, "mentor");
+      return {
+        npc: m,
+        title: "Cu\u1ED1n s\xE1ch",
+        text: `${N(m)} \u0111\u01B0a b\u1EA1n m\u1ED9t cu\u1ED1n s\xE1ch c\u0169. "\u0110\u1ECDc r\u1ED3i k\u1EC3 th\u1EA7y nghe."`,
+        choices: [C2("\u0110\u1ECDc h\u1EBFt", { know: 3, counters: { read: 2 }, trust: { npc: m, delta: 0.12 }, agency: 0.01 }), C2("\u0110\u1EC3 \u0111\u1EA5y", { trust: { npc: m, delta: -0.04 } })],
+        def: 0
+      };
+    }),
+    M("m_defend_friend", [12, 18], (c) => !!role2(c, "bully") && !!role2(c, "childhood_friend"), any, (c, N) => {
+      let b = role2(c, "bully"), f4 = role2(c, "childhood_friend");
+      return {
+        npc: b,
+        title: `${N(b)} v\xE0 ${N(f4)}`,
+        text: `${N(b)} \u0111ang d\u1ED3n ${N(f4)} v\xE0o g\xF3c t\u01B0\u1EDDng.`,
+        choices: [C2("X\xF4ng v\xE0o", { health: -3, trait: { bold: 2 }, memory: { npc: f4, tag: "STOOD_UP_FOR_ME", weight: 0.3, note: `\u0111\u1EE9ng ra che cho ${N(f4)} tr\u01B0\u1EDBc ${N(b)}` } }), C2("G\u1ECDi ng\u01B0\u1EDDi l\u1EDBn", { memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.15, note: "g\u1ECDi ng\u01B0\u1EDDi l\u1EDBn" } }), C2("\u0110i ch\u1ED7 kh\xE1c", { memory: { npc: f4, tag: "REFUSED_HELP", weight: -0.2, note: "quay l\u01B0ng b\u1ECF \u0111i h\xF4m \u0111\xF3" } })],
+        def: 1
+      };
+    }),
+    M("m_friend_secret", [13, 22], (c) => !!role2(c, "childhood_friend"), any, (c, N) => {
+      let f4 = role2(c, "childhood_friend");
+      return {
+        npc: f4,
+        title: "B\xED m\u1EADt c\u1EE7a b\u1EA1n",
+        text: `${N(f4)} k\u1EC3 cho b\u1EA1n m\u1ED9t chuy\u1EC7n nh\xE0 kh\xF4ng ai \u0111\u01B0\u1EE3c bi\u1EBFt.`,
+        choices: [C2("Gi\u1EEF k\xEDn", { memory: { npc: f4, tag: "KEPT_PROMISE", weight: 0.2, note: "gi\u1EEF k\xEDn chuy\u1EC7n nh\xE0" } }), C2("K\u1EC3 cho ng\u01B0\u1EDDi kh\xE1c", { rel: 1, memory: { npc: f4, tag: "CHEATED_ME", weight: -0.35, note: "\u0111em chuy\u1EC7n nh\xE0 \u0111i k\u1EC3" } })],
+        def: 0
+      };
+    }),
+    M("m_exercise_start", [14, 50], (c) => h(c, "exercise") < 3, (c) => countTrue(c.health < 60), (c) => ({
+      title: "Ch\u1EA1y b\u1ED9 bu\u1ED5i s\xE1ng",
+      text: vary("run", c.age, ["H\xE0ng x\xF3m r\u1EE7 ch\u1EA1y b\u1ED9 l\xFAc n\u0103m gi\u1EDD s\xE1ng.", "B\u1EA1n th\u1EA5y m\xECnh leo c\u1EA7u thang \u0111\xE3 th\u1EDF d\u1ED1c."]),
+      choices: [C2("B\u1EAFt \u0111\u1EA7u", { counters: { exercise: 2 }, happy: -1, flags: ["habit_exercise"] }, "M\u1EC7t b\xE2y gi\u1EDD, kh\u1ECFe v\u1EC1 sau"), C2("\u0110\u1EC3 mai", {})],
+      def: 1
+    })),
+    /* =============================== Người lớn: tiền & thói quen =============================== */
+    M("m_found_wallet", [18, 75], any, (c) => countTrue(c.broke), (c) => ({
+      title: "C\xE1i v\xED",
+      text: "B\u1EA1n nh\u1EB7t \u0111\u01B0\u1EE3c m\u1ED9t c\xE1i v\xED d\xE0y tr\xEAn xe bu\xFDt. C\xF3 gi\u1EA5y t\u1EDD v\xE0 m\u1ED9t x\u1EA5p ti\u1EC1n.",
+      choices: [C2("T\xECm tr\u1EA3 ch\u1EE7", { counters: { honest: 1 }, happy: 2, rel: 1 }), C2("Gi\u1EEF ti\u1EC1n, v\u1EE9t v\xED", { money: 0.08, counters: { honest: -2 }, happy: -1 })],
+      def: 0
+    }), { cooldownYears: 15 }),
+    M("m_wrong_change", [18, 75], any, (c) => countTrue(c.broke), (c) => ({
+      title: "Ti\u1EC1n th\u1ED1i",
+      text: "B\xE0 b\xE1n h\xE0ng th\u1ED1i nh\u1EA7m cho b\u1EA1n g\u1EA5p \u0111\xF4i.",
+      choices: [C2("Tr\u1EA3 l\u1EA1i", { counters: { honest: 1 }, happy: 1 }), C2("L\u1EDD \u0111i", { money: 0.01, counters: { honest: -1 } })],
+      def: 0
+    })),
+    M("m_colleague_drink", [20, 60], (c) => c.has_job, (c) => countTrue(c.worker, c.scarcity), (c) => ({
+      title: "Nh\u1EADu sau gi\u1EDD l\xE0m",
+      text: vary("nhau", c.age, ["C\u1EA3 t\u1ED5 r\u1EE7 \u0111i nh\u1EADu m\u1EEBng xong \u0111\u01A1n h\xE0ng.", "S\u1EBFp m\u1EDDi c\u1EA3 ph\xF2ng \u0111i nh\u1EADu, ai kh\xF4ng \u0111i th\xEC th\xF4i."]),
+      choices: [C2("\u0110i, u\u1ED1ng t\u1EDBi b\u1EBFn", { counters: { drink: 1 }, rel: 3, money: -0.01, health: -1 }), C2("\u0110i, u\u1ED1ng ch\u1EEBng m\u1EF1c", { rel: 1, money: -0.01 }), C2("V\u1EC1 nh\xE0", { rel: -2 })],
+      def: 1
+    })),
+    M("m_stress_smoke", [20, 65], (c) => h(c, "smoke") > 0, (c) => countTrue(c.scarcity, c.rat_race), (c) => ({
+      title: "\u0110i\u1EBFu thu\u1ED1c l\xFAc c\u0103ng th\u1EB3ng",
+      text: "\u0110\u1EA7u \xF3c r\u1ED1i b\u1EDDi. Bao thu\u1ED1c trong t\xFAi \xE1o.",
+      choices: [C2("H\xFAt", { counters: { smoke: 1 }, bw: 2 }), C2("B\u1ECF h\u1EB3n t\u1EEB h\xF4m nay", { counters: { smoke: -3 }, happy: -3, bw: -3 }, "Kh\xF3, nh\u01B0ng c\xF3 th\u1EC3")],
+      def: 0
+    })),
+    M("m_lottery", [18, 75], any, (c) => countTrue(c.broke, c.traits.risk > 0, c.poor_country), (c) => ({
+      title: "V\xE9 s\u1ED1",
+      text: "B\xE0 c\u1EE5 b\xE1n v\xE9 s\u1ED1 \u0111\u1EE9ng ch\u1EDD. Gi\u1EA3i \u0111\u1EB7c bi\u1EC7t tu\u1EA7n n\xE0y l\u1EDBn b\u1EA5t th\u01B0\u1EDDng.",
+      choices: [C2("Mua v\xE0i t\u1EDD", { money: -5e-3, counters: { gamble: 1 }, gamble: { p: 0.03, win: { money: 0.5, log: "B\u1EA1n tr\xFAng m\u1ED9t gi\u1EA3i nh\u1ECF." }, lose: {} } }), C2("Th\xF4i", {})],
+      def: 1
+    })),
+    M("m_card_game", [20, 65], (c) => h(c, "gamble") > 0 || c.traits.risk > 0, (c) => countTrue(c.broke, c.rat_race), (c) => ({
+      title: "Chi\u1EBFu b\u1EA1c",
+      text: "\u0110\xE1m c\u01B0\u1EDBi xong, m\u1EA5y \xF4ng b\xE0y chi\u1EBFu \u0111\xE1nh b\xE0i, r\u1EE7 b\u1EA1n ng\u1ED3i v\xE0o.",
+      choices: [C2("Ng\u1ED3i v\xE0o", { counters: { gamble: 2 }, gamble: { p: 0.45, win: { money: 0.1, happy: 3 }, lose: { money: -0.15, happy: -3 } } }), C2("\u0110\u1EE9ng xem r\u1ED3i v\u1EC1", {})],
+      def: 1
+    })),
+    M("m_installment", [18, 55], (c) => c.has_job, (c) => countTrue(c.broke, c.tier === "autopilot"), (c) => ({
+      title: "\u0110i\u1EC7n tho\u1EA1i tr\u1EA3 g\xF3p",
+      text: "\u0110\u1ED3ng nghi\u1EC7p ai c\u0169ng c\xF3 \u0111i\u1EC7n tho\u1EA1i m\u1EDBi. C\u1EEDa h\xE0ng cho tr\u1EA3 g\xF3p 0 %.",
+      choices: [C2("Mua", { happy: 4, custom: "borrow:0.12", counters: { save: -1 } }), C2("D\xF9ng m\xE1y c\u0169 th\xEAm n\u0103m n\u1EEFa", { happy: -1, counters: { save: 1 } })],
+      def: 0
+    })),
+    M("m_bonus", [20, 64], (c) => c.has_job && !c.farmer, (c) => countTrue(c.econ_phase === "boom"), (c) => ({
+      title: "Ti\u1EC1n th\u01B0\u1EDFng",
+      text: "Cu\u1ED1i n\u0103m c\xF3 m\u1ED9t kho\u1EA3n th\u01B0\u1EDFng b\u1EB1ng n\u1EEDa th\xE1ng l\u01B0\u01A1ng.",
+      choices: [C2("\u0110\u1EC3 d\xE0nh", { money: 0.04, counters: { save: 2 } }), C2("S\u1EAFm s\u1EEDa cho nh\xE0", { happy: 3, rel: 2 }), C2("\u0110\xE3i b\u1EA1n b\xE8 m\u1ED9t b\u1EEFa", { rel: 3, happy: 2 })],
+      def: 0
+    })),
+    M("m_send_home", [18, 60], (c) => !!role2(c, "mother") || !!role2(c, "father"), (c) => countTrue(c.parent_old, c.poor_country, c.migrated), (c, N) => {
+      let p = role2(c, "mother") ?? role2(c, "father");
+      return {
+        npc: p,
+        title: "G\u1EEDi ti\u1EC1n v\u1EC1 nh\xE0",
+        text: `Th\xE1ng n\xE0y ${N(p)} kh\xF4ng g\u1ECDi xin, nh\u01B0ng b\u1EA1n bi\u1EBFt nh\xE0 \u0111ang thi\u1EBFu.`,
+        choices: [C2("G\u1EEDi v\u1EC1", { money: -0.04, trust: { npc: p, delta: 0.08 }, counters: { kind: 1 } }), C2("Th\xE1ng sau", {})],
+        def: 0
+      };
+    }, { cooldownYears: 4 }),
+    M("m_checkup", [30, 80], any, (c) => countTrue(c.health < 55, c.age > 50), (c) => ({
+      title: "Kh\xE1m s\u1EE9c kh\u1ECFe",
+      text: "Ph\xF2ng kh\xE1m g\u1EA7n nh\xE0 c\xF3 g\xF3i kh\xE1m t\u1ED5ng qu\xE1t. B\u1EA1n c\u0169ng ch\u1EB3ng th\u1EA5y \u0111au \u1EDF \u0111\xE2u.",
+      choices: [C2("\u0110i kh\xE1m", { money: -0.02, health: 3, flags: ["checked_up"] }), C2("Kh\xF4ng c\u1EA7n", {})],
+      def: 1
+    }), { cooldownYears: 5 }),
+    M("m_insurance", [22, 55], (c) => c.has_job && !c.poor_country, (c) => countTrue(c.kids_alive > 0), (c) => ({
+      title: "B\u1EA3o hi\u1EC3m",
+      text: "M\u1ED9t ng\u01B0\u1EDDi b\xE1n b\u1EA3o hi\u1EC3m ng\u1ED3i l\xEC \u1EDF ph\xF2ng kh\xE1ch.",
+      choices: [C2("Mua", { money: -0.03, flags: ["insured"] }), C2("M\u1EDDi v\u1EC1", {})],
+      def: 1
+    }), { cooldownYears: 15 }),
+    M("m_evening_class", [20, 50], (c) => c.has_job, (c) => countTrue(c.know < 50, c.tier !== "autopilot"), (c) => ({
+      title: "L\u1EDBp bu\u1ED5i t\u1ED1i",
+      text: vary("eve", c.age, ["C\xF3 l\u1EDBp ti\u1EBFng Anh bu\u1ED5i t\u1ED1i g\u1EA7n ch\u1ED7 l\xE0m.", "M\u1ED9t kh\xF3a h\u1ECDc k\u1EBF to\xE1n online, h\u1ECDc ph\xED ph\u1EA3i ch\u0103ng."]),
+      choices: [C2("\u0110\u0103ng k\xFD", { money: -0.03, know: 3, health: -1, counters: { read: 2 } }), C2("Kh\xF4ng c\xF3 th\u1EDDi gian", {})],
+      def: 1
+    })),
+    M("m_side_gig", [20, 55], (c) => c.has_job, (c) => countTrue(c.broke, c.rat_race), (c) => ({
+      title: "Vi\u1EC7c tay tr\xE1i",
+      text: "C\xF3 ng\u01B0\u1EDDi nh\u1EDD b\u1EA1n l\xE0m th\xEAm cu\u1ED1i tu\u1EA7n, tr\u1EA3 ti\u1EC1n m\u1EB7t.",
+      choices: [C2("Nh\u1EADn", { money: 0.06, health: -2, rel: -1 }), C2("Gi\u1EEF cu\u1ED1i tu\u1EA7n cho nh\xE0", { rel: 2 })],
+      def: 0
+    })),
+    /* =============================== Người lớn: chỗ làm =============================== */
+    M("m_cover_mistake", [20, 60], (c) => c.has_job && !c.farmer, any, (c) => ({
+      title: "L\u1ED7i c\u1EE7a \u0111\u1ED3ng nghi\u1EC7p",
+      text: "\u0110\u1ED3ng nghi\u1EC7p l\xE0m h\u1ECFng m\u1ED9t l\xF4 h\xE0ng v\xE0 xin b\u1EA1n \u0111\u1EEBng b\xE1o l\xEAn.",
+      choices: [C2("Che gi\xFAp", { rel: 2, counters: { honest: -1 }, gamble: { p: 0.8, win: {}, lose: { income_mult: 0.95, log: "Chuy\u1EC7n l\u1ED9 ra. C\u1EA3 hai b\u1ECB tr\u1EEB l\u01B0\u01A1ng." } } }), C2("B\xE1o l\xEAn", { rel: -3, counters: { honest: 1 }, gamble: { p: 0.5, win: { income_mult: 1.03, log: "S\u1EBFp ghi nh\u1EADn b\u1EA1n." }, lose: {} } })],
+      def: 0
+    })),
+    M("m_take_credit", [22, 60], (c) => c.has_job && !c.farmer && !c.worker, any, (c) => ({
+      title: "\xDD t\u01B0\u1EDFng c\u1EE7a ai",
+      text: "S\u1EBFp khen \xFD t\u01B0\u1EDFng m\xE0 m\u1ED9t \u0111\u1ED3ng nghi\u1EC7p tr\u1EBB ngh\u0129 ra, v\xE0 t\u01B0\u1EDFng l\xE0 c\u1EE7a b\u1EA1n.",
+      choices: [C2("N\xF3i th\u1EADt l\xE0 c\u1EE7a c\u1EADu \u1EA5y", { counters: { honest: 1 }, rel: 2 }), C2("Nh\u1EADn lu\xF4n", { income_mult: 1.03, counters: { honest: -1 }, flags: ["took_credit"] })],
+      def: 0
+    })),
+    M("m_weekend_work", [20, 60], (c) => c.has_job, (c) => countTrue(c.married, c.kids_alive > 0), (c) => ({
+      title: "L\xE0m cu\u1ED1i tu\u1EA7n",
+      text: "S\u1EBFp nh\u1EDD b\u1EA1n l\xE0m th\xEAm c\u1EA3 hai ng\xE0y cu\u1ED1i tu\u1EA7n. H\xF4m \u0111\xF3 l\xE0 sinh nh\u1EADt ng\u01B0\u1EDDi nh\xE0.",
+      choices: [C2("\u0110i l\xE0m", { money: 0.02, rel: -3, income_mult: 1.01 }), C2("Xin ngh\u1EC9", { rel: 3, gamble: { p: 0.8, win: {}, lose: { happy: -2, log: "S\u1EBFp kh\xF4ng vui." } } })],
+      def: 0
+    })),
+    M("m_safety", [20, 60], (c) => c.worker, any, (c) => ({
+      title: "M\xE1y h\u1ECFng",
+      text: "C\xE1i m\xE1y \u1EDF x\u01B0\u1EDFng h\u1EDF \u0111i\u1EC7n m\u1EA5y h\xF4m nay. B\xE1o l\xEAn th\xEC x\u01B0\u1EDFng ph\u1EA3i d\u1EEBng, c\u1EA3 t\u1ED5 m\u1EA5t l\u01B0\u01A1ng ng\xE0y.",
+      choices: [C2("B\xE1o", { rel: -2, trait: { fair: 1 }, gamble: { p: 0.6, win: { log: "X\u01B0\u1EDFng s\u1EEDa m\xE1y. Kh\xF4ng ai b\u1ECB g\xEC." }, lose: { happy: -2, log: "Qu\u1EA3n \u0111\u1ED1c m\u1EAFng b\u1EA1n l\xE0m ch\u1EADm vi\u1EC7c." } } }), C2("K\u1EC7", { gamble: { p: 0.85, win: {}, lose: { health: -12, log: "M\u1ED9t ng\u01B0\u1EDDi b\u1ECB \u0111i\u1EC7n gi\u1EADt. B\u1EA1n l\xE0 ng\u01B0\u1EDDi bi\u1EBFt tr\u01B0\u1EDBc." } } })],
+      def: 0
+    }), { once: !0 }),
+    M("m_quit_job", [24, 55], (c) => c.has_job && !c.farmer, (c) => countTrue(c.happy < 40, c.tier !== "autopilot"), (c) => ({
+      title: "\u1EDE hay \u0111i",
+      text: "B\u1EA1n ch\xE1n vi\u1EC7c n\xE0y \u0111\xE3 l\xE2u. C\xF3 m\u1ED9t ch\u1ED7 kh\xE1c, l\u01B0\u01A1ng b\u1EB1ng, nh\u01B0ng l\xE0 th\u1EE9 b\u1EA1n th\xEDch.",
+      choices: [C2("\u0110i", { happy: 5, money: -0.05, agency: 0.02, custom: "job_new" }), C2("\u1EDE l\u1EA1i", { happy: -2 })],
+      def: 1
+    }), { cooldownYears: 10 }),
+    M("m_traffic_cop", [18, 70], (c) => c.gdp < 3e4, any, (c) => ({
+      title: "B\u1ECB th\u1ED5i ph\u1EA1t",
+      text: "C\u1EA3nh s\xE1t giao th\xF4ng th\u1ED5i b\u1EA1n v\xE0o l\u1EC1. L\u1ED7i nh\u1ECF, bi\xEAn b\u1EA3n th\xEC m\u1EA5t c\u1EA3 bu\u1ED5i.",
+      choices: [C2("D\xFAi \xEDt ti\u1EC1n", { money: -5e-3, counters: { honest: -1 } }), C2("L\xE0m bi\xEAn b\u1EA3n", { money: -0.01, happy: -2, counters: { honest: 1 } })],
+      def: 0
+    }), { cooldownYears: 5 }),
+    /* =============================== Người lớn: xóm làng & bạn bè =============================== */
+    M("m_wedding_far", [20, 70], any, (c) => countTrue(c.broke), (c) => ({
+      title: "Thi\u1EC7p c\u01B0\u1EDBi",
+      text: "M\u1ED9t ng\u01B0\u1EDDi b\u1EA1n c\u0169 \u1EDF xa g\u1EEDi thi\u1EC7p c\u01B0\u1EDBi. \u0110i th\xEC m\u1EA5t hai ng\xE0y c\xF4ng v\xE0 ti\u1EC1n xe.",
+      choices: [C2("\u0110i", { money: -0.02, rel: 3 }), C2("G\u1EEDi phong b\xEC", { money: -0.01, rel: 1 }), C2("L\u1EDD \u0111i", { rel: -2 })],
+      def: 1
+    }), { cooldownYears: 4 }),
+    M("m_funeral", [20, 85], (c) => !!role2(c, "neighbor"), any, (c, N) => {
+      let nb = role2(c, "neighbor");
+      return {
+        npc: nb,
+        title: "\u0110\xE1m tang",
+        text: `Nh\xE0 ${N(nb)} c\xF3 tang. C\u1EA3 x\xF3m \u0111\u1EBFn gi\xFAp.`,
+        choices: [C2("\u0110\u1EBFn gi\xFAp m\u1EA5y ng\xE0y", { rel: 3, money: -0.01, memory: { npc: nb, tag: "HELPED_IN_CRISIS", weight: 0.15, note: "gi\xFAp \u0111\xE1m tang" } }), C2("\u0110\u1EBFn th\u1EAFp n\xE9n h\u01B0\u01A1ng", { rel: 1 }), C2("B\u1EADn", { memory: { npc: nb, tag: "REFUSED_HELP", weight: -0.1, note: "kh\xF4ng \u0111\u1EBFn \u0111\xE1m tang" } })],
+        def: 1
+      };
+    }, { cooldownYears: 12 }),
+    M("m_gossip", [18, 80], (c) => !!role2(c, "rival") && !!role2(c, "neighbor"), any, (c, N) => {
+      let r = role2(c, "rival"), nb = role2(c, "neighbor");
+      return {
+        npc: r,
+        title: "Chuy\u1EC7n c\u1EE7a ng\u01B0\u1EDDi ta",
+        text: `${N(nb)} k\u1EC3 m\u1ED9t chuy\u1EC7n kh\xF4ng hay v\u1EC1 ${N(r)} v\xE0 ch\u1EDD b\u1EA1n g\xF3p l\u1EDDi.`,
+        choices: [C2("G\xF3p th\xEAm", { rel: 2, memory: { npc: r, tag: "GOSSIP_HEARD_BAD", weight: -0.15, note: "n\xF3i x\u1EA5u sau l\u01B0ng" }, trust: { npc: nb, delta: 0.05 } }), C2("B\xEAnh v\xE0i c\xE2u", { memory: { npc: r, tag: "STOOD_UP_FOR_ME", weight: 0.12, note: "b\xEAnh khi b\u1ECB n\xF3i x\u1EA5u" } }), C2("\u0110\u1ED5i ch\u1EE7 \u0111\u1EC1", {})],
+        def: 2
+      };
+    }, { cooldownYears: 6 }),
+    M("m_village_meeting", [25, 80], any, (c) => countTrue(c.poor_country, c.tier !== "autopilot"), (c) => ({
+      title: "H\u1ECDp x\xF3m",
+      text: "X\xF3m h\u1ECDp b\xE0n chuy\u1EC7n l\xE0m l\u1EA1i con \u0111\u01B0\u1EDDng. Ai c\u0169ng than, kh\xF4ng ai mu\u1ED1n \u0111\u1EE9ng ra.",
+      choices: [C2("\u0110\u1EE9ng ra lo", { rel: 4, happy: -2, money: -0.02, trait: { coop: 1 }, agency: 0.01 }), C2("G\xF3p ti\u1EC1n, kh\xF4ng g\xF3p s\u1EE9c", { money: -0.02, rel: 1 }), C2("Ng\u1ED3i nghe", {})],
+      def: 2
+    }), { requires_open: ["village_trust"] }),
+    M("m_lend_bike", [18, 70], (c) => !!role2(c, "neighbor"), any, (c, N) => {
+      let nb = role2(c, "neighbor");
+      return {
+        npc: nb,
+        title: "M\u01B0\u1EE3n xe",
+        text: `${N(nb)} h\u1ECFi m\u01B0\u1EE3n xe m\xE1y \u0111i vi\u1EC7c g\u1EA5p.`,
+        choices: [C2("Cho m\u01B0\u1EE3n", { gamble: { p: 0.85, win: { trust: { npc: nb, delta: 0.08 } }, lose: { money: -0.03, log: `${N(nb)} tr\u1EA3 xe, x\u01B0\u1EDBc m\u1ED9t b\xEAn.` } } }), C2("B\u1EA3o xe h\u1ECFng", { trust: { npc: nb, delta: -0.05 }, counters: { honest: -1 } })],
+        def: 0
+      };
+    }),
+    M("m_stranger_crash", [18, 80], any, (c) => countTrue(c.traits.coop > 0), (c) => ({
+      title: "Tai n\u1EA1n b\xEAn \u0111\u01B0\u1EDDng",
+      text: "M\u1ED9t ng\u01B0\u1EDDi l\u1EA1 ng\xE3 xe, n\u1EB1m b\u1EA5t \u0111\u1ED9ng. Xe c\u1ED9 v\u1EABn ch\u1EA1y qua.",
+      choices: [C2("D\u1EEBng l\u1EA1i gi\xFAp", { counters: { kind: 2 }, happy: 2, gamble: { p: 0.9, win: { log: "B\u1EA1n \u0111\u01B0a ng\u01B0\u1EDDi \u1EA5y v\xE0o vi\u1EC7n. Ng\u01B0\u1EDDi nh\xE0 h\u1ECD c\u1EA3m \u01A1n r\u1ED1i r\xEDt." }, lose: { money: -0.05, log: "Ng\u01B0\u1EDDi nh\xE0 h\u1ECD nghi b\u1EA1n g\xE2y tai n\u1EA1n. M\u1EA5t c\u1EA3 bu\u1ED5i gi\u1EA3i th\xEDch." } } }), C2("\u0110i ti\u1EBFp", { happy: -2 })],
+      def: 0
+    }), { cooldownYears: 12 }),
+    M("m_temple", [20, 85], any, (c) => countTrue(c.poor_country, h(c, "faith") > 0), (c) => ({
+      title: "C\xF4ng \u0111\u1EE9c",
+      text: "Ng\xF4i ch\xF9a (\u0111\u1EC1n, nh\xE0 th\u1EDD) trong l\xE0ng k\xEAu g\u1ECDi \u0111\xF3ng g\xF3p s\u1EEDa m\xE1i.",
+      choices: [C2("G\xF3p", { money: -0.02, counters: { faith: 1 }, rel: 2 }), C2("G\xF3p c\xF4ng", { health: -1, counters: { faith: 1 }, rel: 3 }), C2("Th\xF4i", {})],
+      def: 0
+    }), { cooldownYears: 6 }),
+    M("m_friend_pitch", [22, 55], (c) => !!role2(c, "childhood_friend"), (c) => countTrue(op2(c, role2(c, "childhood_friend")) > 0.2), (c, N) => {
+      let f4 = role2(c, "childhood_friend");
+      return {
+        npc: f4,
+        title: `${N(f4)} r\u1EE7 b\xE1n h\xE0ng online`,
+        text: `${N(f4)} mu\u1ED1n b\u1EA1n g\xF3p m\u1ED9t \xEDt v\u1ED1n nh\u1EADp h\xE0ng v\u1EC1 b\xE1n th\u1EED.`,
+        choices: [C2("G\xF3p", { game: { npc: f4, move: "cooperate", stake_frac: 0.08 } }), C2("T\u1EEB ch\u1ED1i", { trust: { npc: f4, delta: -0.03 } })],
+        def: 0
+      };
+    }, { cooldownYears: 10 }),
+    M("m_sibling_small", [20, 65], (c) => !!role2(c, "sibling"), any, (c, N) => {
+      let s = role2(c, "sibling");
+      return {
+        npc: s,
+        title: `${N(s)} c\u1EA7n \xEDt ti\u1EC1n`,
+        text: `${N(s)} g\u1ECDi, gi\u1ECDng ng\u1EADp ng\u1EEBng. C\u1EA7n m\u1ED9t kho\u1EA3n nh\u1ECF cho con \u0111i h\u1ECDc.`,
+        choices: [C2("\u0110\u01B0a", { money: -0.03, memory: { npc: s, tag: "HELPED_IN_CRISIS", weight: 0.15, note: "gi\xFAp ti\u1EC1n h\u1ECDc cho ch\xE1u" } }), C2("B\u1EA3o \u0111ang kh\xF3", { memory: { npc: s, tag: "REFUSED_HELP", weight: -0.1, note: "kh\xF4ng gi\xFAp ti\u1EC1n h\u1ECDc" } })],
+        def: 0
+      };
+    }, { cooldownYears: 6 }),
+    M("m_mentor_ask", [22, 70], (c) => !!role2(c, "mentor"), any, (c, N) => {
+      let m = role2(c, "mentor");
+      return {
+        npc: m,
+        title: `${N(m)} nh\u1EDD vi\u1EC7c`,
+        text: `${N(m)} gi\xE0 r\u1ED3i, nh\u1EDD b\u1EA1n gi\xFAp s\u1EEDa l\u1EA1i c\u0103n nh\xE0 d\u1ED9t.`,
+        choices: [C2("Gi\xFAp", { health: -1, rel: 2, memory: { npc: m, tag: "KEPT_PROMISE", weight: 0.2, note: "gi\xFAp s\u1EEDa nh\xE0" } }), C2("B\u1EADn", { memory: { npc: m, tag: "REFUSED_HELP", weight: -0.1, note: "b\u1EADn kh\xF4ng \u0111\u1EBFn" } })],
+        def: 0
+      };
+    }, { cooldownYears: 10 }),
+    /* =============================== Gia đình riêng =============================== */
+    M("m_spouse_buy", [22, 70], (c) => c.married && !!role2(c, "spouse"), (c) => countTrue(c.broke, c.rat_race), (c, N) => {
+      let s = role2(c, "spouse");
+      return {
+        npc: s,
+        title: `${N(s)} mu\u1ED1n mua`,
+        text: vary("sbuy", c.age, [`${N(s)} mu\u1ED1n \u0111\u1ED5i c\xE1i t\u1EE7 l\u1EA1nh c\u0169.`, `${N(s)} mu\u1ED1n mua chi\u1EBFc xe m\xE1y m\u1EDBi cho \u0111\u1EE1 h\u1ECFng v\u1EB7t.`]),
+        choices: [C2("Mua", { money: -0.06, trust: { npc: s, delta: 0.06 }, happy: 2 }), C2("\u0110\u1EC3 sau", { trust: { npc: s, delta: -0.06 } })],
+        def: 0
+      };
+    }, { cooldownYears: 5 }),
+    M("m_spouse_fight", [22, 75], (c) => c.married && !!role2(c, "spouse"), (c) => countTrue(c.scarcity, c.rat_race, h(c, "drink") >= 3), (c, N) => {
+      let s = role2(c, "spouse");
+      return {
+        npc: s,
+        title: "C\xE3i nhau",
+        text: vary("sfight", c.age, [`${N(s)} tr\xE1ch b\u1EA1n v\u1EC1 mu\u1ED9n m\xE0 kh\xF4ng g\u1ECDi.`, "Hai ng\u01B0\u1EDDi c\xE3i nhau v\xEC chuy\u1EC7n ti\u1EC1n nong.", `${N(s)} n\xF3i b\u1EA1n ch\u1EB3ng bao gi\u1EDD nghe.`]),
+        choices: [C2("Xin l\u1ED7i tr\u01B0\u1EDBc", { trust: { npc: s, delta: 0.08 }, happy: -1 }), C2("C\xE3i cho ra l\u1EBD", { trust: { npc: s, delta: -0.1 }, trait: { bold: 1 } }), C2("B\u1ECF ra ngo\xE0i", { trust: { npc: s, delta: -0.06 }, counters: { drink: 1 } })],
+        def: 0
+      };
+    }, { cooldownYears: 3 }),
+    M("m_anniversary", [24, 80], (c) => c.married && !!role2(c, "spouse"), any, (c, N) => {
+      let s = role2(c, "spouse");
+      return {
+        npc: s,
+        title: "Ng\xE0y c\u01B0\u1EDBi",
+        text: `H\xF4m nay l\xE0 ng\xE0y c\u01B0\u1EDBi. ${N(s)} kh\xF4ng nh\u1EAFc.`,
+        choices: [C2("Nh\u1EDB ra, n\u1EA5u m\u1ED9t b\u1EEFa", { trust: { npc: s, delta: 0.08 }, happy: 2 }), C2("Qu\xEAn", { trust: { npc: s, delta: -0.04 } })],
+        def: 0
+      };
+    }, { cooldownYears: 5 }),
+    M("m_child_toy", [24, 55], (c) => c.kids_alive > 0 && !!role2(c, "child"), (c) => countTrue(c.broke), (c, N) => {
+      let k = role2(c, "child");
+      return {
+        npc: k,
+        title: `${N(k)} xin qu\xE0`,
+        text: `${N(k)} xin m\xF3n \u0111\u1ED3 ch\u01A1i m\xE0 b\u1EA1n b\xE8 \u0111\u1EE9a n\xE0o c\u0169ng c\xF3.`,
+        choices: [C2("Mua", { money: -0.02, trust: { npc: k, delta: 0.06 } }), C2("Gi\u1EA3i th\xEDch nh\xE0 m\xECnh ch\u01B0a c\xF3", { trust: { npc: k, delta: -0.02 }, counters: { save: 1 } })],
+        def: 0
+      };
+    }, { cooldownYears: 4 }),
+    M("m_child_homework", [26, 60], (c) => c.kids_school > 0 && !!role2(c, "child"), (c) => countTrue(c.bandwidth < 40), (c, N) => {
+      let k = role2(c, "child");
+      return {
+        npc: k,
+        title: "B\xE0i t\u1EADp c\u1EE7a con",
+        text: `${N(k)} ng\u1ED3i kh\xF3c v\u1EDBi b\xE0i to\xE1n. B\u1EA1n v\u1EEBa \u0111i l\xE0m v\u1EC1, m\u1EC7t r\xE3.`,
+        choices: [C2("Ng\u1ED3i k\xE8m", { bw: -4, trust: { npc: k, delta: 0.08 } }), C2("B\u1EA3o t\u1EF1 l\xE0m", { trust: { npc: k, delta: -0.04 } })],
+        def: 0
+      };
+    }, { cooldownYears: 3 }),
+    M("m_child_bullied", [28, 60], (c) => c.kids_school > 0 && !!role2(c, "child"), any, (c, N) => {
+      let k = role2(c, "child");
+      return {
+        npc: k,
+        title: `${N(k)} b\u1ECB b\u1EAFt n\u1EA1t`,
+        text: `${N(k)} v\u1EC1 nh\xE0 v\u1EDBi v\u1EBFt b\u1EA7m v\xE0 kh\xF4ng ch\u1ECBu n\xF3i.`,
+        choices: [C2("L\xEAn tr\u01B0\u1EDDng l\xE0m cho ra l\u1EBD", { trust: { npc: k, delta: 0.12 }, happy: -1, memory: { npc: k, tag: "STOOD_UP_FOR_ME", weight: 0.2, note: "l\xEAn tr\u01B0\u1EDDng b\xEAnh con" } }), C2("D\u1EA1y con t\u1EF1 \u0111\xE1nh tr\u1EA3", { trust: { npc: k, delta: 0.04 } }), C2("B\u1EA3o con ch\u1ECBu kh\xF3", { trust: { npc: k, delta: -0.08 } })],
+        def: 0
+      };
+    }, { once: !0 }),
+    M("m_child_path", [38, 65], (c) => c.kids_teen > 0 && !!role2(c, "child"), any, (c, N) => {
+      let k = role2(c, "child");
+      return {
+        npc: k,
+        title: `${N(k)} ch\u1ECDn \u0111\u01B0\u1EDDng`,
+        text: `${N(k)} mu\u1ED1n h\u1ECDc th\u1EE9 b\u1EA1n kh\xF4ng hi\u1EC3u v\xE0 kh\xF4ng ch\u1EAFc ki\u1EBFm ra ti\u1EC1n.`,
+        choices: [C2("\u0110\u1EC3 con ch\u1ECDn", { trust: { npc: k, delta: 0.15 }, agency: 0.01 }), C2("\xC9p theo ngh\u1EC1 ch\u1EAFc \u0103n", { trust: { npc: k, delta: -0.15 }, memory: { npc: k, tag: "HUMILIATED_ME", weight: -0.15, note: "b\u1ECB \xE9p ch\u1ECDn ngh\u1EC1" } })],
+        def: 1
+      };
+    }, { once: !0 }),
+    M("m_inlaw", [22, 60], (c) => c.married, any, (c) => ({
+      title: "Nh\xE0 b\xEAn kia",
+      text: "Nh\xE0 v\u1EE3/ch\u1ED3ng g\xF3p \xFD chuy\u1EC7n b\u1EA1n nu\xF4i con, l\u1EA7n th\u1EE9 ba trong th\xE1ng.",
+      choices: [C2("Nh\u1ECBn", { happy: -2, rel: 2 }), C2("N\xF3i th\u1EB3ng", { rel: -3, agency: 0.01, trait: { bold: 1 } })],
+      def: 0
+    }), { cooldownYears: 6 }),
+    M("m_call_parent", [20, 75], (c) => !!role2(c, "mother") || !!role2(c, "father"), (c) => countTrue(c.migrated, c.parent_old, c.flags.has("left_home")), (c, N) => {
+      let p = role2(c, "mother") ?? role2(c, "father");
+      return {
+        npc: p,
+        title: `Cu\u1ED9c g\u1ECDi c\u1EE7a ${N(p)}`,
+        text: `${N(p)} g\u1ECDi l\xFAc b\u1EA1n \u0111ang b\u1EADn. L\u1EA7n tr\u01B0\u1EDBc b\u1EA1n c\u0169ng kh\xF4ng nghe.`,
+        choices: [C2("Nghe", { trust: { npc: p, delta: 0.06 }, bw: -1 }), C2("L\xE1t g\u1ECDi l\u1EA1i", { trust: { npc: p, delta: -0.04 } })],
+        def: 0
+      };
+    }, { cooldownYears: 3 }),
+    /* =============================== Tuổi già =============================== */
+    M("m_will", [60, 90], (c) => c.kids_alive > 0, any, (c) => ({
+      title: "Di ch\xFAc",
+      text: "B\u1EA1n ngh\u0129 \u0111\u1EBFn chuy\u1EC7n vi\u1EBFt di ch\xFAc. N\xF3i ra th\xEC c\xE1c con s\u1EBD ngh\u0129 ng\u1EE3i.",
+      choices: [C2("Vi\u1EBFt, chia \u0111\u1EC1u", { trait: { fair: 1 }, flags: ["will_even"] }), C2("Vi\u1EBFt, cho \u0111\u1EE9a ch\u0103m m\xECnh nhi\u1EC1u h\u01A1n", { flags: ["will_care"] }), C2("Ch\u01B0a", {})],
+      def: 2
+    }), { once: !0 }),
+    M("m_reconcile", [55, 90], (c) => c.enemies > 0, any, (c, N) => {
+      let id = Object.entries(c.opinion).sort((a, b) => a[1] - b[1])[0][0];
+      return {
+        npc: id,
+        title: `${N(id)} v\u1EABn c\xF2n \u0111\xF3`,
+        text: `\u1EDE tu\u1ED5i n\xE0y, ${N(id)} v\xE0 b\u1EA1n v\u1EABn kh\xF4ng nh\xECn m\u1EB7t nhau. M\u1ED9t ng\u01B0\u1EDDi quen b\u1EA3o ${N(id)} \u1ED1m.`,
+        choices: [C2("\u0110\u1EBFn th\u0103m", { memory: { npc: id, tag: "STOOD_UP_FOR_ME", weight: 0.4, note: "\u0111\u1EBFn th\u0103m l\xFAc \u1ED1m" }, happy: 3, agency: 0.02 }), C2("\u0110\u1EC3 v\u1EADy", { happy: -1 })],
+        def: 1
+      };
+    }, { cooldownYears: 10, causes: (c) => {
+      let id = Object.entries(c.opinion).sort((a, b) => a[1] - b[1])[0]?.[0];
+      return id ? [prov.opinion(id)] : [];
+    } }),
+    M("m_grandchild", [55, 90], (c) => c.kids_alive > 0, any, (c) => ({
+      title: "\u0110\u1EE9a ch\xE1u",
+      text: "\u0110\u1EE9a ch\xE1u n\u1ED9i (ngo\u1EA1i) \u0111\u01B0\u1EE3c g\u1EEDi sang \u1EDF v\u1EDBi b\u1EA1n c\u1EA3 m\xF9a h\xE8.",
+      choices: [C2("D\u1EA1y n\xF3 nh\u1EEFng g\xEC m\xECnh bi\u1EBFt", { happy: 4, know: 1, rel: 2 }), C2("\u0110\u1EC3 n\xF3 xem \u0111i\u1EC7n tho\u1EA1i", { happy: 1 })],
+      def: 0
+    }), { cooldownYears: 5 }),
+    M("m_keep_working", [60, 75], (c) => c.has_job || c.retired, (c) => countTrue(c.broke), (c) => ({
+      title: "Ngh\u1EC9 h\u1EB3n hay l\xE0m ti\u1EBFp",
+      text: "C\xF3 ng\u01B0\u1EDDi nh\u1EDD b\u1EA1n tr\xF4ng coi vi\u1EC7c b\xE1n th\u1EDDi gian.",
+      choices: [C2("Nh\u1EADn", { money: 0.1, health: -2 }), C2("Ngh\u1EC9 ng\u01A1i", { happy: 3 })],
+      def: 0
+    }), { cooldownYears: 5 }),
+    /* =============================== Hệ quả của thói quen (ngưỡng) =============================== */
+    {
+      id: "t_smoker",
+      category: "fuse",
+      urgency: 82,
+      cooldownYears: 99,
+      once: !0,
+      tension: 10,
+      prerequisites: (c) => h(c, "smoke") >= 6 && c.age >= 38,
+      specificity: () => 4,
+      causes: () => [prov.flag("habit_smoke")],
+      build: (c) => ({
+        title: "C\u01A1n ho kh\xF4ng d\u1EE9t",
+        text: `B\xE1c s\u0129 xem phim ph\u1ED5i r\u1EA5t l\xE2u. B\u1EA1n \u0111\xE3 h\xFAt thu\u1ED1c ${c.age - (c.counters.smoke_since ?? 16)} n\u0103m.`,
+        choices: [C2("B\u1ECF thu\u1ED1c ngay", { counters: { smoke: -10 }, health: -4, happy: -4, log: "B\u1EA1n b\u1ECF thu\u1ED1c. Ba th\xE1ng \u0111\u1EA7u nh\u01B0 \u0111\u1ECBa ng\u1EE5c." }), C2("H\xFAt \xEDt \u0111i", { counters: { smoke: -2 }, health: -8, log: "B\u1EA1n h\u1EE9a h\xFAt \xEDt \u0111i." })],
+        def: 0
+      })
+    },
+    {
+      id: "t_drinker",
+      category: "fuse",
+      urgency: 82,
+      cooldownYears: 12,
+      tension: 12,
+      prerequisites: (c) => h(c, "drink") >= 6 && c.age >= 28,
+      causes: () => [prov.flag("habit_drink")],
+      specificity: () => 4,
+      build: (c, N) => {
+        let s = c.cast.spouse;
+        return {
+          ...s ? { npc: s } : {},
+          title: "R\u01B0\u1EE3u",
+          text: `${s ? `${N(s)} \u0111\u1EBFm v\u1ECF chai d\u01B0\u1EDBi g\u1EA7m b\u1EBFp r\u1ED3i nh\xECn b\u1EA1n.` : "B\u1EA1n t\u1EC9nh d\u1EADy \u1EDF m\u1ED9t ch\u1ED7 kh\xF4ng nh\u1EDB \u0111\xE3 \u0111\u1EBFn b\u1EB1ng c\xE1ch n\xE0o."} \u0110\xE3 nhi\u1EC1u n\u0103m b\u1EA1n kh\xF4ng qua n\u1ED5i m\u1ED9t ng\xE0y kh\xF4ng u\u1ED1ng.`,
+          choices: [C2("Cai", { counters: { drink: -8 }, bw: -6, happy: -5, health: 4, log: "B\u1EA1n cai r\u01B0\u1EE3u. C\xF3 nh\u1EEFng \u0111\xEAm ph\u1EA3i n\u1EAFm ch\u1EB7t tay." }, "\u0110au, nh\u01B0ng l\xE0m \u0111\u01B0\u1EE3c"), C2("U\u1ED1ng \xEDt l\u1EA1i", { counters: { drink: -2 }, ...s ? { trust: { npc: s, delta: -0.1 } } : {}, log: "B\u1EA1n h\u1EE9a s\u1EBD u\u1ED1ng \xEDt l\u1EA1i." }), C2("Ai c\u0169ng u\u1ED1ng m\xE0", { health: -6, ...s ? { trust: { npc: s, delta: -0.2 } } : {}, rel: -5, log: "B\u1EA1n g\u1EA1t \u0111i." })],
+          def: 1
+        };
+      }
+    },
+    {
+      id: "t_gambler",
+      category: "fuse",
+      urgency: 85,
+      cooldownYears: 99,
+      once: !0,
+      tension: 14,
+      prerequisites: (c) => h(c, "gamble") >= 5,
+      causes: () => [prov.flag("habit_gamble")],
+      specificity: () => 4,
+      build: () => ({
+        title: "M\xF3n n\u1EE3 \u0111\u1ECF \u0111en",
+        text: "Nh\u1EEFng v\xE1n b\xE0i nh\u1ECF c\u1ED9ng l\u1EA1i th\xE0nh m\u1ED9t con s\u1ED1 b\u1EA1n kh\xF4ng d\xE1m n\xF3i v\u1EDBi ai.",
+        choices: [C2("Th\xFA nh\u1EADn v\u1EDBi gia \u0111\xECnh", { custom: "borrow:0.4", rel: -6, happy: -6, counters: { gamble: -6 }, log: "B\u1EA1n k\u1EC3 h\u1EBFt. C\u1EA3 nh\xE0 im l\u1EB7ng, r\u1ED3i c\xF9ng g\xE1nh." }), C2("G\u1EE1 th\xEAm m\u1ED9t v\xE1n", { gamble: { p: 0.3, win: { money: 0.3, counters: { gamble: 1 }, log: "B\u1EA1n g\u1EE1 \u0111\u01B0\u1EE3c. L\u1EA7n n\xE0y." }, lose: { custom: "borrow:0.8", happy: -10, counters: { gamble: 1 }, log: "B\u1EA1n thua ti\u1EBFp. N\u1EE3 g\u1EA5p \u0111\xF4i." } } })],
+        def: 0
+      })
+    },
+    {
+      id: "t_fit",
+      category: "fuse",
+      urgency: 60,
+      cooldownYears: 99,
+      once: !0,
+      tension: -4,
+      prerequisites: (c) => h(c, "exercise") >= 6 && c.age >= 45,
+      specificity: () => 3,
+      causes: () => [prov.flag("habit_exercise")],
+      build: (c) => ({
+        title: "C\xE1i ch\xE2n c\xF2n kh\u1ECFe",
+        text: "B\u1EA1n b\xE8 c\xF9ng tu\u1ED5i b\u1EAFt \u0111\u1EA7u \u0111au l\u01B0ng, m\u1ECFi g\u1ED1i. B\u1EA1n v\u1EABn ch\u1EA1y \u0111\u01B0\u1EE3c n\u0103m c\xE2y s\u1ED1.",
+        choices: [C2("Ti\u1EBFp t\u1EE5c", { health: 6, happy: 4, log: "Nh\u1EEFng bu\u1ED5i s\xE1ng n\u0103m gi\u1EDD \u1EA5y gi\u1EDD tr\u1EA3 l\u1EA1i cho b\u1EA1n." })],
+        def: 0
+      })
+    },
+    {
+      id: "t_reader",
+      category: "fuse",
+      urgency: 60,
+      cooldownYears: 99,
+      once: !0,
+      tension: -2,
+      prerequisites: (c) => h(c, "read") >= 6 && c.age >= 25 && c.has_job,
+      causes: () => [prov.flag("habit_read")],
+      specificity: () => 3,
+      build: () => ({
+        title: "Ng\u01B0\u1EDDi hay \u0111\u1ECDc",
+        text: 'M\u1ED9t ng\u01B0\u1EDDi b\u1EA1n quen \u1EDF l\u1EDBp h\u1ECDc bu\u1ED5i t\u1ED1i gi\u1EDBi thi\u1EC7u b\u1EA1n v\xE0o m\u1ED9t ch\u1ED7 l\xE0m t\u1ED1t h\u01A1n. "T\xF4i nh\u1EDB anh l\xE0 ng\u01B0\u1EDDi ch\u1ECBu \u0111\u1ECDc."',
+        choices: [C2("Nh\u1EADn", { income_mult: 1.15, agency: 0.03, log: "Nh\u1EEFng cu\u1ED1n s\xE1ch c\u0169 cu\u1ED1i c\xF9ng c\u0169ng tr\u1EA3 ti\u1EC1n." }), C2("\u1EDE l\u1EA1i ch\u1ED7 c\u0169", {})],
+        def: 0
+      })
+    },
+    {
+      id: "t_saver",
+      category: "fuse",
+      urgency: 55,
+      cooldownYears: 99,
+      once: !0,
+      tension: -4,
+      prerequisites: (c) => h(c, "save") >= 6 && c.age >= 35,
+      causes: () => [prov.flag("habit_save")],
+      specificity: () => 3,
+      build: () => ({
+        title: "Kho\u1EA3n \u0111\u1EC3 d\xE0nh",
+        text: "Nh\u1EEFng \u0111\u1ED3ng l\u1EBB \u0111\u1EC3 d\xE0nh nhi\u1EC1u n\u0103m gi\u1EDD th\xE0nh m\u1ED9t kho\u1EA3n \u0111\u1EE7 \u0111\u1EC3 kh\xF4ng ph\u1EA3i vay khi c\xF3 chuy\u1EC7n.",
+        choices: [C2("Gi\u1EEF l\xE0m qu\u1EF9 ph\xF2ng th\xE2n", { money: 0.2, bw: 6, log: "B\u1EA1n ng\u1EE7 ngon h\u01A1n h\u1EB3n." }), C2("M\u1EDF m\u1ED9t c\u1EEDa h\xE0ng nh\u1ECF", { money: -0.1, income_mult: 1.12, agency: 0.03, log: "B\u1EA1n m\u1EDF m\u1ED9t c\u1EEDa h\xE0ng nh\u1ECF c\u1EE7a ri\xEAng m\xECnh." })],
+        def: 0
+      })
+    },
+    {
+      id: "t_honest",
+      category: "fuse",
+      urgency: 50,
+      cooldownYears: 99,
+      once: !0,
+      tension: -4,
+      prerequisites: (c) => h(c, "honest") >= 5 && c.age >= 30,
+      causes: () => [prov.flag("habit_honest")],
+      specificity: () => 3,
+      build: () => ({
+        title: "Ti\u1EBFng th\u1EADt th\xE0",
+        text: "\u1EDE ch\u1EE3 ng\u01B0\u1EDDi ta b\u1EA3o nhau: h\xE0ng c\u1EE7a ng\u01B0\u1EDDi n\xE0y kh\xF4ng c\u1EA7n ki\u1EC3m. B\u1EA1n kh\xF4ng nh\u1EDB m\xECnh \u0111\xE3 b\u1EAFt \u0111\u1EA7u \u0111\u01B0\u1EE3c tin nh\u01B0 th\u1EBF t\u1EEB bao gi\u1EDD.",
+        choices: [C2("Nh\u1EADn", { rel: 6, income_mult: 1.06, log: "Danh ti\u1EBFng th\u1EADt th\xE0 mang l\u1EA1i kh\xE1ch quen." })],
+        def: 0
+      })
+    },
+    {
+      id: "t_liar",
+      category: "fuse",
+      urgency: 70,
+      cooldownYears: 99,
+      once: !0,
+      tension: 8,
+      prerequisites: (c) => h(c, "honest") <= -5 && c.age >= 25,
+      causes: () => [prov.flag("habit_liar")],
+      specificity: () => 3,
+      build: () => ({
+        title: "Kh\xF4ng ai tin",
+        text: "L\u1EA7n n\xE0y b\u1EA1n n\xF3i th\u1EADt, nh\u01B0ng ch\u1EB3ng ai tin. Nh\u1EEFng l\u1EDDi n\xF3i d\u1ED1i nh\u1ECF nhi\u1EC1u n\u0103m c\u1ED9ng l\u1EA1i th\xE0nh m\u1ED9t c\xE1i ti\u1EBFng.",
+        choices: [C2("Ch\u1ECBu", { rel: -6, money: -0.1, log: "B\u1EA1n m\u1EA5t m\u1ED9t m\u1ED1i l\xE0m \u0103n ch\u1EC9 v\xEC kh\xF4ng ai tin l\u1EDDi b\u1EA1n." })],
+        def: 0
+      })
+    },
+    {
+      id: "t_kind",
+      category: "fuse",
+      urgency: 60,
+      cooldownYears: 99,
+      once: !0,
+      tension: -6,
+      prerequisites: (c) => h(c, "kind") >= 6 && (c.scarcity || c.rat_race),
+      causes: () => [prov.flag("habit_kind")],
+      specificity: () => 3,
+      build: () => ({
+        title: "Nh\u1EEFng ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\xFAp",
+        text: "Nghe tin b\u1EA1n kh\xF3 kh\u0103n, nh\u1EEFng ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\xFAp l\xFAc nh\u1ECF nh\u1EB7t m\u1ED7i ng\u01B0\u1EDDi g\xF3p m\u1ED9t \xEDt.",
+        choices: [C2("Nh\u1EADn", { money: 0.3, happy: 6, bw: 6, log: "Nh\u1EEFng b\xE1t c\u01A1m, nh\u1EEFng l\u1EA7n d\u1EEBng xe n\u0103m x\u01B0a quay v\u1EC1." })],
+        def: 0
+      })
+    }
+  ];
+
+  // src/engine/narrative/branches.ts
+  var C3 = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), f = (c, x) => c.flags.has(x), role3 = (c, r) => c.cast[r];
+  function B(id, gate, ages, build, extra = {}) {
+    let g = typeof gate == "string" ? (c) => f(c, gate) : gate;
+    return { id, category: "micro", urgency: 18, cooldownYears: 99, once: !0, tension: 2, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, build, ...extra };
+  }
+  function A(id, need, build, extra = {}) {
+    return { id, category: "arc", urgency: 84, cooldownYears: 99, once: !0, tension: 8, prerequisites: (c) => f(c, need), specificity: () => 6, causes: () => [prov.flag(need)], build, ...extra };
+  }
+  var T = (title, text, choices, def = 0, more = {}) => ({ title, text, choices, def, ...more });
+  var temperFlags = ["temper_curious", "temper_bold", "temper_kind", "temper_tough"], BRANCHES = [
+    /* ===================================== TÍNH KHÍ (3 & 5 tuổi) ===================================== */
+    {
+      id: "temper_3",
+      category: "childhood",
+      urgency: 100,
+      cooldownYears: 99,
+      once: !0,
+      tension: 0,
+      prerequisites: (c) => c.age === 3,
+      specificity: () => 9,
+      build: (c) => T("C\u01A1n m\u01B0a r\xE0o", "M\u01B0a r\xE0o \u0111\u1ED5 xu\u1ED1ng, s\xE2n nh\xE0 ng\u1EADp \u0111\u1EBFn m\u1EAFt c\xE1. Ng\u01B0\u1EDDi l\u1EDBn ch\u1EA1y \u0111i c\u1EA5t \u0111\u1ED3. B\u1EA1n ba tu\u1ED5i, \u0111\u1EE9ng \u1EDF b\u1EADc c\u1EEDa.", [
+        C3("Ng\u1ED3i xem \u0111\xE0n ki\u1EBFn b\xF2 l\xEAn t\u01B0\u1EDDng tr\xE1nh n\u01B0\u1EDBc", { flags: ["temper_curious"], know: 2 }, "T\xF2 m\xF2"),
+        C3("L\u1ED9i \xF9a ra gi\u1EEFa s\xE2n", { flags: ["temper_bold"], health: 1 }, "Gan l\xEC"),
+        C3("K\xE9o con ch\xF3 con v\xE0o hi\xEAn cho kh\u1ECFi \u01B0\u1EDBt", { flags: ["temper_kind"], rel: 2 }, "Th\u01B0\u01A1ng ng\u01B0\u1EDDi"),
+        C3("Tr\u01B0\u1EE3t ng\xE3, t\u1EF1 \u0111\u1EE9ng d\u1EADy, kh\xF4ng kh\xF3c", { flags: ["temper_tough"], health: 2 }, "B\u1EC1n b\u1EC9")
+      ], Math.floor((c.family_wealth * 9973 + c.gdp * 0.37) % 1 * 4))
+    },
+    {
+      id: "temper_5",
+      category: "childhood",
+      urgency: 100,
+      cooldownYears: 99,
+      once: !0,
+      tension: 0,
+      prerequisites: (c) => c.age === 5,
+      specificity: () => 9,
+      build: (c) => {
+        let was = temperFlags.find((t) => f(c, t)), keep = (t) => ({ flags: was === t ? ["temper2_" + t.slice(7), "temper_deep"] : ["temper2_" + t.slice(7)] });
+        return T("Ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc", "Bu\u1ED5i \u0111\u1EA7u ti\xEAn \u1EDF l\u1EDBp m\u1EABu gi\xE1o. C\xF4 gi\xE1o b\u1EADn d\u1ED7 m\u1ED9t \u0111\u1EE9a, c\u1EA3 l\u1EDBp nh\u1ED1n nh\xE1o.", [
+          C3("H\u1ECFi c\xF4 c\u1EA3 tr\u0103m c\xE2u v\u1EC1 c\xE1i qu\u1EA3 \u0111\u1ECBa c\u1EA7u", { ...keep("temper_curious"), know: 2 }),
+          C3("R\u1EE7 c\u1EA3 b\u1ECDn ch\u01A1i tr\xF2 m\xECnh b\xE0y ra", { ...keep("temper_bold"), rel: 1 }),
+          C3("Ng\u1ED3i c\u1EA1nh \u0111\u1EE9a \u0111ang kh\xF3c", { ...keep("temper_kind"), rel: 2 }),
+          C3("Nh\u1EDB m\u1EB9, nh\u01B0ng kh\xF4ng kh\xF3c", { ...keep("temper_tough"), happy: -1 })
+        ], Math.max(0, temperFlags.indexOf(was ?? "temper_curious")));
+      }
+    },
+    /* ---- Tò mò ---- */
+    B("cu_radio", "temper_curious", [8, 12], () => T("C\xE1i radio h\u1ECFng", "C\xE1i radio c\u0169 c\u1EE7a \xF4ng n\u1EB1m trong g\xF3c nh\xE0, kh\xF4ng ai d\xF9ng n\u1EEFa.", [
+      C3("Th\xE1o ra xem b\xEAn trong", { know: 3, flags: ["tinker"], gamble: { p: 0.4, win: { happy: 4, log: "B\u1EA1n l\u1EAFp l\u1EA1i \u0111\u01B0\u1EE3c, radio k\xEAu r\xE8 r\xE8. C\u1EA3 nh\xE0 ng\u1EA1c nhi\xEAn." }, lose: { happy: -1, log: "B\u1EA1n kh\xF4ng l\u1EAFp l\u1EA1i \u0111\u01B0\u1EE3c. \xD4ng l\u1EAFc \u0111\u1EA7u, nh\u01B0ng kh\xF4ng m\u1EAFng." } } }),
+      C3("\u0110\u1EC3 y\xEAn, \xF4ng s\u1EBD gi\u1EADn", {})
+    ])),
+    B("cu_fair", (c) => (f(c, "temper_curious") || f(c, "temper2_curious") || f(c, "tinker")) && c.in_school, [12, 16], () => T("Cu\u1ED9c thi khoa h\u1ECDc", "Tr\u01B0\u1EDDng g\u1EEDi th\xF4ng b\xE1o cu\u1ED9c thi khoa h\u1ECDc c\u1EA5p huy\u1EC7n. Ph\u1EA3i t\u1EF1 b\u1ECF ti\u1EC1n l\xE0m m\xF4 h\xECnh.", [
+      C3("\u0110\u0103ng k\xFD", { money: -0.02, know: 4, gamble: { p: 0.45, win: { flags: ["science_prize"], happy: 6, log: "M\xF4 h\xECnh c\u1EE7a b\u1EA1n \u0111o\u1EA1t gi\u1EA3i. T\xEAn b\u1EA1n l\xEAn b\u1EA3ng tin huy\u1EC7n." }, lose: { happy: -2, log: "Kh\xF4ng \u0111o\u1EA1t gi\u1EA3i, nh\u01B0ng th\u1EA7y gi\u1EEF l\u1EA1i m\xF4 h\xECnh c\u1EE7a b\u1EA1n." } } }),
+      C3("Th\xF4i, t\u1ED1n ti\u1EC1n", {})
+    ])),
+    B("cu_scholar", "science_prize", [15, 18], (c, N) => {
+      let m = role3(c, "mother") ?? role3(c, "father");
+      return T("H\u1ECDc b\u1ED5ng tr\u01B0\u1EDDng chuy\xEAn", `Tr\u01B0\u1EDDng chuy\xEAn \u1EDF th\xE0nh ph\u1ED1 c\u1EA5p h\u1ECDc b\u1ED5ng cho b\u1EA1n. Ph\u1EA3i \u0111i xa nh\xE0 ba n\u0103m.${m ? ` ${N(m)} kh\xF4ng n\xF3i g\xEC, ch\u1EC9 h\u1ECFi ai s\u1EBD ph\u1EE5 vi\u1EC7c nh\xE0.` : ""}`, [
+        C3("\u0110i", { flags: ["scholarship", "left_home"], know: 8, rel: -4, custom: "scholar", agency: 0.03 }, "\u0110\u01B0\u1EDDng h\u1ECDc m\u1EDF r\u1ED9ng, nh\xE0 v\u1EAFng m\u1ED9t ng\u01B0\u1EDDi"),
+        C3("\u1EDE l\u1EA1i ph\u1EE5 gia \u0111\xECnh", { rel: 4, ...m ? { trust: { npc: m, delta: 0.15 } } : {}, flags: ["declined_scholarship"] })
+      ]);
+    }),
+    B("cu_question", (c) => f(c, "temper_curious") && c.has_job, [30, 60], () => T("M\u1ED9t c\xE2u h\u1ECFi ch\u01B0a ai tr\u1EA3 l\u1EDDi", "C\xF3 m\u1ED9t c\xE1ch l\xE0m vi\u1EC7c t\u1ED1t h\u01A1n m\xE0 b\u1EA1n ngh\u0129 ra t\u1EEB l\xE2u. Th\u1EED th\xEC t\u1ED1n ti\u1EC1n v\xE0 th\u1EDDi gian.", [
+      C3("L\xE0m th\u1EED ngo\xE0i gi\u1EDD", { money: -0.15, health: -2, later: { years: 3, storylet: "cu_invent" }, flags: ["invention"] }),
+      C3("\u0110\u1EC3 \u0111\xF3", { happy: -1 })
+    ])),
+    A("cu_invent", "invention", () => T("Sau ba n\u0103m m\xE0y m\xF2", "Th\u1EE9 b\u1EA1n l\xE0m ngo\xE0i gi\u1EDD cu\u1ED1i c\xF9ng c\u0169ng ch\u1EA1y \u0111\u01B0\u1EE3c.", [
+      C3("B\xE1n \xFD t\u01B0\u1EDFng cho c\xF4ng ty l\u1EDBn", { money: 0.8, unflags: ["invention"], log: "H\u1ECD mua v\u1EDBi gi\xE1 m\u1ED9t n\u0103m l\u01B0\u01A1ng." }),
+      C3("T\u1EF1 s\u1EA3n xu\u1EA5t", { unflags: ["invention"], gamble: { p: 0.35, win: { income_mult: 1.6, flags: ["own_business"], log: "X\u01B0\u1EDFng nh\u1ECF c\u1EE7a b\u1EA1n c\xF3 \u0111\u01A1n h\xE0ng \u0111\u1EC1u." }, lose: { money: -0.5, log: "Kh\xF4ng ai mua. B\u1EA1n b\xE1n l\u1EA1i m\xE1y m\xF3c." } } }, "R\u1EE7i h\u01A1n, c\xF3 th\u1EC3 \u0111\u1ED5i \u0111\u1EDDi")
+    ])),
+    /* ---- Gan lì ---- */
+    B("bo_gang", "temper_bold", [8, 12], () => T("Th\u1EE7 l\u0129nh x\xF3m", "\u0110\xE1m tr\u1EBB trong x\xF3m nghe b\u1EA1n. H\xF4m nay c\u1EA3 b\u1ECDn ch\u1EDD b\u1EA1n b\xE0y tr\xF2.", [
+      C3("D\u1EABn c\u1EA3 b\u1ECDn \u0111i h\xE1i tr\u1ED9m \u1ED5i nh\xE0 \xF4ng T\u01B0", { happy: 3, rel: 2, trait: { bold: 1 }, gamble: { p: 0.6, win: {}, lose: { rel: -3, log: "\xD4ng T\u01B0 b\u1EAFt \u0111\u01B0\u1EE3c, d\u1EAFt c\u1EA3 b\u1ECDn v\u1EC1 t\u1EEBng nh\xE0." } } }),
+      C3("L\u1EADp \u0111\u1ED9i b\xF3ng, \u0111\xE1 v\u1EDBi x\xF3m b\xEAn", { happy: 3, counters: { exercise: 1 }, flags: ["leader"] })
+    ])),
+    B("bo_fight", "temper_bold", [14, 18], (c, N) => {
+      let b = role3(c, "bully");
+      return T("\u0110\xE1m l\xE0ng b\xEAn", `\u0110\xE1m thanh ni\xEAn l\xE0ng b\xEAn ch\u1EB7n \u0111\u01B0\u1EDDng b\u1EA1n b\xE8 b\u1EA1n${b ? `, ${N(b)} \u0111i c\xF9ng b\u1ECDn ch\xFAng` : ""}.`, [
+        C3("X\xF4ng v\xE0o", { health: -5, trait: { bold: 2 }, flags: ["brawler"], ...b ? { memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.2, note: "tr\u1EADn \u0111\xE1nh \u1EDF b\u1EDD \u0111\xEA" } } : {} }),
+        C3("\u0110\u1EE9ng ra n\xF3i chuy\u1EC7n", { trait: { fair: 1 }, gamble: { p: 0.5, win: { rel: 4, flags: ["leader"], log: "Hai b\xEAn gi\u1EA3i t\xE1n. Ng\u01B0\u1EDDi l\u1EDBn b\u1EAFt \u0111\u1EA7u \u0111\u1EC3 \xFD b\u1EA1n." }, lose: { health: -3, log: "N\xF3i kh\xF4ng xong, v\u1EABn \u0103n \u0111\xF2n." } } })
+      ]);
+    }),
+    B("bo_own", (c) => (f(c, "temper_bold") || f(c, "temper2_bold")) && c.has_job && !f(c, "own_business"), [22, 40], () => T("T\u1EF1 l\xE0m ch\u1EE7", "B\u1EA1n ch\xE1n l\xE0m c\xF4ng. M\u1ED9t qu\u1EA7y h\xE0ng nh\u1ECF \u1EDF ch\u1EE3 \u0111ang sang nh\u01B0\u1EE3ng.", [
+      C3("Vay ti\u1EC1n, ra l\xE0m ri\xEAng", { custom: "borrow:0.6|job_switch:market", flags: ["own_business"], agency: 0.03 }, "N\u1EE3 ngay, c\xF3 th\u1EC3 gi\xE0u"),
+      C3("\u1EDE l\u1EA1i l\xE0m c\xF4ng", { happy: -1 })
+    ])),
+    B("bo_second", "own_business", [26, 55], () => T("C\u1EEDa h\xE0ng th\u1EE9 hai", "Vi\u1EC7c bu\xF4n b\xE1n \u0111ang l\xEAn. Ng\xE2n h\xE0ng s\u1EB5n s\xE0ng cho vay m\u1EDF th\xEAm m\u1ED9t \u0111i\u1EC3m.", [
+      C3("M\u1EDF r\u1ED9ng", { custom: "borrow:1", income_mult: 1.35, flags: ["expanded"], later: { years: 3, storylet: "bo_pricewar" } }, "G\u1EA5p \u0111\xF4i r\u1EE7i ro"),
+      C3("Gi\u1EEF m\u1ED9t c\u1EEDa h\xE0ng cho ch\u1EAFc", { bw: 4 })
+    ])),
+    A("bo_pricewar", "expanded", (c, N) => {
+      let r = role3(c, "rival");
+      return T("\u0110\u1ED1i th\u1EE7 h\u1EA1 gi\xE1", `${r ? N(r) : "M\u1ED9t \u0111\u1ED1i th\u1EE7"} m\u1EDF c\u1EEDa h\xE0ng ngay \u0111\u1ED1i di\u1EC7n v\xE0 b\xE1n d\u01B0\u1EDBi gi\xE1 v\u1ED1n.`, [
+        C3("H\u1EA1 gi\xE1 theo", { unflags: ["expanded"], gamble: { p: 0.45, win: { income_mult: 1.1, log: "\u0110\u1ED1i th\u1EE7 \u0111\xF3ng c\u1EEDa tr\u01B0\u1EDBc." }, lose: { custom: "borrow:0.6", income_mult: 0.8, log: "C\u1EA3 hai c\xF9ng l\u1ED7. B\u1EA1n tr\u1EE5 \u0111\u01B0\u1EE3c, nh\u01B0ng ng\u1EADp n\u1EE3." } } }),
+        C3("Gi\u1EEF gi\xE1, ch\u0103m kh\xE1ch quen", { unflags: ["expanded"], income_mult: 0.9, rel: 3 }),
+        C3("G\u1EB7p \u0111\u1ED1i th\u1EE7, chia khu v\u1EF1c", { unflags: ["expanded"], gamble: { p: 0.6, win: { income_mult: 1.05, log: "Hai b\xEAn b\u1EAFt tay. M\u1ED7i ng\u01B0\u1EDDi gi\u1EEF m\u1ED9t \u0111\u1EA7u ph\u1ED1." }, lose: { log: "H\u1ECD kh\xF4ng g\u1EB7p." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba: bi\u1EBFn tr\xF2 ch\u01A1i g\xE0 th\xE0nh th\u1ECFa thu\u1EADn", { tier: "sovereign" })
+      ], 1, r ? { npc: r } : {});
+    }),
+    /* ---- Thương người ---- */
+    B("ki_dog", "temper_kind", [7, 12], () => T("Con ch\xF3 b\u1ECB th\u01B0\u01A1ng", "M\u1ED9t con ch\xF3 hoang n\u1EB1m b\xEAn \u0111\u01B0\u1EDDng, g\xE3y ch\xE2n.", [
+      C3("B\u1EBF v\u1EC1 ch\u0103m", { happy: 2, rel: 1, counters: { kind: 1 }, flags: ["animal_friend"] }),
+      C3("\u0110i qua", { happy: -2 })
+    ])),
+    B("ki_oldlady", (c) => f(c, "temper_kind") && !!role3(c, "neighbor"), [12, 17], (c, N) => {
+      let nb = role3(c, "neighbor");
+      return T(`${N(nb)} \u1EDF m\u1ED9t m\xECnh`, `${N(nb)} gi\xE0 \u0111i nhanh. Con c\xE1i \u0111i l\xE0m xa c\u1EA3.`, [
+        C3("Chi\u1EC1u n\xE0o c\u0169ng gh\xE9 qua", { counters: { kind: 2 }, memory: { npc: nb, tag: "HELPED_IN_CRISIS", weight: 0.35, note: "nh\u1EEFng bu\u1ED5i chi\u1EC1u gh\xE9 qua" }, flags: ["carer"] }),
+        C3("Th\u1EC9nh tho\u1EA3ng", { counters: { kind: 1 } })
+      ], 0, { npc: nb });
+    }),
+    B("ki_clinic", (c) => f(c, "temper_kind") || f(c, "temper2_kind") || f(c, "carer"), [18, 30], () => T("Tr\u1EA1m x\xE1 thi\u1EBFu ng\u01B0\u1EDDi", "Tr\u1EA1m x\xE1 x\xE3 c\u1EA7n ng\u01B0\u1EDDi t\xECnh nguy\u1EC7n cu\u1ED1i tu\u1EA7n.", [
+      C3("\u0110i", { counters: { kind: 2 }, health: -1, know: 2, flags: ["clinic_vol"] }),
+      C3("B\u1EADn vi\u1EC7c nh\xE0", {})
+    ])),
+    B("ki_child", (c) => (f(c, "temper_kind") || f(c, "carer")) && c.has_job, [30, 60], () => T("\u0110\u1EE9a tr\u1EBB kh\xF4ng nh\xE0", "C\xF3 m\u1ED9t \u0111\u1EE9a tr\u1EBB m\u1ED3 c\xF4i ng\u1EE7 \u1EDF m\xE1i hi\xEAn ch\u1EE3. Ng\u01B0\u1EDDi ta \u0111i qua, kh\xF4ng ai d\u1EEBng.", [
+      C3("\u0110\u1EE1 \u0111\u1EA7u cho n\xF3 \u0111i h\u1ECDc", { money: -0.1, counters: { kind: 2 }, flags: ["sponsor"], later: { years: 15, storylet: "ki_return" } }, "T\u1ED1n ti\u1EC1n m\u01B0\u1EDDi n\u0103m"),
+      C3("Cho \xEDt ti\u1EC1n", { money: -0.01 }),
+      C3("\u0110i qua", { happy: -2 })
+    ])),
+    A("ki_return", "sponsor", () => T("\u0110\u1EE9a tr\u1EBB n\u0103m x\u01B0a", "M\u1ED9t ng\u01B0\u1EDDi l\u1EA1 g\xF5 c\u1EEDa, tay c\u1EA7m gi\u1ECF qu\xE0. B\u1EA1n m\u1EA5t m\u1ED9t l\xFAc m\u1EDBi nh\u1EADn ra: \u0111\u1EE9a b\xE9 ng\u1EE7 \u1EDF m\xE1i hi\xEAn ch\u1EE3 n\u0103m n\xE0o.", [
+      C3("M\u1EDDi v\xE0o nh\xE0", { happy: 10, rel: 6, unflags: ["sponsor"], log: "N\xF3 gi\u1EDD l\xE0 y t\xE1. N\xF3 n\xF3i b\u1EA1n l\xE0 l\xFD do n\xF3 c\xF2n s\u1ED1ng." })
+    ], 0), { tension: -8 }),
+    /* ---- Bền bỉ ---- */
+    B("to_water", "temper_tough", [8, 12], () => T("G\xE1nh n\u01B0\u1EDBc", "Gi\u1EBFng nh\xE0 c\u1EA1n. M\u1EB9 ph\u1EA3i g\xE1nh n\u01B0\u1EDBc t\u1EEB \u0111\u1EA7u l\xE0ng.", [
+      C3("G\xE1nh thay m\u1EB9", { health: 2, counters: { exercise: 1 }, rel: 2 }),
+      C3("\u0110\u1EC3 m\u1EB9 g\xE1nh", {})
+    ])),
+    B("to_team", (c) => f(c, "temper_tough") || f(c, "temper2_tough") || f(c, "leader"), [13, 17], () => T("\u0110\u1ED9i tuy\u1EC3n", "Th\u1EA7y th\u1EC3 d\u1EE5c ch\u1ECDn ng\u01B0\u1EDDi v\xE0o \u0111\u1ED9i \u0111i\u1EC1n kinh c\u1EE7a tr\u01B0\u1EDDng.", [
+      C3("T\u1EADp m\u1ED7i s\xE1ng", { counters: { exercise: 3 }, know: -1, gamble: { p: 0.35, win: { flags: ["athlete"], log: "B\u1EA1n \u0111\u01B0\u1EE3c g\u1ECDi l\xEAn \u0111\u1ED9i tuy\u1EC3n t\u1EC9nh." }, lose: { log: "B\u1EA1n kh\xF4ng \u0111\u01B0\u1EE3c ch\u1ECDn, nh\u01B0ng ch\xE2n kh\u1ECFe h\u1EB3n." } } }),
+      C3("Lo h\u1ECDc", { know: 2 })
+    ])),
+    B("to_pro", "athlete", [16, 22], () => T("\u0110\u1ED9i t\u1EC9nh", "\u0110\u1ED9i t\u1EC9nh mu\u1ED1n gi\u1EEF b\u1EA1n l\u1EA1i t\u1EADp trung. L\u01B0\u01A1ng \xEDt, t\u01B0\u01A1ng lai kh\xF4ng ch\u1EAFc.", [
+      C3("Theo nghi\u1EC7p th\u1EC3 thao", { flags: ["pro_athlete"], counters: { exercise: 3 }, income_mult: 0.8, later: { years: 10, storylet: "to_retire" } }),
+      C3("V\u1EC1 \u0111i l\xE0m", {})
+    ])),
+    A("to_retire", "pro_athlete", () => T("Gi\u1EA3i ngh\u1EC7", "\u0110\u1EA7u g\u1ED1i kh\xF4ng c\xF2n nh\u01B0 x\u01B0a. Ba m\u01B0\u01A1i tu\u1ED5i, b\u1EA1n r\u1EDDi \u0111\u1ED9i.", [
+      C3("L\xE0m hu\u1EA5n luy\u1EC7n vi\xEAn", { income_mult: 1.1, unflags: ["pro_athlete"], happy: 2 }),
+      C3("M\u1EDF ph\xF2ng t\u1EADp", { custom: "borrow:0.4", flags: ["own_business"], unflags: ["pro_athlete"] })
+    ])),
+    B("to_grit", (c) => f(c, "temper_tough") && c.has_job, [25, 55], () => T("G\u1ED3ng", "L\u01B0ng b\u1EA1n \u0111au \u0111\xE3 ba th\xE1ng. Ngh\u1EC9 th\xEC m\u1EA5t vi\u1EC7c, l\xE0m ti\u1EBFp th\xEC kh\xF4ng bi\u1EBFt \u0111\u1EBFn bao gi\u1EDD.", [
+      C3("C\u1EAFn r\u0103ng l\xE0m ti\u1EBFp", { health: -8, money: 0.05 }),
+      C3("Ngh\u1EC9 ch\u1EEFa", { money: -0.1, health: 6 })
+    ], 0), { cooldownYears: 15, once: !1 }),
+    /* ===================================== XUẤT THÂN ===================================== */
+    B("or_hunger", "origin_poor_rural", [6, 12], (c, N) => {
+      let m = role3(c, "mother");
+      return T("M\xF9a gi\xE1p h\u1EA1t", `G\u1EA1o trong chum s\u1EAFp h\u1EBFt.${m ? ` ${N(m)} b\u1EDBt ph\u1EA7n c\u01A1m c\u1EE7a m\xECnh.` : ""}`, [
+        C3("\u0110i m\xF2 cua b\u1EAFt \u1ED1c \u0103n th\xEAm", { health: 1, happy: 1, counters: { exercise: 1 } }),
+        C3("Nh\u01B0\u1EDDng ph\u1EA7n cho em", { health: -2, counters: { kind: 1 } })
+      ]);
+    }),
+    B("or_buffalo", "origin_poor_rural", [8, 13], () => T("Con tr\xE2u", "Nh\xE0 c\u1EA7n ng\u01B0\u1EDDi ch\u0103n tr\xE2u c\u1EA3 ng\xE0y. \u0110i h\u1ECDc th\xEC kh\xF4ng ai ch\u0103n.", [
+      C3("Ngh\u1EC9 h\u1ECDc ch\u0103n tr\xE2u", { know: -4, flags: ["early_work"], money: 0.03 }),
+      C3("Xin \u0111i h\u1ECDc ti\u1EBFp", { know: 2, rel: -1 })
+    ])),
+    B("or_city14", (c) => f(c, "origin_poor_rural") && !c.in_school, [13, 17], () => T("L\xEAn th\xE0nh ph\u1ED1", "M\u1ED9t ng\u01B0\u1EDDi trong l\xE0ng r\u1EE7 l\xEAn th\xE0nh ph\u1ED1 l\xE0m thu\xEA. Bao \u0103n \u1EDF.", [
+      C3("\u0110i", { flags: ["path_city", "left_home"], money: 0.05, rel: -3, happy: -2 }),
+      C3("\u1EDE l\u1EA1i l\xE0ng", {})
+    ])),
+    B("or_eviction", "origin_poor_urban", [8, 16], () => T("Gi\u1EA3i t\u1ECFa", "Khu nh\xE0 tr\u1ECD c\u1EE7a gia \u0111\xECnh b\u1ECB gi\u1EA3i t\u1ECFa. Ti\u1EC1n \u0111\u1EC1n b\xF9 ch\u1EB3ng \u0111\u1EE7 thu\xEA ch\u1ED7 kh\xE1c.", [
+      C3("Theo b\u1ED1 m\u1EB9 ra ngo\u1EA1i \xF4", { rel: -3, happy: -3 }),
+      C3("\u1EDE l\u1EA1i v\u1EDBi b\xE0 ngo\u1EA1i trong th\xE0nh ph\u1ED1", { rel: 1, flags: ["raised_by_grandma"] })
+    ])),
+    B("or_lottery_kid", "origin_poor_urban", [9, 14], () => T("X\u1EA5p v\xE9 s\u1ED1", "Sau gi\u1EDD h\u1ECDc, m\u1EB9 \u0111\u01B0a b\u1EA1n x\u1EA5p v\xE9 s\u1ED1 \u0111i b\xE1n quanh ch\u1EE3.", [
+      C3("\u0110i b\xE1n", { money: 0.02, know: -1, counters: { save: 1 } }),
+      C3("Tr\u1ED1n \u0111i ch\u01A1i", { happy: 2, rel: -1 })
+    ])),
+    B("or_alley", "origin_poor_urban", [14, 19], () => T("\u0110\u1EA7u h\u1EBBm", "\u0110\xE1m thanh ni\xEAn \u0111\u1EA7u h\u1EBBm r\u1EE7 b\u1EA1n ch\u1EA1y vi\u1EC7c cho m\u1ED9t 'anh l\u1EDBn'. Ti\u1EC1n nhi\u1EC1u h\u01A1n m\u1EB9 l\xE0m c\u1EA3 th\xE1ng.", [
+      C3("Nh\u1EADn", { money: 0.1, flags: ["gang"], counters: { honest: -2 }, later: { years: 6, storylet: "or_bigbro" } }, "Ti\u1EC1n d\u1EC5, kh\xF3 r\xFAt ra"),
+      C3("Tr\xE1nh xa", { happy: -1 })
+    ])),
+    A("or_bigbro", "gang", () => T("Anh l\u1EDBn g\u1ECDi", "Anh l\u1EDBn g\u1ECDi b\u1EA1n l\u1EA1i. L\u1EA7n n\xE0y l\xE0 m\u1ED9t vi\u1EC7c l\u1EDBn, v\xE0 anh kh\xF4ng h\u1ECFi \xFD.", [
+      C3("L\xE0m", { unflags: ["gang"], money: 0.4, secret: { tag: "FORGED_PAPERS", severity: 0.8, fuse_years: [4, 15], note: "vi\u1EC7c cho anh l\u1EDBn" } }),
+      C3("B\u1ECF tr\u1ED1n kh\u1ECFi th\xE0nh ph\u1ED1", { unflags: ["gang"], money: -0.2, flags: ["left_home", "path_city"], happy: -5, log: "B\u1EA1n \u0111i trong \u0111\xEAm, kh\xF4ng k\u1ECBp ch\xE0o ai." })
+    ])),
+    B("or_tutor", "origin_middle", [9, 15], () => T("H\u1ECDc th\xEAm", "B\u1ED1 m\u1EB9 \u0111\u0103ng k\xFD cho b\u1EA1n ba l\u1EDBp h\u1ECDc th\xEAm bu\u1ED5i t\u1ED1i.", [
+      C3("\u0110i \u0111\u1EE7", { know: 4, happy: -3, counters: { read: 1 } }),
+      C3("N\u0103n n\u1EC9 b\u1ECF b\u1EDBt m\u1ED9t l\u1EDBp", { happy: 2, know: 1 })
+    ])),
+    B("or_divorce", "origin_middle", [8, 15], (c, N) => {
+      let m = role3(c, "mother"), fa = role3(c, "father");
+      return T("B\u1ED1 m\u1EB9 ly th\xE2n", "B\u1ED1 m\u1EB9 quy\u1EBFt \u0111\u1ECBnh kh\xF4ng s\u1ED1ng chung n\u1EEFa. B\u1EA1n \u0111\u01B0\u1EE3c h\u1ECFi mu\u1ED1n \u1EDF v\u1EDBi ai.", [
+        C3(`\u1EDE v\u1EDBi ${m ? N(m) : "m\u1EB9"}`, { ...m ? { trust: { npc: m, delta: 0.15 } } : {}, ...fa ? { trust: { npc: fa, delta: -0.15 } } : {}, happy: -5 }),
+        C3(`\u1EDE v\u1EDBi ${fa ? N(fa) : "b\u1ED1"}`, { ...fa ? { trust: { npc: fa, delta: 0.15 } } : {}, ...m ? { trust: { npc: m, delta: -0.15 } } : {}, happy: -5 })
+      ]);
+    }, { prerequisites: (c) => c.age >= 8 && c.age <= 15 && f(c, "origin_middle") && !!role3(c, "mother") && !!role3(c, "father") }),
+    B("or_pc", "origin_middle", [10, 15], () => T("C\xE1i m\xE1y t\xEDnh \u0111\u1EA7u ti\xEAn", "Nh\xE0 mua m\xE1y t\xEDnh. B\u1EA1n b\xE8 \u0111\u1EE9a n\xE0o c\u0169ng m\xEA tr\xF2 ch\u01A1i tr\xEAn m\u1EA1ng.", [
+      C3("Ch\u01A1i game", { happy: 4, know: -1 }),
+      C3("M\xE0y m\xF2 l\u1EADp tr\xECnh", { know: 4, flags: ["coder"], counters: { read: 1 } })
+    ])),
+    B("or_abroad", "origin_rich", [12, 17], () => T("Tr\u1EA1i h\xE8 n\u01B0\u1EDBc ngo\xE0i", "B\u1ED1 m\u1EB9 g\u1EEDi b\u1EA1n \u0111i tr\u1EA1i h\xE8 \u1EDF n\u01B0\u1EDBc ngo\xE0i m\u1ED9t th\xE1ng.", [
+      C3("\u0110i", { know: 3, happy: 3, flags: ["seen_world"] }),
+      C3("\u1EDE nh\xE0 v\u1EDBi b\u1EA1n b\xE8", { rel: 2 })
+    ])),
+    B("or_driverkid", "origin_rich", [8, 13], () => T("Con b\xE1c t\xE0i", "Con trai b\xE1c t\xE0i x\u1EBF nh\xE0 b\u1EA1n tr\u1EA1c tu\u1ED5i b\u1EA1n, th\u01B0\u1EDDng ng\u1ED3i ch\u1EDD ngo\xE0i c\u1ED5ng.", [
+      C3("R\u1EE7 n\xF3 v\xE0o ch\u01A1i", { rel: 2, counters: { kind: 1 }, flags: ["cross_class_friend"] }),
+      C3("M\u1EB7c k\u1EC7", {})
+    ])),
+    B("or_heir", "origin_rich", [22, 32], (c, N) => {
+      let fa = role3(c, "father");
+      return T("C\xF4ng ty c\u1EE7a gia \u0111\xECnh", `${fa ? N(fa) : "B\u1ED1"} mu\u1ED1n b\u1EA1n v\u1EC1 ti\u1EBFp qu\u1EA3n c\xF4ng ty.`, [
+        C3("V\u1EC1 ti\u1EBFp qu\u1EA3n", { flags: ["heir"], income_mult: 1.4, agency: -0.02, custom: "job_switch:office", later: { years: 6, storylet: "or_heir_crisis" } }),
+        C3("T\u1EF1 \u0111i con \u0111\u01B0\u1EDDng ri\xEAng", { agency: 0.04, ...fa ? { trust: { npc: fa, delta: -0.2 } } : {}, close_doors: ["inheritance"] }, "T\u1EF1 do, m\u1EA5t ph\u1EA7n th\u1EEBa k\u1EBF")
+      ]);
+    }),
+    A("or_heir_crisis", "heir", () => T("C\xF4ng ty l\u1ED7", "C\xF4ng ty gia \u0111\xECnh l\u1ED7 ba n\u0103m li\u1EC1n. C\xE1c ch\xFA b\xE1c trong h\u1ED9i \u0111\u1ED3ng nh\xECn b\u1EA1n.", [
+      C3("C\u1EAFt gi\u1EA3m m\u1ED9t n\u1EEDa nh\xE2n vi\xEAn", { unflags: ["heir"], income_mult: 1.1, rel: -6, trait: { coop: -1 } }),
+      C3("B\xE1n b\u1EDBt t\xE0i s\u1EA3n gi\u1EEF ng\u01B0\u1EDDi", { unflags: ["heir"], money: -0.5, rel: 4 }),
+      C3("Chuy\u1EC3n \u0111\u1ED5i sang h\u01B0\u1EDBng m\u1EDBi", { unflags: ["heir"], gamble: { p: 0.45, win: { income_mult: 1.4, log: "H\u01B0\u1EDBng m\u1EDBi th\xE0nh c\xF4ng. C\xE1c ch\xFA b\xE1c im l\u1EB7ng." }, lose: { money: -1, log: "Th\u1EA5t b\u1EA1i. B\u1EA1n m\u1EA5t c\u1EA3 c\xF4ng ty l\u1EABn m\u1EB7t m\u0169i." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba", { tier: "sovereign" })
+    ])),
+    /* ===================================== NGHỀ: NÔNG ===================================== */
+    B("fa_crop", "job_farm", [18, 50], () => T("Gi\u1ED1ng m\u1EDBi", "C\xE1n b\u1ED9 khuy\u1EBFn n\xF4ng gi\u1EDBi thi\u1EC7u chuy\u1EC3n ru\u1ED9ng l\xFAa sang tr\u1ED3ng c\xE2y \u0103n tr\xE1i. Ph\u1EA3i vay v\u1ED1n, ba n\u0103m m\u1EDBi c\xF3 thu.", [
+      C3("Chuy\u1EC3n \u0111\u1ED5i", { custom: "borrow:0.8", flags: ["orchard"], later: { years: 3, storylet: "fa_trader" } }, "Ba n\u0103m \u0111\xF3i, sau \u0111\xF3 c\xF3 th\u1EC3 kh\xE1"),
+      C3("Gi\u1EEF l\xFAa", {})
+    ])),
+    A("fa_trader", "orchard", () => T("Th\u01B0\u01A1ng l\xE1i \xE9p gi\xE1", "N\u0103m \u0111\u1EA7u thu ho\u1EA1ch. Th\u01B0\u01A1ng l\xE1i tr\u1EA3 gi\xE1 b\u1EB1ng n\u1EEDa n\u0103m ngo\xE1i, v\xEC c\u1EA3 v\xF9ng \u0111\u1EC1u chuy\u1EC3n \u0111\u1ED5i.", [
+      C3("B\xE1n r\u1EBB cho xong", { unflags: ["orchard"], money: 0.3 }),
+      C3("\u0110\u1EC3 d\xE0nh ch\u1EDD gi\xE1", { unflags: ["orchard"], gamble: { p: 0.4, win: { money: 0.9, log: "Gi\xE1 l\xEAn. B\u1EA1n th\u1EAFng l\u1EDBn." }, lose: { money: 0.05, log: "Tr\xE1i ch\xEDn r\u1EE5ng, gi\xE1 kh\xF4ng l\xEAn." } } }),
+      C3("R\u1EE7 c\u1EA3 x\xF3m l\u1EADp h\u1EE3p t\xE1c x\xE3", { unflags: ["orchard"], gamble: { p: 0.6, win: { money: 0.7, rel: 6, flags: ["coop_group"], log: "C\u1EA3 x\xF3m c\xF9ng b\xE1n, th\u01B0\u01A1ng l\xE1i ph\u1EA3i n\xE2ng gi\xE1." }, lose: { money: 0.3, log: "M\u1ED7i nh\xE0 m\u1ED9t \xFD, h\u1EE3p t\xE1c x\xE3 tan." } } }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba", { tier: "sovereign" })
+    ], 1)),
+    B("fa_developer", "job_farm", [25, 65], () => T("D\u1EF1 \xE1n v\u1EC1 l\xE0ng", "M\u1ED9t c\xF4ng ty b\u1EA5t \u0111\u1ED9ng s\u1EA3n h\u1ECFi mua ru\u1ED9ng nh\xE0 b\u1EA1n \u0111\u1EC3 l\xE0m khu \u0111\xF4 th\u1ECB. Gi\xE1 g\u1EA5p m\u01B0\u1EDDi n\u0103m thu ho\u1EA1ch.", [
+      C3("B\xE1n", { money: 2.5, flags: ["land_sold"], custom: "job_switch:market", close_doors: ["return_home"], later: { years: 3, storylet: "fa_money" } }, "Ti\u1EC1n l\u1EDBn, m\u1EA5t \u0111\u1EA5t"),
+      C3("Gi\u1EEF \u0111\u1EA5t", { rel: 2 })
+    ])),
+    A("fa_money", "land_sold", () => T("Ti\u1EC1n \u0111\u1EC1n b\xF9", "Ba n\u0103m sau khi b\xE1n \u0111\u1EA5t, ti\u1EC1n v\u1EABn c\xF2n g\u1EA7n h\u1EBFt. Ai trong h\u1ECD c\u0169ng c\xF3 vi\u1EC7c c\u1EA7n vay.", [
+      C3("X\xE2y nh\xE0 to", { unflags: ["land_sold"], money: -1.2, happy: 6, rel: 2 }),
+      C3("Cho h\u1ECD h\xE0ng vay", { unflags: ["land_sold"], money: -0.8, rel: 6, gamble: { p: 0.4, win: { money: 0.8 }, lose: { log: "Ti\u1EC1n cho vay kh\xF4ng v\u1EC1." } } }),
+      C3("G\u1EEDi ng\xE2n h\xE0ng, s\u1ED1ng b\u1EB1ng l\xE3i", { unflags: ["land_sold"], bw: 6, income_mult: 1.15 })
+    ])),
+    B("fa_drought", "job_farm", [20, 70], () => T("H\u1EA1n m\u1EB7n", "N\u01B0\u1EDBc m\u1EB7n v\xE0o s\xE2u. Ru\u1ED9ng nh\xE0 n\u1EE9t n\u1EBB.", [
+      C3("Vay ti\u1EC1n mua m\xE1y b\u01A1m", { custom: "borrow:0.3", income_mult: 0.95 }),
+      C3("B\u1ECF hoang m\u1ED9t v\u1EE5, \u0111i l\xE0m thu\xEA", { money: 0.05, health: -2, income_mult: 0.9 }),
+      C3("Chuy\u1EC3n sang nu\xF4i t\xF4m", { custom: "borrow:0.4", gamble: { p: 0.5, win: { income_mult: 1.3 }, lose: { income_mult: 0.8, log: "T\xF4m ch\u1EBFt h\xE0ng lo\u1EA1t." } } })
+    ])),
+    /* ===================================== NGHỀ: BUÔN BÁN ===================================== */
+    B("mk_credit", "job_market", [18, 60], () => T("B\xE1n ch\u1ECBu", "Kh\xE1ch quen xin ghi s\u1ED5, cu\u1ED1i th\xE1ng tr\u1EA3.", [
+      C3("Cho ghi s\u1ED5", { rel: 4, flags: ["credit_book"], later: { years: 2, storylet: "mk_ledger" } }),
+      C3("Ch\u1EC9 b\xE1n ti\u1EC1n m\u1EB7t", { rel: -2 })
+    ])),
+    A("mk_ledger", "credit_book", () => T("Cu\u1ED1n s\u1ED5 n\u1EE3", "Cu\u1ED1n s\u1ED5 n\u1EE3 d\xE0y l\xEAn. C\xF3 ng\u01B0\u1EDDi n\u1EE3 c\u1EA3 n\u0103m kh\xF4ng tr\u1EA3.", [
+      C3("\u0110\u1EBFn t\u1EADn nh\xE0 \u0111\xF2i", { unflags: ["credit_book"], money: 0.15, rel: -5 }),
+      C3("X\xF3a n\u1EE3 cho nh\xE0 ngh\xE8o", { unflags: ["credit_book"], money: -0.1, rel: 8, counters: { kind: 2 } }),
+      C3("B\xE1n s\u1ED5 n\u1EE3 cho ng\u01B0\u1EDDi \u0111i \u0111\xF2i thu\xEA", { unflags: ["credit_book"], money: 0.08, rel: -8, counters: { honest: -1 } })
+    ])),
+    B("mk_fake", "job_market", [20, 60], () => T("H\xE0ng nh\xE1i", "M\u1ED1i h\xE0ng m\u1EDBi ch\xE0o h\xE0ng nh\xE1i gi\u1ED1ng y h\xE0ng th\u1EADt, l\xE3i g\u1EA5p ba.", [
+      C3("Nh\u1EADp v\u1EC1 b\xE1n", { income_mult: 1.2, secret: { tag: "DEFRAUDED_FRIEND", severity: 0.5, fuse_years: [3, 10], note: "b\xE1n h\xE0ng nh\xE1i cho kh\xE1ch quen" } }),
+      C3("Kh\xF4ng", { counters: { honest: 1 } })
+    ])),
+    B("mk_kiosk", "job_market", [24, 55], () => T("Ki-\u1ED1t m\u1EB7t ti\u1EC1n", "C\xF3 m\u1ED9t ki-\u1ED1t m\u1EB7t ti\u1EC1n ch\u1EE3 sang l\u1EA1i, g\u1EA5p \u0111\xF4i ch\u1ED7 b\u1EA1n \u0111ang ng\u1ED3i.", [
+      C3("Vay ti\u1EC1n thu\xEA", { custom: "borrow:0.5", income_mult: 1.25 }),
+      C3("Ng\u1ED3i ch\u1ED7 c\u0169", {})
+    ])),
+    B("mk_online", "job_market", [20, 50], (c) => T("B\xE1n online", c.poor_country ? "Con nh\xE0 b\xEAn b\xE0y b\u1EA1n livestream b\xE1n h\xE0ng tr\xEAn \u0111i\u1EC7n tho\u1EA1i." : "Kh\xE1ch quen d\u1EA7n chuy\u1EC3n sang mua tr\xEAn m\u1EA1ng.", [
+      C3("H\u1ECDc b\xE1n online", { know: 3, gamble: { p: 0.55, win: { income_mult: 1.3, log: "\u0110\u01A1n v\u1EC1 \u0111\u1EC1u \u0111\u1EB7n." }, lose: { money: -0.05, log: "Kh\xF4ng ai xem livestream c\u1EE7a b\u1EA1n." } } }),
+      C3("B\xE1n ki\u1EC3u c\u0169", { income_mult: 0.95 })
+    ])),
+    /* ===================================== NGHỀ: LÁI XE ===================================== */
+    B("dr_night", "job_driver", [18, 60], () => T("Ch\u1EA1y \u0111\xEAm", "Ch\u1EA1y \u0111\xEAm \u0111\u01B0\u1EE3c g\u1EA5p r\u01B0\u1EE1i, nh\u01B0ng \u0111\u01B0\u1EDDng v\u1EAFng v\xE0 ng\u01B0\u1EDDi say nhi\u1EC1u.", [
+      C3("Ch\u1EA1y \u0111\xEAm", { money: 0.08, health: -3, bw: -3 }),
+      C3("Ch\u1EC9 ch\u1EA1y ng\xE0y", {})
+    ])),
+    B("dr_crash", "job_driver", [18, 65], () => T("Va qu\u1EC7t", "Xe b\u1EA1n qu\u1EC7t v\xE0o m\u1ED9t ng\u01B0\u1EDDi \u0111i xe \u0111\u1EA1p. Ng\u01B0\u1EDDi \u1EA5y ng\xE3, tr\u1EA7y x\u01B0\u1EDBc. Tr\u1EDDi t\u1ED1i, kh\xF4ng ai th\u1EA5y.", [
+      C3("D\u1EEBng l\u1EA1i, \u0111\u01B0a \u0111i vi\u1EC7n", { money: -0.08, counters: { honest: 1, kind: 1 } }),
+      C3("Th\u1ECFa thu\u1EADn ri\xEAng", { money: -0.04 }),
+      C3("Ch\u1EA1y lu\xF4n", { secret: { tag: "FORGED_PAPERS", severity: 0.6, fuse_years: [2, 12], note: "v\u1EE5 va qu\u1EC7t b\u1ECF ch\u1EA1y" }, happy: -3 })
+    ])),
+    B("dr_own", "job_driver", [22, 50], () => T("Xe c\u1EE7a m\xECnh", "L\xE1i thu\xEA m\xE3i c\u0169ng ch\xE1n. C\xF3 chi\u1EBFc xe c\u0169 ng\u01B0\u1EDDi ta b\xE1n tr\u1EA3 g\xF3p.", [
+      C3("Mua", { custom: "borrow:0.7", flags: ["own_vehicle"], income_mult: 1.2 }),
+      C3("L\xE1i thu\xEA ti\u1EBFp", {})
+    ])),
+    B("dr_app", (c) => f(c, "job_driver") && !c.poor_country, [20, 60], () => T("\u1EE8ng d\u1EE5ng g\u1ECDi xe", "\u1EE8ng d\u1EE5ng g\u1ECDi xe v\xE0o th\xE0nh ph\u1ED1. Kh\xE1ch quen chuy\u1EC3n h\u1EBFt sang \u0111\u1EB7t tr\xEAn \u0111i\u1EC7n tho\u1EA1i.", [
+      C3("Ch\u1EA1y \u1EE9ng d\u1EE5ng", { income_mult: 1.1, bw: -3, health: -1 }),
+      C3("Gi\u1EEF kh\xE1ch quen", { income_mult: 0.85, rel: 2 })
+    ])),
+    /* ===================================== NGHỀ: XÂY DỰNG / THỢ ===================================== */
+    B("bu_scaffold", "job_build", [18, 60], () => T("Gi\xE0n gi\xE1o", "Gi\xE0n gi\xE1o t\u1EA7ng n\u0103m l\u1ECFng ch\u1ED1t. Cai b\u1EA3o c\u1EE9 tr\xE8o, s\u1EAFp xong r\u1ED3i.", [
+      C3("Tr\xE8o", { gamble: { p: 0.88, win: { money: 0.02 }, lose: { health: -25, log: "B\u1EA1n ng\xE3. Hai th\xE1ng n\u1EB1m vi\u1EC7n." } } }),
+      C3("Kh\xF4ng tr\xE8o \u0111\u1EBFn khi s\u1EEDa", { rel: -2, trait: { fair: 1 } })
+    ])),
+    B("bu_unpaid", "job_build", [18, 60], () => T("Cai th\u1EA7u n\u1EE3 l\u01B0\u01A1ng", "Cai th\u1EA7u n\u1EE3 ba th\xE1ng l\u01B0\u01A1ng c\u1EA3 \u0111\u1ED9i r\u1ED3i bi\u1EBFn m\u1EA5t.", [
+      C3("C\xF9ng c\u1EA3 \u0111\u1ED9i l\xEAn ph\u01B0\u1EDDng", { gamble: { p: 0.5, win: { money: 0.2, rel: 4 }, lose: { money: -0.05 } } }),
+      C3("B\u1ECF, t\xECm c\xF4ng tr\xECnh kh\xE1c", { money: -0.2 })
+    ])),
+    B("bu_foreman", "job_build", [26, 50], () => T("L\xEAn l\xE0m cai", "Ch\u1EE7 th\u1EA7u mu\u1ED1n b\u1EA1n \u0111\u1EE9ng ra l\xE0m cai, qu\u1EA3n hai ch\u1EE5c th\u1EE3.", [
+      C3("Nh\u1EADn", { income_mult: 1.3, flags: ["foreman"], later: { years: 2, storylet: "bu_skim" } }),
+      C3("L\xE0m th\u1EE3 cho nh\u1EB9 \u0111\u1EA7u", {})
+    ])),
+    A("bu_skim", "foreman", () => T("B\u1EDBt xi m\u0103ng", "Ch\u1EE7 th\u1EA7u ra hi\u1EC7u: b\u1EDBt m\u1ED7i m\u1EBB m\u1ED9t bao, c\u1EA3 hai c\xF9ng c\xF3 l\u1EDDi. C\xF4ng tr\xECnh l\xE0 tr\u01B0\u1EDDng h\u1ECDc.", [
+      C3("B\u1EDBt", { unflags: ["foreman"], money: 0.3, secret: { tag: "FORGED_PAPERS", severity: 0.9, fuse_years: [5, 20], note: "b\u1EDBt xi m\u0103ng \u1EDF c\xF4ng tr\xECnh tr\u01B0\u1EDDng h\u1ECDc" } }),
+      C3("Kh\xF4ng", { unflags: ["foreman"], income_mult: 0.9, counters: { honest: 2 }, log: "Ch\u1EE7 th\u1EA7u kh\xF4ng g\u1ECDi b\u1EA1n c\xF4ng tr\xECnh sau." })
+    ], 1)),
+    /* ===================================== NGHỀ: NHÀ MÁY ===================================== */
+    B("fc_ot", "job_factory", [18, 55], () => T("T\u0103ng ca b\u1EAFt bu\u1ED9c", "X\u01B0\u1EDFng nh\u1EADn \u0111\u01A1n g\u1EA5p. Ai kh\xF4ng t\u0103ng ca th\xEC th\xE1ng sau kh\u1ECFi \u0111i l\xE0m.", [
+      C3("T\u0103ng ca", { money: 0.06, health: -3, bw: -4 }),
+      C3("T\u1EEB ch\u1ED1i", { gamble: { p: 0.5, win: {}, lose: { custom: "job_lose" } } })
+    ])),
+    B("fc_lead", "job_factory", [24, 50], () => T("T\u1ED5 tr\u01B0\u1EDFng", "Qu\u1EA3n \u0111\u1ED1c \u0111\u1EC1 b\u1EA1t b\u1EA1n l\xE0m t\u1ED5 tr\u01B0\u1EDFng.", [
+      C3("Nh\u1EADn", { income_mult: 1.2, flags: ["line_lead"], later: { years: 2, storylet: "fc_push" } }),
+      C3("\u1EDE l\u1EA1i l\xE0m c\xF4ng nh\xE2n", { rel: 2 })
+    ])),
+    A("fc_push", "line_lead", () => T("\xC9p n\u0103ng su\u1EA5t", "C\xF4ng ty y\xEAu c\u1EA7u t\u0103ng n\u0103ng su\u1EA5t 20% m\xE0 kh\xF4ng th\xEAm ng\u01B0\u1EDDi. T\u1ED5 c\u1EE7a b\u1EA1n nh\xECn b\u1EA1n.", [
+      C3("\xC9p t\u1ED5 l\xE0m", { unflags: ["line_lead"], income_mult: 1.1, rel: -6 }),
+      C3("\u0110\u1EE9ng v\u1EC1 ph\xEDa t\u1ED5", { unflags: ["line_lead"], rel: 6, gamble: { p: 0.5, win: {}, lose: { income_mult: 0.85, log: "B\u1EA1n b\u1ECB gi\xE1ng xu\u1ED1ng." } } })
+    ])),
+    B("fc_export", "job_factory", [20, 38], () => T("Xu\u1EA5t kh\u1EA9u lao \u0111\u1ED9ng", "C\xF4ng ty m\xF4i gi\u1EDBi tuy\u1EC3n ng\u01B0\u1EDDi sang Nh\u1EADt l\xE0m ba n\u0103m. Ph\xED m\xF4i gi\u1EDBi b\u1EB1ng hai n\u0103m l\u01B0\u01A1ng.", [
+      C3("Vay ti\u1EC1n \u0111i", { custom: "borrow:1.5", flags: ["path_migrant", "left_home"], income_mult: 2.2, rel: -6, later: { years: 3, storylet: "mg_return" } }, "\u0110\u1ED5i \u0111\u1EDDi ho\u1EB7c ng\u1EADp n\u1EE3"),
+      C3("\u1EDE l\u1EA1i", {})
+    ])),
+    /* ===================================== NGHỀ: DẠY HỌC ===================================== */
+    B("te_tutor", "job_teach", [22, 60], () => T("D\u1EA1y th\xEAm", "L\u01B0\u01A1ng gi\xE1o vi\xEAn kh\xF4ng \u0111\u1EE7 s\u1ED1ng. \u0110\u1ED3ng nghi\u1EC7p ai c\u0169ng m\u1EDF l\u1EDBp d\u1EA1y th\xEAm, h\u1ECDc sinh trong l\u1EDBp bu\u1ED9c ph\u1EA3i \u0111i.", [
+      C3("M\u1EDF l\u1EDBp, \xE9p h\u1ECDc sinh \u0111i", { money: 0.15, counters: { honest: -1 } }),
+      C3("M\u1EDF l\u1EDBp, ai mu\u1ED1n th\xEC \u0111i", { money: 0.06 }),
+      C3("Kh\xF4ng d\u1EA1y th\xEAm", { money: -0.02, counters: { honest: 1 } })
+    ])),
+    B("te_envelope", "job_teach", [24, 60], () => T("Phong b\xEC", "M\u1ED9t ph\u1EE5 huynh \u0111\u1EC3 l\u1EA1i phong b\xEC tr\xEAn b\xE0n, k\xE8m l\u1EDDi nh\u1EDD 'quan t\xE2m' \u0111i\u1EC3m thi c\u1EE7a con.", [
+      C3("Nh\u1EADn", { money: 0.05, secret: { tag: "PAID_BRIBE", severity: 0.4, fuse_years: [3, 12], note: "phong b\xEC s\u1EEDa \u0111i\u1EC3m" } }),
+      C3("Tr\u1EA3 l\u1EA1i", { counters: { honest: 1 }, rel: -1 })
+    ])),
+    B("te_problem", "job_teach", [24, 55], () => T("H\u1ECDc tr\xF2 c\xE1 bi\u1EC7t", "C\xF3 m\u1ED9t \u0111\u1EE9a trong l\u1EDBp hay tr\u1ED1n h\u1ECDc, \u0111\xE1nh nhau. Hi\u1EC7u tr\u01B0\u1EDFng mu\u1ED1n \u0111u\u1ED5i.", [
+      C3("Xin gi\u1EEF l\u1EA1i, k\xE8m ri\xEAng", { bw: -4, counters: { kind: 2 }, flags: ["saved_student"], later: { years: 15, storylet: "te_return" } }),
+      C3("\u0110\u1EC3 nh\xE0 tr\u01B0\u1EDDng quy\u1EBFt", {})
+    ])),
+    A("te_return", "saved_student", () => T("H\u1ECDc tr\xF2 c\u0169", "M\u1ED9t ng\u01B0\u1EDDi \u0111\xE0n \xF4ng l\u1ECBch s\u1EF1 xin g\u1EB7p b\u1EA1n. \u0110\u1EE9a h\u1ECDc tr\xF2 c\xE1 bi\u1EC7t n\u0103m n\xE0o, gi\u1EDD l\xE0m ch\u1EE7 m\u1ED9t x\u01B0\u1EDFng nh\u1ECF.", [
+      C3("Ng\u1ED3i n\xF3i chuy\u1EC7n", { happy: 8, rel: 4, unflags: ["saved_student"], log: "N\xF3 n\xF3i nh\u1EDD n\u0103m \u1EA5y b\u1EA1n kh\xF4ng b\u1ECF n\xF3." })
+    ]), { tension: -8 }),
+    /* ===================================== NGHỀ: Y TẾ ===================================== */
+    B("he_shift", "job_health", [22, 60], () => T("Tr\u1EF1c li\xEAn t\u1EE5c", "B\u1EC7nh vi\u1EC7n thi\u1EBFu ng\u01B0\u1EDDi. B\u1EA1n \u0111\xE3 tr\u1EF1c ba \u0111\xEAm li\u1EC1n.", [
+      C3("Tr\u1EF1c ti\u1EBFp", { health: -4, bw: -5, rel: 2 }),
+      C3("T\u1EEB ch\u1ED1i ca th\u1EE9 t\u01B0", { rel: -2 })
+    ])),
+    B("he_gift", "job_health", [22, 60], () => T("Phong b\xEC c\u1EE7a ng\u01B0\u1EDDi nh\xE0", "Ng\u01B0\u1EDDi nh\xE0 b\u1EC7nh nh\xE2n d\xFAi v\xE0o t\xFAi b\u1EA1n m\u1ED9t phong b\xEC, xin 'ch\u0103m s\xF3c k\u1EF9 h\u01A1n'.", [
+      C3("Nh\u1EADn", { money: 0.04, counters: { honest: -1 } }),
+      C3("Tr\u1EA3 l\u1EA1i", { counters: { honest: 1 } })
+    ])),
+    B("he_case", "job_health", [28, 60], () => T("Ca kh\xF3", "M\u1ED9t ca c\u1EA5p c\u1EE9u v\u01B0\u1EE3t qu\xE1 kh\u1EA3 n\u0103ng c\u1EE7a tuy\u1EBFn n\xE0y. Chuy\u1EC3n vi\u1EC7n th\xEC b\u1EC7nh nh\xE2n c\xF3 th\u1EC3 kh\xF4ng qua.", [
+      C3("L\xE0m t\u1EA1i ch\u1ED7", { trait: { bold: 2 }, gamble: { p: 0.55, win: { happy: 8, rel: 5, log: "B\u1EC7nh nh\xE2n qua kh\u1ECFi." }, lose: { happy: -10, log: "B\u1EC7nh nh\xE2n kh\xF4ng qua kh\u1ECFi. Ng\u01B0\u1EDDi nh\xE0 l\xE0m \u0111\u01A1n ki\u1EC7n." } } }),
+      C3("Chuy\u1EC3n vi\u1EC7n", { happy: -2 })
+    ])),
+    B("he_abroad", "job_health", [24, 40], () => T("\u0110i\u1EC1u d\u01B0\u1EE1ng sang \u0110\u1EE9c", "C\xF3 ch\u01B0\u01A1ng tr\xECnh \u0111\u01B0a \u0111i\u1EC1u d\u01B0\u1EE1ng sang \u0110\u1EE9c. H\u1ECDc ti\u1EBFng hai n\u0103m, l\u01B0\u01A1ng g\u1EA5p n\u0103m.", [
+      C3("\u0110\u0103ng k\xFD", { know: 5, flags: ["path_migrant", "left_home"], income_mult: 2.5, rel: -6, later: { years: 4, storylet: "mg_return" } }),
+      C3("\u1EDE l\u1EA1i", {})
+    ])),
+    /* ===================================== NGHỀ: VĂN PHÒNG ===================================== */
+    B("of_politics", "job_office", [24, 55], () => T("Hai phe", "Ph\xF2ng b\u1EA1n chia hai phe theo hai ph\xF3 gi\xE1m \u0111\u1ED1c. Ai c\u0169ng ph\u1EA3i \u0111\u1EE9ng v\u1EC1 m\u1ED9t b\xEAn.", [
+      C3("Theo phe m\u1EA1nh", { gamble: { p: 0.6, win: { income_mult: 1.15 }, lose: { income_mult: 0.9, log: "Phe b\u1EA1n thua. B\u1EA1n b\u1ECB \u0111i\u1EC1u sang chi nh\xE1nh xa." } } }),
+      C3("\u0110\u1EE9ng ngo\xE0i", { income_mult: 0.97 })
+    ])),
+    B("of_fudge", "job_office", [24, 60], () => T("S\u1EEDa s\u1ED1 li\u1EC7u", "S\u1EBFp nh\u1EDD b\u1EA1n 'l\xE0m \u0111\u1EB9p' b\xE1o c\xE1o qu\xFD tr\u01B0\u1EDBc khi g\u1EEDi l\xEAn t\u1ED5ng c\xF4ng ty.", [
+      C3("S\u1EEDa", { income_mult: 1.05, secret: { tag: "FORGED_PAPERS", severity: 0.6, fuse_years: [3, 12], note: "s\u1EEDa b\xE1o c\xE1o qu\xFD" } }),
+      C3("T\u1EEB ch\u1ED1i", { counters: { honest: 2 }, income_mult: 0.95 })
+    ])),
+    B("of_layoff", "job_office", [28, 60], () => T("C\u1EAFt gi\u1EA3m", "C\xF4ng ty c\u1EAFt gi\u1EA3m m\u1ED9t n\u1EEDa ph\xF2ng. S\u1EBFp h\u1ECFi ri\xEAng b\u1EA1n n\xEAn gi\u1EEF ai.", [
+      C3("Gi\u1EEF ng\u01B0\u1EDDi gi\u1ECFi nh\u1EA5t", { trait: { fair: 1 } }),
+      C3("Gi\u1EEF ng\u01B0\u1EDDi th\xE2n v\u1EDBi m\xECnh", { rel: 2, counters: { honest: -1 } }),
+      C3("\u0110\u1EC1 ngh\u1ECB c\u1EA3 ph\xF2ng gi\u1EA3m gi\u1EDD, kh\xF4ng ai b\u1ECB \u0111u\u1ED5i", { rel: 6, income_mult: 0.92 }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba", { tier: "sovereign" })
+    ])),
+    B("of_startup", "job_office", [26, 45], () => T("B\u1ECF vi\u1EC7c", "M\u1ED9t ng\u01B0\u1EDDi b\u1EA1n r\u1EE7 b\u1EA1n b\u1ECF vi\u1EC7c v\u0103n ph\xF2ng l\xE0m c\xF9ng m\u1ED9t d\u1EF1 \xE1n ri\xEAng.", [
+      C3("B\u1ECF vi\u1EC7c", { flags: ["own_business"], income_mult: 0.6, agency: 0.04, gamble: { p: 0.35, win: { income_mult: 2.2, log: "D\u1EF1 \xE1n s\u1ED1ng \u0111\u01B0\u1EE3c, r\u1ED3i l\u1EDBn d\u1EA7n." }, lose: { money: -0.4, log: "D\u1EF1 \xE1n ch\u1EBFt sau hai n\u0103m. B\u1EA1n \u0111i xin vi\u1EC7c l\u1EA1i." } } }),
+      C3("\u1EDE l\u1EA1i", {})
+    ])),
+    /* ===================================== NGHỀ: CÔNG NGHỆ ===================================== */
+    B("tc_remote", "job_tech", [22, 50], () => T("Kh\xE1ch n\u01B0\u1EDBc ngo\xE0i", "M\u1ED9t kh\xE1ch h\xE0ng n\u01B0\u1EDBc ngo\xE0i mu\u1ED1n thu\xEA b\u1EA1n l\xE0m t\u1EEB xa, tr\u1EA3 b\u1EB1ng \u0111\xF4.", [
+      C3("Nh\u1EADn, l\xE0m c\u1EA3 \u0111\xEAm", { income_mult: 1.4, health: -3, bw: -3 }),
+      C3("Kh\xF4ng", {})
+    ])),
+    B("tc_equity", "job_tech", [24, 40], () => T("C\xF4ng ty kh\u1EDFi nghi\u1EC7p", "M\u1ED9t c\xF4ng ty kh\u1EDFi nghi\u1EC7p m\u1EDDi b\u1EA1n v\u1EC1, tr\u1EA3 n\u1EEDa l\u01B0\u01A1ng v\xE0 m\u1ED9t ph\u1EA7n c\u1ED5 ph\u1EA7n.", [
+      C3("\u0110i", { income_mult: 0.6, flags: ["startup"], later: { years: 3, storylet: "tc_exit" } }, "C\xF3 th\u1EC3 \u0111\u1ED5i \u0111\u1EDDi"),
+      C3("\u1EDE l\u1EA1i ch\u1ED7 \u1ED5n \u0111\u1ECBnh", {})
+    ])),
+    A("tc_exit", "startup", () => T("G\u1ECDi v\u1ED1n ho\u1EB7c ch\u1EBFt", "C\xF4ng ty h\u1EBFt ti\u1EC1n. M\u1ED9t qu\u1EF9 \u0111\u1EA7u t\u01B0 \u0111\u1ED3ng \xFD r\xF3t v\u1ED1n n\u1EBFu m\u1ECDi ng\u01B0\u1EDDi l\xE0m g\u1EA5p \u0111\xF4i trong m\u1ED9t n\u0103m.", [
+      C3("\u1EDE l\u1EA1i chi\u1EBFn", { unflags: ["startup"], health: -6, gamble: { p: 0.3, win: { money: 3, income_mult: 2, log: "C\xF4ng ty \u0111\u01B0\u1EE3c mua l\u1EA1i. C\u1ED5 ph\u1EA7n c\u1EE7a b\u1EA1n th\xE0nh m\u1ED9t gia t\xE0i." }, lose: { money: -0.3, log: "C\xF4ng ty \u0111\xF3ng c\u1EEDa." } } }),
+      C3("R\u1EDDi \u0111i", { unflags: ["startup"], income_mult: 1.6 })
+    ])),
+    B("tc_ai", "job_tech", [30, 60], () => T("M\xE1y l\xE0m thay", "C\xF4ng c\u1EE5 m\u1EDBi l\xE0m \u0111\u01B0\u1EE3c n\u1EEDa vi\u1EC7c c\u1EE7a b\u1EA1n. C\xF4ng ty b\u1EAFt \u0111\u1EA7u n\xF3i chuy\u1EC7n tinh gi\u1EA3n.", [
+      C3("H\u1ECDc l\u1EA1i t\u1EEB \u0111\u1EA7u", { know: 6, bw: -5, money: -0.05 }),
+      C3("Ch\u1EDD xem", { gamble: { p: 0.5, win: {}, lose: { custom: "job_lose" } } })
+    ])),
+    /* ===================================== NGHỀ: GIÚP VIỆC ===================================== */
+    B("do_accused", "job_domestic", [16, 60], () => T("B\u1ECB nghi", "Nh\xE0 ch\u1EE7 m\u1EA5t chi\u1EBFc nh\u1EABn. B\xE0 ch\u1EE7 nh\xECn b\u1EA1n.", [
+      C3("\u0110\u1EC3 h\u1ECD kh\xE1m \u0111\u1ED3", { happy: -6, gamble: { p: 0.8, win: { log: "Chi\u1EBFc nh\u1EABn r\u01A1i sau t\u1EE7 l\u1EA1nh. Kh\xF4ng ai xin l\u1ED7i." }, lose: { custom: "job_lose" } } }),
+      C3("B\u1ECF vi\u1EC7c ngay", { custom: "job_lose", happy: -2, agency: 0.02 })
+    ])),
+    B("do_cook", "job_domestic", [18, 50], () => T("H\u1ECDc n\u1EA5u \u0103n", "B\xE0 ch\u1EE7 khen b\u1EA1n n\u1EA5u ngon, g\u1EE3i \xFD \u0111i h\u1ECDc m\u1ED9t kh\xF3a n\u1EA5u \u0103n.", [
+      C3("\u0110i h\u1ECDc", { money: -0.05, custom: "job_switch:market", know: 3 }),
+      C3("Th\xF4i", {})
+    ])),
+    /* ===================================== BẠN ĐỜI ===================================== */
+    B("sp_wait", "spouse_warm", [22, 70], (c, N) => {
+      let s = role3(c, "spouse");
+      return T("B\u1EEFa c\u01A1m ch\u1EDD", `${N(s)} v\u1EABn \u0111\u1EC3 ph\u1EA7n c\u01A1m, d\xF9 b\u1EA1n v\u1EC1 mu\u1ED9n ba t\u1ED1i li\u1EC1n.`, [
+        C3("V\u1EC1 s\u1EDBm t\u1EEB mai", { trust: { npc: s, delta: 0.1 }, income_mult: 0.98 }),
+        C3("C\xF4ng vi\u1EC7c m\xE0", { trust: { npc: s, delta: -0.08 } })
+      ], 0, { npc: s });
+    }, { prerequisites: (c) => c.age >= 22 && f(c, "spouse_warm") && !!role3(c, "spouse") }),
+    B("sp_dream", "spouse_warm", [25, 60], (c, N) => {
+      let s = role3(c, "spouse");
+      return T("\u01AF\u1EDBc m\u01A1 c\u1EE7a ng\u01B0\u1EDDi \u1EA5y", `${N(s)} k\u1EC3 l\u1EA7n \u0111\u1EA7u: mu\u1ED1n m\u1EDF m\u1ED9t ti\u1EC7m may nh\u1ECF. C\u1EA7n v\u1ED1n.`, [
+        C3("D\u1ED3n ti\u1EC1n cho ng\u01B0\u1EDDi \u1EA5y", { money: -0.4, trust: { npc: s, delta: 0.25 }, gamble: { p: 0.5, win: { income_mult: 1.2, log: "Ti\u1EC7m may \u0111\xF4ng kh\xE1ch." }, lose: { log: "Ti\u1EC7m \u0111\xF3ng sau m\u1ED9t n\u0103m, nh\u01B0ng ng\u01B0\u1EDDi \u1EA5y kh\xF4ng qu\xEAn." } } }),
+        C3("Ch\u01B0a ph\u1EA3i l\xFAc", { trust: { npc: s, delta: -0.15 } })
+      ], 0, { npc: s });
+    }, { prerequisites: (c) => c.age >= 25 && f(c, "spouse_warm") && !!role3(c, "spouse") }),
+    B("sp_sorry", "spouse_proud", [22, 70], (c, N) => {
+      let s = role3(c, "spouse");
+      return T("L\u1EDDi xin l\u1ED7i", `Hai ng\u01B0\u1EDDi c\xE3i nhau, l\u1EA7n n\xE0y ${N(s)} sai. Ba ng\xE0y r\u1ED3i ${N(s)} kh\xF4ng n\xF3i m\u1ED9t l\u1EDDi.`, [
+        C3("Xin l\u1ED7i tr\u01B0\u1EDBc d\xF9 kh\xF4ng sai", { trust: { npc: s, delta: 0.1 }, happy: -2 }),
+        C3("Ch\u1EDD ng\u01B0\u1EDDi \u1EA5y xin l\u1ED7i", { trust: { npc: s, delta: -0.12 }, happy: -3 })
+      ], 0, { npc: s });
+    }, { prerequisites: (c) => c.age >= 22 && f(c, "spouse_proud") && !!role3(c, "spouse") }),
+    B("sp_grudge", (c) => f(c, "spouse_proud") && !!role3(c, "spouse") && !!role3(c, "sibling"), [25, 70], (c, N) => {
+      let s = role3(c, "spouse"), sib = role3(c, "sibling");
+      return T("Gi\u1EADn nh\xE0 ch\u1ED3ng/v\u1EE3", `${N(s)} v\xE0 ${N(sib)} gi\u1EADn nhau t\u1EEB \u0111\xE1m gi\u1ED7 n\u0103m ngo\xE1i. T\u1EBFt n\xE0y, ${N(s)} kh\xF4ng mu\u1ED1n v\u1EC1.`, [
+        C3("V\u1EC1 m\u1ED9t m\xECnh", { trust: { npc: s, delta: -0.1 }, memory: { npc: sib, tag: "KEPT_PROMISE", weight: 0.1, note: "v\u1EABn v\u1EC1 \u0103n T\u1EBFt" } }),
+        C3("\u1EDE nh\xE0 v\u1EDBi ng\u01B0\u1EDDi \u1EA5y", { trust: { npc: s, delta: 0.12 }, memory: { npc: sib, tag: "REFUSED_HELP", weight: -0.15, note: "kh\xF4ng v\u1EC1 \u0103n T\u1EBFt" } }),
+        C3("\u0110\u1EE9ng gi\u1EEFa h\xF2a gi\u1EA3i", { gamble: { p: 0.4, win: { rel: 6, log: "Hai ng\u01B0\u1EDDi l\xE0m l\xE0nh." }, lose: { trust: { npc: s, delta: -0.1 }, log: "C\u1EA3 hai gi\u1EADn lu\xF4n c\u1EA3 b\u1EA1n." } } }, void 0, { tier: "awakened" })
+      ], 1, { npc: s });
+    }),
+    B("sp_phone", "spouse_restless", [24, 60], (c, N) => {
+      let s = role3(c, "spouse");
+      return T("Tin nh\u1EAFn l\u1EA1", `\u0110i\u1EC7n tho\u1EA1i ${N(s)} s\xE1ng l\xEAn l\xFAc n\u1EEDa \u0111\xEAm. M\u1ED9t c\xE1i t\xEAn b\u1EA1n kh\xF4ng bi\u1EBFt.`, [
+        C3("H\u1ECFi th\u1EB3ng", { gamble: { p: 0.5, win: { trust: { npc: s, delta: 0.05 }, log: "Ch\u1EC9 l\xE0 \u0111\u1ED3ng nghi\u1EC7p. Hai ng\u01B0\u1EDDi c\u01B0\u1EDDi, nh\u01B0ng c\xF3 g\xEC \u0111\xF3 \u0111\xE3 kh\xE1c." }, lose: { trust: { npc: s, delta: -0.3 }, flags: ["affair"], log: "Ng\u01B0\u1EDDi \u1EA5y kh\xF4ng ch\u1ED1i." } } }),
+        C3("L\xE9n \u0111\u1ECDc tin nh\u1EAFn", { counters: { honest: -1 }, gamble: { p: 0.5, win: { log: "Kh\xF4ng c\xF3 g\xEC. B\u1EA1n th\u1EA5y x\u1EA5u h\u1ED5." }, lose: { flags: ["affair"], happy: -10, log: "C\xF3. B\u1EA1n kh\xF4ng n\xF3i g\xEC, v\xE0 mang n\xF3 theo." } } }),
+        C3("M\u1EB7c k\u1EC7", { bw: -3 })
+      ], 0, { npc: s });
+    }, { prerequisites: (c) => c.age >= 24 && f(c, "spouse_restless") && !!role3(c, "spouse") }),
+    A("sp_affair", "affair", (c, N) => {
+      let s = role3(c, "spouse");
+      return T("Chuy\u1EC7n kh\xF4ng c\xF2n gi\u1EA5u \u0111\u01B0\u1EE3c", `${s ? N(s) : "Ng\u01B0\u1EDDi \u1EA5y"} mu\u1ED1n \u0111i.`, [
+        C3("N\xEDu k\xE9o v\xEC con", { unflags: ["affair"], happy: -6, ...s ? { trust: { npc: s, delta: 0.05 } } : {} }),
+        C3("\u0110\u1EC3 ng\u01B0\u1EDDi \u1EA5y \u0111i", { unflags: ["affair"], custom: "spouse_leave", happy: -10, agency: 0.03 })
+      ], 0, s ? { npc: s } : {});
+    }),
+    B("sp_loan", "spouse_restless", [26, 60], (c, N) => {
+      let s = role3(c, "spouse");
+      return T("Kho\u1EA3n vay sau l\u01B0ng", `Ch\u1EE7 n\u1EE3 g\u1ECDi \u0111\u1EBFn nh\xE0. ${N(s)} \u0111\xE3 vay m\u1ED9t kho\u1EA3n l\u1EDBn m\xE0 kh\xF4ng n\xF3i v\u1EDBi b\u1EA1n.`, [
+        C3("G\xE1nh c\xF9ng", { custom: "borrow:0.5", trust: { npc: s, delta: 0.1 } }),
+        C3("B\u1EAFt ng\u01B0\u1EDDi \u1EA5y t\u1EF1 tr\u1EA3", { trust: { npc: s, delta: -0.25 }, rel: -3 })
+      ], 0, { npc: s });
+    }, { prerequisites: (c) => c.age >= 26 && f(c, "spouse_restless") && !!role3(c, "spouse") }),
+    B("sp_chores", "spouse_fair", [22, 60], (c, N) => {
+      let s = role3(c, "spouse");
+      return T("Chia vi\u1EC7c nh\xE0", `${N(s)} \u0111\u1EB7t l\xEAn b\xE0n m\u1ED9t t\u1EDD gi\u1EA5y: ai l\xE0m g\xEC, m\u1ED7i tu\u1EA7n.`, [
+        C3("K\xFD", { trust: { npc: s, delta: 0.12 }, bw: -1 }),
+        C3("C\u01B0\u1EDDi tr\u1EEB", { trust: { npc: s, delta: -0.08 } })
+      ], 0, { npc: s });
+    }, { prerequisites: (c) => c.age >= 22 && f(c, "spouse_fair") && !!role3(c, "spouse") }),
+    B("sp_vote", "spouse_fair", [28, 65], (c, N) => {
+      let s = role3(c, "spouse");
+      return T("Quy\u1EBFt c\xF9ng nhau", `C\xF3 m\u1ED9t kho\u1EA3n ti\u1EC1n. ${N(s)} mu\u1ED1n s\u1EEDa nh\xE0, b\u1EA1n mu\u1ED1n cho con h\u1ECDc th\xEAm. ${N(s)} \u0111\u1EC1 ngh\u1ECB b\u1ED1c th\u0103m.`, [
+        C3("B\u1ED1c th\u0103m", { gamble: { p: 0.5, win: { know: 2, log: "Con \u0111\u01B0\u1EE3c \u0111i h\u1ECDc th\xEAm." }, lose: { happy: 3, log: "Nh\xE0 \u0111\u01B0\u1EE3c s\u1EEDa." } }, trust: { npc: s, delta: 0.05 } }),
+        C3("Nh\u01B0\u1EDDng ng\u01B0\u1EDDi \u1EA5y", { happy: 2, trust: { npc: s, delta: 0.1 } }),
+        C3("C\xE3i \u0111\u1EBFn c\xF9ng", { trust: { npc: s, delta: -0.1 } })
+      ], 0, { npc: s });
+    }, { prerequisites: (c) => c.age >= 28 && f(c, "spouse_fair") && !!role3(c, "spouse") }),
+    /* ===================================== LỐI RẼ ===================================== */
+    B("mg_room", "path_migrant", [16, 60], () => T("Ph\xF2ng tr\u1ECD t\xE1m ng\u01B0\u1EDDi", "T\xE1m ng\u01B0\u1EDDi chung m\u1ED9t ph\xF2ng, ng\u1EE7 ca. Ai c\u0169ng g\u1EEDi g\u1EA7n h\u1EBFt l\u01B0\u01A1ng v\u1EC1 nh\xE0.", [
+      C3("G\u1EEDi v\u1EC1 nh\xE0 g\u1EA7n h\u1EBFt", { money: -0.1, rel: 4, counters: { kind: 1 } }),
+      C3("Gi\u1EEF l\u1EA1i m\u1ED9t ph\u1EA7n h\u1ECDc ti\u1EBFng", { know: 4 })
+    ])),
+    B("mg_scam", "path_migrant", [18, 60], () => T("Ng\u01B0\u1EDDi \u0111\u1ED3ng h\u01B0\u01A1ng", "M\u1ED9t ng\u01B0\u1EDDi \u0111\u1ED3ng h\u01B0\u01A1ng r\u1EE7 g\xF3p ti\u1EC1n l\xE0m \u0103n, n\xF3i ch\u1EAFc \u0103n.", [
+      C3("G\xF3p", { gamble: { p: 0.3, win: { money: 0.3 }, lose: { money: -0.3, log: "Ng\u01B0\u1EDDi \u0111\xF3 bi\u1EBFn m\u1EA5t c\xF9ng ti\u1EC1n c\u1EE7a m\u01B0\u1EDDi ng\u01B0\u1EDDi." } } }),
+      C3("Kh\xF4ng", {})
+    ])),
+    B("mg_papers", "path_migrant", [18, 60], () => T("H\u1EBFt h\u1EA1n gi\u1EA5y t\u1EDD", "Visa s\u1EAFp h\u1EBFt. \u1EDE l\u1EA1i th\xEC th\xE0nh b\u1EA5t h\u1EE3p ph\xE1p, v\u1EC1 th\xEC ch\u01B0a tr\u1EA3 xong n\u1EE3.", [
+      C3("\u1EDE l\u1EA1i chui", { money: 0.3, bw: -8, flags: ["undocumented"] }, "Ti\u1EC1n h\u01A1n, s\u1EE3 h\u01A1n"),
+      C3("V\u1EC1", { custom: "return_home", rel: 4 })
+    ])),
+    A("mg_return", "path_migrant", () => T("V\u1EC1 hay \u1EDF", "H\u1EBFt h\u1EE3p \u0111\u1ED3ng. Ti\u1EC1n g\u1EEDi v\u1EC1 \u0111\xE3 tr\u1EA3 xong n\u1EE3. \u1EDE qu\xEA ng\u01B0\u1EDDi ta x\xE2y nh\xE0 to, c\xF2n b\u1EA1n th\xEC quen d\u1EA7n n\u01A1i n\xE0y.", [
+      C3("V\u1EC1 qu\xEA", { custom: "return_home", rel: 6, happy: 4 }),
+      C3("\u1EDE l\u1EA1i th\xEAm", { income_mult: 1.05, rel: -4 }),
+      C3("\u0110\xF3n gia \u0111\xECnh sang", { custom: "borrow:0.6", rel: 4, agency: 0.03 }, void 0, { tier: "awakened" })
+    ]), { prerequisites: (c) => f(c, "path_migrant") && c.age >= 24 }),
+    B("un_dorm", "path_uni", [18, 23], () => T("K\xFD t\xFAc x\xE1", "B\u1EA1n c\xF9ng ph\xF2ng k\xFD t\xFAc r\u1EE7 \u0111i bi\u1EC3u t\xECnh ph\u1EA3n \u0111\u1ED1i t\u0103ng h\u1ECDc ph\xED.", [
+      C3("\u0110i", { agency: 0.03, gamble: { p: 0.8, win: { rel: 3 }, lose: { flags: ["record"], log: "T\xEAn b\u1EA1n b\u1ECB ghi v\xE0o danh s\xE1ch." } } }),
+      C3("\u1EDE l\u1EA1i \xF4n thi", { know: 2 })
+    ])),
+    B("un_job", "path_uni", [18, 23], () => T("H\u1ECDc hay l\xE0m", "M\u1ED9t c\xF4ng ty nh\u1EADn b\u1EA1n l\xE0m b\xE1n th\u1EDDi gian. \u0110i\u1EC3m s\u1EBD th\u1EA5p \u0111i.", [
+      C3("\u0110i l\xE0m", { money: 0.1, know: -3, flags: ["early_experience"] }),
+      C3("Ch\u1EC9 h\u1ECDc", { know: 4 })
+    ])),
+    B("un_rich", "path_uni", [18, 23], () => T("B\u1EA1n h\u1ECDc nh\xE0 gi\xE0u", "M\u1EA5y ng\u01B0\u1EDDi b\u1EA1n h\u1ECDc nh\xE0 gi\xE0u r\u1EE7 \u0111i ch\u01A1i cu\u1ED1i tu\u1EA7n. M\u1ED9t bu\u1ED5i b\u1EB1ng n\u1EEDa th\xE1ng ti\u1EC1n nh\xE0 g\u1EEDi.", [
+      C3("\u0110i", { money: -0.05, rel: 4, flags: ["rich_friends"] }),
+      C3("T\u1EEB ch\u1ED1i kh\xE9o", { rel: -1 })
+    ])),
+    B("dp_boss", "path_dropout", [12, 18], () => T("Ch\u1EE7 x\u01B0\u1EDFng", "Ch\u1EE7 x\u01B0\u1EDFng \u0111\xE1nh b\u1EA1n v\xEC l\xE0m h\u1ECFng h\xE0ng.", [
+      C3("Ch\u1ECBu", { happy: -5, health: -2 }),
+      C3("B\u1ECF \u0111i", { custom: "job_lose", agency: 0.02 }),
+      C3("B\xE1o c\xF4ng an ph\u01B0\u1EDDng", { trait: { bold: 2 }, gamble: { p: 0.4, win: { log: "Ch\u1EE7 x\u01B0\u1EDFng b\u1ECB ph\u1EA1t." }, lose: { custom: "job_lose" } } })
+    ])),
+    B("dp_night", "path_dropout", [16, 40], () => T("L\u1EDBp b\u1ED5 t\xFAc", "C\xF3 l\u1EDBp b\u1ED5 t\xFAc v\u0103n h\xF3a bu\u1ED5i t\u1ED1i \u1EDF nh\xE0 v\u0103n h\xF3a ph\u01B0\u1EDDng.", [
+      C3("\u0110i h\u1ECDc l\u1EA1i", { know: 6, health: -1, counters: { read: 2 }, flags: ["back_to_school"] }),
+      C3("Kh\xF4ng c\xF3 th\u1EDDi gian", {})
+    ])),
+    B("si_asked", (c) => !c.married && !c.widowed && (f(c, "temper_kind") || f(c, "origin_poor_rural") || f(c, "origin_middle")), [34, 50], () => T("Ng\u01B0\u1EDDi ta h\u1ECFi", "\u0110\xE1m c\u01B0\u1EDBi \u0111\u1EE9a em h\u1ECD. C\u1EA3 b\xE0n quay sang h\u1ECFi bao gi\u1EDD \u0111\u1EBFn l\u01B0\u1EE3t b\u1EA1n.", [
+      C3("C\u01B0\u1EDDi cho qua", { happy: -2 }),
+      C3("N\xF3i th\u1EADt m\xECnh mu\u1ED1n s\u1ED1ng m\u1ED9t m\xECnh", { agency: 0.03, rel: -2 }),
+      C3("Nh\u1EDD mai m\u1ED1i", { flags: ["matchmaking"] })
+    ]))
+  ], MICRO_GATES = {
+    m_mentor_ask: (c) => f(c, "temper_kind") || f(c, "temper_curious") || f(c, "temper2_kind"),
+    m_sibling_small: (c) => f(c, "origin_poor_rural") || f(c, "origin_poor_urban") || f(c, "temper_kind"),
+    m_friend_pitch: (c) => f(c, "temper_bold") || f(c, "temper2_bold") || f(c, "job_market") || f(c, "origin_poor_urban"),
+    m_friend_secret: (c) => f(c, "temper_kind") || f(c, "temper2_kind") || f(c, "origin_middle"),
+    m_defend_friend: (c) => f(c, "temper_bold") || f(c, "temper_tough") || f(c, "temper2_bold"),
+    m_father_future: (c) => !f(c, "origin_poor_rural") || f(c, "temper_curious"),
+    m_reconcile: (c) => f(c, "temper_kind") || c.tier !== "autopilot",
+    m_fruit_tree: (c) => f(c, "origin_poor_rural") || f(c, "temper_bold"),
+    m_broke_vase: (c) => !f(c, "origin_poor_rural"),
+    m_share_lunch: (c) => f(c, "temper_kind") || f(c, "origin_poor_rural") || f(c, "origin_poor_urban"),
+    m_teased_kid: (c) => f(c, "temper_kind") || f(c, "temper_bold"),
+    m_tell_sibling: (c) => !f(c, "temper_kind"),
+    m_fight_toy: (c) => f(c, "temper_bold") || f(c, "temper_tough"),
+    m_found_coin: (c) => f(c, "origin_poor_rural") || f(c, "origin_poor_urban") || f(c, "temper_kind"),
+    m_homework: (c) => !f(c, "temper_curious"),
+    m_hobby: (c) => f(c, "temper_tough") || f(c, "temper_bold") || f(c, "origin_middle"),
+    m_festival: (c) => c.poor_country && !f(c, "origin_rich"),
+    m_crush: (c) => !f(c, "temper_bold") || c.age > 16,
+    m_found_wallet: (c) => (f(c, "temper_kind") || f(c, "temper_curious") || f(c, "origin_poor_urban")) && !f(c, "job_farm"),
+    m_wrong_change: (c) => f(c, "job_market") || f(c, "origin_poor_urban") || f(c, "job_domestic"),
+    m_lottery: (c) => (f(c, "origin_poor_urban") || f(c, "job_driver") || f(c, "job_build")) && !f(c, "temper_curious"),
+    m_card_game: (c) => f(c, "job_build") || f(c, "job_driver") || f(c, "job_farm") || f(c, "origin_poor_rural"),
+    m_traffic_cop: (c) => f(c, "job_driver") || f(c, "job_market") || f(c, "job_build"),
+    m_wedding_far: (c) => f(c, "path_migrant") || f(c, "left_home") || f(c, "path_city"),
+    m_stranger_crash: (c) => f(c, "temper_kind") || f(c, "job_driver") || f(c, "job_health"),
+    m_checkup: (c) => f(c, "origin_rich") || f(c, "job_office") || f(c, "job_tech") || (f(c, "temper_curious") || f(c, "spouse_warm")) && c.age > 50,
+    m_funeral: (c) => !f(c, "path_migrant") && (c.poor_country || f(c, "origin_poor_rural")),
+    m_lend_bike: (c) => f(c, "origin_poor_rural") || f(c, "origin_poor_urban") || f(c, "job_farm"),
+    m_gossip: (c) => f(c, "origin_poor_rural") || f(c, "job_market") || f(c, "job_farm"),
+    m_call_parent: (c) => f(c, "path_migrant") || f(c, "left_home") || f(c, "path_city") || c.migrated,
+    m_send_home: (c) => f(c, "path_migrant") || f(c, "path_city") || f(c, "origin_poor_rural"),
+    m_village_meeting: (c) => f(c, "job_farm") || f(c, "origin_poor_rural"),
+    m_temple: (c) => (c.counters.faith ?? 0) > 0 || f(c, "temper_kind"),
+    m_colleague_drink: (c) => f(c, "job_factory") || f(c, "job_build") || f(c, "job_driver") || f(c, "job_office"),
+    m_cover_mistake: (c) => f(c, "job_factory") || f(c, "job_office") || f(c, "job_market"),
+    m_take_credit: (c) => f(c, "job_office") || f(c, "job_tech") || f(c, "job_teach"),
+    m_weekend_work: (c) => f(c, "job_office") || f(c, "job_tech") || f(c, "job_health"),
+    m_installment: (c) => (f(c, "temper_bold") || f(c, "spouse_restless") || f(c, "origin_poor_urban")) && !f(c, "job_farm"),
+    m_bonus: (c) => f(c, "job_office") || f(c, "job_tech") || f(c, "job_factory"),
+    m_evening_class: (c) => (f(c, "job_office") || f(c, "job_factory") || f(c, "job_market")) && !c.has_degree,
+    m_side_gig: (c) => f(c, "job_driver") || f(c, "job_build") || f(c, "job_teach"),
+    m_quit_job: (c) => f(c, "job_office") || f(c, "job_tech") || f(c, "job_teach") || f(c, "job_health"),
+    m_safety: (c) => f(c, "job_factory") || f(c, "job_build"),
+    m_exercise_start: (c) => !f(c, "temper_tough") && !f(c, "athlete"),
+    m_first_smoke: (c) => !f(c, "athlete"),
+    m_teen_drink: (c) => !f(c, "temper_curious") || f(c, "origin_poor_urban"),
+    m_mentor_book: (c) => f(c, "temper_curious") || f(c, "origin_middle") || f(c, "path_uni"),
+    m_help_father: (c) => !f(c, "origin_rich"),
+    m_parttime: (c) => !f(c, "origin_rich"),
+    m_skip_class: (c) => !f(c, "temper_curious"),
+    m_spouse_buy: (c) => f(c, "spouse_restless") || f(c, "spouse_warm"),
+    m_spouse_fight: (c) => f(c, "spouse_proud") || f(c, "spouse_restless"),
+    m_anniversary: (c) => f(c, "spouse_warm") || f(c, "spouse_fair"),
+    m_inlaw: (c) => f(c, "spouse_proud") || f(c, "spouse_fair"),
+    m_insurance: (c) => f(c, "job_office") || f(c, "job_tech") || f(c, "origin_rich"),
+    m_keep_working: (c) => !f(c, "origin_rich") && (f(c, "temper_tough") || f(c, "temper_bold") || c.broke),
+    m_grandchild: (c) => c.kids_alive > 0 && (f(c, "temper_kind") || f(c, "spouse_warm") || f(c, "origin_poor_rural")),
+    m_child_bullied: (c) => f(c, "temper_bold") || f(c, "temper_tough") || f(c, "spouse_proud"),
+    m_child_path: (c) => f(c, "temper_curious") || f(c, "origin_middle") || f(c, "origin_rich") || f(c, "spouse_fair"),
+    m_child_toy: (c) => f(c, "origin_poor_rural") || f(c, "origin_poor_urban") || f(c, "temper_kind") || f(c, "spouse_restless"),
+    m_child_homework: (c) => f(c, "temper_curious") || f(c, "temper_tough") || f(c, "path_uni"),
+    m_will: (c) => f(c, "origin_rich") || f(c, "origin_middle") || f(c, "temper_tough") || f(c, "spouse_proud")
+  }, RECUR = { dr_night: 6, dr_crash: 12, fc_ot: 5, he_shift: 5, he_gift: 8, te_tutor: 8, te_envelope: 10, bu_scaffold: 8, bu_unpaid: 10, of_politics: 8, tc_remote: 8, sp_wait: 6, sp_sorry: 5, sp_chores: 10, sp_vote: 8, mg_room: 5, mg_scam: 10, fa_drought: 7, do_accused: 12, or_hunger: 3, or_lottery_kid: 3, or_tutor: 3, to_water: 3, bo_gang: 3, un_job: 2, un_rich: 2, dp_boss: 3 };
+  for (let st of BRANCHES) {
+    let cd = RECUR[st.id];
+    cd !== void 0 && (st.once = !1, st.cooldownYears = cd);
+  }
+
+  // src/engine/narrative/branches2.ts
+  var C4 = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), f2 = (c, x) => c.flags.has(x), role4 = (c, r) => c.cast[r], T2 = (title, text, choices, def = 0, more = {}) => ({ title, text, choices, def, ...more });
+  function R(id, gate, ages, cooldown, build) {
+    let g = typeof gate == "string" ? (c) => f2(c, gate) : gate;
+    return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, build };
+  }
+  var vary2 = (id, age, arr) => {
+    let x = age * 31;
+    for (let ch of id) x = x * 33 + ch.charCodeAt(0) >>> 0;
+    return arr[x % arr.length];
+  }, BRANCHES2 = [
+    /* ---------------- NÔNG ---------------- */
+    R("fa2_pest", "job_farm", [18, 70], 6, (c) => T2("S\xE2u r\u1EA7y", vary2("pest", c.age, ["S\xE2u r\u1EA7y lan t\u1EEB ru\u1ED9ng b\xEAn sang.", "L\xE1 l\xFAa v\xE0ng t\u1EEBng m\u1EA3ng, ng\u01B0\u1EDDi ta b\u1EA3o b\u1EC7nh m\u1EDBi."]), [
+      C4("Phun thu\u1ED1c li\u1EC1u cao cho ch\u1EAFc", { money: -0.04, health: -3, income_mult: 1.02 }),
+      C4("L\xE0m theo c\xE1n b\u1ED9 khuy\u1EBFn n\xF4ng", { money: -0.02, know: 1 }),
+      C4("\u0110\u1EC3 m\u1EB7c, tr\u1EDDi cho bao nhi\xEAu \u0103n b\u1EA5y nhi\xEAu", { income_mult: 0.95 })
+    ])),
+    R("fa2_borrow_seed", "job_farm", [18, 65], 5, () => T2("Mua ch\u1ECBu ph\xE2n b\xF3n", "\u0110\u1EA1i l\xFD cho mua ch\u1ECBu ph\xE2n b\xF3n, tr\u1EA3 sau v\u1EE5, l\xE3i t\xEDnh theo th\xE1ng.", [
+      C4("Mua ch\u1ECBu", { custom: "borrow:0.1", income_mult: 1.03 }),
+      C4("B\xF3n \xEDt \u0111i", { income_mult: 0.98 })
+    ])),
+    R("fa2_harvest_help", (c) => f2(c, "job_farm") && !!role4(c, "neighbor"), [20, 70], 5, (c, N) => {
+      let nb = role4(c, "neighbor");
+      return T2("\u0110\u1ED5i c\xF4ng", `L\xFAa nh\xE0 ${N(nb)} ch\xEDn tr\u01B0\u1EDBc. ${N(nb)} nh\u1EDD b\u1EA1n sang g\u1EB7t, h\u1EE9a v\u1EE5 sau sang g\u1EB7t l\u1EA1i.`, [
+        C4("Sang g\u1EB7t", { health: -1, memory: { npc: nb, tag: "KEPT_PROMISE", weight: 0.12, note: "sang g\u1EB7t \u0111\u1ED5i c\xF4ng" } }),
+        C4("B\u1EADn ru\u1ED9ng nh\xE0", { memory: { npc: nb, tag: "REFUSED_HELP", weight: -0.08, note: "kh\xF4ng sang g\u1EB7t" } })
+      ], 0, { npc: nb });
+    }),
+    R("fa2_child_city", (c) => f2(c, "job_farm") && c.kids_teen > 0, [35, 65], 99, (c, N) => {
+      let k = role4(c, "child");
+      return T2("Con mu\u1ED1n l\xEAn th\xE0nh ph\u1ED1", `${k ? N(k) : "\u0110\u1EE9a l\u1EDBn"} kh\xF4ng mu\u1ED1n l\xE0m ru\u1ED9ng nh\u01B0 b\u1ED1 m\u1EB9.`, [
+        C4("Cho \u0111i", { rel: -2, money: -0.05, ...k ? { trust: { npc: k, delta: 0.15 } } : {} }),
+        C4("Gi\u1EEF l\u1EA1i l\xE0m c\xF9ng", { income_mult: 1.05, ...k ? { trust: { npc: k, delta: -0.15 } } : {} })
+      ], 0, k ? { npc: k } : {});
+    }),
+    /* ---------------- BUÔN BÁN ---------------- */
+    R("mk2_tax", "job_market", [20, 65], 5, () => T2("Qu\u1EA3n l\xFD th\u1ECB tr\u01B0\u1EDDng", "\u0110o\xE0n ki\u1EC3m tra \u0111i qua ch\u1EE3. Ai c\u0169ng bi\u1EBFt ph\u1EA3i 'g\u1EEDi' m\u1ED9t \xEDt \u0111\u1EC3 \u0111\u01B0\u1EE3c y\xEAn.", [
+      C4("G\u1EEDi", { money: -0.02, counters: { honest: -1 } }),
+      C4("Kh\xF4ng g\u1EEDi, xu\u1EA5t tr\xECnh h\xF3a \u0111\u01A1n", { gamble: { p: 0.5, win: { counters: { honest: 1 } }, lose: { money: -0.06, log: "H\u1ECD t\xECm ra l\u1ED7i kh\xE1c \u0111\u1EC3 ph\u1EA1t." } } })
+    ])),
+    R("mk2_neighbor_stall", (c) => f2(c, "job_market") && !!role4(c, "rival"), [22, 65], 6, (c, N) => {
+      let r = role4(c, "rival");
+      return T2("S\u1EA1p b\xEAn c\u1EA1nh", `${N(r)} b\xE1n c\xF9ng m\u1EB7t h\xE0ng ngay s\u1EA1p b\xEAn, ch\xE8o k\xE9o kh\xE1ch c\u1EE7a b\u1EA1n.`, [
+        C4("H\u1EA1 gi\xE1 gi\xE0nh kh\xE1ch", { income_mult: 0.97, memory: { npc: r, tag: "HUMILIATED_ME", weight: -0.1, note: "gi\xE0nh kh\xE1ch \u1EDF ch\u1EE3" } }),
+        C4("R\u1EE7 nhau chia m\u1EB7t h\xE0ng", { gamble: { p: 0.55, win: { income_mult: 1.05, memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.2, note: "chia m\u1EB7t h\xE0ng \u1EDF ch\u1EE3" } }, lose: {} } }),
+        C4("K\u1EC7", {})
+      ], 2, { npc: r });
+    }),
+    R("mk2_supplier", "job_market", [22, 65], 7, () => T2("M\u1ED1i h\xE0ng m\u1EDBi", "M\u1ED9t m\u1ED1i h\xE0ng m\u1EDBi ch\xE0o gi\xE1 r\u1EBB h\u01A1n hai ph\u1EA7n m\u01B0\u1EDDi, \u0111\xF2i tr\u1EA3 ti\u1EC1n tr\u01B0\u1EDBc.", [
+      C4("Tr\u1EA3 tr\u01B0\u1EDBc", { gamble: { p: 0.6, win: { income_mult: 1.08 }, lose: { money: -0.15, log: "M\u1ED1i h\xE0ng nh\u1EADn ti\u1EC1n r\u1ED3i bi\u1EBFn." } } }),
+      C4("Gi\u1EEF m\u1ED1i c\u0169", {})
+    ])),
+    R("mk2_early", "job_market", [20, 65], 4, (c) => T2("Phi\xEAn ch\u1EE3 s\u1EDBm", vary2("early", c.age, ["Ch\u1EE3 \u0111\u1EA7u m\u1ED1i m\u1EDF l\xFAc hai gi\u1EDD s\xE1ng. \u0110i s\u1EDBm th\xEC l\u1EA5y \u0111\u01B0\u1EE3c h\xE0ng \u0111\u1EB9p.", "M\xF9a T\u1EBFt, h\xE0ng v\u1EC1 nhi\u1EC1u, ph\u1EA3i d\u1EADy t\u1EEB m\u1ED9t gi\u1EDD."]), [
+      C4("\u0110i s\u1EDBm", { money: 0.03, health: -2, bw: -2 }),
+      C4("Ng\u1EE7 \u0111\u1EE7", { bw: 2 })
+    ])),
+    /* ---------------- LÁI XE ---------------- */
+    R("dr2_drunk", "job_driver", [18, 65], 6, () => T2("Kh\xE1ch say", "M\u1ED9t v\u1ECB kh\xE1ch say m\xE8m l\xEAn xe, tr\u1EA3 g\u1EA5p ba n\u1EBFu ch\u1EDF v\u1EC1 t\u1EADn nh\xE0 \u1EDF x\xE3 xa.", [
+      C4("Ch\u1EDF", { money: 0.02, gamble: { p: 0.85, win: {}, lose: { health: -6, money: -0.03, log: "Kh\xE1ch n\xF4n ra xe r\u1ED3i g\xE2y s\u1EF1." } } }),
+      C4("T\u1EEB ch\u1ED1i", {})
+    ])),
+    R("dr2_police", "job_driver", [18, 65], 5, () => T2("Ch\u1ED1t ki\u1EC3m tra", "Xe b\u1EA1n thi\u1EBFu m\u1ED9t gi\u1EA5y t\u1EDD. Ch\u1ED1t ki\u1EC3m tra ph\xEDa tr\u01B0\u1EDBc.", [
+      C4("Quay \u0111\u1EA7u \u0111i \u0111\u01B0\u1EDDng v\xF2ng", { bw: -2, money: -5e-3 }),
+      C4("\u0110i qua, chu\u1EA9n b\u1ECB 'b\u1ED3i d\u01B0\u1EE1ng'", { money: -0.01, counters: { honest: -1 } })
+    ])),
+    R("dr2_back", "job_driver", [30, 65], 7, () => T2("C\xE1i l\u01B0ng", "Ng\u1ED3i xe c\u1EA3 ng\xE0y, l\u01B0ng b\u1EA1n b\u1EAFt \u0111\u1EA7u \u0111au m\u1ED7i s\xE1ng.", [
+      C4("\u0110i v\u1EADt l\xFD tr\u1ECB li\u1EC7u", { money: -0.03, health: 4 }),
+      C4("U\u1ED1ng thu\u1ED1c gi\u1EA3m \u0111au, ch\u1EA1y ti\u1EBFp", { health: -3, money: 0.02 })
+    ])),
+    R("dr2_tourist", (c) => f2(c, "job_driver") && !c.poor_country, [20, 60], 6, () => T2("Kh\xE1ch du l\u1ECBch", "M\u1ED9t kh\xE1ch du l\u1ECBch h\u1ECFi gi\xE1 chuy\u1EBFn \u0111i. H\u1ECD kh\xF4ng bi\u1EBFt gi\xE1 th\u1EADt.", [
+      C4("N\xF3i gi\xE1 th\u1EADt", { counters: { honest: 1 } }),
+      C4("N\xF3i g\u1EA5p \u0111\xF4i", { money: 0.01, counters: { honest: -1 } })
+    ])),
+    /* ---------------- THỢ ---------------- */
+    R("bu2_private", "job_build", [22, 65], 5, () => T2("Nh\u1EADn vi\u1EC7c ri\xEAng", "M\u1ED9t nh\xE0 trong x\xF3m thu\xEA b\u1EA1n s\u1EEDa nh\xE0 cu\u1ED1i tu\u1EA7n, tr\u1EA3 ti\u1EC1n m\u1EB7t.", [
+      C4("Nh\u1EADn, l\xE0m k\u1EF9", { money: 0.04, rel: 2, health: -1 }),
+      C4("Nh\u1EADn, l\xE0m qua loa cho nhanh", { money: 0.05, rel: -2, counters: { honest: -1 } }),
+      C4("Ngh\u1EC9 cu\u1ED1i tu\u1EA7n", { bw: 2 })
+    ])),
+    R("bu2_apprentice", (c) => f2(c, "job_build") && c.age >= 30, [30, 65], 99, () => T2("Th\u1EB1ng ph\u1EE5", "M\u1ED9t \u0111\u1EE9a tr\u1EBB m\u01B0\u1EDDi l\u0103m tu\u1ED5i xin theo b\u1EA1n h\u1ECDc ngh\u1EC1, kh\xF4ng l\u01B0\u01A1ng.", [
+      C4("Nh\u1EADn, d\u1EA1y h\u1EBFt ngh\u1EC1", { counters: { kind: 2 }, health: 1, flags: ["has_apprentice"] }),
+      C4("Nh\u1EADn, sai v\u1EB7t", { money: 0.02 }),
+      C4("Kh\xF4ng nh\u1EADn", {})
+    ])),
+    R("bu2_heat", "job_build", [18, 65], 4, (c) => T2("N\u1EAFng", vary2("heat", c.age, ["B\u1ED1n m\u01B0\u01A1i \u0111\u1ED9. C\xF4ng tr\xECnh kh\xF4ng c\xF3 m\xE1i che.", "N\u1EAFng nh\u01B0 \u0111\u1ED5 l\u1EEDa, cai v\u1EABn gi\u1EE5c."]), [
+      C4("L\xE0m ti\u1EBFp", { health: -3, money: 0.01 }),
+      C4("Ngh\u1EC9 tr\u01B0a d\u01B0\u1EDBi b\xF3ng c\xE2y", { gamble: { p: 0.7, win: {}, lose: { money: -0.01, log: "Cai tr\u1EEB n\u1EEDa ng\xE0y c\xF4ng." } } })
+    ])),
+    R("bu2_tools", "job_build", [22, 60], 8, () => T2("\u0110\u1ED3 ngh\u1EC1", "B\u1ED9 \u0111\u1ED3 ngh\u1EC1 c\u0169 \u0111\xE3 h\u1ECFng. \u0110\u1ED3 t\u1ED1t th\xEC \u0111\u1EAFt.", [
+      C4("Mua \u0111\u1ED3 t\u1ED1t", { money: -0.05, income_mult: 1.04 }),
+      C4("Mua \u0111\u1ED3 r\u1EBB", { money: -0.01 })
+    ])),
+    /* ---------------- NHÀ MÁY ---------------- */
+    R("fc2_union", "job_factory", [20, 60], 8, () => T2("C\xF4ng \u0111o\xE0n", "C\xF3 ng\u01B0\u1EDDi l\xE9n r\u1EE7 l\u1EADp c\xF4ng \u0111o\xE0n \u0111\u1ED9c l\u1EADp trong x\u01B0\u1EDFng.", [
+      C4("Tham gia", { agency: 0.02, rel: 3, gamble: { p: 0.7, win: {}, lose: { custom: "job_lose", log: "B\u1EA1n c\xF3 t\xEAn trong danh s\xE1ch b\u1ECB \u0111u\u1ED5i." } } }),
+      C4("\u0110\u1EE9ng ngo\xE0i", {})
+    ])),
+    R("fc2_dorm", "job_factory", [18, 45], 5, () => T2("Khu tr\u1ECD c\xF4ng nh\xE2n", "Khu tr\u1ECD quanh nh\xE0 m\xE1y t\u0103ng gi\xE1. C\xF3 ph\xF2ng xa h\u01A1n, r\u1EBB h\u01A1n, \u0111i l\u1EA1i m\u1ED9t ti\u1EBFng.", [
+      C4("Chuy\u1EC3n ra xa", { money: 0.02, bw: -3, health: -1 }),
+      C4("\u1EDE l\u1EA1i", { money: -0.02 })
+    ])),
+    R("fc2_friend_fired", "job_factory", [20, 60], 7, () => T2("\u0110\u1ED3ng nghi\u1EC7p b\u1ECB \u0111u\u1ED5i", "M\u1ED9t ch\u1ECB c\xF9ng chuy\u1EC1n b\u1ECB \u0111u\u1ED5i v\xEC \u0111i v\u1EC7 sinh qu\xE1 n\u0103m ph\xFAt. C\u1EA3 chuy\u1EC1n im l\u1EB7ng.", [
+      C4("L\xEAn ti\u1EBFng", { trait: { fair: 2 }, rel: 3, gamble: { p: 0.6, win: { log: "Qu\u1EA3n \u0111\u1ED1c nh\u1EADn ch\u1ECB \u1EA5y l\u1EA1i." }, lose: { income_mult: 0.95 } } }),
+      C4("Im l\u1EB7ng", { happy: -2 })
+    ])),
+    R("fc2_eyes", "job_factory", [30, 60], 99, () => T2("M\u1EAFt m\u1EDD", "M\u01B0\u1EDDi n\u0103m nh\xECn \u0111\u01B0\u1EDDng kim, m\u1EAFt b\u1EA1n m\u1EDD \u0111i.", [
+      C4("\u0110i kh\xE1m, \u0111\u1ED5i kh\xE2u kh\xE1c", { money: -0.03, income_mult: 0.95, health: 2 }),
+      C4("C\u1ED1", { health: -4 })
+    ])),
+    /* ---------------- DẠY HỌC ---------------- */
+    R("te2_parent", "job_teach", [24, 60], 5, () => T2("Ph\u1EE5 huynh n\xF3ng t\xEDnh", "M\u1ED9t ph\u1EE5 huynh x\xF4ng v\xE0o l\u1EDBp m\u1EAFng b\u1EA1n v\xEC cho con h\u1ECD \u0111i\u1EC3m th\u1EA5p.", [
+      C4("Gi\u1EEF nguy\xEAn \u0111i\u1EC3m", { trait: { fair: 1 }, happy: -2 }),
+      C4("N\xE2ng \u0111i\u1EC3m cho y\xEAn", { counters: { honest: -1 } })
+    ])),
+    R("te2_remote", (c) => f2(c, "job_teach") && c.poor_country, [22, 45], 99, () => T2("D\u1EA1y v\xF9ng cao", "S\u1EDF c\u1EA7n gi\xE1o vi\xEAn l\xEAn d\u1EA1y \u1EDF m\u1ED9t \u0111i\u1EC3m tr\u01B0\u1EDDng v\xF9ng cao ba n\u0103m. Ph\u1EE5 c\u1EA5p cao, xa nh\xE0.", [
+      C4("\u0110i", { money: 0.1, rel: -5, flags: ["highland_teacher", "left_home"], agency: 0.03, counters: { kind: 2 } }),
+      C4("\u1EDE l\u1EA1i", {})
+    ])),
+    R("te2_exam", "job_teach", [26, 60], 6, () => T2("\u0110\u1EC1 thi", "M\u1ED9t \u0111\u1ED3ng nghi\u1EC7p \u0111\u1EC1 ngh\u1ECB l\u1ED9 \u0111\u1EC1 cho l\u1EDBp m\xECnh \u0111\u1EC3 th\xE0nh t\xEDch tr\u01B0\u1EDDng \u0111\u1EB9p h\u01A1n.", [
+      C4("\u0110\u1ED3ng \xFD", { income_mult: 1.03, counters: { honest: -2 } }),
+      C4("T\u1EEB ch\u1ED1i", { counters: { honest: 1 }, rel: -1 })
+    ])),
+    R("te2_bright", "job_teach", [24, 60], 6, () => T2("\u0110\u1EE9a h\u1ECDc tr\xF2 gi\u1ECFi", "C\xF3 m\u1ED9t \u0111\u1EE9a h\u1ECDc tr\xF2 r\u1EA5t gi\u1ECFi nh\u01B0ng nh\xE0 ngh\xE8o, s\u1EAFp ph\u1EA3i ngh\u1EC9 h\u1ECDc.", [
+      C4("\u0110\u1EBFn nh\xE0 thuy\u1EBFt ph\u1EE5c b\u1ED1 m\u1EB9", { counters: { kind: 2 }, bw: -2 }),
+      C4("\u0110\xF3ng h\u1ECDc ph\xED gi\xFAp", { money: -0.05, counters: { kind: 2 } }),
+      C4("Kh\xF4ng ph\u1EA3i vi\u1EC7c c\u1EE7a m\xECnh", {})
+    ])),
+    /* ---------------- Y TẾ ---------------- */
+    R("he2_violence", "job_health", [22, 60], 7, () => T2("Ng\u01B0\u1EDDi nh\xE0 hung h\u0103ng", "Ng\u01B0\u1EDDi nh\xE0 b\u1EC7nh nh\xE2n lao v\xE0o t\xFAm \xE1o b\u1EA1n v\xEC ch\u1EDD l\xE2u.", [
+      C4("B\xECnh t\u0129nh gi\u1EA3i th\xEDch", { bw: -3 }),
+      C4("G\u1ECDi b\u1EA3o v\u1EC7", {}),
+      C4("Xin ngh\u1EC9 m\u1ED9t tu\u1EA7n", { money: -0.02, health: 2 })
+    ])),
+    R("he2_private", "job_health", [28, 60], 99, () => T2("Ph\xF2ng kh\xE1m t\u01B0", "M\u1ED9t ph\xF2ng kh\xE1m t\u01B0 m\u1EDDi b\u1EA1n l\xE0m th\xEAm bu\u1ED5i t\u1ED1i, tr\u1EA3 g\u1EA5p ba b\u1EC7nh vi\u1EC7n.", [
+      C4("Nh\u1EADn", { income_mult: 1.25, health: -3, bw: -3 }),
+      C4("Kh\xF4ng", {})
+    ])),
+    R("he2_drug", "job_health", [25, 60], 8, () => T2("H\xE3ng thu\u1ED1c", "Tr\xECnh d\u01B0\u1EE3c vi\xEAn \u0111\u1EC1 ngh\u1ECB 'hoa h\u1ED3ng' n\u1EBFu b\u1EA1n k\xEA \u0111\u01A1n thu\u1ED1c c\u1EE7a h\xE3ng h\u1ECD.", [
+      C4("Nh\u1EADn", { money: 0.06, secret: { tag: "PAID_BRIBE", severity: 0.5, fuse_years: [3, 12], note: "hoa h\u1ED3ng h\xE3ng thu\u1ED1c" } }),
+      C4("T\u1EEB ch\u1ED1i", { counters: { honest: 1 } })
+    ])),
+    R("he2_death", "job_health", [24, 60], 9, () => T2("Ca kh\xF4ng c\u1EE9u \u0111\u01B0\u1EE3c", "M\u1ED9t b\u1EC7nh nhi kh\xF4ng qua kh\u1ECFi trong ca tr\u1EF1c c\u1EE7a b\u1EA1n.", [
+      C4("Xin ngh\u1EC9 v\xE0i ng\xE0y", { money: -0.01, happy: -4 }),
+      C4("Tr\u1EF1c ti\u1EBFp", { happy: -8, bw: -4 })
+    ])),
+    /* ---------------- VĂN PHÒNG ---------------- */
+    R("of2_meeting", "job_office", [22, 60], 4, (c) => T2("Cu\u1ED9c h\u1ECDp", vary2("meet", c.age, ["S\u1EBFp \u0111\u01B0a ra m\u1ED9t k\u1EBF ho\u1EA1ch b\u1EA1n th\u1EA5y r\xF5 l\xE0 sai.", "C\u1EA3 ph\xF2ng g\u1EADt \u0111\u1EA7u v\u1EDBi m\u1ED9t \u0111\u1EC1 xu\u1EA5t m\xE0 b\u1EA1n bi\u1EBFt s\u1EBD th\u1EA5t b\u1EA1i."]), [
+      C4("N\xF3i th\u1EB3ng", { agency: 0.01, gamble: { p: 0.5, win: { income_mult: 1.03 }, lose: { income_mult: 0.98 } } }),
+      C4("G\u1EADt theo", {})
+    ])),
+    R("of2_expense", "job_office", [24, 60], 6, () => T2("H\xF3a \u0111\u01A1n c\xF4ng t\xE1c", "\u0110\u1ED3ng nghi\u1EC7p khai kh\u1ED1ng h\xF3a \u0111\u01A1n c\xF4ng t\xE1c. Ai c\u0169ng l\xE0m, b\u1EA3o b\u1EA1n c\u0169ng n\xEAn l\xE0m.", [
+      C4("Khai kh\u1ED1ng", { money: 0.02, counters: { honest: -1 } }),
+      C4("Khai \u0111\xFAng", { counters: { honest: 1 } })
+    ])),
+    R("of2_burnout", "job_office", [26, 60], 6, () => T2("Ki\u1EC7t s\u1EE9c", "Ba th\xE1ng li\u1EC1n b\u1EA1n ng\u1EE7 kh\xF4ng qu\xE1 n\u0103m ti\u1EBFng. S\xE1ng nay b\u1EA1n ng\u1ED3i trong xe m\u01B0\u1EDDi ph\xFAt kh\xF4ng xu\u1ED1ng n\u1ED5i.", [
+      C4("Xin ngh\u1EC9 ph\xE9p d\xE0i", { money: -0.05, bw: 10, health: 3 }),
+      C4("C\u1ED1 qua qu\xFD n\xE0y", { bw: -6, health: -3 })
+    ])),
+    R("of2_mentor", (c) => f2(c, "job_office") && c.age >= 38, [38, 60], 99, () => T2("Ng\u01B0\u1EDDi m\u1EDBi", "M\u1ED9t nh\xE2n vi\xEAn m\u1EDBi r\u1EA5t gi\u1ECFi, c\xF3 th\u1EC3 thay b\u1EA1n trong v\xE0i n\u0103m.", [
+      C4("D\u1EA1y h\u1EBFt nh\u1EEFng g\xEC m\xECnh bi\u1EBFt", { counters: { kind: 2 }, rel: 3 }),
+      C4("Gi\u1EEF ngh\u1EC1", { income_mult: 1.02 })
+    ])),
+    /* ---------------- KỸ THUẬT ---------------- */
+    R("tc2_bug", "job_tech", [22, 60], 5, () => T2("L\u1ED7i l\xFAc n\u1EEDa \u0111\xEAm", "H\u1EC7 th\u1ED1ng s\u1EADp l\xFAc hai gi\u1EDD s\xE1ng. B\u1EA1n kh\xF4ng tr\u1EF1c, nh\u01B0ng ch\u1EC9 b\u1EA1n bi\u1EBFt s\u1EEDa.", [
+      C4("D\u1EADy s\u1EEDa", { bw: -4, rel: 2, income_mult: 1.02 }),
+      C4("T\u1EAFt \u0111i\u1EC7n tho\u1EA1i", { gamble: { p: 0.6, win: {}, lose: { income_mult: 0.95, log: "S\u1EBFp kh\xF4ng qu\xEAn." } } })
+    ])),
+    R("tc2_data", "job_tech", [24, 60], 99, () => T2("D\u1EEF li\u1EC7u ng\u01B0\u1EDDi d\xF9ng", "C\xF4ng ty mu\u1ED1n b\xE1n d\u1EEF li\u1EC7u ng\u01B0\u1EDDi d\xF9ng m\xE0 kh\xF4ng h\u1ECFi h\u1ECD. B\u1EA1n l\xE0 ng\u01B0\u1EDDi ph\u1EA3i vi\u1EBFt \u0111o\u1EA1n m\xE3 \u0111\xF3.", [
+      C4("Vi\u1EBFt", { income_mult: 1.05, counters: { honest: -2 } }),
+      C4("T\u1EEB ch\u1ED1i", { trait: { fair: 2 }, gamble: { p: 0.5, win: {}, lose: { custom: "job_lose" } } }),
+      C4("B\xE1o cho b\xE1o ch\xED", { agency: 0.04, trait: { bold: 2 }, custom: "job_lose" }, "L\u1EF1a ch\u1ECDn th\u1EE9 ba", { tier: "sovereign" })
+    ])),
+    R("tc2_learn", "job_tech", [22, 55], 4, () => T2("C\xF4ng ngh\u1EC7 m\u1EDBi", "L\u1EA1i m\u1ED9t c\xF4ng ngh\u1EC7 m\u1EDBi. Kh\xF4ng h\u1ECDc th\xEC hai n\u0103m n\u1EEFa l\u1EA1c h\u1EADu.", [
+      C4("H\u1ECDc bu\u1ED5i t\u1ED1i", { know: 3, bw: -3, counters: { read: 1 } }),
+      C4("\u0110\u1EC3 sau", {})
+    ])),
+    R("tc2_abroad", (c) => f2(c, "job_tech") && c.gdp < 4e4, [24, 45], 99, () => T2("L\u1EDDi m\u1EDDi sang n\u01B0\u1EDBc ngo\xE0i", "M\u1ED9t c\xF4ng ty n\u01B0\u1EDBc ngo\xE0i m\u1EDDi b\u1EA1n sang l\xE0m, l\u01B0\u01A1ng g\u1EA5p b\u1ED1n.", [
+      C4("\u0110i", { income_mult: 2.5, flags: ["path_migrant", "left_home"], rel: -6, later: { years: 5, storylet: "mg_return" } }),
+      C4("\u1EDE l\u1EA1i", { rel: 2 })
+    ])),
+    /* ---------------- GIÚP VIỆC ---------------- */
+    R("do2_child", "job_domestic", [18, 60], 6, () => T2("\u0110\u1EE9a tr\u1EBB nh\xE0 ch\u1EE7", "\u0110\u1EE9a con nh\xE0 ch\u1EE7 qu\u1EA5n b\u1EA1n h\u01A1n m\u1EB9 n\xF3. B\xE0 ch\u1EE7 b\u1EAFt \u0111\u1EA7u kh\xF3 ch\u1ECBu.", [
+      C4("Gi\u1EEF kho\u1EA3ng c\xE1ch", { happy: -2 }),
+      C4("V\u1EABn th\u01B0\u01A1ng n\xF3 nh\u01B0 c\u0169", { happy: 2, gamble: { p: 0.7, win: {}, lose: { custom: "job_lose" } } })
+    ])),
+    R("do2_holiday", "job_domestic", [18, 60], 4, () => T2("T\u1EBFt", "Ch\u1EE7 nh\xE0 mu\u1ED1n b\u1EA1n \u1EDF l\u1EA1i l\xE0m T\u1EBFt, tr\u1EA3 g\u1EA5p ba.", [
+      C4("\u1EDE l\u1EA1i", { money: 0.03, rel: -3 }),
+      C4("V\u1EC1 qu\xEA", { rel: 3 })
+    ])),
+    /* ---------------- XUẤT THÂN ở tuổi trưởng thành ---------------- */
+    R("or2_rural_land", "origin_poor_rural", [25, 60], 99, (c, N) => {
+      let s = role4(c, "sibling");
+      return T2("M\u1EA3nh v\u01B0\u1EDDn c\u1EE7a b\u1ED1 m\u1EB9", `${s ? N(s) : "H\u1ECD h\xE0ng"} mu\u1ED1n b\xE1n m\u1EA3nh v\u01B0\u1EDDn chung \u0111\u1EC3 chia ti\u1EC1n.`, [
+        C4("\u0110\u1ED3ng \xFD b\xE1n", { money: 0.4, close_doors: ["return_home"] }),
+        C4("Gi\u1EEF l\u1EA1i l\xE0m ch\u1ED7 v\u1EC1", { ...s ? { trust: { npc: s, delta: -0.1 } } : {} })
+      ], 0, s ? { npc: s } : {});
+    }),
+    R("or2_urban_alley", "origin_poor_urban", [25, 60], 99, () => T2("Con h\u1EBBm c\u0169", "Con h\u1EBBm n\u01A1i b\u1EA1n l\u1EDBn l\xEAn s\u1EAFp b\u1ECB gi\u1EA3i t\u1ECFa. H\xE0ng x\xF3m c\u0169 r\u1EE7 k\xFD \u0111\u01A1n.", [
+      C4("K\xFD \u0111\u01A1n", { rel: 4, agency: 0.01 }),
+      C4("Kh\xF4ng li\xEAn quan n\u1EEFa", {})
+    ])),
+    R("or2_middle_parents", "origin_middle", [30, 60], 99, (c, N) => {
+      let m = role4(c, "mother") ?? role4(c, "father");
+      return T2("Nh\xE0 c\u1EE7a b\u1ED1 m\u1EB9", `${m ? N(m) : "B\u1ED1 m\u1EB9"} mu\u1ED1n b\xE1n c\u0103n nh\xE0 c\u0169, chia cho c\xE1c con mua nh\xE0 ri\xEAng.`, [
+        C4("\u0110\u1ED3ng \xFD", { money: 0.5 }),
+        C4("Khuy\xEAn gi\u1EEF l\u1EA1i", { ...m ? { trust: { npc: m, delta: 0.1 } } : {} })
+      ], 0, m ? { npc: m } : {});
+    }),
+    R("or2_rich_charity", "origin_rich", [30, 70], 8, () => T2("T\u1EEB thi\u1EC7n", "H\u1ED9i t\u1EEB thi\u1EC7n m\u1EDDi b\u1EA1n \u0111\u1EE9ng t\xEAn m\u1ED9t ch\u01B0\u01A1ng tr\xECnh. B\xE1o ch\xED s\u1EBD \u0111\u01B0a tin.", [
+      C4("G\xF3p ti\u1EC1n, kh\xF4ng \u0111\u1EE9ng t\xEAn", { money: -0.1, counters: { kind: 2 } }),
+      C4("\u0110\u1EE9ng t\xEAn, g\xF3p \xEDt", { money: -0.03, rel: 3 }),
+      C4("Kh\xF4ng", {})
+    ])),
+    R("or2_rich_family", "origin_rich", [25, 60], 7, () => T2("H\u1ECD h\xE0ng xin vi\u1EC7c", "M\u1ED9t ng\u01B0\u1EDDi h\u1ECD h\xE0ng xin b\u1EA1n s\u1EAFp x\u1EBFp cho con h\u1ECD m\u1ED9t ch\u1ED7 l\xE0m.", [
+      C4("S\u1EAFp x\u1EBFp", { rel: 3, counters: { honest: -1 } }),
+      C4("B\u1EA3o n\xF3 t\u1EF1 n\u1ED9p h\u1ED3 s\u01A1", { rel: -3, trait: { fair: 1 } })
+    ])),
+    /* ---------------- TÍNH KHÍ ở tuổi trưởng thành ---------------- */
+    R("tm2_curious", "temper_curious", [25, 70], 5, (c) => T2("T\xF2 m\xF2", vary2("cu2", c.age, ["B\u1EA1n t\xECnh c\u1EDD \u0111\u1ECDc \u0111\u01B0\u1EE3c v\u1EC1 m\u1ED9t th\u1EE9 ho\xE0n to\xE0n m\u1EDBi.", "C\xF3 m\u1ED9t l\u1EDBp h\u1ECDc mi\u1EC5n ph\xED v\u1EC1 thi\xEAn v\u0103n \u1EDF th\u01B0 vi\u1EC7n t\u1EC9nh."]), [
+      C4("\u0110\u1EAFm v\xE0o", { know: 3, counters: { read: 1 }, happy: 2, bw: -1 }),
+      C4("Kh\xF4ng c\xF3 th\u1EDDi gian", {})
+    ])),
+    R("tm2_bold", "temper_bold", [25, 65], 5, () => T2("Li\u1EC1u", "C\xF3 m\u1ED9t c\u01A1 h\u1ED9i ch\u1EC9 ng\u01B0\u1EDDi gan m\u1EDBi d\xE1m n\u1EAFm.", [
+      C4("N\u1EAFm", { gamble: { p: 0.45, win: { money: 0.4, log: "L\u1EA7n n\xE0y b\u1EA1n th\u1EAFng." }, lose: { money: -0.3, log: "L\u1EA7n n\xE0y b\u1EA1n thua." } } }),
+      C4("Th\xF4i", {})
+    ])),
+    R("tm2_kind", "temper_kind", [25, 75], 5, (c) => T2("Ng\u01B0\u1EDDi l\u1EA1", vary2("ki2", c.age, ["M\u1ED9t ng\u01B0\u1EDDi \u0111\xE0n b\xE0 ng\u1ED3i kh\xF3c \u1EDF b\u1EBFn xe, m\u1EA5t h\u1EBFt ti\u1EC1n v\u1EC1 qu\xEA.", "\u0110\u1EE9a b\xE9 b\xE1n h\xE0ng rong b\u1ECB \u0111\xE1nh ngay tr\u01B0\u1EDBc m\u1EB7t b\u1EA1n."]), [
+      C4("Gi\xFAp", { money: -0.01, counters: { kind: 1 }, happy: 2 }),
+      C4("\u0110i qua", { happy: -2 })
+    ])),
+    R("tm2_tough", "temper_tough", [25, 70], 5, () => T2("M\u1ED9t m\xECnh g\xE1nh", "C\xF3 chuy\u1EC7n n\u1EB7ng. B\u1EA1n quen t\u1EF1 g\xE1nh, kh\xF4ng k\u1EC3 v\u1EDBi ai.", [
+      C4("T\u1EF1 g\xE1nh", { bw: -4, happy: -1 }),
+      C4("L\u1EA7n n\xE0y nh\u1EDD ng\u01B0\u1EDDi kh\xE1c", { rel: 3, bw: 3 })
+    ])),
+    /* ---------------- BẠN ĐỜI (thêm) ---------------- */
+    R("sp2_warm_sick", (c) => f2(c, "spouse_warm") && !!role4(c, "spouse"), [40, 85], 8, (c, N) => {
+      let s = role4(c, "spouse");
+      return T2(`${N(s)} m\u1EC7t`, `${N(s)} gi\u1EA5u b\u1EC7nh v\xEC s\u1EE3 t\u1ED1n ti\u1EC1n.`, [
+        C4("B\u1EAFt \u0111i kh\xE1m", { money: -0.05, trust: { npc: s, delta: 0.1 } }),
+        C4("Tin l\u1EDDi ng\u01B0\u1EDDi \u1EA5y", { gamble: { p: 0.7, win: {}, lose: { happy: -6, log: "B\u1EC7nh n\u1EB7ng h\u01A1n b\u1EA1n t\u01B0\u1EDFng." } } })
+      ], 0, { npc: s });
+    }),
+    R("sp2_proud_job", (c) => f2(c, "spouse_proud") && !!role4(c, "spouse"), [26, 60], 6, (c, N) => {
+      let s = role4(c, "spouse");
+      return T2("Th\u1EC3 di\u1EC7n", `${N(s)} kh\xF4ng ch\u1ECBu cho b\u1EA1n l\xE0m c\xF4ng vi\u1EC7c "th\u1EA5p k\xE9m" d\xF9 tr\u1EA3 t\u1ED1t h\u01A1n.`, [
+        C4("Nghe theo", { trust: { npc: s, delta: 0.08 }, income_mult: 0.97 }),
+        C4("V\u1EABn l\xE0m", { income_mult: 1.05, trust: { npc: s, delta: -0.12 } })
+      ], 0, { npc: s });
+    }),
+    R("sp2_restless_move", (c) => f2(c, "spouse_restless") && !!role4(c, "spouse"), [26, 55], 8, (c, N) => {
+      let s = role4(c, "spouse");
+      return T2("\u0110i n\u01A1i kh\xE1c", `${N(s)} mu\u1ED1n chuy\u1EC3n c\u1EA3 nh\xE0 l\xEAn th\xE0nh ph\u1ED1 l\u1EDBn, b\u1EAFt \u0111\u1EA7u l\u1EA1i.`, [
+        C4("\u0110i", { money: -0.15, rel: -4, agency: 0.02, flags: ["left_home"], trust: { npc: s, delta: 0.15 } }),
+        C4("\u1EDE l\u1EA1i", { trust: { npc: s, delta: -0.12 } })
+      ], 0, { npc: s });
+    }),
+    R("sp2_fair_money", (c) => f2(c, "spouse_fair") && !!role4(c, "spouse"), [25, 65], 7, (c, N) => {
+      let s = role4(c, "spouse");
+      return T2("S\u1ED5 chi ti\xEAu", `${N(s)} \u0111\u1EC1 ngh\u1ECB hai ng\u01B0\u1EDDi c\xF9ng ghi s\u1ED5 chi ti\xEAu, minh b\u1EA1ch t\u1EEBng \u0111\u1ED3ng.`, [
+        C4("\u0110\u1ED3ng \xFD", { counters: { save: 2 }, trust: { npc: s, delta: 0.08 } }),
+        C4("Th\u1EA5y phi\u1EC1n", { trust: { npc: s, delta: -0.05 } })
+      ], 0, { npc: s });
+    }),
+    /* ---------------- LỐI RẼ (thêm) ---------------- */
+    R("mg2_lonely", "path_migrant", [20, 60], 5, () => T2("Xa nh\xE0", "\u0110\xEAm giao th\u1EEBa \u1EDF x\u1EE9 ng\u01B0\u1EDDi. C\u1EA3 khu tr\u1ECD g\u1ECDi video v\u1EC1 nh\xE0.", [
+      C4("G\u1ECDi v\u1EC1", { rel: 2, happy: -1 }),
+      C4("Ra ngo\xE0i m\u1ED9t m\xECnh", { happy: -3, counters: { drink: 1 } })
+    ])),
+    R("mg2_language", "path_migrant", [20, 50], 6, () => T2("Ti\u1EBFng", "\xD4ng ch\u1EE7 n\xF3i nhanh, b\u1EA1n hi\u1EC3u \u0111\u01B0\u1EE3c m\u1ED9t n\u1EEDa. C\xF3 l\u1EDBp ti\u1EBFng bu\u1ED5i t\u1ED1i.", [
+      C4("\u0110i h\u1ECDc", { know: 4, bw: -2, income_mult: 1.05 }),
+      C4("Kh\xF4ng c\xF3 s\u1EE9c", {})
+    ])),
+    R("un2_grad", "path_uni", [21, 26], 99, () => T2("Ra tr\u01B0\u1EDDng", "C\xF3 hai l\u1EDDi m\u1EDDi: m\u1ED9t c\xF4ng ty l\u1EDBn \u1EDF th\xE0nh ph\u1ED1, v\xE0 m\u1ED9t ch\u1ED7 \u1EDF qu\xEA g\u1EA7n b\u1ED1 m\u1EB9.", [
+      C4("\u1EDE l\u1EA1i th\xE0nh ph\u1ED1", { income_mult: 1.15, rel: -3, flags: ["left_home"] }),
+      C4("V\u1EC1 qu\xEA", { rel: 4, income_mult: 0.9 })
+    ])),
+    R("dp2_skill", "path_dropout", [18, 40], 5, () => T2("H\u1ECDc ngh\u1EC1", "C\xF3 m\u1ED9t kh\xF3a h\u1ECDc ngh\u1EC1 ng\u1EAFn h\u1EA1n mi\u1EC5n ph\xED cho ng\u01B0\u1EDDi kh\xF4ng c\xF3 b\u1EB1ng.", [
+      C4("\u0110i h\u1ECDc", { know: 3, income_mult: 1.06, bw: -2 }),
+      C4("Th\xF4i", {})
+    ]))
+  ];
+
+  // src/engine/narrative/branches3.ts
+  var C5 = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), f3 = (c, x) => c.flags.has(x), role5 = (c, r) => c.cast[r], T3 = (title, text, choices, def = 0, more = {}) => ({ title, text, choices, def, ...more }), vary3 = (id, age, arr) => {
+    let x = age * 31;
+    for (let ch of id) x = x * 33 + ch.charCodeAt(0) >>> 0;
+    return arr[x % arr.length];
+  };
+  function R2(id, gate, ages, cooldown, build, extra = {}) {
+    let g = typeof gate == "string" ? (c) => f3(c, gate) : gate, causes = typeof gate == "string" ? () => [prov.flag(gate)] : void 0;
+    return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, ...causes ? { causes } : {}, build, ...extra };
+  }
+  var parent = (c) => role5(c, "mother") ?? role5(c, "father"), psBase = (c) => c.parent_sick && c.age >= 20 && !!parent(c);
+  function PS(id, gate, spec, build) {
+    return { id, group: "parent_sick", category: "family", urgency: 90, cooldownYears: 6, tension: 14, prerequisites: (c) => psBase(c) && f3(c, gate), specificity: () => spec, causes: () => [prov.flag(gate)], build };
+  }
+  var sibBase = (c) => c.age >= 22 && c.age <= 45 && !!role5(c, "sibling");
+  function SW(id, gate, build) {
+    return { id, group: "sibling_wedding", category: "family", urgency: 60, cooldownYears: 99, once: !0, tension: 4, prerequisites: (c) => sibBase(c) && f3(c, gate), specificity: () => 6, causes: () => [prov.flag(gate)], build };
+  }
+  var LIFE_VARIANTS = [
+    PS("ps_curious", "temper_curious", 7, (c, N) => {
+      let p = parent(c);
+      return T3(`${N(p)} \u1ED1m n\u1EB7ng`, `B\xE1c s\u0129 n\xF3i b\u1EC7nh c\u1EE7a ${N(p)} kh\xF3 ch\u1EEFa. \u0110\xEAm \u0111\xF3 b\u1EA1n \u0111\u1ECDc h\u1EBFt m\u1ECDi th\u1EE9 t\xECm \u0111\u01B0\u1EE3c, v\xE0 th\u1EA5y m\u1ED9t ph\xE1c \u0111\u1ED3 m\u1EDBi \u0111ang th\u1EED nghi\u1EC7m \u1EDF b\u1EC7nh vi\u1EC7n tuy\u1EBFn tr\xEAn.`, [
+        C5("Xin cho b\u1ED1 m\u1EB9 v\xE0o nh\xF3m th\u1EED nghi\u1EC7m", { money: -0.1, know: 3, gamble: { p: 0.5, win: { trust: { npc: p, delta: 0.25 }, log: "Ph\xE1c \u0111\u1ED3 m\u1EDBi c\xF3 t\xE1c d\u1EE5ng. B\xE1c s\u0129 ng\u1EA1c nhi\xEAn." }, lose: { happy: -6, log: "Kh\xF4ng c\xF3 t\xE1c d\u1EE5ng. B\u1EA1n t\u1EF1 h\u1ECFi m\xECnh \u0111\xE3 \u0111\xFAng ch\u01B0a." } } }, "C\xF3 th\u1EC3 l\xE0 hy v\u1ECDng, c\xF3 th\u1EC3 l\xE0 th\xED nghi\u1EC7m"),
+        C5("Theo ph\xE1c \u0111\u1ED3 c\u0169, tr\u1EA3 vi\u1EC7n ph\xED", { money: -0.35, trust: { npc: p, delta: 0.15 } }),
+        C5("\u0110\u01B0a v\u1EC1 nh\xE0, t\u1EF1 h\u1ECDc c\xE1ch ch\u0103m", { income_mult: 0.9, know: 2, rel: 3, trust: { npc: p, delta: 0.25 } })
+      ], 0, { npc: p });
+    }),
+    PS("ps_bold", "temper_bold", 7, (c, N) => {
+      let p = parent(c);
+      return T3(`${N(p)} \u1ED1m n\u1EB7ng`, "B\u1EC7nh vi\u1EC7n trong n\u01B0\u1EDBc b\u1EA3o kh\xF3. M\u1ED9t ng\u01B0\u1EDDi quen n\xF3i c\xF3 b\u1EC7nh vi\u1EC7n \u1EDF n\u01B0\u1EDBc ngo\xE0i ch\u1EEFa \u0111\u01B0\u1EE3c, nh\u01B0ng ph\u1EA3i c\xF3 ti\u1EC1n trong m\u1ED9t tu\u1EA7n.", [
+        C5("Vay n\xF3ng, \u0111\u01B0a \u0111i ngay", { custom: "borrow:0.8", gamble: { p: 0.55, win: { trust: { npc: p, delta: 0.3 }, log: "Ca m\u1ED5 th\xE0nh c\xF4ng. M\xF3n n\u1EE3 th\xEC c\xF2n \u0111\xF3." }, lose: { happy: -8, log: "Ti\u1EC1n m\u1EA5t, ng\u01B0\u1EDDi c\u0169ng kh\xF4ng gi\u1EEF \u0111\u01B0\u1EE3c l\xE2u." } } }, "\u0110\u1EB7t c\u01B0\u1EE3c l\u1EDBn nh\u1EA5t \u0111\u1EDDi"),
+        C5("B\xE1n t\xE0i s\u1EA3n trong nh\xE0", { money: -0.5, happy: -3, trust: { npc: p, delta: 0.2 } }),
+        C5("Ch\u1EEFa trong n\u01B0\u1EDBc", { money: -0.25 })
+      ], 0, { npc: p });
+    }),
+    PS("ps_kind", "temper_kind", 7, (c, N) => {
+      let p = parent(c), sib = role5(c, "sibling");
+      return T3(`${N(p)} \u1ED1m n\u1EB7ng`, `${N(p)} c\u1EA7n ng\u01B0\u1EDDi \u1EDF c\u1EA1nh su\u1ED1t ng\xE0y \u0111\xEAm. ${sib ? `${N(sib)} c\xF3 con nh\u1ECF, kh\xF4ng \u0111i \u0111\u01B0\u1EE3c.` : "Kh\xF4ng c\xF2n ai kh\xE1c."} B\u1EA1n bi\u1EBFt m\xECnh s\u1EBD l\xE0 ng\u01B0\u1EDDi \u1EDF l\u1EA1i.`, [
+        C5("Ngh\u1EC9 vi\u1EC7c v\u1EC1 ch\u0103m", { custom: "job_lose", rel: 5, trust: { npc: p, delta: 0.35 }, counters: { kind: 2 }, ...sib ? { memory: { npc: sib, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "v\u1EC1 ch\u0103m b\u1ED1 m\u1EB9" } } : {} }, "M\u1EA5t vi\u1EC7c, kh\xF4ng m\u1EA5t ng\u01B0\u1EDDi"),
+        C5("Thu\xEA ng\u01B0\u1EDDi ch\u0103m, chi\u1EC1u n\xE0o c\u0169ng gh\xE9", { money: -0.3, bw: -5, trust: { npc: p, delta: 0.15 } }),
+        C5("\u0110\xF3n v\u1EC1 \u1EDF chung", { money: -0.1, rel: 2, bw: -6, health: -3, trust: { npc: p, delta: 0.3 } })
+      ], 0, { npc: p });
+    }),
+    PS("ps_tough", "temper_tough", 7, (c, N) => {
+      let p = parent(c);
+      return T3(`${N(p)} \u1ED1m n\u1EB7ng`, "Vi\u1EC7n ph\xED m\u1ED7i th\xE1ng b\u1EB1ng ba th\xE1ng l\u01B0\u01A1ng. B\u1EA1n t\xEDnh: n\u1EBFu l\xE0m th\xEAm ca \u0111\xEAm th\xEC v\u1EEBa \u0111\u1EE7.", [
+        C5("L\xE0m th\xEAm ca \u0111\xEAm, m\u1ED9t m\xECnh g\xE1nh", { money: -0.2, health: -6, bw: -6, trust: { npc: p, delta: 0.2 }, counters: { exercise: -1 } }, "\u0110\u1EE7 ti\u1EC1n, c\u1EA1n s\u1EE9c"),
+        C5("G\u1ECDi c\u1EA3 h\u1ECD h\u1ECDp, chia nhau", { rel: 3, money: -0.12, gamble: { p: 0.6, win: { log: "L\u1EA7n \u0111\u1EA7u ti\xEAn b\u1EA1n m\u1EDF mi\u1EC7ng nh\u1EDD, v\xE0 m\u1ECDi ng\u01B0\u1EDDi g\xF3p." }, lose: { rel: -3, log: "Cu\u1ED9c h\u1ECDp th\xE0nh c\xE3i nhau." } } }),
+        C5("\u0110\u1EC3 anh ch\u1ECB em lo", { happy: -6, close_doors: ["family_table"], secret: { tag: "ABANDONED_PARENT", severity: 0.4, fuse_years: [3, 12], note: "kh\xF4ng lo cho b\u1ED1 m\u1EB9 l\xFAc \u1ED1m" } })
+      ], 0, { npc: p });
+    }),
+    PS("ps_migrant", "path_migrant", 8, (c, N) => {
+      let p = parent(c);
+      return T3("Tin nh\u1EAFn t\u1EEB qu\xEA", `${N(p)} nh\u1EADp vi\u1EC7n. B\u1EA1n \u0111ang \u1EDF x\u1EE9 ng\u01B0\u1EDDi. V\u1EC1 th\xEC m\u1EA5t vi\u1EC7c, c\xF3 th\u1EC3 kh\xF4ng quay l\u1EA1i \u0111\u01B0\u1EE3c.`, [
+        C5("Bay v\u1EC1", { custom: "return_home", money: -0.2, trust: { npc: p, delta: 0.35 }, rel: 4 }, "C\xF3 th\u1EC3 m\u1EA5t \u0111\u01B0\u1EDDng quay l\u1EA1i"),
+        C5("\u1EDE l\u1EA1i, g\u1EEDi ti\u1EC1n v\u1EC1", { money: -0.35, trust: { npc: p, delta: 0.05 }, happy: -5 }),
+        C5("G\u1ECDi video m\u1ED7i t\u1ED1i", { happy: -8, trust: { npc: p, delta: -0.05 } })
+      ], 1, { npc: p });
+    }),
+    PS("ps_nurse", "job_health", 8, (c, N) => {
+      let p = parent(c);
+      return T3(`${N(p)} n\u1EB1m \u1EDF khoa b\u1EA1n l\xE0m`, "B\u1EA1n \u0111\u1ECDc b\u1EC7nh \xE1n v\xE0 bi\u1EBFt r\xF5 h\u01A1n ai h\u1EBFt ti\xEAn l\u01B0\u1EE3ng. C\u1EA3 nh\xE0 nh\xECn b\u1EA1n ch\u1EDD m\u1ED9t c\xE2u.", [
+        C5("N\xF3i th\u1EADt v\u1EDBi c\u1EA3 nh\xE0", { counters: { honest: 2 }, happy: -4, rel: 2 }),
+        C5("N\xF3i tr\xE1nh, gi\u1EEF hy v\u1ECDng cho m\u1ECDi ng\u01B0\u1EDDi", { counters: { honest: -1 }, rel: 1 }),
+        C5("Xin chuy\u1EC3n ca \u0111\u1EC3 t\u1EF1 ch\u0103m", { income_mult: 0.95, trust: { npc: p, delta: 0.3 } })
+      ], 0, { npc: p });
+    }),
+    SW("sw_bold", "temper_bold", (c, N) => {
+      let s = role5(c, "sibling");
+      return T3(`${N(s)} c\u01B0\u1EDBi`, `C\u1EA3 h\u1ECD tr\xF4ng v\xE0o b\u1EA1n. B\u1EA1n c\xF3 th\u1EC3 l\xE0m m\u1ED9t \u0111\xE1m c\u01B0\u1EDBi to nh\u1EA5t x\xF3m cho ${N(s)}, n\u1EBFu d\xE1m vay.`, [
+        C5("Vay, l\xE0m th\u1EADt to", { custom: "borrow:0.4", rel: 6, memory: { npc: s, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "lo \u0111\xE1m c\u01B0\u1EDBi to" } }, "N\u1EDF m\xE0y n\u1EDF m\u1EB7t, n\u1EE3 ba n\u0103m"),
+        C5("L\xE0m v\u1EEBa s\u1EE9c", { money: -0.15, rel: 2, memory: { npc: s, tag: "KEPT_PROMISE", weight: 0.15, note: "lo \u0111\xE1m c\u01B0\u1EDBi" } })
+      ], 1, { npc: s });
+    }),
+    SW("sw_kind", "temper_kind", (c, N) => {
+      let s = role5(c, "sibling");
+      return T3(`${N(s)} c\u01B0\u1EDBi`, `${N(s)} l\xE9n h\u1ECFi m\u01B0\u1EE3n kho\u1EA3n ti\u1EBFt ki\u1EC7m c\u1EE7a b\u1EA1n \u0111\u1EC3 \u0111\u1EE7 ti\u1EC1n th\xE1ch c\u01B0\u1EDBi. B\u1EA1n \u0111ang \u0111\u1EC3 d\xE0nh mua nh\xE0.`, [
+        C5("Cho m\u01B0\u1EE3n h\u1EBFt", { money: -0.4, counters: { kind: 2 }, memory: { npc: s, tag: "HELPED_IN_CRISIS", weight: 0.35, note: "cho m\u01B0\u1EE3n ti\u1EC1n c\u01B0\u1EDBi" }, promise: { to: s, what: "nh\u1EADn l\u1EA1i ti\u1EC1n c\u01B0\u1EDBi \u0111\xE3 cho m\u01B0\u1EE3n", years: 4 } }),
+        C5("Cho m\u01B0\u1EE3n m\u1ED9t n\u1EEDa", { money: -0.2, memory: { npc: s, tag: "HELPED_IN_CRISIS", weight: 0.15, note: "cho m\u01B0\u1EE3n ti\u1EC1n c\u01B0\u1EDBi" } }),
+        C5("T\u1EEB ch\u1ED1i", { memory: { npc: s, tag: "REFUSED_HELP", weight: -0.25, note: "kh\xF4ng cho m\u01B0\u1EE3n ti\u1EC1n c\u01B0\u1EDBi" } })
+      ], 0, { npc: s });
+    }),
+    SW("sw_tough", "temper_tough", (c, N) => {
+      let s = role5(c, "sibling");
+      return T3(`${N(s)} c\u01B0\u1EDBi`, "\u0110\xE1m c\u01B0\u1EDBi r\u01A1i \u0111\xFAng tu\u1EA7n cao \u0111i\u1EC3m. Xin ngh\u1EC9 th\xEC m\u1EA5t th\u01B0\u1EDFng c\u1EA3 n\u0103m.", [
+        C5("Xin ngh\u1EC9 v\u1EC1 d\u1EF1", { income_mult: 0.98, rel: 3, memory: { npc: s, tag: "KEPT_PROMISE", weight: 0.2, note: "v\u1EC1 d\u1EF1 \u0111\xE1m c\u01B0\u1EDBi" } }),
+        C5("\u0110i l\xE0m, g\u1EEDi ti\u1EC1n m\u1EEBng g\u1EA5p \u0111\xF4i", { money: -0.1, memory: { npc: s, tag: "REFUSED_HELP", weight: -0.1, note: "kh\xF4ng v\u1EC1 d\u1EF1 c\u01B0\u1EDBi" } })
+      ], 0, { npc: s });
+    }),
+    SW("sw_curious", "temper_curious", (c, N) => {
+      let s = role5(c, "sibling");
+      return T3(`${N(s)} mu\u1ED1n c\u01B0\u1EDBi ng\u01B0\u1EDDi ngo\xE0i`, `${N(s)} y\xEAu m\u1ED9t ng\u01B0\u1EDDi kh\xE1c \u0111\u1EA1o, kh\xE1c v\xF9ng. C\u1EA3 h\u1ECD ph\u1EA3n \u0111\u1ED1i. ${N(s)} ch\u1EC9 h\u1ECFi b\u1EA1n: "M\xE0y \u0111\u1EE9ng v\u1EC1 ph\xEDa n\xE0o?"`, [
+        C5("\u0110\u1EE9ng v\u1EC1 ph\xEDa em/anh/ch\u1ECB", { rel: -3, agency: 0.02, memory: { npc: s, tag: "STOOD_UP_FOR_ME", weight: 0.4, note: "\u0111\u1EE9ng v\u1EC1 ph\xEDa m\xECnh l\xFAc c\u1EA3 h\u1ECD ph\u1EA3n \u0111\u1ED1i" } }, "M\u1EA5t l\xF2ng c\u1EA3 h\u1ECD"),
+        C5("\u0110\u1EE9ng v\u1EC1 ph\xEDa b\u1ED1 m\u1EB9", { rel: 2, memory: { npc: s, tag: "REFUSED_HELP", weight: -0.3, note: "kh\xF4ng b\xEAnh l\xFAc c\u01B0\u1EDBi" } }),
+        C5("Im l\u1EB7ng", {})
+      ], 0, { npc: s });
+    })
+  ], TEMPER_LIFE = [
+    /* tò mò */
+    R2("tc_cu_take", "temper_curious", [7, 14], 3, (c) => T3("Th\xE1o ra xem", vary3("cutake", c.age, ["C\xE1i \u0111\xE0i c\u1EE7a b\u1ED1 t\u1EF1 nhi\xEAn im. B\u1EA1n c\xF3 m\u1ED9t c\xE1i tua v\xEDt.", "Chi\u1EBFc \u0111\u1ED3ng h\u1ED3 c\u1EE7a \xF4ng n\u1EB1m trong ng\u0103n k\xE9o, \u0111\xE3 ch\u1EBFt t\u1EEB l\xE2u."]), [
+      C5("Th\xE1o ra", { know: 2, gamble: { p: 0.5, win: { happy: 3, flags: ["tinkerer"], log: "N\xF3 ch\u1EA1y l\u1EA1i. C\u1EA3 nh\xE0 ng\u1EA1c nhi\xEAn." }, lose: { happy: -2, log: "N\xF3 kh\xF4ng bao gi\u1EDD ch\u1EA1y l\u1EA1i n\u1EEFa. B\u1EA1n b\u1ECB m\u1EAFng." } } }),
+      C5("Th\xF4i", {})
+    ])),
+    R2("tc_cu_library", "temper_curious", [9, 17], 3, () => T3("Th\u01B0 vi\u1EC7n", "Th\u01B0 vi\u1EC7n huy\u1EC7n c\xF3 m\u1ED9t t\u1EE7 s\xE1ch c\u0169 kh\xF4ng ai m\u01B0\u1EE3n.", [
+      C5("\u0110\u1ECDc h\u1EBFt c\xE1i t\u1EE7", { know: 3, counters: { read: 1 }, rel: -1 }),
+      C5("Ra s\xE2n \u0111\xE1 b\xF3ng", { rel: 2, health: 1 })
+    ])),
+    R2("tm3_cu_side", "temper_curious", [22, 55], 6, (c) => T3("M\u1ED9t \xFD t\u01B0\u1EDFng", vary3("cuside", c.age, ["B\u1EA1n ngh\u0129 ra m\u1ED9t c\xE1ch l\xE0m nhanh g\u1EA5p \u0111\xF4i vi\u1EC7c \u1EDF ch\u1ED7 l\xE0m.", "B\u1EA1n \u0111\u1EC3 \xFD m\u1ED9t th\u1EE9 m\xE0 c\u1EA3 ph\u1ED1 c\u1EA7n nh\u01B0ng ch\u01B0a ai b\xE1n."]), [
+      C5("Th\u1EED l\xE0m ngo\xE0i gi\u1EDD", { bw: -3, gamble: { p: 0.4, win: { income_mult: 1.08, log: "N\xF3 ch\u1EA1y. Ng\u01B0\u1EDDi ta b\u1EAFt \u0111\u1EA7u h\u1ECFi b\u1EA1n." }, lose: { money: -0.05, log: "Kh\xF4ng ch\u1EA1y. Nh\u01B0ng b\u1EA1n h\u1ECDc \u0111\u01B0\u1EE3c v\xE0i th\u1EE9." } } }),
+      C5("Ghi v\xE0o s\u1ED5, \u0111\u1EC3 \u0111\u1EA5y", {})
+    ])),
+    R2("tm3_cu_travel", "temper_curious", [25, 70], 7, () => T3("\u0110i xa", "B\u1EA1n ch\u01B0a t\u1EEBng th\u1EA5y bi\u1EC3n ph\xEDa B\u1EAFc, hay n\xFAi ph\xEDa T\xE2y. C\xF3 m\u1ED9t chuy\u1EBFn \u0111i r\u1EBB.", [
+      C5("\u0110i", { money: -0.05, happy: 4, know: 2, flags: ["seen_world"] }),
+      C5("\u0110\u1EC3 d\xE0nh ti\u1EC1n", { counters: { save: 1 } })
+    ])),
+    R2("tm3_cu_old", "temper_curious", [60, 90], 6, () => T3("H\u1ECDc c\xE1i m\u1EDBi l\xFAc gi\xE0", "Ch\xE1u c\xE0i cho b\u1EA1n m\u1ED9t \u1EE9ng d\u1EE5ng h\u1ECDc ngo\u1EA1i ng\u1EEF.", [
+      C5("H\u1ECDc m\u1ED7i ng\xE0y", { know: 3, happy: 2 }),
+      C5("Gi\xE0 r\u1ED3i", {})
+    ])),
+    /* gan */
+    R2("tc_bo_dare", "temper_bold", [8, 15], 3, (c) => T3("Th\xE1ch", vary3("bodare", c.age, ["L\u0169 b\u1EA1n th\xE1ch b\u1EA1n nh\u1EA3y t\u1EEB th\xE0nh c\u1EA7u xu\u1ED1ng s\xF4ng.", "C\xF3 \u0111\u1EE9a th\xE1ch b\u1EA1n tr\xE8o l\xEAn m\xE1i nh\xE0 kho."]), [
+      C5("Nh\u1EADn th\xE1ch", { gamble: { p: 0.75, win: { rel: 3, trait: { bold: 1 }, log: "B\u1EA1n l\xE0m \u0111\u01B0\u1EE3c. C\u1EA3 b\u1ECDn n\u1EC3." }, lose: { health: -8, log: "B\u1EA1n ng\xE3. G\xE3y tay." } } }),
+      C5("Kh\xF4ng", { rel: -1 })
+    ])),
+    R2("tc_bo_trade", "temper_bold", [10, 17], 3, () => T3("Bu\xF4n \u0111\u1EA7u ti\xEAn", "B\u1EA1n c\xF3 th\u1EC3 mua s\u1EC9 m\u1ED9t t\xFAi \u0111\u1ED3 ch\u01A1i \u1EDF ch\u1EE3 r\u1ED3i b\xE1n l\u1EA1i cho l\u0169 tr\u1EBB trong tr\u01B0\u1EDDng.", [
+      C5("L\xE0m", { money: 0.01, flags: ["kid_trader"], gamble: { p: 0.7, win: { happy: 2 }, lose: { log: "Th\u1EA7y gi\xE1o t\u1ECBch thu h\u1EBFt." } } }),
+      C5("Th\xF4i", {})
+    ])),
+    R2("tm3_bo_deal", "temper_bold", [24, 60], 6, (c) => T3("M\u1ED9t phi v\u1EE5", vary3("bodeal", c.age, ["M\u1ED9t ng\u01B0\u1EDDi quen r\u1EE7 g\xF3p v\u1ED1n nh\u1EADp m\u1ED9t l\xF4 h\xE0ng, l\xE3i g\u1EA5p \u0111\xF4i trong ba th\xE1ng.", "C\xF3 m\u1ED9t mi\u1EBFng \u0111\u1EA5t ven \u0111\xF4 \u0111ang r\u1EBB v\xEC d\xEDnh quy ho\u1EA1ch treo."]), [
+      C5("Nh\u1EA3y v\xE0o", { gamble: { p: 0.45, win: { money: 0.6, log: "Tr\xFAng." }, lose: { money: -0.4, log: "Tr\u01B0\u1EE3t." } } }),
+      C5("Ch\u1EC9 g\xF3p \xEDt", { gamble: { p: 0.45, win: { money: 0.15 }, lose: { money: -0.1 } } }),
+      C5("\u0110\u1EE9ng ngo\xE0i", {})
+    ], 2)),
+    R2("tm3_bo_stand", "temper_bold", [20, 65], 7, () => T3("\u0110\u1EE9ng ra", "C\u1EA3 x\xF3m b\u1EF1c v\xEC m\u1ED9t chuy\u1EC7n b\u1EA5t c\xF4ng, nh\u01B0ng kh\xF4ng ai d\xE1m n\xF3i v\u1EDBi ch\xEDnh quy\u1EC1n.", [
+      C5("B\u1EA1n \u0111\u1EE9ng ra n\xF3i", { rel: 4, agency: 0.02, gamble: { p: 0.6, win: { flags: ["leader"] }, lose: { income_mult: 0.97, log: "B\u1EA1n b\u1ECB \u0111\u1EC3 \xFD." } } }),
+      C5("K\u1EC7", {})
+    ])),
+    R2("tm3_bo_old", "temper_bold", [60, 90], 7, () => T3("Ch\u01B0a ch\u1ECBu gi\xE0", "Con ch\xE1u b\u1EA3o b\u1EA1n ngh\u1EC9 ng\u01A1i. B\u1EA1n l\u1EA1i mu\u1ED1n l\xE0m th\xEAm m\u1ED9t chuy\u1EC7n cu\u1ED1i.", [
+      C5("L\xE0m", { happy: 3, health: -2, money: -0.05 }),
+      C5("Nghe con ch\xE1u", { rel: 2 })
+    ])),
+    /* tốt bụng */
+    R2("tc_ki_share", "temper_kind", [7, 15], 3, (c) => T3("Chia", vary3("kishare", c.age, ["\u0110\u1EE9a b\u1EA1n ng\u1ED3i c\u1EA1nh kh\xF4ng c\xF3 b\xFAt.", "M\u1ED9t con ch\xF3 con b\u1ECB b\u1ECF \u1EDF \u0111\u1EA7u ng\xF5."]), [
+      C5("Gi\xFAp", { counters: { kind: 1 }, happy: 2 }),
+      C5("Kh\xF4ng ph\u1EA3i vi\u1EC7c m\xECnh", {})
+    ])),
+    R2("tc_ki_sib", (c) => f3(c, "temper_kind") && !!role5(c, "sibling"), [8, 17], 4, (c, N) => {
+      let s = role5(c, "sibling");
+      return T3("Nh\u1EADn l\u1ED7i thay", `${N(s)} l\xE0m h\u1ECFng chi\u1EBFc xe \u0111\u1EA1p c\u1EE7a b\u1ED1, m\u1EB7t t\xE1i m\xE9t.`, [
+        C5("Nh\u1EADn thay", { happy: -2, memory: { npc: s, tag: "STOOD_UP_FOR_ME", weight: 0.25, note: "nh\u1EADn l\u1ED7i thay h\u1ED3i nh\u1ECF" } }),
+        C5("\u0110\u1EC3 n\xF3 t\u1EF1 nh\u1EADn", {})
+      ], 0, { npc: s });
+    }),
+    R2("tm3_ki_neighbor", "temper_kind", [22, 75], 6, (c) => T3("Nh\xE0 b\xEAn", vary3("kinb", c.age, ["B\xE0 c\u1EE5 nh\xE0 b\xEAn s\u1ED1ng m\u1ED9t m\xECnh, m\u1EA5y h\xF4m nay kh\xF4ng th\u1EA5y m\u1EDF c\u1EEDa.", "Nh\xE0 b\xEAn c\xF3 \u0111\u1EE9a tr\u1EBB ng\xE0y n\xE0o c\u0169ng ng\u1ED3i m\u1ED9t m\xECnh \u0111\u1EBFn t\u1ED1i."]), [
+      C5("Sang xem", { counters: { kind: 1 }, rel: 2, bw: -1 }),
+      C5("Kh\xF4ng mu\u1ED1n xen v\xE0o", {})
+    ])),
+    R2("tm3_ki_lend", "temper_kind", [22, 65], 6, () => T3("Vay ti\u1EC1n", "M\u1ED9t ng\u01B0\u1EDDi b\u1EA1n c\u0169 vay ti\u1EC1n, gi\u1ECDng run. B\u1EA1n bi\u1EBFt kh\u1EA3 n\u0103ng cao kh\xF4ng \u0111\xF2i l\u1EA1i \u0111\u01B0\u1EE3c.", [
+      C5("Cho vay", { money: -0.1, counters: { kind: 1 }, gamble: { p: 0.4, win: { money: 0.1, rel: 3, log: "H\u1ECD tr\u1EA3 l\u1EA1i, k\xE8m m\u1ED9t con g\xE0." }, lose: { log: "B\u1EA1n kh\xF4ng bao gi\u1EDD nh\u1EADn l\u1EA1i." } } }),
+      C5("Cho h\u1EB3n m\u1ED9t \xEDt", { money: -0.03, counters: { kind: 1 } }),
+      C5("T\u1EEB ch\u1ED1i", {})
+    ], 1)),
+    R2("tm3_ki_old", "temper_kind", [60, 90], 6, () => T3("Tr\xF4ng ch\xE1u", "Con c\xE1i \u0111i l\xE0m xa, g\u1EEDi ch\xE1u cho b\u1EA1n.", [
+      C5("Nh\u1EADn tr\xF4ng", { rel: 4, health: -2, happy: 3 }),
+      C5("B\u1EA3o ch\xFAng t\u1EF1 lo", { rel: -2, health: 1 })
+    ])),
+    /* lì */
+    R2("tc_to_work", "temper_tough", [8, 16], 3, (c) => T3("Ph\u1EE5 vi\u1EC7c", vary3("towork", c.age, ["Nh\xE0 \u0111ang m\xF9a g\u1EB7t, thi\u1EBFu ng\u01B0\u1EDDi.", "B\u1ED1 b\u1ECB \u0111au l\u01B0ng, kh\xF4ng ai g\xE1nh n\u01B0\u1EDBc."]), [
+      C5("Ngh\u1EC9 h\u1ECDc v\xE0i h\xF4m ph\u1EE5 nh\xE0", { know: -1, health: 1, rel: 2, trait: { coop: 1 } }),
+      C5("V\u1EABn \u0111i h\u1ECDc", { know: 1 })
+    ])),
+    R2("tc_to_cry", "temper_tough", [7, 13], 4, () => T3("Kh\xF4ng kh\xF3c", "B\u1EA1n ng\xE3 r\xE1ch \u0111\u1EA7u g\u1ED1i, m\xE1u ch\u1EA3y. M\u1EA5y \u0111\u1EE9a kh\xE1c nh\xECn.", [
+      C5("\u0110\u1EE9ng d\u1EADy, kh\xF4ng kh\xF3c", { trait: { bold: 1 }, happy: -1 }),
+      C5("Kh\xF3c, ch\u1EA1y v\u1EC1 nh\xE0", { rel: 1 })
+    ])),
+    R2("tm3_to_injury", "temper_tough", [22, 60], 6, (c) => T3("\u0110au m\xE0 kh\xF4ng n\xF3i", vary3("toinj", c.age, ["B\u1EA1n \u0111au ng\u1EF1c m\u1EA5y tu\u1EA7n nay.", "V\u1EBFt th\u01B0\u01A1ng \u1EDF tay m\xE3i kh\xF4ng l\xE0nh."]), [
+      C5("\u0110i kh\xE1m", { money: -0.03, health: 4 }),
+      C5("Ch\u1ECBu \u0111\u01B0\u1EE3c", { gamble: { p: 0.7, win: {}, lose: { health: -10, log: "N\xF3 kh\xF4ng t\u1EF1 kh\u1ECFi." } } })
+    ], 1)),
+    R2("tm3_to_hold", "temper_tough", [25, 65], 6, () => T3("Gi\u1EEF ch\u1EB7t", "Vi\u1EC7c \u1EDF ch\u1ED7 l\xE0m \u0111ang t\u1EC7. Ai c\u0169ng t\xEDnh nh\u1EA3y vi\u1EC7c.", [
+      C5("B\xE1m tr\u1EE5", { income_mult: 1.02, bw: -2 }),
+      C5("Nh\u1EA3y", { gamble: { p: 0.5, win: { income_mult: 1.12 }, lose: { income_mult: 0.92 } } })
+    ])),
+    R2("tm3_to_old", "temper_tough", [60, 90], 6, () => T3("V\u1EABn ra \u0111\u1ED3ng", "B\u1EA1n \u0111\xE3 gi\xE0, nh\u01B0ng s\xE1ng n\xE0o c\u0169ng d\u1EADy l\xE0m nh\u01B0 h\u1ED3i tr\u1EBB.", [
+      C5("L\xE0m ti\u1EBFp", { health: 1, happy: 2 }),
+      C5("Ngh\u1EC9 h\u1EB3n", { happy: -2 })
+    ]))
+  ], TEMPER2_ECHO = [
+    R2("t5_curious", "temper2_curious", [11, 60], 8, () => T3("C\xE2u h\u1ECFi ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc", "C\xF4 gi\xE1o n\u0103m l\u1EDBp m\u1ED9t t\u1EEBng b\u1EA3o b\u1EA1n h\u1ECFi nhi\u1EC1u qu\xE1. H\xF4m nay l\u1EA1i c\xF3 m\u1ED9t c\xE2u b\u1EA1n mu\u1ED1n h\u1ECFi gi\u1EEFa cu\u1ED9c h\u1ECDp.", [
+      C5("H\u1ECFi", { know: 2, gamble: { p: 0.6, win: { rel: 2 }, lose: { rel: -2 } } }),
+      C5("Th\xF4i", {})
+    ])),
+    R2("t5_bold", "temper2_bold", [11, 60], 8, () => T3("Th\xF3i quen ng\u1ED3i b\xE0n \u0111\u1EA7u", "T\u1EEB ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n \u0111\xE3 ch\u1ECDn ch\u1ED7 ng\u1ED3i \u0111\u1EA7u. H\xF4m nay c\u0169ng c\xF3 m\u1ED9t ch\u1ED7 ng\u1ED3i \u0111\u1EA7u, tr\u01B0\u1EDBc m\u1EB7t ng\u01B0\u1EDDi quan tr\u1ECDng.", [
+      C5("Ng\u1ED3i l\xEAn \u0111\u1EA7u, t\u1EF1 gi\u1EDBi thi\u1EC7u", { rel: 2, gamble: { p: 0.5, win: { income_mult: 1.04 }, lose: {} } }),
+      C5("Ng\u1ED3i cu\u1ED1i", {})
+    ])),
+    R2("t5_kind", "temper2_kind", [11, 60], 8, () => T3("\u0110\u1EE9a ng\u1ED3i m\u1ED9t m\xECnh", "Ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n \u0111\xE3 ng\u1ED3i c\u1EA1nh \u0111\u1EE9a kh\xF4ng ai ch\u01A1i. H\xF4m nay c\xF3 m\u1ED9t ng\u01B0\u1EDDi m\u1EDBi c\u0169ng \u0111ang \u0111\u1EE9ng m\u1ED9t m\xECnh.", [
+      C5("L\u1EA1i g\u1EA7n", { rel: 2, counters: { kind: 1 } }),
+      C5("Th\xF4i", {})
+    ])),
+    R2("t5_tough", "temper2_tough", [11, 60], 8, () => T3("Kh\xF4ng kh\xF3c l\xFAc m\u1EB9 v\u1EC1", "Ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n kh\xF4ng kh\xF3c khi m\u1EB9 v\u1EC1. H\xF4m nay c\xF3 chuy\u1EC7n bu\u1ED3n, v\xE0 b\u1EA1n l\u1EA1i kh\xF4ng kh\xF3c.", [
+      C5("Gi\u1EEF trong l\xF2ng", { bw: -2 }),
+      C5("K\u1EC3 cho m\u1ED9t ng\u01B0\u1EDDi", { rel: 2, bw: 2 })
+    ]))
+  ];
+
+  // src/engine/narrative/vignettes.ts
+  var R3 = (id, specificity, when, lines, tone = "") => ({ id, specificity, when, lines, tone }), VIGNETTES = [
+    /* ---- tuổi thơ ---- */
+    R3("kid_poor_rural", 3, (c) => c.age < 10 && c.poor_country && c.family_wealth < 0.4, ["M\xF9a kh\xF4, {mother} g\xE1nh n\u01B0\u1EDBc t\u1EEB xa v\u1EC1, b\u1EA1n \u0111i theo x\xE1ch c\xE1i can nh\u1ECF.", "T\u1ED1i kh\xF4ng c\xF3 \u0111i\u1EC7n, {father} k\u1EC3 chuy\u1EC7n c\u0169 d\u01B0\u1EDBi ng\u1ECDn \u0111\xE8n d\u1EA7u.", "B\u1EA1n v\xE0 {sibling} chia nhau m\u1ED9t c\xE1i b\xE1nh, n\u1EEDa l\u1EDBn n\u1EEDa nh\u1ECF, c\xE3i nhau v\xEC n\u1EEDa n\xE0o."]),
+    R3("kid_poor", 2, (c) => c.age < 10 && c.poor_country, ["Tr\u01B0a n\u1EAFng, b\u1EA1n v\xE0 {friend} ch\u1EA1y ch\xE2n \u0111\u1EA5t ngo\xE0i s\xE2n, kh\xF4ng ai lo g\xEC c\u1EA3.", "{mother} v\xE1 l\u1EA1i c\xE1i \xE1o l\u1EA7n th\u1EE9 ba. B\u1EA1n m\u1EB7c n\xF3 th\xEAm m\u1ED9t m\xF9a."]),
+    R3("kid_rich", 2, (c) => c.age < 10 && c.gdp > 3e4, ["Sinh nh\u1EADt b\u1EA1n c\xF3 b\xE1nh kem v\xE0 nhi\u1EC1u qu\xE0 h\u01A1n b\u1EA1n nh\u1EDB n\u1ED5i.", "{father} \u0111i c\xF4ng t\xE1c, g\u1ECDi video m\u1ED7i t\u1ED1i; m\xE0n h\xECnh kh\xF4ng thay \u0111\u01B0\u1EE3c ng\u01B0\u1EDDi."]),
+    R3("kid_any", 1, (c) => c.age < 10, ["B\u1EA1n h\u1ECDc b\u01A1i \u1EDF con m\u01B0\u01A1ng sau nh\xE0. {sibling} \u0111\u1EE9ng xem v\xE0 kh\xF4ng nh\u1EA3y xu\u1ED1ng.", "M\u1ED9t con ch\xF3 hoang theo b\u1EA1n v\u1EC1. {mother} cho n\xF3 \u1EDF l\u1EA1i."]),
+    R3("teen_school_poor", 3, (c) => c.age >= 10 && c.age < 18 && c.in_school && c.poor_country, ["S\xE1ng \u0111i h\u1ECDc, chi\u1EC1u ph\u1EE5 {father} ngo\xE0i \u0111\u1ED3ng; t\u1ED1i m\u1EDBi m\u1EDF v\u1EDF.", "{friend} ngh\u1EC9 h\u1ECDc \u0111i l\xE0m. L\u1EDBp v\u1EAFng th\xEAm m\u1ED9t ch\u1ED7.", "C\xF4 gi\xE1o n\xF3i b\u1EA1n c\xF3 th\u1EC3 \u0111i xa n\u1EBFu c\xF3 ti\u1EC1n. C\xE2u sau nh\u1ECF h\u01A1n c\xE2u tr\u01B0\u1EDBc."]),
+    R3("teen_school", 2, (c) => c.age >= 10 && c.age < 18 && c.in_school, ["B\u1EA1n th\xEDch m\u1ED9t ng\u01B0\u1EDDi trong l\u1EDBp v\xE0 kh\xF4ng n\xF3i v\u1EDBi ai, k\u1EC3 c\u1EA3 {friend}.", "{bully} gi\u1EDD ng\u1ED3i cu\u1ED1i l\u1EDBp, \xEDt n\xF3i h\u01A1n. Hai ng\u01B0\u1EDDi tr\xE1nh m\u1EAFt nhau.", "K\u1EF3 thi \u0111\u1EBFn, c\u1EA3 nh\xE0 \u0111i nh\u1EB9 n\xF3i kh\u1EBD."]),
+    R3("teen_noschool", 2, (c) => c.age >= 10 && c.age < 18 && !c.in_school, ["B\u1EA1n l\xE0m vi\u1EC7c v\u1EDBi ng\u01B0\u1EDDi l\u1EDBn, v\xE0 b\u1EAFt \u0111\u1EA7u n\xF3i chuy\u1EC7n nh\u01B0 ng\u01B0\u1EDDi l\u1EDBn.", "B\u1EA1n b\xE8 c\u0169 \u0111i h\u1ECDc ngang qua. B\u1EA1n gi\u1EA3 v\u1EDD b\u1EADn."]),
+    /* ---- đi làm ---- */
+    R3("farmer_crisis", 3, (c) => c.farmer && c.econ_phase === "crisis", ["Gi\xE1 n\xF4ng s\u1EA3n r\u1EDBt. {neighbor} \u0111\u1ED5 c\u1EA3 xe rau ra l\u1EC1 \u0111\u01B0\u1EDDng.", "Th\u01B0\u01A1ng l\xE1i kh\xF4ng \u0111\u1EBFn. B\u1EA1n ng\u1ED3i nh\xECn ru\u1ED9ng ch\xEDn."], "bad"),
+    R3("farmer_poor", 2, (c) => c.farmer && c.poor_country, ["M\xF9a g\u1EB7t, c\u1EA3 x\xF3m xu\u1ED1ng \u0111\u1ED3ng t\u1EEB b\u1ED1n gi\u1EDD s\xE1ng. {neighbor} mang n\u01B0\u1EDBc ch\xE8 ra.", "Tr\u1EDDi kh\xF4ng m\u01B0a \u0111\xFAng l\xFAc. M\u1ECDi ng\u01B0\u1EDDi nh\xECn tr\u1EDDi v\xE0 n\xF3i chuy\u1EC7n kh\xE1c."]),
+    R3("farmer", 1, (c) => c.farmer, ["B\u1EA1n bi\u1EBFt \u0111\u1EA5t nh\xE0 m\xECnh b\u1EB1ng l\xF2ng b\xE0n tay, t\u1EEBng ch\u1ED7 tr\u0169ng."]),
+    R3("worker_ratrace", 3, (c) => c.worker && c.rat_race, ["T\u0103ng ca ba th\xE1ng li\u1EC1n. L\u01B0\u01A1ng v\u1EC1 l\xE0 n\u1EE3 \u0111i. B\u1EA1n kh\xF4ng nh\u1EDB n\u1ED5i m\u1EB7t {child}.", "\u0110\u1ED3ng h\u1ED3 nh\xE0 m\xE1y ch\u1EA1y nhanh h\u01A1n \u0111\u1ED3ng h\u1ED3 trong ng\u01B0\u1EDDi."], "bad"),
+    R3("worker", 2, (c) => c.worker, ["Ca \u0111\xEAm. Ti\u1EBFng m\xE1y kh\xF4ng bao gi\u1EDD t\u1EAFt h\u1EB3n trong tai b\u1EA1n.", "\u1EDE x\u01B0\u1EDFng c\xF3 ng\u01B0\u1EDDi m\u1EDBi. B\u1EA1n ch\u1EC9 vi\u1EC7c cho h\u1ECD nh\u01B0 ng\u01B0\u1EDDi ta t\u1EEBng ch\u1EC9 cho b\u1EA1n."]),
+    R3("office_scarcity", 3, (c) => c.has_job && !c.farmer && !c.worker && c.scarcity, ["Cu\u1ED1i th\xE1ng, b\u1EA1n t\xEDnh t\u1EEBng b\u1EEFa. \u0110\u1ED3ng nghi\u1EC7p r\u1EE7 c\xE0 ph\xEA, b\u1EA1n n\xF3i \u0111ang ki\xEAng.", "H\xF3a \u0111\u01A1n ch\u1ED3ng l\xEAn h\xF3a \u0111\u01A1n. B\u1EA1n m\u1EDF ra r\u1ED3i g\u1EADp l\u1EA1i."], "bad"),
+    R3("office_boom", 3, (c) => c.has_job && !c.farmer && !c.worker && c.econ_phase === "boom", ["C\xF4ng ty th\u01B0\u1EDFng. Ng\u01B0\u1EDDi ta b\u1EAFt \u0111\u1EA7u n\xF3i chuy\u1EC7n mua nh\xE0.", "Ai c\u0169ng b\u1EADn, ai c\u0169ng t\u1EF1 tin. B\u1EA1n c\u0169ng th\u1EBF."], "good"),
+    R3("office", 2, (c) => c.has_job && !c.farmer && !c.worker, ["M\u1ED9t ng\xE0y nh\u01B0 m\u1ECDi ng\xE0y: h\u1ECDp, email, b\u1EEFa tr\u01B0a \u0103n v\u1ED9i.", "{mentor} h\u1ECFi b\u1EA1n \u0111\u1ECBnh l\xE0m g\xEC trong n\u0103m n\u0103m n\u1EEFa. B\u1EA1n kh\xF4ng c\xF3 c\xE2u tr\u1EA3 l\u1EDDi."]),
+    R3("retired_rich", 3, (c) => c.retired && c.rich, ["S\xE1ng c\xE0 ph\xEA, chi\u1EC1u \u0111i b\u1ED9. B\u1EA1n kh\xF4ng nh\u1EDB l\u1EA7n cu\u1ED1i nh\xECn \u0111\u1ED3ng h\u1ED3."], "good"),
+    R3("retired_poor", 3, (c) => c.retired && c.broke, ["L\u01B0\u01A1ng h\u01B0u kh\xF4ng \u0111\u1EE7 thu\u1ED1c. {child} g\u1EEDi v\u1EC1 m\u1ED9t \xEDt, kh\xF4ng n\xF3i g\xEC."], "bad"),
+    R3("retired", 2, (c) => c.retired, ["B\u1EA1n k\u1EC3 chuy\u1EC7n c\u0169, v\xE0 nh\u1EADn ra m\xECnh \u0111\xE3 k\u1EC3 chuy\u1EC7n n\xE0y r\u1ED3i."]),
+    R3("migrated", 2, (c) => c.migrated, ["M\xF9a n\xE0y \u1EDF qu\xEA \u0111ang g\u1EB7t. \u1EDE \u0111\xE2y tr\u1EDDi l\u1EA1nh, b\u1EA1n g\u1ECDi v\u1EC1 m\xE0 kh\xF4ng bi\u1EBFt n\xF3i g\xEC.", "Gi\u1ECDng b\u1EA1n b\u1EAFt \u0111\u1EA7u l\u1EABn ti\u1EBFng n\u01A1i m\u1EDBi. {mother} nh\u1EADn ra qua \u0111i\u1EC7n tho\u1EA1i."]),
+    /* ---- gia đình ---- */
+    R3("parent_old_sick_poor", 4, (c) => c.parent_sick && c.poor_country && c.broke, ["Thu\u1ED1c cho {mother} h\u1EBFt, ch\u01B0a c\xF3 ti\u1EC1n mua \u0111\u1EE3t m\u1EDBi. B\xE0 b\u1EA3o kh\xF4ng sao.", "{father} ho su\u1ED1t \u0111\xEAm. B\u1EA1n n\u1EB1m nghe v\xE0 t\xEDnh ti\u1EC1n."], "bad"),
+    R3("parent_sick", 3, (c) => c.parent_sick, ["{mother} y\u1EBFu \u0111i th\u1EA5y r\xF5. M\u1ED7i l\u1EA7n v\u1EC1, b\u1EA1n th\u1EA5y b\xE0 nh\u1ECF l\u1EA1i m\u1ED9t ch\xFAt.", "B\u1EC7nh vi\u1EC7n, h\xE0nh lang, s\u1ED1 th\u1EE9 t\u1EF1. B\u1EA1n thu\u1ED9c \u0111\u01B0\u1EDDng \u0111i."], "bad"),
+    R3("parent_old", 2, (c) => c.parent_old && !c.parent_sick, ["{father} b\u1EAFt \u0111\u1EA7u h\u1ECFi l\u1EA1i chuy\u1EC7n b\u1EA1n v\u1EEBa k\u1EC3. B\u1EA1n k\u1EC3 l\u1EA1i, ch\u1EADm h\u01A1n."]),
+    R3("kids_school_broke", 3, (c) => c.kids_school > 0 && c.broke, ["{child} c\u1EA7n s\xE1ch m\u1EDBi. B\u1EA1n n\xF3i tu\u1EA7n sau, v\xE0 tu\u1EA7n sau l\u1EA1i n\xF3i tu\u1EA7n sau."], "bad"),
+    R3("kids_small", 2, (c) => c.kids_alive > 0 && c.kids_school === 0 && c.kids_teen === 0 && c.age < 45, ["{child} g\u1ECDi b\u1EA1n b\u1EB1ng m\u1ED9t c\xE1i t\xEAn t\u1EF1 ngh\u0129 ra. C\u1EA3 nh\xE0 d\xF9ng theo.", "\u0110\xEAm {child} s\u1ED1t, hai v\u1EE3 ch\u1ED3ng thay nhau th\u1EE9c."]),
+    R3("kids_teen", 2, (c) => c.kids_teen > 0, ["{child} \u0111\xF3ng c\u1EEDa ph\xF2ng nhi\u1EC1u h\u01A1n. B\u1EA1n \u0111\u1EE9ng ngo\xE0i m\u1ED9t l\xFAc r\u1ED3i \u0111i."]),
+    R3("married_happy", 3, (c) => c.married && c.happy > 60, ["T\u1ED1i, {spouse} v\xE0 b\u1EA1n ng\u1ED3i ngo\xE0i hi\xEAn kh\xF4ng n\xF3i g\xEC. Th\u1EBF l\xE0 \u0111\u1EE7."], "good"),
+    R3("married_strain", 3, (c) => c.married && (c.scarcity || c.rat_race), ["Hai v\u1EE3 ch\u1ED3ng c\xE3i nhau v\xEC ti\u1EC1n, r\u1ED3i im l\u1EB7ng v\xEC c\u0169ng ch\u1EB3ng c\xF3 g\xEC \u0111\u1EC3 c\xE3i th\xEAm."], "bad"),
+    R3("married", 2, (c) => c.married, ["{spouse} mua m\u1ED9t th\u1EE9 kh\xF4ng c\u1EA7n thi\u1EBFt. B\u1EA1n \u0111\u1ECBnh n\xF3i r\u1ED3i th\xF4i."]),
+    R3("widowed", 2, (c) => c.widowed, ["B\u1EA1n v\u1EABn d\u1ECDn hai c\xE1i ch\xE9n. R\u1ED3i c\u1EA5t m\u1ED9t c\xE1i \u0111i."], "bad"),
+    R3("single_30s", 2, (c) => !c.married && c.age >= 30 && c.age < 45, ["\u0110\xE1m c\u01B0\u1EDBi {friend}. Ng\u01B0\u1EDDi ta h\u1ECFi b\u1EA1n c\xE2u ng\u01B0\u1EDDi ta v\u1EABn h\u1ECFi."]),
+    R3("sibling_rich_me_poor", 3, (c) => !!c.cast.sibling && c.broke && c.age > 25, ["{sibling} khoe mua xe. B\u1EA1n n\xF3i ch\xFAc m\u1EEBng v\xE0 ngh\u0129 v\u1EC1 c\xE1i b\u1EBFp h\u1ECFng."]),
+    /* ---- sổ cái & xã hội ---- */
+    R3("enemies_many", 3, (c) => c.enemies >= 2, ["\u1EDE ch\u1EE3, hai ng\u01B0\u1EDDi quay \u0111i khi th\u1EA5y b\u1EA1n. B\u1EA1n bi\u1EBFt v\xEC sao."], "bad"),
+    R3("allies_many", 3, (c) => c.allies >= 3, ["Nh\xE0 c\xF3 vi\u1EC7c, ch\u01B0a k\u1ECBp g\u1ECDi \u0111\xE3 c\xF3 ng\u01B0\u1EDDi \u0111\u1EBFn gi\xFAp."], "good"),
+    R3("rep_low", 2, (c) => c.reputation < 35, ["Ng\u01B0\u1EDDi ta v\u1EABn ch\xE0o, nh\u01B0ng kh\xF4ng c\xF2n r\u1EE7."], "bad"),
+    R3("rep_high", 2, (c) => c.reputation > 70, ["Ng\u01B0\u1EDDi l\u1EA1 bi\u1EBFt t\xEAn b\u1EA1n tr\u01B0\u1EDBc khi b\u1EA1n gi\u1EDBi thi\u1EC7u."], "good"),
+    R3("bully_official", 3, (c) => !!c.cast.bully && (c.roles[c.cast.bully] ?? []).includes("official"), ["B\u1EA1n th\u1EA5y {bully} tr\xEAn b\xE1o \u0111\u1ECBa ph\u01B0\u01A1ng, c\u01B0\u1EDDi, c\u1EAFt b\u0103ng kh\xE1nh th\xE0nh."]),
+    R3("hooks_held", 3, (c) => Object.keys(c.hooks).length > 0, ["C\xF3 m\u1ED9t ng\u01B0\u1EDDi bi\u1EBFt m\u1ED9t chuy\u1EC7n. B\u1EA1n g\u1EB7p h\u1ECD \u1EDF \u0111\xE1m gi\u1ED7 v\xE0 c\u01B0\u1EDDi nhi\u1EC1u h\u01A1n c\u1EA7n thi\u1EBFt."], "bad"),
+    R3("friend_far", 2, (c) => !!c.cast.childhood_friend && c.age > 30, ["{friend} g\u1EEDi \u1EA3nh con. Hai ng\u01B0\u1EDDi h\u1EB9n g\u1EB7p, r\u1ED3i kh\xF4ng g\u1EB7p."]),
+    /* ---- trạng thái tâm trí ---- */
+    R3("tunnel", 3, (c) => c.bandwidth_locked, ["B\u1EA1n qu\xEAn ng\xE0y sinh nh\u1EADt c\u1EE7a ch\xEDnh m\xECnh. Ch\u1EC9 nh\u1EDB ng\xE0y tr\u1EA3 l\xE3i."], "bad"),
+    R3("scarcity", 2, (c) => c.scarcity && !c.bandwidth_locked, ["B\u1EA1n \u0111\u1EE9ng tr\u01B0\u1EDBc k\u1EC7 h\xE0ng l\xE2u h\u01A1n ng\u01B0\u1EDDi kh\xE1c, t\xEDnh nh\u1EA9m."], "bad"),
+    R3("sovereign_quiet", 3, (c) => c.tier === "sovereign" && !c.scarcity, ["Ng\u01B0\u1EDDi ta m\u1EDDi b\u1EA1n v\xE0o m\u1ED9t vi\u1EC7c. B\u1EA1n h\u1ECFi ba c\xE2u, r\u1ED3i t\u1EEB ch\u1ED1i. H\u1ECD ng\u1EA1c nhi\xEAn v\xEC b\u1EA1n d\xE1m.", "B\u1EA1n nh\xECn m\u1ED9t k\xE8o v\xE0 th\u1EA5y lu\xF4n ai s\u1EBD thi\u1EC7t. Tr\u01B0\u1EDBc \u0111\xE2y b\u1EA1n kh\xF4ng th\u1EA5y."], "good"),
+    R3("awakened_quiet", 2, (c) => c.tier === "awakened" && !c.scarcity, ["B\u1EA1n b\u1EAFt \u0111\u1EA7u \u0111\u1EC3 \xFD ai \u0111\u01B0\u1EE3c l\u1EE3i m\u1ED7i khi ng\u01B0\u1EDDi ta b\u1EA3o 'ai c\u0169ng l\xE0m th\u1EBF'."]),
+    R3("autopilot_rich", 3, (c) => c.tier === "autopilot" && c.rich, ["B\u1EA1n mua th\xEAm m\u1ED9t th\u1EE9. N\xF3 l\xE0m b\u1EA1n vui \u0111\xFAng m\u1ED9t tu\u1EA7n."]),
+    R3("sick", 2, (c) => c.ill, ["Thu\u1ED1c, t\xE1i kh\xE1m, h\xF3a \u0111\u01A1n. B\u1EC7nh th\xE0nh m\u1ED9t ph\u1EA7n l\u1ECBch."], "bad"),
+    R3("healthy_old", 3, (c) => c.age > 60 && c.health > 65, ["B\u1EA1n v\u1EABn \u0111i b\u1ED9 m\u1ED7i s\xE1ng. Ng\u01B0\u1EDDi trong x\xF3m ch\xE0o t\u1EEB xa."], "good"),
+    R3("boom", 1, (c) => c.econ_phase === "boom", ["Ngo\xE0i \u0111\u01B0\u1EDDng nhi\u1EC1u xe m\u1EDBi. Gi\xE1 nh\xE0 nh\xEDch l\xEAn m\u1ED7i th\xE1ng."]),
+    R3("crisis", 1, (c) => c.econ_phase === "crisis", ["Qu\xE1n cu\u1ED1i ph\u1ED1 \u0111\xF3ng c\u1EEDa. Ch\u1EE7 qu\xE1n ng\u1ED3i tr\u01B0\u1EDBc c\u1EEDa c\u1EA3 bu\u1ED5i s\xE1ng."], "bad"),
+    R3("any_poor", 1, (c) => c.poor_country, ["M\u01B0a \u0111\u1EA7u m\xF9a. M\xE1i t\xF4n nh\xE0 b\u1EA1n k\xEAu nh\u01B0 tr\u1ED1ng."]),
+    R3("any", 0, () => !0, ["M\u1ED9t n\u0103m tr\xF4i qua kh\xF4ng c\xF3 g\xEC \u0111\xE1ng k\u1EC3, v\xE0 \u0111\xF3 c\u0169ng l\xE0 m\u1ED9t ki\u1EC3u may m\u1EAFn.", "B\u1EA1n \u0111\u1ED5i ch\u1ED7 ng\u1ED3i quen \u1EDF qu\xE1n, ch\u1EC9 \u0111\u1EC3 xem c\xF3 kh\xE1c g\xEC kh\xF4ng."])
+  ];
+
+  // src/engine/narrative/Storyteller.ts
+  function createStoryteller(rng) {
+    return { tension: 10, phase: "build", breather_until: 0, last_major_age: 0, majors: 0, threshold: 30 + Math.round(rng.next() * 15) };
+  }
+  function pressure(ctx) {
+    let p = 2;
+    return ctx.scarcity && (p += 6), ctx.rat_race && (p += 5), ctx.debt_ratio > 1 && (p += 3), ctx.parent_sick && (p += 4), p += 2 * Math.min(3, ctx.enemies), p += 3 * Math.min(2, Object.keys(ctx.hooks).length), ctx.econ_phase === "crisis" && (p += 3), ctx.bandwidth_locked && (p += 3), ctx.rich && ctx.allies >= 2 && (p -= 2), p;
+  }
+  var MILESTONES = [15, 30, 50, 70];
+  function decide(st, ctx, rng) {
+    if (st.tension = clamp(st.tension + pressure(ctx) - 6, 0, 100), ctx.age < st.breather_until)
+      return st.phase = "breather", { minUrgency: 80, vignette: !0, phase: "breather" };
+    let yearsQuiet = ctx.age - st.last_major_age;
+    return st.tension >= st.threshold || yearsQuiet >= 6 + Math.floor(rng.next() * 3) ? (st.phase = "storm", { minUrgency: 0, vignette: !1, phase: "storm" }) : (st.phase = "build", { minUrgency: 60, vignette: !0, phase: "build" });
+  }
+  function onFired(st, age, tensionCost, rng) {
+    st.tension = clamp(st.tension - tensionCost, 0, 100), st.last_major_age = age, st.majors += 1, tensionCost >= 15 && (st.breather_until = age + 1 + Math.floor(rng.next() * 3));
+  }
+
+  // src/engine/narrative/Memory.ts
+  function createMemory() {
+    return { tokens: /* @__PURE__ */ new Map(), secrets: [], nextSecretId: 1 };
+  }
+  var DEFAULT_DECAY = { good: 0.03, bad: 0.01 };
+  function addMemory(m, npcId, tag, age, weight, note, decayPerYear) {
+    let t = { tag, age, weight: clamp(weight, -1, 1), decayPerYear: decayPerYear ?? (weight < 0 ? DEFAULT_DECAY.bad : DEFAULT_DECAY.good), note }, arr = m.tokens.get(npcId) ?? [];
+    return arr.push(t), m.tokens.set(npcId, arr), t;
+  }
+  function memoriesOf(m, npcId) {
+    return m.tokens.get(npcId) ?? [];
+  }
+  function strongestMemory(m, npcId, sign) {
+    let best = null;
+    for (let t of memoriesOf(m, npcId)) Math.sign(t.weight) === sign && (!best || Math.abs(t.weight) > Math.abs(best.weight)) && (best = t);
+    return best;
+  }
+  function opinionOf(s, m, npcId) {
+    let e = getEdge(s.graph, npcId, PLAYER_NODE_ID), v = e ? e.trust : 0;
+    for (let t of memoriesOf(m, npcId)) v += t.weight;
+    return clamp(v, -1, 1);
+  }
+  function decayMemories(m) {
+    for (let [id, arr] of m.tokens) {
+      let keep = [];
+      for (let t of arr) {
+        let w = t.weight > 0 ? Math.max(0, t.weight - t.decayPerYear) : Math.min(0, t.weight + t.decayPerYear);
+        w !== 0 && keep.push({ ...t, weight: w });
+      }
+      keep.length ? m.tokens.set(id, keep) : m.tokens.delete(id);
+    }
+  }
+  function addSecret(m, tag, age, severity, fuseYears, rng, note, knownBy = []) {
+    let sec = { id: `sec${m.nextSecretId++}`, tag, age, severity: clamp(severity, 0, 1), holders: [...knownBy], fuse_age: age + fuseYears[0] + Math.floor(rng.next() * (fuseYears[1] - fuseYears[0] + 1)), exploded: !1, note };
+    return m.secrets.push(sec), sec;
+  }
+  function leakSecrets(s, m, rng) {
+    let out = [];
+    for (let sec of m.secrets) {
+      if (sec.exploded) continue;
+      let newHolders = [];
+      for (let h2 of sec.holders) {
+        let w = s.graph.nodes.get(h2)?.weight ?? 0.3;
+        for (let e of s.graph.edges.values())
+          e.from !== h2 || e.to === PLAYER_NODE_ID || e.trust <= 0 || sec.holders.includes(e.to) || newHolders.includes(e.to) || rng.chance(0.12 * e.trust * w) && (newHolders.push(e.to), out.push({ secret: sec, to: e.to }));
+      }
+      sec.holders.push(...newHolders);
+    }
+    return out;
+  }
+  function hooks(s, m) {
+    let out = [];
+    for (let sec of m.secrets)
+      if (!sec.exploded)
+        for (let h2 of sec.holders) {
+          if (!s.npcs.has(h2)) continue;
+          (opinionOf(s, m, h2) <= -0.3 || sec.severity >= 0.7) && out.push({ secret: sec, holder: h2 });
+        }
+    return out;
+  }
+  function fuseCheck(s, m, age, rng) {
+    let boom = [];
+    for (let sec of m.secrets) {
+      if (sec.exploded || age < sec.fuse_age) continue;
+      let hostile = sec.holders.some((h2) => opinionOf(s, m, h2) <= -0.3);
+      if (!rng.chance(hostile ? 0.35 : 0.15)) continue;
+      sec.exploded = !0;
+      let sources = sec.holders.length ? sec.holders : [...s.npcs.keys()].slice(0, 1);
+      for (let h2 of sources) s.npcs.has(h2) && propagate(s.graph, h2, -0.5 * sec.severity, s.tick);
+      boom.push(sec);
+    }
+    return boom;
+  }
+
+  // src/engine/narrative/Cast.ts
+  var ROLE_ARCH = {
+    mother: ["generous_tit_for_tat", "generous_tit_for_tat", "tit_for_tat"],
+    father: ["tit_for_tat", "grudger", "generous_tit_for_tat"],
+    sibling: ["tit_for_tat", "generous_tit_for_tat", "opportunist", "grudger"],
+    childhood_friend: ["tit_for_tat", "generous_tit_for_tat", "tit_for_tat", "opportunist"],
+    bully: ["opportunist", "always_defect", "grudger"],
+    neighbor: ["tit_for_tat", "grudger", "opportunist"],
+    first_boss: ["tit_for_tat", "opportunist", "grudger"],
+    official: ["opportunist", "grudger", "tit_for_tat"],
+    partner: ["tit_for_tat", "generous_tit_for_tat", "grudger", "opportunist", "always_defect"],
+    creditor: ["always_defect", "grudger", "opportunist"],
+    mentor: ["generous_tit_for_tat", "generous_tit_for_tat", "tit_for_tat"],
+    rival: ["opportunist", "tit_for_tat", "grudger"],
+    spouse: ["generous_tit_for_tat", "tit_for_tat", "grudger"],
+    child: ["generous_tit_for_tat", "tit_for_tat", "opportunist"]
+  }, ROLE_SEX = {
+    mother: "F",
+    father: "M",
+    sibling: "any",
+    childhood_friend: "any",
+    bully: "M",
+    neighbor: "any",
+    first_boss: "any",
+    official: "M",
+    partner: "any",
+    creditor: "any",
+    mentor: "any",
+    rival: "any",
+    spouse: "any",
+    child: "any"
+  }, BIRTH_ROLES = [
+    // role, age offset range, weight (influence)
+    ["mother", [22, 36], 0.6],
+    ["father", [24, 40], 0.6],
+    ["sibling", [-6, 6], 0.4],
+    ["childhood_friend", [-2, 2], 0.5],
+    ["bully", [0, 3], 0.4],
+    ["neighbor", [5, 30], 0.6],
+    ["first_boss", [10, 25], 0.6],
+    ["official", [8, 25], 0.8],
+    ["partner", [-3, 8], 0.5],
+    ["creditor", [5, 20], 0.7],
+    ["mentor", [15, 35], 0.7],
+    ["rival", [-2, 4], 0.5]
+  ];
+  function createCast(s, rng, names, playerWealth) {
+    let cast = /* @__PURE__ */ new Map(), base = s.spawn.macro.survival_cost_quarterly * 4;
+    for (let [role6, [lo, hi], weight] of BIRTH_ROLES) {
+      let sex = ROLE_SEX[role6] === "any" ? rng.chance(0.5) ? "M" : "F" : ROLE_SEX[role6], name = rng.pick(sex === "M" ? names.male : names.female), arch = rng.pick(ROLE_ARCH[role6]), id = `cast_${role6}`, liquid = base * (role6 === "official" || role6 === "creditor" || role6 === "first_boss" ? 3 + 4 * rng.next() : 0.5 + 2 * rng.next()) * (0.6 + playerWealth), npc = makeNpc(id, name, arch, rng, liquid);
+      s.npcs.set(id, npc);
+      let initialTrust = role6 === "mother" || role6 === "father" ? 0.7 : role6 === "childhood_friend" ? 0.4 : role6 === "sibling" ? 0.5 : role6 === "mentor" ? 0.3 : role6 === "bully" ? -0.3 : 0;
+      addNpcToGraph(s.graph, npc, weight, s.tick, initialTrust);
+      let m = { id, name, role: role6, roles: [role6], age_offset: lo + Math.floor(rng.next() * (hi - lo + 1)), alive: !0, health: 70 + 25 * rng.next(), dependent: !1, true_archetype: arch };
+      cast.set(id, m);
+    }
+    let link = (a, b, t) => connectNpcs(s.graph, `cast_${a}`, `cast_${b}`, t, s.tick);
+    return link("mother", "father", 0.8), link("mother", "sibling", 0.8), link("father", "sibling", 0.7), link("neighbor", "official", 0.5), link("official", "creditor", 0.5), link("creditor", "first_boss", 0.4), link("childhood_friend", "bully", 0.3), link("rival", "partner", 0.4), link("mentor", "first_boss", 0.5), link("neighbor", "mother", 0.5), cast;
+  }
+  function addCastMember(s, cast, rng, role6, name, ageOffset, trust = 0.5, archOverride) {
+    let n = [...cast.values()].filter((c) => c.role === role6).length, id = `cast_${role6}${n ? n + 1 : ""}`, drawn = rng.pick(ROLE_ARCH[role6]), arch = archOverride ?? drawn, npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
+    s.npcs.set(id, npc), addNpcToGraph(s.graph, npc, 0.5, s.tick, trust);
+    let m = { id, name, role: role6, roles: [role6], age_offset: ageOffset, alive: !0, health: role6 === "child" ? 95 : 80, dependent: role6 === "child", true_archetype: arch };
+    return cast.set(id, m), m;
+  }
+  function ageCast(cast, playerAge, rng, poorCountry) {
+    let ev = [];
+    for (let m of cast.values()) {
+      if (!m.alive) continue;
+      let npcAge = playerAge + m.age_offset, wasSick = m.health < 40;
+      npcAge > 55 ? m.health -= 1.2 + 0.08 * (npcAge - 55) + (poorCountry ? 0.6 : 0) : m.health += (85 - m.health) * 0.1, m.health += rng.normal(0, 2), m.health = clamp(m.health, 0, 100);
+      let q = 1 - Math.exp(-(2e-4 * Math.exp(0.09 * Math.max(0, npcAge - 40))));
+      if (m.health <= 0 || rng.chance(q)) {
+        m.alive = !1, m.dependent = !1, ev.push({ id: m.id, name: m.name, role: m.role, kind: "died" });
+        continue;
+      }
+      let sick = m.health < 40;
+      sick && !wasSick && ev.push({ id: m.id, name: m.name, role: m.role, kind: "fell_ill" }), !sick && wasSick && ev.push({ id: m.id, name: m.name, role: m.role, kind: "recovered" }), (m.role === "mother" || m.role === "father") && (m.dependent = sick || npcAge >= 70), m.role === "child" && (m.dependent = npcAge < 22);
+    }
+    return ev;
+  }
+  function dependentCosts(cast, playerAge, richCountry) {
+    let out = [];
+    for (let m of cast.values()) {
+      if (!m.alive || !m.dependent) continue;
+      let npcAge = playerAge + m.age_offset;
+      m.role === "mother" || m.role === "father" ? m.health < 20 ? out.push({ id: m.id, name: m.name, role: m.role, frac: 0.2, why: "thu\u1ED1c men, vi\u1EC7n ph\xED" }) : m.health < 40 ? out.push({ id: m.id, name: m.name, role: m.role, frac: 0.12, why: "thu\u1ED1c men" }) : npcAge >= 70 && out.push({ id: m.id, name: m.name, role: m.role, frac: 0.05, why: "ph\u1EE5ng d\u01B0\u1EE1ng" }) : m.role === "child" && (npcAge >= 6 && npcAge < 18 ? out.push({ id: m.id, name: m.name, role: m.role, frac: richCountry ? 0.12 : 0.06, why: "h\u1ECDc ph\xED, s\xE1ch v\u1EDF" }) : npcAge >= 18 && npcAge < 22 && out.push({ id: m.id, name: m.name, role: m.role, frac: 0.15, why: "h\u1ECDc \u0111\u1EA1i h\u1ECDc" }));
+    }
+    return out;
+  }
+  function byRole(cast, role6) {
+    for (let m of cast.values()) if (m.alive && m.roles.includes(role6)) return m;
+  }
+  return __toCommonJS(engine_exports);
+})();
