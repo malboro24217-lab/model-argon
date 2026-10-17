@@ -5,7 +5,7 @@ export { BRANCHES, MICRO_GATES } from "./branches.ts";
 export { BRANCHES2 } from "./branches2.ts";
 export { LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO } from "./branches3.ts";
 export { VIGNETTES } from "./vignettes.ts";
-export { selectStorylet, selectVignette, eligible, countTrue, groupIndex, type MatchOptions, type FiredRecord } from "./Matcher.ts";
+export { selectStorylet, selectVignette, eligible, countTrue, groupIndex, repeatCap, type MatchOptions, type FiredRecord } from "./Matcher.ts";
 export { createStoryteller, decide, onFired, pressure, MILESTONES, type StorytellerState, type StoryDecision, type StoryPhase } from "./Storyteller.ts";
 export { createMemory, addMemory, memoriesOf, strongestMemory, opinionOf, decayMemories, addSecret, leakSecrets, hooks, fuseCheck, type NarrativeMemory } from "./Memory.ts";
 export { createCast, addCastMember, ageCast, dependentCosts, byRole, type CastNames, type CastEvent } from "./Cast.ts";

@@ -218,6 +218,8 @@ export interface Storylet {
   /** Variants of one life event share a group: once/cooldown apply to the whole group (a branch-specific
    *  'parent falls ill' blocks the generic one and every other variant for the cooldown). */
   group?: string;
+  /** Most times one storylet may fire in a life (host default 1 for micro cards). */
+  maxPerLife?: number;
   /** Tension this storylet adds to the storyteller when it fires. */
   tension: number;
   /** Builds the scene. May read the context and roles to write names in. */

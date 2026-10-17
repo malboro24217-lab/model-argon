@@ -220,7 +220,7 @@ export const STORYLETS: Storylet[] = [
         C("Để anh chị em lo", { happy: -6, close_doors: ["family_table"], secret: { tag: "ABANDONED_PARENT", severity: 0.4, fuse_years: [3, 12], note: `không lo cho ${N(p)} lúc ốm`, known_by: sib ? [sib] : [] }, ...(sib ? { memory: { npc: sib, tag: "REFUSED_HELP", weight: -0.5, note: "bỏ mặc cha mẹ lúc ốm" } } : {}), log: "Bạn nói mình không lo nổi. Trong nhà ai cũng biết." }, "Giữ tiền, mất nhiều thứ khác")], def: 0 }; },
   },
   {
-    id: "child_tuition", category: "family", urgency: 80, cooldownYears: 5, tension: 10,
+    id: "child_tuition", category: "family", urgency: 80, cooldownYears: 7, tension: 10,
     prerequisites: (c) => c.kids_school > 0 && (c.broke || c.rat_race) && !!role(c, "child"),
     specificity: (c) => n(c.rat_race, c.poor_country, c.bandwidth_locked),
     build: (c, N) => { const k = role(c, "child")!; return { title: `Học phí của ${N(k)}`, npc: k,
@@ -270,7 +270,7 @@ export const STORYLETS: Storylet[] = [
 
   /* ---------------------------------------------------------------- Sổ cái chủ động: kẻ thù, đồng minh, chủ nợ */
   {
-    id: "creditor_knock", category: "ledger", urgency: 88, cooldownYears: 4, tension: 14,
+    id: "creditor_knock", category: "ledger", urgency: 88, cooldownYears: 6, tension: 14,
     prerequisites: (c) => c.debt_ratio >= 1.2 && !!role(c, "creditor") && c.age >= 20,
     specificity: (c) => n(c.scarcity, c.bandwidth_locked, op(c, role(c, "creditor")) < -0.2, c.econ_phase === "crisis"),
     build: (c, N) => { const cr = role(c, "creditor")!; const angry = op(c, cr) < -0.2; return { title: `${N(cr)} đập cửa đòi nợ`, npc: cr,
@@ -372,14 +372,14 @@ export const STORYLETS: Storylet[] = [
     id: "scandal", category: "fuse", urgency: 96, cooldownYears: 0, tension: 16,
     prerequisites: (c) => c.flags.has("scandal_pending"),
     specificity: () => 9, causes: () => [prov.flag("scandal_pending")],
-    build: (c) => ({ title: "Chuyện cũ vỡ lở", text: `Một chuyện bạn tưởng đã chôn từ ${c.counters.scandal_age ?? "lâu"} tuổi bỗng được kể lại khắp nơi, đúng lúc bạn tưởng mình đã an toàn.`,
+    build: (c) => ({ title: c.counters.scandal_age ? `Chuyện năm ${c.counters.scandal_age} tuổi vỡ lở` : "Chuyện cũ vỡ lở", text: `Một chuyện bạn tưởng đã chôn từ ${c.counters.scandal_age ?? "lâu"} tuổi bỗng được kể lại khắp nơi, đúng lúc bạn tưởng mình đã an toàn.`,
       choices: [C("Chối", { unflags: ["scandal_pending"], gamble: { p: 0.35, win: { happy: -3, log: "Người ta bán tín bán nghi. Chuyện lắng xuống." }, lose: { income_mult: 0.85, rel: -10, happy: -8, log: "Có người đưa bằng chứng. Bạn mất cả danh tiếng lẫn việc." } } }, "35 % thoát"),
         C("Nhận và xin lỗi", { unflags: ["scandal_pending"], income_mult: 0.92, rel: -4, happy: -5, trait: { fair: 2 }, log: "Bạn nhận. Mất một phần, giữ được phần còn lại." }, "Mất ít hơn, chắc chắn", { longterm: true })], def: 1 }),
   },
 
   /* ---------------------------------------------------------------- Chủ động thức tỉnh */
   {
-    id: "agency_year", category: "agency", urgency: 20, cooldownYears: 3, tension: -3,
+    id: "agency_year", category: "agency", urgency: 20, cooldownYears: 8, tension: -3,
     prerequisites: (c) => c.age >= 16 && c.age <= 70 && c.tier !== "sovereign",
     specificity: (c) => n(c.crises_survived > 0, c.bandwidth >= 60, !c.rat_race),
     build: (c, N) => { const m = role(c, "mentor"); return { title: "Một năm dành cho mình", concept: "ev",
@@ -404,3 +404,8 @@ export const STORYLETS: Storylet[] = [
     },
   })),
 ];
+
+/** Repeat caps for recurring major storylets (Task 1: cut repetition). Arcs built on repeated rounds (shop_round) and fuses (scandal) stay uncapped. */
+const MAJOR_CAPS: Record<string, number> = { creditor_knock: 2, enemy_obstruct: 2, blackmail: 2, reckless: 2, agency_year: 2, parent_sick: 2, child_tuition: 2, mistake: 2 };
+for (const st of STORYLETS) { const cap = MAJOR_CAPS[st.id]; if (cap !== undefined) st.maxPerLife = cap; }
+

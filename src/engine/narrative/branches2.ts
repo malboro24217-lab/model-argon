@@ -4,6 +4,7 @@
  * instead of generic filler.
  */
 import type { Storylet, FactContext, StoryletView, Choice, CastRole, Effect } from "./types.ts";
+import { repeatCap } from "./Matcher.ts";
 
 const C = (label: string, effects: Effect, hint?: string, extra: Partial<Choice> = {}): Choice => ({ label, ...(hint !== undefined ? { hint } : {}), effects, ...extra });
 const f = (c: FactContext, x: string) => c.flags.has(x);
@@ -13,7 +14,7 @@ const T = (title: string, text: string, choices: Choice[], def = 0, more: Partia
 /** Recurring branch card: gate flag(s), ages, cooldown. */
 function R(id: string, gate: string | ((c: FactContext) => boolean), ages: [number, number], cooldown: number, build: Build): Storylet {
   const g = typeof gate === "string" ? (c: FactContext) => f(c, gate) : gate;
-  return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, build };
+  return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, maxPerLife: repeatCap(build), build };
 }
 const vary = (id: string, age: number, arr: string[]): string => { let x = age * 31; for (const ch of id) x = (x * 33 + ch.charCodeAt(0)) >>> 0; return arr[x % arr.length]!; };
 

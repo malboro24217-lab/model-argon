@@ -7,7 +7,7 @@
  * The host applies habit drift every year (see living.js habitYear()).
  */
 import type { Storylet, FactContext, StoryletView, Choice, CastRole } from "./types.ts";
-import { countTrue as n } from "./Matcher.ts";
+import { countTrue as n, repeatCap } from "./Matcher.ts";
 import { prov } from "./Causality.ts";
 
 const C = (label: string, effects: Choice["effects"], hint?: string, extra: Partial<Choice> = {}): Choice => ({ label, ...(hint !== undefined ? { hint } : {}), effects, ...extra });
@@ -19,7 +19,7 @@ const vary = (id: string, age: number, arr: string[]): string => { let x = age *
 
 type Build = (c: FactContext, N: (id: string) => string) => StoryletView;
 function M(id: string, ages: [number, number], when: (c: FactContext) => boolean, spec: (c: FactContext) => number, build: Build, extra: Partial<Storylet> = {}): Storylet {
-  return { id, category: "micro", urgency: 15, cooldownYears: 7, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && when(c), specificity: spec, build, ...extra };
+  return { id, category: "micro", urgency: 15, cooldownYears: 7, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && when(c), specificity: spec, maxPerLife: repeatCap(build), build, ...extra };
 }
 const any = ((): number => 1) as unknown as ((c: FactContext) => boolean) & ((c: FactContext) => number);
 

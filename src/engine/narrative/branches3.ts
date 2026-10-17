@@ -9,6 +9,7 @@
  */
 import type { Storylet, FactContext, StoryletView, Choice, CastRole, Effect } from "./types.ts";
 import { prov } from "./Causality.ts";
+import { repeatCap } from "./Matcher.ts";
 
 const C = (label: string, effects: Effect, hint?: string, extra: Partial<Choice> = {}): Choice => ({ label, ...(hint !== undefined ? { hint } : {}), effects, ...extra });
 const f = (c: FactContext, x: string) => c.flags.has(x);
@@ -21,7 +22,7 @@ const vary = (id: string, age: number, arr: string[]): string => { let x = age *
 function R(id: string, gate: string | ((c: FactContext) => boolean), ages: [number, number], cooldown: number, build: Build, extra: Partial<Storylet> = {}): Storylet {
   const g = typeof gate === "string" ? (c: FactContext) => f(c, gate) : gate;
   const causes = typeof gate === "string" ? () => [prov.flag(gate)] : undefined;
-  return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, ...(causes ? { causes } : {}), build, ...extra };
+  return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, maxPerLife: repeatCap(build), ...(causes ? { causes } : {}), build, ...extra };
 }
 
 /* ------------------------------------------------------------------ life-event variants */
@@ -29,7 +30,7 @@ function R(id: string, gate: string | ((c: FactContext) => boolean), ages: [numb
 const parent = (c: FactContext) => role(c, "mother") ?? role(c, "father");
 const psBase = (c: FactContext) => c.parent_sick && c.age >= 20 && !!parent(c);
 function PS(id: string, gate: string, spec: number, build: Build): Storylet {
-  return { id, group: "parent_sick", category: "family", urgency: 90, cooldownYears: 6, tension: 14, prerequisites: (c) => psBase(c) && f(c, gate), specificity: () => spec, causes: () => [prov.flag(gate)], build };
+  return { id, group: "parent_sick", maxPerLife: 2, category: "family", urgency: 90, cooldownYears: 6, tension: 14, prerequisites: (c) => psBase(c) && f(c, gate), specificity: () => spec, causes: () => [prov.flag(gate)], build };
 }
 const sibBase = (c: FactContext) => c.age >= 22 && c.age <= 45 && !!role(c, "sibling");
 function SW(id: string, gate: string, build: Build): Storylet {
@@ -117,8 +118,8 @@ export const TEMPER_LIFE: Storylet[] = [
   /* lì */
   R("tc_to_work", "temper_tough", [8, 16], 3, (c) => T("Phụ việc", vary("towork", c.age, ["Nhà đang mùa gặt, thiếu người.", "Bố bị đau lưng, không ai gánh nước."]), [
     C("Nghỉ học vài hôm phụ nhà", { know: -1, health: 1, rel: 2, trait: { coop: 1 } }), C("Vẫn đi học", { know: 1 })])),
-  R("tc_to_cry", "temper_tough", [7, 13], 4, () => T("Không khóc", "Bạn ngã rách đầu gối, máu chảy. Mấy đứa khác nhìn.", [
-    C("Đứng dậy, không khóc", { trait: { bold: 1 }, happy: -1 }), C("Khóc, chạy về nhà", { rel: 1 })])),
+  R("tc_to_road", "temper_tough", [7, 13], 4, () => T("Đường đến trường", "Mùa mưa, con đường năm cây số đến trường ngập đến đầu gối. Mấy đứa trong xóm đã nghỉ học cả tuần.", [
+    C("Lội đi học", { know: 2, health: -2, trait: { bold: 1 } }), C("Ở nhà phụ việc", { rel: 1, know: -1 })])),
   R("tm3_to_injury", "temper_tough", [22, 60], 6, (c) => T("Đau mà không nói", vary("toinj", c.age, ["Bạn đau ngực mấy tuần nay.", "Vết thương ở tay mãi không lành."]), [
     C("Đi khám", { money: -0.03, health: 4 }), C("Chịu được", { gamble: { p: 0.7, win: {}, lose: { health: -10, log: "Nó không tự khỏi." } } })], 1)),
   R("tm3_to_hold", "temper_tough", [25, 65], 6, () => T("Giữ chặt", "Việc ở chỗ làm đang tệ. Ai cũng tính nhảy việc.", [
@@ -130,12 +131,12 @@ export const TEMPER_LIFE: Storylet[] = [
 /* ------------------------------------------------------------------ echoes of the age-5 choice */
 
 export const TEMPER2_ECHO: Storylet[] = [
-  R("t5_curious", "temper2_curious", [11, 60], 8, () => T("Câu hỏi ngày đầu đi học", "Cô giáo năm lớp một từng bảo bạn hỏi nhiều quá. Hôm nay lại có một câu bạn muốn hỏi giữa cuộc họp.", [
+  R("t5_curious", "temper2_curious", [16, 45], 99, () => T("Câu hỏi ngày đầu đi học", "Cô giáo năm lớp một từng bảo bạn hỏi nhiều quá. Hôm nay lại có một câu bạn muốn hỏi giữa cuộc họp.", [
     C("Hỏi", { know: 2, gamble: { p: 0.6, win: { rel: 2 }, lose: { rel: -2 } } }), C("Thôi", {})])),
-  R("t5_bold", "temper2_bold", [11, 60], 8, () => T("Thói quen ngồi bàn đầu", "Từ ngày đầu đi học bạn đã chọn chỗ ngồi đầu. Hôm nay cũng có một chỗ ngồi đầu, trước mặt người quan trọng.", [
+  R("t5_bold", "temper2_bold", [16, 45], 99, () => T("Thói quen ngồi bàn đầu", "Từ ngày đầu đi học bạn đã chọn chỗ ngồi đầu. Hôm nay cũng có một chỗ ngồi đầu, trước mặt người quan trọng.", [
     C("Ngồi lên đầu, tự giới thiệu", { rel: 2, gamble: { p: 0.5, win: { income_mult: 1.04 }, lose: {} } }), C("Ngồi cuối", {})])),
-  R("t5_kind", "temper2_kind", [11, 60], 8, () => T("Đứa ngồi một mình", "Ngày đầu đi học bạn đã ngồi cạnh đứa không ai chơi. Hôm nay có một người mới cũng đang đứng một mình.", [
+  R("t5_kind", "temper2_kind", [16, 45], 99, () => T("Đứa ngồi một mình", "Ngày đầu đi học bạn đã ngồi cạnh đứa không ai chơi. Hôm nay có một người mới cũng đang đứng một mình.", [
     C("Lại gần", { rel: 2, counters: { kind: 1 } }), C("Thôi", {})])),
-  R("t5_tough", "temper2_tough", [11, 60], 8, () => T("Không khóc lúc mẹ về", "Ngày đầu đi học bạn không khóc khi mẹ về. Hôm nay có chuyện buồn, và bạn lại không khóc.", [
+  R("t5_tough", "temper2_tough", [16, 45], 99, () => T("Gồng", "Ngày đầu đi học, bạn đã gồng lên để không ai thấy mình nhớ mẹ. Hôm nay có chuyện buồn ở chỗ làm, và bạn lại gồng lên như thế.", [
     C("Giữ trong lòng", { bw: -2 }), C("Kể cho một người", { rel: 2, bw: 2 })])),
 ];

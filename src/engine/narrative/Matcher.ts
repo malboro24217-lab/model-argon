@@ -34,6 +34,7 @@ export function eligible(pool: Storylet[], ctx: FactContext, opts: MatchOptions)
     const g = s.group;
     let last: FiredRecord | undefined;
     for (let i = opts.history.length - 1; i >= 0; i--) { const h = opts.history[i]!; if (h.id === s.id || (g !== undefined && groupOf.get(h.id) === g)) { last = h; break; } }
+    if (s.maxPerLife !== undefined) { let n = 0; for (const h of opts.history) if (h.id === s.id) n++; if (n >= s.maxPerLife) continue; }
     if (last) {
       if (s.once) continue;
       if (opts.age - last.age < s.cooldownYears) continue;
@@ -74,6 +75,9 @@ export function selectVignette(rules: VignetteRule[], ctx: FactContext, rng: Rng
   }
   return best.length ? rng.pick(best) : null;
 }
+
+/** Repeat budget for an authored card: cards whose text varies by age (they call `vary(...)`) may recur twice, others fire once. */
+export function repeatCap(build: unknown): number { return /\bvary\d*\(/.test(String(build)) ? 2 : 1; }
 
 /** Helper for authoring: counts how many of the given predicates hold — the specificity score. */
 export function countTrue(...preds: boolean[]): number { return preds.filter(Boolean).length; }

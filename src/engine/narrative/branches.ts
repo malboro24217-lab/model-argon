@@ -9,6 +9,7 @@
  */
 import type { Storylet, FactContext, StoryletView, Choice, CastRole, Effect } from "./types.ts";
 import { prov } from "./Causality.ts";
+import { repeatCap } from "./Matcher.ts";
 
 const C = (label: string, effects: Effect, hint?: string, extra: Partial<Choice> = {}): Choice => ({ label, ...(hint !== undefined ? { hint } : {}), effects, ...extra });
 const f = (c: FactContext, x: string) => c.flags.has(x);
@@ -357,4 +358,4 @@ export const MICRO_GATES: Record<string, (c: FactContext) => boolean> = {
 
 /** Everyday cards of a branch recur on a cooldown (still branch-specific, so they add decisions without adding overlap). */
 const RECUR: Record<string, number> = {"dr_night": 6, "dr_crash": 12, "fc_ot": 5, "he_shift": 5, "he_gift": 8, "te_tutor": 8, "te_envelope": 10, "bu_scaffold": 8, "bu_unpaid": 10, "of_politics": 8, "tc_remote": 8, "sp_wait": 6, "sp_sorry": 5, "sp_chores": 10, "sp_vote": 8, "mg_room": 5, "mg_scam": 10, "fa_drought": 7, "do_accused": 12, "or_hunger": 3, "or_lottery_kid": 3, "or_tutor": 3, "to_water": 3, "bo_gang": 3, "un_job": 2, "un_rich": 2, "dp_boss": 3};
-for (const st of BRANCHES) { const cd = RECUR[st.id]; if (cd !== undefined) { st.once = false; st.cooldownYears = cd; } }
+for (const st of BRANCHES) { const cd = RECUR[st.id]; if (cd !== undefined) { st.once = false; st.cooldownYears = Math.max(6, cd); st.maxPerLife = repeatCap(st.build); } }

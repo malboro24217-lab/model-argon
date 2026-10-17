@@ -5,7 +5,7 @@
  *   3. over 20,000 random contexts every storylet is reachable (prints the ones that never fire);
  *   4. the matcher never returns a storylet whose prerequisites fail; selection is deterministic per seed.
  */
-import { STORYLETS as _S, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, VIGNETTES, selectStorylet, selectVignette, createRng, type FactContext, type CastRole, type Effect } from "./engine/index.ts";
+import { STORYLETS as _S, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, VIGNETTES, selectStorylet, selectVignette, eligible, createRng, type Storylet, type FactContext, type CastRole, type Effect } from "./engine/index.ts";
 
 const STORYLETS = [..._S, ...MICRO, ...BRANCHES, ...BRANCHES2, ...LIFE_VARIANTS, ...TEMPER_LIFE, ...TEMPER2_ECHO];
 const ids = new Set(STORYLETS.map((s) => s.id));
@@ -70,4 +70,16 @@ console.log("reach counts:", [...fired.entries()].sort((a, b) => a[1] - b[1]).sl
 const a = selectStorylet(STORYLETS, randomCtx(createRng(3)), { minUrgency: 0, history: [], age: 30 }, createRng(5))?.id;
 const b = selectStorylet(STORYLETS, randomCtx(createRng(3)), { minUrgency: 0, history: [], age: 30 }, createRng(5))?.id;
 console.log("deterministic:", a === b);
+
+/* maxPerLife is enforced by the matcher for every pool (Task 1). */
+{
+  const capped: Storylet = { id: "cap_probe", category: "family", urgency: 50, cooldownYears: 0, maxPerLife: 2, tension: 0, prerequisites: () => true, specificity: () => 1, build: () => ({ title: "x", text: "x", choices: [], def: 0 }) };
+  const ctx = randomCtx(createRng(11));
+  const hist = [{ id: "cap_probe", age: 10 }, { id: "cap_probe", age: 20 }];
+  const got = eligible([capped], ctx, { minUrgency: 0, history: hist, age: 40 });
+  if (got.length !== 0) { console.error("FAIL maxPerLife not enforced by matcher"); process.exit(1); }
+  const got1 = eligible([capped], ctx, { minUrgency: 0, history: hist.slice(0, 1), age: 40 });
+  if (got1.length !== 1) { console.error("FAIL maxPerLife blocks too early"); process.exit(1); }
+  console.log("maxPerLife enforced: ok");
+}
 process.exit(bad.length ? 1 : 0);
