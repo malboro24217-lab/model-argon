@@ -305,8 +305,10 @@ function stepYear(L){
   if(L.ar&&L.ar.state.dead&&L.ar.state.capitals.bioEnergy.value<=0&&L.alive){die(L,"kiệt sức");return}
   updateHappiness(L);
   L.map.push({h:L.st.happy});
-  {let g=0;while(L.pending&&L.auto&&g++<6)resolve(L,autoChoice(L))}
+  autoChain(L);
+  if(L.replay&&L.replayActs&&L.alive){replayProactive(L);autoChain(L)}
 }
+function autoChain(L){let g=0;while(L.pending&&L.auto&&g++<12){const a=autoChoice(L);if(a&&typeof a==="object")applyAct(L,a.act,"scene",a.text,a.chon,a.seq);else resolve(L,a)}}
 
 function applyFocus(L){switch(L.focus){
   case"study":addSt(L,"know",3);addSt(L,"happy",-1);break;
@@ -442,7 +444,7 @@ function updateHappiness(L){const c=L.c;let t=c.h*8+(L.st.rel-50)*.25+(L.st.heal
   L.st.happy=clamp(L.st.happy+(t-L.st.happy)*.3+nrm(L.r)*2,0,100)}
 
 /* ================= QUYẾT ĐỊNH ================= */
-function autoChoice(L){const p=L.pending;const g=argonGate(L);const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);if(L.script){const k=sceneKey(L,p);if(L.override&&L.override.key===k&&p.choices[L.override.index])return L.override.index;if(L.script[k]!==undefined&&p.choices[L.script[k]])return L.script[k]}if(!ok.length)return p.def;const d=ok.includes(p.def)?p.def:ok[0];return L.ra()<.8?d:ok[Math.floor(L.ra()*ok.length)]}
+function autoChoice(L){const p=L.pending;const g=argonGate(L);const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);if(L.script){const k=sceneKey(L,p);if(L.override&&L.override.key===k&&p.choices[L.override.index])return L.override.index;const sv=L.script[k];if(sv&&typeof sv==="object")return L.override&&L.override.removeKey===k?p.def:sv;if(sv!==undefined&&p.choices[sv])return sv}if(!ok.length)return p.def;const d=ok.includes(p.def)?p.def:ok[0];return L.ra()<.8?d:ok[Math.floor(L.ra()*ok.length)]}
 function resolve(L,i){const p=L.pending;if(!p)return;L.pending=null;const r=L.r,c=L.c;const ch=p.choices[i];markChoice(L,p,i);if(ch&&ch.fx){try{ch.fx(L)}finally{L.curMark=null}livingFollowUp(L);return}
   try{resolveCore(L,p,i,r,c)}finally{L.curMark=null}livingFollowUp(L)}
 function resolveCore(L,p,i,r,c){
@@ -5304,7 +5306,10 @@ function eulogyVN(L) {
     : `Bạn sống ${L.age} năm ở ${L.c.n}. ${yrs(V.ticks_autopilot)} năm đầu là của người khác: của làng, của nhà, của những điều ai cũng làm. Rồi ${V.crises_survived ? `sau ${V.crises_survived} lần khủng hoảng` : "dần dần"}, bạn bắt đầu thấy luật chơi, và ${yrs(V.ticks_sovereign)} năm cuối cùng bạn tự viết lấy phần mình${V.relapses ? `, dù có ${V.relapses} lần suýt trượt về` : ""}.`;
   const p2 = `${S.rounds ? `Bạn ngồi vào ${S.rounds} ván với người khác và để lại ${S.net_systemic_surplus >= 0 ? "thêm " : "ít hơn "}${fmtPPP(Math.abs(S.net_systemic_surplus))} cho tất cả những người ngồi cùng bàn, trên ${fmtPPP(S.potential_surplus)} có thể có nếu ai cũng thật.` : "Bạn ít khi ngồi vào bàn với ai."} ${prospered.length ? `${prospered.join(", ")} khá lên nhờ có bạn.` : ""} ${preyed.length ? `${preyed.join(", ")} khá lên trên lưng bạn.` : ""} ${bankrupt.length ? `${bankrupt.join(", ")} trắng tay, và một phần là vì bạn.` : ""} ${friends.length ? `${friends.join(", ")} tin bạn đến cuối.` : ""} ${enemies.length ? `${enemies.join(", ")} thì không bao giờ.` : ""}`;
   const p3 = `Khi nấm mộ đã xanh cỏ, ${L.c.g < 8000 ? "làng" : "khu phố"} nhớ gì về bạn? ${good ? `Người ta nhớ ${good.note || LW.TAG_VN[good.tag]}.` : ""} ${bad ? `Người ta cũng nhớ ${bad.note || LW.TAG_VN[bad.tag]}.` : ""} ${!good && !bad ? "Không nhiều. Bạn là một người đi qua, và ở nơi này điều đó không hiếm." : R.reputation_final >= 65 ? `Tên bạn được nhắc khi người ta cần ví dụ về một người tử tế.` : R.reputation_final <= 35 ? `Tên bạn được nhắc khi người ta dặn con cẩn thận.` : "Tên bạn được nhắc, thỉnh thoảng, không tốt không xấu."}`;
-  return [p1, p2, p3].map(x => x.replace(/\s+/g, " ").trim());
+  const own = (L.actLog || []).filter(a => a.kind === "proactive").map(a => ({ a, m: L.lw.cz.marks.find(m => m.key === a.key) })).filter(x => x.m)
+    .sort((x, y) => (y.m.consequences.length + y.m.doors_closed.length) - (x.m.consequences.length + x.m.doors_closed.length) || x.a.age - y.a.age).slice(0, 3).sort((x, y) => x.a.age - y.a.age);
+  const p4 = own.length ? `Những điều bạn tự quyết, không ai bày cho: ${own.map(x => `${x.a.text} (năm ${x.a.age} tuổi)`).join(", ")}.` : "";
+  return [p1, p2, p3 + (p4 ? " " + p4 : "")].map(x => x.replace(/\s+/g, " ").trim());
 }
 
 /* ---- Chuyện nhỏ: 1–3 mỗi năm ---- */
@@ -5437,12 +5442,13 @@ function lifeSummary(P) {
   const T = P.ar ? Argon.lifeTopology(P.ar.state, P.ar.npcStart) : null;
   return { age: P.age, cause: P.cause, country: P.c.n, job: P.job || P.lastJob || "không nghề", hist: P.lw.history.map(h => [h.id, h.age]), net: Math.round(P.savings), married: P.married || P.widowed, kids: P.kids.filter(k => k.alive).length, rep: P.ar ? Math.round(P.ar.state.capitals.socialLedger.reputation) : 50, tier: P.ar ? Argon.tierOf(P.ar.state) : "autopilot", quadrant: T ? T.quadrant : null, epithets: epithets(P), doors: [...P.lw.cz.doors] };
 }
-function replayLife(seed, choices, override) {
-  const script = {}; for (const c of choices) script[c.key] = c.index;
+function replayLife(seed, choices, override, actLog) {
+  const script = replayScript(choices, actLog || []);
   const focus = {}; for (const k in (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS) || {}) focus[k] = (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS)[k];
   const was = NAR.enabled; NAR.enabled = false;
   const P = createLife(seed, { auto: true, script, override, focus });
-  let g = 0; while (P.alive && g++ < 130) stepYear(P);
+  P.replayActs = actLog || [];
+  let g = 0; while (P.alive && g++ < 130) { stepYear(P); if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; } }
   NAR.enabled = was;
   return P;
 }
@@ -5450,11 +5456,18 @@ function counterfactuals(L) {
   CF_FOCUS = L.focusLog;
   const cz = L.lw.cz; const secretsFrom = m => [...cz.origin.entries()].filter(([k, v]) => v === m.id && k.startsWith("secret:")).length;
   const pivots = Argon.pivotalMarks(cz, 6, m => secretsFrom(m) * 2 + (m.alt_indices && m.alt_indices.length ? 0 : -99)).filter(m => m.alt_indices && m.alt_indices.length);
+  const acts = L.actLog || [];
   const root = cz.marks.find(m => m.age <= 5 && m.alt_indices && m.alt_indices.length);
-  const pv = (root ? [root].concat(pivots.filter(m => m !== root)) : pivots).slice(0, 3); pivots.length = 0; pivots.push(...pv);
+  const proRec = m => acts.find(a => a.kind === "proactive" && a.key === m.key);
+  const typed = cz.marks.filter(m => proRec(m)).sort((a, b) => (b.consequences.length + b.doors_closed.length) - (a.consequences.length + a.doors_closed.length) || a.age - b.age)[0];
+  const head = [root, typed].filter(Boolean);
+  const pv = head.concat(pivots.filter(m => !head.includes(m))).slice(0, 3); pivots.length = 0; pivots.push(...pv);
   if (!pivots.length) return null;
-  const base = lifeSummary(replayLife(L.seed, L.choices, null));
-  const alts = pivots.map(m => { const alt = m.alt_indices[0]; const P = replayLife(L.seed, L.choices, { key: keyOfMark(L, m), index: alt }); const altLabel = m.altLabels && m.altLabels[alt] || m.alternatives.filter(a => a !== m.choice)[0] || "khác"; return { mark: m, altLabel, life: lifeSummary(P) }; });
+  const base = lifeSummary(replayLife(L.seed, L.choices, null, acts));
+  const alts = pivots.map(m => {
+    const rec = proRec(m);
+    if (rec) return { mark: m, altLabel: "không làm việc đó", typedProactive: true, life: lifeSummary(replayLife(L.seed, L.choices, { removeAct: rec.seq }, acts)) };
+    const alt = m.alt_indices[0]; const P = replayLife(L.seed, L.choices, { key: keyOfMark(L, m), index: alt }, acts); const altLabel = m.altLabels && m.altLabels[alt] || m.alternatives.filter(a => a !== m.choice)[0] || "khác"; return { mark: m, altLabel, life: lifeSummary(P) }; });
   return { base, alts };
 }
 function keyOfMark(L, m) { return m.key || null; }
@@ -5475,7 +5488,7 @@ function diffVN(a, b, fromAge) {
 }
 function counterfactualVN(L) {
   const cf = counterfactuals(L); if (!cf) return "";
-  const rows = cf.alts.map(a => { const d = diffVN(cf.base, a.life, a.mark.age); return `<div class="c"><b>Năm ${a.mark.age} tuổi · ${esc(a.mark.title)}</b><span>Bạn đã chọn "${esc(a.mark.choice)}". Nếu chọn "${esc(a.altLabel)}": ${d.length ? d.join("; ") + "." : "cuộc đời gần như không đổi. Có những ngã rẽ chỉ là ngã rẽ trong đầu."}</span></div>`; });
+  const rows = cf.alts.map(a => { const d = diffVN(cf.base, a.life, a.mark.age); return `<div class="c"><b>Năm ${a.mark.age} tuổi · ${esc(a.mark.title)}</b><span>${a.typedProactive ? `Bạn đã tự quyết "${esc(a.mark.choice)}". Nếu năm ${a.mark.age} tuổi bạn không làm việc đó: ` : `Bạn đã chọn "${esc(a.mark.choice)}". Nếu chọn "${esc(a.altLabel)}": `}${d.length ? d.join("; ") + "." : "cuộc đời gần như không đổi. Có những ngã rẽ chỉ là ngã rẽ trong đầu."}</span></div>`; });
   return `<div class="panel"><span class="label">Cuộc đời suýt có</span><p style="margin:0" class="muted">Cùng một hạt giống, cùng mọi lựa chọn khác, chỉ đổi một.</p>${rows.join("")}</div>`;
 }
 function causalityVN(L) {
@@ -5776,11 +5789,12 @@ function statDeltas(a, b) { const d = {}; for (const k in a) { const v = b[k] - 
 const OUTCOME_VN = { thanh: "Thành", nua_voi: "Nửa vời", hong: "Hỏng", khong_lam_duoc: "Không làm được" };
 
 /** Áp một việc gõ đã làm sạch (đồng bộ — dùng cả khi tua lại đời). kind: "proactive" | "scene". */
-function applyAct(L, act, kind, text, chon) {
+function applyAct(L, act, kind, text, chon, forcedSeq) {
   const before = statSnap(L);
   if (!L.actsThisYear || L.actsThisYear.age !== L.age) L.actsThisYear = { age: L.age, n: 0, texts: [] };
   L.actsThisYear.n++; L.actsThisYear.texts.push(text);
-  const seq = (L.actSeq = (L.actSeq || 0) + 1);
+  const seq = forcedSeq !== undefined ? forcedSeq : (L.actSeq = (L.actSeq || 0) + 1);
+  if (forcedSeq !== undefined) L.actSeq = Math.max(L.actSeq || 0, forcedSeq);
   const p = kind === "scene" ? L.pending : { id: "tu_quyet", key: `act@${L.age}#${seq}`, title: "Tự quyết", text: "", choices: [{ label: "Không làm gì" }], npc: null };
   const engineScene = kind === "scene" && !isFreeScene(p);
   L.pending = null;
@@ -5909,6 +5923,28 @@ function storyReplay(L) {
   const rec = (L.replayActs || []).find(a => a.kind === "story" && a.key === `story:${story.id}#${stage}`);
   if (!rec) { L.storyDue = null; storyFail(L, story); return; }
   L.storyDue = null; L.pending = sceneFromStory(L, story, rec.scene, stage);
+}
+
+/* ================= TUA LẠI ĐỜI ================= */
+/** Áp lại các việc chủ động đã gõ ở đúng tuổi này (theo thứ tự), bỏ qua việc bị gỡ trong nhánh giả định. */
+function replayProactive(L) {
+  L.replayDone = L.replayDone || new Set();
+  const recs = L.replayActs.filter(a => a.kind === "proactive" && a.age === L.age && !L.replayDone.has(a.seq)).sort((a, b) => a.seq - b.seq);
+  for (const a of recs) {
+    L.replayDone.add(a.seq);
+    if (L.override && L.override.removeAct === a.seq) continue;
+    if (!L.alive || L.pending) break;
+    applyAct(L, a.result, "proactive", a.text, null, a.seq);
+  }
+}
+/** Kịch bản tua lại: lựa chọn bấm nút giữ chỉ số; lựa chọn tự viết trỏ tới kết quả AI đã lưu. */
+function replayScript(choices, actLog) {
+  const script = {};
+  for (const c of choices) {
+    if (c.typed) { const rec = (actLog || []).find(a => a.kind === "scene" && a.key === c.key); if (rec) script[c.key] = { act: rec.result, text: rec.text, chon: rec.chon, seq: rec.seq }; }
+    else script[c.key] = c.index;
+  }
+  return script;
 }
 
 </script>

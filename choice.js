@@ -92,12 +92,13 @@ function lifeSummary(P) {
   const T = P.ar ? Argon.lifeTopology(P.ar.state, P.ar.npcStart) : null;
   return { age: P.age, cause: P.cause, country: P.c.n, job: P.job || P.lastJob || "không nghề", hist: P.lw.history.map(h => [h.id, h.age]), net: Math.round(P.savings), married: P.married || P.widowed, kids: P.kids.filter(k => k.alive).length, rep: P.ar ? Math.round(P.ar.state.capitals.socialLedger.reputation) : 50, tier: P.ar ? Argon.tierOf(P.ar.state) : "autopilot", quadrant: T ? T.quadrant : null, epithets: epithets(P), doors: [...P.lw.cz.doors] };
 }
-function replayLife(seed, choices, override) {
-  const script = {}; for (const c of choices) script[c.key] = c.index;
+function replayLife(seed, choices, override, actLog) {
+  const script = replayScript(choices, actLog || []);
   const focus = {}; for (const k in (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS) || {}) focus[k] = (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS)[k];
   const was = NAR.enabled; NAR.enabled = false;
   const P = createLife(seed, { auto: true, script, override, focus });
-  let g = 0; while (P.alive && g++ < 130) stepYear(P);
+  P.replayActs = actLog || [];
+  let g = 0; while (P.alive && g++ < 130) { stepYear(P); if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; } }
   NAR.enabled = was;
   return P;
 }
@@ -105,11 +106,18 @@ function counterfactuals(L) {
   CF_FOCUS = L.focusLog;
   const cz = L.lw.cz; const secretsFrom = m => [...cz.origin.entries()].filter(([k, v]) => v === m.id && k.startsWith("secret:")).length;
   const pivots = Argon.pivotalMarks(cz, 6, m => secretsFrom(m) * 2 + (m.alt_indices && m.alt_indices.length ? 0 : -99)).filter(m => m.alt_indices && m.alt_indices.length);
+  const acts = L.actLog || [];
   const root = cz.marks.find(m => m.age <= 5 && m.alt_indices && m.alt_indices.length);
-  const pv = (root ? [root].concat(pivots.filter(m => m !== root)) : pivots).slice(0, 3); pivots.length = 0; pivots.push(...pv);
+  const proRec = m => acts.find(a => a.kind === "proactive" && a.key === m.key);
+  const typed = cz.marks.filter(m => proRec(m)).sort((a, b) => (b.consequences.length + b.doors_closed.length) - (a.consequences.length + a.doors_closed.length) || a.age - b.age)[0];
+  const head = [root, typed].filter(Boolean);
+  const pv = head.concat(pivots.filter(m => !head.includes(m))).slice(0, 3); pivots.length = 0; pivots.push(...pv);
   if (!pivots.length) return null;
-  const base = lifeSummary(replayLife(L.seed, L.choices, null));
-  const alts = pivots.map(m => { const alt = m.alt_indices[0]; const P = replayLife(L.seed, L.choices, { key: keyOfMark(L, m), index: alt }); const altLabel = m.altLabels && m.altLabels[alt] || m.alternatives.filter(a => a !== m.choice)[0] || "khác"; return { mark: m, altLabel, life: lifeSummary(P) }; });
+  const base = lifeSummary(replayLife(L.seed, L.choices, null, acts));
+  const alts = pivots.map(m => {
+    const rec = proRec(m);
+    if (rec) return { mark: m, altLabel: "không làm việc đó", typedProactive: true, life: lifeSummary(replayLife(L.seed, L.choices, { removeAct: rec.seq }, acts)) };
+    const alt = m.alt_indices[0]; const P = replayLife(L.seed, L.choices, { key: keyOfMark(L, m), index: alt }, acts); const altLabel = m.altLabels && m.altLabels[alt] || m.alternatives.filter(a => a !== m.choice)[0] || "khác"; return { mark: m, altLabel, life: lifeSummary(P) }; });
   return { base, alts };
 }
 function keyOfMark(L, m) { return m.key || null; }
@@ -130,7 +138,7 @@ function diffVN(a, b, fromAge) {
 }
 function counterfactualVN(L) {
   const cf = counterfactuals(L); if (!cf) return "";
-  const rows = cf.alts.map(a => { const d = diffVN(cf.base, a.life, a.mark.age); return `<div class="c"><b>Năm ${a.mark.age} tuổi · ${esc(a.mark.title)}</b><span>Bạn đã chọn "${esc(a.mark.choice)}". Nếu chọn "${esc(a.altLabel)}": ${d.length ? d.join("; ") + "." : "cuộc đời gần như không đổi. Có những ngã rẽ chỉ là ngã rẽ trong đầu."}</span></div>`; });
+  const rows = cf.alts.map(a => { const d = diffVN(cf.base, a.life, a.mark.age); return `<div class="c"><b>Năm ${a.mark.age} tuổi · ${esc(a.mark.title)}</b><span>${a.typedProactive ? `Bạn đã tự quyết "${esc(a.mark.choice)}". Nếu năm ${a.mark.age} tuổi bạn không làm việc đó: ` : `Bạn đã chọn "${esc(a.mark.choice)}". Nếu chọn "${esc(a.altLabel)}": `}${d.length ? d.join("; ") + "." : "cuộc đời gần như không đổi. Có những ngã rẽ chỉ là ngã rẽ trong đầu."}</span></div>`; });
   return `<div class="panel"><span class="label">Cuộc đời suýt có</span><p style="margin:0" class="muted">Cùng một hạt giống, cùng mọi lựa chọn khác, chỉ đổi một.</p>${rows.join("")}</div>`;
 }
 function causalityVN(L) {

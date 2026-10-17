@@ -118,11 +118,12 @@ function statDeltas(a, b) { const d = {}; for (const k in a) { const v = b[k] - 
 const OUTCOME_VN = { thanh: "Thành", nua_voi: "Nửa vời", hong: "Hỏng", khong_lam_duoc: "Không làm được" };
 
 /** Áp một việc gõ đã làm sạch (đồng bộ — dùng cả khi tua lại đời). kind: "proactive" | "scene". */
-function applyAct(L, act, kind, text, chon) {
+function applyAct(L, act, kind, text, chon, forcedSeq) {
   const before = statSnap(L);
   if (!L.actsThisYear || L.actsThisYear.age !== L.age) L.actsThisYear = { age: L.age, n: 0, texts: [] };
   L.actsThisYear.n++; L.actsThisYear.texts.push(text);
-  const seq = (L.actSeq = (L.actSeq || 0) + 1);
+  const seq = forcedSeq !== undefined ? forcedSeq : (L.actSeq = (L.actSeq || 0) + 1);
+  if (forcedSeq !== undefined) L.actSeq = Math.max(L.actSeq || 0, forcedSeq);
   const p = kind === "scene" ? L.pending : { id: "tu_quyet", key: `act@${L.age}#${seq}`, title: "Tự quyết", text: "", choices: [{ label: "Không làm gì" }], npc: null };
   const engineScene = kind === "scene" && !isFreeScene(p);
   L.pending = null;
@@ -251,4 +252,26 @@ function storyReplay(L) {
   const rec = (L.replayActs || []).find(a => a.kind === "story" && a.key === `story:${story.id}#${stage}`);
   if (!rec) { L.storyDue = null; storyFail(L, story); return; }
   L.storyDue = null; L.pending = sceneFromStory(L, story, rec.scene, stage);
+}
+
+/* ================= TUA LẠI ĐỜI ================= */
+/** Áp lại các việc chủ động đã gõ ở đúng tuổi này (theo thứ tự), bỏ qua việc bị gỡ trong nhánh giả định. */
+function replayProactive(L) {
+  L.replayDone = L.replayDone || new Set();
+  const recs = L.replayActs.filter(a => a.kind === "proactive" && a.age === L.age && !L.replayDone.has(a.seq)).sort((a, b) => a.seq - b.seq);
+  for (const a of recs) {
+    L.replayDone.add(a.seq);
+    if (L.override && L.override.removeAct === a.seq) continue;
+    if (!L.alive || L.pending) break;
+    applyAct(L, a.result, "proactive", a.text, null, a.seq);
+  }
+}
+/** Kịch bản tua lại: lựa chọn bấm nút giữ chỉ số; lựa chọn tự viết trỏ tới kết quả AI đã lưu. */
+function replayScript(choices, actLog) {
+  const script = {};
+  for (const c of choices) {
+    if (c.typed) { const rec = (actLog || []).find(a => a.kind === "scene" && a.key === c.key); if (rec) script[c.key] = { act: rec.result, text: rec.text, chon: rec.chon, seq: rec.seq }; }
+    else script[c.key] = c.index;
+  }
+  return script;
 }

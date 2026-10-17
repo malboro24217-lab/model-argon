@@ -231,7 +231,10 @@ function eulogyVN(L) {
     : `Bạn sống ${L.age} năm ở ${L.c.n}. ${yrs(V.ticks_autopilot)} năm đầu là của người khác: của làng, của nhà, của những điều ai cũng làm. Rồi ${V.crises_survived ? `sau ${V.crises_survived} lần khủng hoảng` : "dần dần"}, bạn bắt đầu thấy luật chơi, và ${yrs(V.ticks_sovereign)} năm cuối cùng bạn tự viết lấy phần mình${V.relapses ? `, dù có ${V.relapses} lần suýt trượt về` : ""}.`;
   const p2 = `${S.rounds ? `Bạn ngồi vào ${S.rounds} ván với người khác và để lại ${S.net_systemic_surplus >= 0 ? "thêm " : "ít hơn "}${fmtPPP(Math.abs(S.net_systemic_surplus))} cho tất cả những người ngồi cùng bàn, trên ${fmtPPP(S.potential_surplus)} có thể có nếu ai cũng thật.` : "Bạn ít khi ngồi vào bàn với ai."} ${prospered.length ? `${prospered.join(", ")} khá lên nhờ có bạn.` : ""} ${preyed.length ? `${preyed.join(", ")} khá lên trên lưng bạn.` : ""} ${bankrupt.length ? `${bankrupt.join(", ")} trắng tay, và một phần là vì bạn.` : ""} ${friends.length ? `${friends.join(", ")} tin bạn đến cuối.` : ""} ${enemies.length ? `${enemies.join(", ")} thì không bao giờ.` : ""}`;
   const p3 = `Khi nấm mộ đã xanh cỏ, ${L.c.g < 8000 ? "làng" : "khu phố"} nhớ gì về bạn? ${good ? `Người ta nhớ ${good.note || LW.TAG_VN[good.tag]}.` : ""} ${bad ? `Người ta cũng nhớ ${bad.note || LW.TAG_VN[bad.tag]}.` : ""} ${!good && !bad ? "Không nhiều. Bạn là một người đi qua, và ở nơi này điều đó không hiếm." : R.reputation_final >= 65 ? `Tên bạn được nhắc khi người ta cần ví dụ về một người tử tế.` : R.reputation_final <= 35 ? `Tên bạn được nhắc khi người ta dặn con cẩn thận.` : "Tên bạn được nhắc, thỉnh thoảng, không tốt không xấu."}`;
-  return [p1, p2, p3].map(x => x.replace(/\s+/g, " ").trim());
+  const own = (L.actLog || []).filter(a => a.kind === "proactive").map(a => ({ a, m: L.lw.cz.marks.find(m => m.key === a.key) })).filter(x => x.m)
+    .sort((x, y) => (y.m.consequences.length + y.m.doors_closed.length) - (x.m.consequences.length + x.m.doors_closed.length) || x.a.age - y.a.age).slice(0, 3).sort((x, y) => x.a.age - y.a.age);
+  const p4 = own.length ? `Những điều bạn tự quyết, không ai bày cho: ${own.map(x => `${x.a.text} (năm ${x.a.age} tuổi)`).join(", ")}.` : "";
+  return [p1, p2, p3 + (p4 ? " " + p4 : "")].map(x => x.replace(/\s+/g, " ").trim());
 }
 
 /* ---- Chuyện nhỏ: 1–3 mỗi năm ---- */

@@ -116,5 +116,35 @@ const pho = { ke: "Bạn gom tiền thuê một góc vỉa hè.", ket_qua: "nua_
     assert(P.stories.every(s => s.closed), 'all closed on death');
   }
   console.log('PASS task5 stories');
+
+  /* ---------------- Task 6: tua lại đời, "Cuộc đời suýt có", điếu văn ---------------- */
+  async function playWithActs(seed) {
+    const P = createLife(seed, { auto: true }); G.life = P; let g = 0; const plan = { 22: "học nấu ăn", 25: "mở quán phở", 28: "làm lành với bố", 33: "đi tập thể dục", 40: "mua đất", 47: "đi từ thiện" };
+    let typedScene = false;
+    while (P.alive && g++ < 130) {
+      stepYear(P);
+      while (P.storyDue && P.alive) { await agencyStory(P, P.storyDue, fake(() => storyScene(true))); if (P.pending) { if (!typedScene) { typedScene = true; await agencyAct(P, "rủ chủ nợ góp vốn", fake(() => ({ ke: "Chủ nợ gật đầu.", ket_qua: "nua_voi", chi_so: { money: 0.2 }, chuyen: { ten: "x", tom_tat: "Quán có thêm vốn.", hen_nam: 2 } }))); } else resolve(P, autoChoice(P)); } }
+      while (P.pending && P.alive) resolve(P, autoChoice(P));
+      if (P.alive && !P.pending && plan[P.age]) await agencyAct(P, plan[P.age], fake(() => plan[P.age] === "mở quán phở" ? pho : { ke: "Bạn " + plan[P.age] + ".", ket_qua: "thanh", chi_so: { happy: 2, money: -0.05 }, co: P.age === 40 ? ["land_sold"] : [] }));
+    }
+    return P;
+  }
+  { let P; for (let sd = 4401; sd < 4501; sd += 7) { P = await playWithActs(sd); if (P.age >= 50) break; } const nActs = P.actLog.filter(a => a.kind !== 'story').length; assert(nActs >= 5, 'acts played: ' + nActs);
+    assert(P.actLog.some(a => a.kind === 'story'), 'story stages played'); assert(P.actLog.some(a => a.kind === 'scene'), 'typed scene act played');
+    const R = replayLife(P.seed, P.choices, null, P.actLog);
+    assert.strictEqual(R.age, P.age, 'same death age'); assert(Math.abs(R.savings - P.savings) < 1, 'same savings ' + R.savings + ' vs ' + P.savings);
+    assert.deepStrictEqual([...R.lw.sflags].sort(), [...P.lw.sflags].sort(), 'same flags');
+    assert.deepStrictEqual(R.lw.history.map(h => h.id), P.lw.history.map(h => h.id), 'same history');
+    const pho0 = P.actLog.find(a => a.text === 'mở quán phở');
+    const X = replayLife(P.seed, P.choices, { removeAct: pho0.seq }, P.actLog);
+    assert(!X.lw.sflags.has('own_business'), 'no business without the act'); assert(!(X.stories || []).some(s => s.title === 'Quán phở đầu ngõ'), 'no story');
+    assert.notDeepStrictEqual(X.lw.history.map(h => h.id), P.lw.history.map(h => h.id), 'history differs');
+    G.life = P; const cfHtml = counterfactualVN(P); assert(/Tự quyết/.test(cfHtml) && /không/.test(cfHtml), 'counterfactual names a typed act');
+    const eu = eulogyVN(P).join(' '); const named = ["học nấu ăn", "mở quán phở", "làm lành với bố", "đi tập thể dục", "mua đất", "đi từ thiện"].filter(t => eu.includes(t)).length;
+    assert(named >= 1 && named <= 3, 'eulogy names 1–3 typed acts, got ' + named);
+    // replay where a story is due but no stage was stored → never stuck
+    const thin = P.actLog.filter(a => a.kind !== 'story'); const Y = replayLife(P.seed, P.choices, null, thin); assert(!Y.alive, 'replay finishes a life');
+  }
+  console.log('PASS task6 replay');
 })().catch(e => { console.error(e); process.exit(1); });
 `);
