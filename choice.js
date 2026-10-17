@@ -59,7 +59,7 @@ function promiseDueScene(L) {
   const pr = L.lw.promises.find(p => p.kept === null && p.due <= L.age);
   if (!pr) return false;
   const npc = L.ar.state.npcs.get(pr.to); if (!npc) { pr.kept = true; return false; }
-  const yearly = Math.max(300, householdIncome(L)); const can = L.savings >= pr.cost * yearly;
+  const yearly = Math.max(300, householdIncome(L)); const can = fundsFor(L) >= pr.cost * yearly;
   const mark = Argon.markById(L.lw.cz, pr.mark);
   scene(L, { id: "promise", key: "promise@" + L.age, title: `Lời hứa với ${npc.name} đến hạn`, npc,
     text: `Năm ${pr.made} tuổi bạn đã hứa với ${npc.name}: ${pr.what}. ${can ? "Bạn có thể giữ lời." : "Giữ lời lúc này sẽ rất đau."} ${npc.name} không nhắc, nhưng nhớ.`,

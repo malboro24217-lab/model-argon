@@ -48,7 +48,7 @@ function factContext(L) {
   for (const h of Argon.hooks(s, L.lw.mem)) (hooksMap[h.holder] = hooksMap[h.holder] || []).push(h.secret.tag);
   const last_move = {}; for (const n of s.npcs.values()) { const h = n.history[n.history.length - 1]; if (h) last_move[n.id] = h.npcMove; }
   const rep = s.capitals.socialLedger.reputation;
-  const debt = L.debt || 0, savings = L.savings;
+  const debt = livesOnFamily(L) ? s.capitals.capitalAssets.debt : (L.debt || 0), savings = fundsFor(L);
   return {
     age: L.age, sex: L.sex, country: L.c.id, luck: lifeLuck(L), gdp: L.c.g, poor_country: L.c.g < 8000, family_wealth: L.fam,
     in_school: L.school.in, years_school: L.school.years, has_degree: L.school.deg, has_job: !!L.job && !L.retired, job: L.job || "", farmer: L.job === "nông dân" || L.job === "phụ giúp việc đồng áng", worker: /công nhân|kho|nhà máy|thợ/.test(L.job || ""), retired: L.retired,
@@ -143,7 +143,7 @@ function customEffect(L, c, npcId) {
       else log(L, "Hết hợp đồng, hai người chia tay tiệm trong hòa bình."); break; }
   }
 }
-function syncFromArgon(L) { const a = L.ar.state.capitals.capitalAssets; L.savings = a.liquid - a.debt; L.debt = a.debt; L.ar.syncedSavings = L.savings; }
+function syncFromArgon(L) { const A = L.ar, a = A.state.capitals.capitalAssets, dS = L.savings - A.syncedSavings; if (dS) a.liquid += dS; L.savings = a.liquid - a.debt - (A.indep ? 0 : (A.hh || 0)); L.debt = A.indep ? a.debt : 0; A.syncedSavings = L.savings; settleDependent(L); }
 
 /* ---- Storylet → cảnh ---- */
 function sceneFromStorylet(L, st, ctx) {

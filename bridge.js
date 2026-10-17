@@ -49,18 +49,34 @@ function argonInit(L, force) {
   s.capitals.capitalAssets.liquid = Math.max(0, L.savings);
   s.capitals.capitalAssets.debt += Math.max(0, -L.savings);
   s.capitals.capitalAssets.income_quarterly = householdIncome(L) / 4;
-  L.ar = { state: s, rng: w.rng, npcStart: new Map(), syncedHealth: L.st.health, syncedSavings: L.savings, frugal: false, lastReport: null, dd: {} };
+  L.ar = { state: s, rng: w.rng, npcStart: new Map(), syncedHealth: L.st.health, syncedSavings: L.savings, frugal: false, lastReport: null, dd: {}, indep: false,
+    hh: s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt - L.savings };
   L.st.bw = s.capitals.cognitiveBandwidth.value;
-  L.debt = s.capitals.capitalAssets.debt;
+  L.debt = 0;
 }
 /* Trước khi đi làm, gia đình nuôi: thu nhập hộ tính theo thu nhập gia đình */
-function householdIncome(L) { return L.income > 0 ? L.income : L.famIncome * 0.6; }
+const CHILD_JOBS = new Set(["phụ giúp việc đồng áng", "làm việc vặt"]);
+function earnsOwnLiving(L) { return L.income > 0 && !CHILD_JOBS.has(L.job); }
+function householdIncome(L) { return earnsOwnLiving(L) ? L.income : L.famIncome * 0.6; }
+/* Khi chưa tự lập, sổ Argon là quỹ chung của cả hộ: phần của gia đình là A.hh, phần còn lại (L.savings) là tiền riêng của bạn.
+   Quỹ chung: bạn tiêu quá thì nhà trả; nhà đang nợ thì tiền bạn có đi trả nợ trước. Từ năm có việc làm thật, sổ là của riêng bạn. */
+function livesOnFamily(L) { return !!(L.ar && !L.ar.indep && !earnsOwnLiving(L)); }
+function fundsFor(L) { return livesOnFamily(L) ? L.savings + (L.ar.hh || 0) : L.savings; }
+function settleDependent(L) {
+  const A = L.ar; if (!A || !A.started || A.indep) return;
+  const hh = A.hh || 0, move = L.savings < 0 ? L.savings : hh < 0 ? Math.min(L.savings, -hh) : 0;
+  if (!move) return;
+  const dS = L.savings - A.syncedSavings; if (dS) A.state.capitals = Argon.applyDelta(A.state.capitals, { liquid: dS });
+  A.hh = hh + move; L.savings -= move; A.syncedSavings = L.savings; L.debt = 0;
+}
 
 /* ---- Mỗi năm: đẩy thay đổi của trò chơi vào Argon, chạy 4 quý, lấy kết quả về ---- */
 function argonYear(L) {
   argonInit(L); if (!L.ar || L.age < AR.START_AGE) return null;
   const s = L.ar.state, A = L.ar;
-  if (!A.started) { A.started = true; s.capitals.bioEnergy.value = clamp(L.st.health, 10, s.capitals.bioEnergy.cap); s.capitals.capitalAssets.liquid = Math.max(0, L.savings) + (L.income > 0 ? 0 : L.famIncome * 0.6); L.savings += (L.income > 0 ? 0 : L.famIncome * 0.6); s.capitals.capitalAssets.debt += Math.max(0, -L.savings); A.syncedHealth = L.st.health; A.syncedSavings = L.savings; }
+  if (!A.started) { A.started = true; s.capitals.bioEnergy.value = clamp(L.st.health, 10, s.capitals.bioEnergy.cap); const a0 = s.capitals.capitalAssets; a0.liquid = Math.max(0, L.savings) + (earnsOwnLiving(L) ? 0 : L.famIncome * 0.6); a0.debt += Math.max(0, -L.savings); if (L.savings < 0) L.savings = 0; A.hh = a0.liquid - a0.debt - L.savings; A.syncedHealth = L.st.health; A.syncedSavings = L.savings; }
+  // Tự lập: từ năm có việc làm thật, sổ là của riêng bạn. Quỹ, nợ và nhà đất của gia đình ở lại với gia đình (thừa kế đi qua kịch bản riêng).
+  if (!A.indep && earnsOwnLiving(L)) { settleDependent(L); const a = s.capitals.capitalAssets; A.indep = true; A.hh = 0; a.liquid = Math.max(0, L.savings); a.debt = Math.max(0, -L.savings); a.illiquid = 0; A.syncedSavings = L.savings; }
   // 1. Đồng bộ các thay đổi trong năm từ phía trò chơi (sự kiện, kịch bản)
   const dH = L.st.health - A.syncedHealth, dS = L.savings - A.syncedSavings;
   if (dH || dS) s.capitals = Argon.applyDelta(s.capitals, { bio: dH, liquid: dS });
@@ -79,9 +95,10 @@ function argonYear(L) {
   // 3. Lấy về
   L.st.health = s.capitals.bioEnergy.value;
   L.st.bw = s.capitals.cognitiveBandwidth.value;
-  L.savings = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt;
-  L.debt = s.capitals.capitalAssets.debt;
+  if (A.indep) { L.savings = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt; L.debt = s.capitals.capitalAssets.debt; }
+  else { A.hh = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt - L.savings; L.debt = 0; }
   A.syncedHealth = L.st.health; A.syncedSavings = L.savings;
+  settleDependent(L);
   // 4. Ghi nhật ký những chuyển biến đáng kể
   const last = reports[reports.length - 1];
   const crisis = reports.find(r => r.awakening.phase_change);
@@ -186,7 +203,7 @@ function argonPlay(L, npc, move, stake, sceneKey) {
   const dS = L.savings - A.syncedSavings; if (dS) s.capitals = Argon.applyDelta(s.capitals, { liquid: dS });
   const r = Argon.resolveInteraction(s, npc, { npc_id: npc.id, move, stake, due_diligence_spent: 0, costly_signal_spent: 0 }, A.rng);
   const after = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt;
-  L.savings = after; A.syncedSavings = after; L.st.bw = s.capitals.cognitiveBandwidth.value;
+  L.savings = after - (A.indep ? 0 : (A.hh || 0)); A.syncedSavings = L.savings; L.st.bw = s.capitals.cognitiveBandwidth.value;
   if (r.outcome.cell === "sucker" && -r.outcome.payoffA.capital >= 0.3 * Math.max(before, householdIncome(L))) A.betrayedThisYear = true;
   trait(L, "coop", move === "cooperate" ? 1 : move === "defect" ? -1 : 0);
   gt(L, r.outcome.payoffA.capital > 0);
