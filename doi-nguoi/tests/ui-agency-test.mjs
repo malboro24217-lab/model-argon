@@ -1,8 +1,8 @@
 // Task 7: ô "Tôi muốn…" trong trình duyệt (AI giả). Run: node tests/ui-agency-test.mjs
-import { chromium } from "/tmp/claude-0/pw/node_modules/playwright-core/index.mjs";
+const { chromium } = await import(process.env.PW_CORE || "/tmp/claude-0/pw/node_modules/playwright-core/index.mjs"); // PW_CORE / PW_CHROME: đường dẫn trên máy khác
 import fs from "fs";
 import assert from "assert";
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const browser = await chromium.launch({ executablePath: process.env.PW_CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const errors = []; page.on("pageerror", e => errors.push(e.message)); page.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
 const mock = `<script>

@@ -4114,11 +4114,11 @@ var Argon = (() => {
       C6("R\u1EE7 m\u1EA5y ng\u01B0\u1EDDi \u1EDF nh\xE0 l\u1EADp b\u1EBFp chung, chia l\u1EDDi", { counters: step(c, H, { hmk_self: 1 }), agency: 0.03, gamble: { p: 0.5, win: { flags: ["hmk_coop"], money: 0.08, log: "B\u1ED1n ng\u01B0\u1EDDi, m\u1ED7i ng\u01B0\u1EDDi m\u1ED9t ng\xE0y \u0111\u1EE9ng b\u1EBFp. L\u1EA7n \u0111\u1EA7u ti\xEAn b\u1EA1n c\xF3 m\u1ED9t ng\xE0y trong tu\u1EA7n kh\xF4ng ph\u1EA3i n\u1EA5u." }, lose: { rel: -2, log: "Sau hai th\xE1ng, chuy\u1EC7n ai n\u1EA5u nhi\u1EC1u ai n\u1EA5u \xEDt l\xE0m nh\xF3m tan." } } }, "Nh\u1EB9 g\xE1nh, chung ch\u1EA1 d\u1EC5 sinh chuy\u1EC7n", { tier: "sovereign" })
     ], 0)),
     beat(H, 3, 4, (c, N) => {
-      let { who } = earner(c, N), kitchen = f4(c, "hmk_side_income") || f4(c, "hmk_coop"), own = f4(c, "hmk_own_account");
-      return T4("Ng\u01B0\u1EDDi ki\u1EBFm ti\u1EC1n m\u1EA5t vi\u1EC7c", `${cap(who)} b\u1ECB c\u1EAFt vi\u1EC7c sau m\u1ED9t \u0111\u1EE3t t\xE1i c\u1EA5u tr\xFAc. Ti\u1EC1n ti\u1EBFt ki\u1EC7m c\u1EE7a c\u1EA3 nh\xE0 ch\u1EC9 \u0111\u1EE7 ba th\xE1ng. ${own ? "T\xE0i kho\u1EA3n ri\xEAng c\u1EE7a b\u1EA1n c\xF2n m\u1ED9t kho\u1EA3n nh\u1ECF g\xF3p t\u1EEBng th\xE1ng. " : "Kh\xF4ng c\xF3 \u0111\u1ED3ng n\xE0o \u0111\u1EE9ng t\xEAn b\u1EA1n. "}${kitchen ? "B\u1EBFp c\u01A1m th\xE1ng l\xE0 kho\u1EA3n thu duy nh\u1EA5t c\xF2n \u0111\u1EC1u." : "H\xF3a \u0111\u01A1n v\u1EABn \u0111\u1EBFn \u0111\xFAng ng\xE0y."}`, [
+      let { who } = earner(c, N), kitchen = f4(c, "hmk_side_income") || f4(c, "hmk_coop"), own2 = f4(c, "hmk_own_account");
+      return T4("Ng\u01B0\u1EDDi ki\u1EBFm ti\u1EC1n m\u1EA5t vi\u1EC7c", `${cap(who)} b\u1ECB c\u1EAFt vi\u1EC7c sau m\u1ED9t \u0111\u1EE3t t\xE1i c\u1EA5u tr\xFAc. Ti\u1EC1n ti\u1EBFt ki\u1EC7m c\u1EE7a c\u1EA3 nh\xE0 ch\u1EC9 \u0111\u1EE7 ba th\xE1ng. ${own2 ? "T\xE0i kho\u1EA3n ri\xEAng c\u1EE7a b\u1EA1n c\xF2n m\u1ED9t kho\u1EA3n nh\u1ECF g\xF3p t\u1EEBng th\xE1ng. " : "Kh\xF4ng c\xF3 \u0111\u1ED3ng n\xE0o \u0111\u1EE9ng t\xEAn b\u1EA1n. "}${kitchen ? "B\u1EBFp c\u01A1m th\xE1ng l\xE0 kho\u1EA3n thu duy nh\u1EA5t c\xF2n \u0111\u1EC1u." : "H\xF3a \u0111\u01A1n v\u1EABn \u0111\u1EBFn \u0111\xFAng ng\xE0y."}`, [
         C6("\u0110i l\xE0m l\u1EA1i ngay, nh\u1EADn ch\u0103m b\u1EC7nh thu\xEA", { counters: step(c, H), unflags: [life(H)], custom: "become:caregiver", flags: ["hmk_back_to_work"], health: -2 }, "C\xF3 ti\u1EC1n ngay, c\u0103n nh\xE0 thi\u1EBFu ng\u01B0\u1EDDi"),
         kitchen ? C6("Nh\u1EADn th\xEAm su\u1EA5t c\u01A1m, g\xE1nh nh\xE0 m\u1ED9t th\u1EDDi gian", { counters: step(c, H, { hmk_self: 1 }), money: 0.25, health: -4, flags: ["hmk_breadwinner"] }, "Nh\xE0 tr\u1EE5 \u0111\u01B0\u1EE3c, l\u01B0ng b\u1EA1n g\xE1nh") : C6("Th\u1EAFt l\u01B0ng bu\u1ED9c b\u1EE5ng, ch\u1EDD ng\u01B0\u1EDDi kia t\xECm vi\u1EC7c", { counters: step(c, H, { hmk_dep: 1 }), money: -0.3, bw: -5, flags: ["hmk_held_on"] }, "Gi\u1EEF n\u1EBFp nh\xE0, s\u1ED1ng trong lo \xE2u"),
-        own ? C6("R\xFAt ti\u1EC1n ri\xEAng ra g\xE1nh, ghi r\xF5 l\xE0 cho vay", { counters: step(c, H, { hmk_self: 1 }), money: 0.1, agency: 0.02, flags: ["hmk_lent_home"] }, "Nh\xE0 qua c\u01A1n, ti\u1EC1n c\u1EE7a b\u1EA1n c\xF3 t\xEAn", { tier: "awakened" }) : C6("Vay h\u1ECD h\xE0ng, t\u1EF1 \u0111\u1EE9ng t\xEAn kho\u1EA3n n\u1EE3", { counters: step(c, H, { hmk_self: 1 }), custom: "borrow:0.3", agency: 0.02, flags: ["hmk_own_debt"] }, "Nh\xE0 qua c\u01A1n, n\u1EE3 mang t\xEAn b\u1EA1n", { tier: "awakened" })
+        own2 ? C6("R\xFAt ti\u1EC1n ri\xEAng ra g\xE1nh, ghi r\xF5 l\xE0 cho vay", { counters: step(c, H, { hmk_self: 1 }), money: 0.1, agency: 0.02, flags: ["hmk_lent_home"] }, "Nh\xE0 qua c\u01A1n, ti\u1EC1n c\u1EE7a b\u1EA1n c\xF3 t\xEAn", { tier: "awakened" }) : C6("Vay h\u1ECD h\xE0ng, t\u1EF1 \u0111\u1EE9ng t\xEAn kho\u1EA3n n\u1EE3", { counters: step(c, H, { hmk_self: 1 }), custom: "borrow:0.3", agency: 0.02, flags: ["hmk_own_debt"] }, "Nh\xE0 qua c\u01A1n, n\u1EE3 mang t\xEAn b\u1EA1n", { tier: "awakened" })
       ], 1);
     }),
     beat(H, 4, 5, (c, N) => {
@@ -11518,9 +11518,9 @@ var Argon = (() => {
         C6("Im l\u1EB7ng, ch\u1EDD chuy\u1EC7n l\u1EAFng xu\u1ED1ng", { counters: step(c, PT), gamble: { p: 0.5, win: { counters: { tg_rep: -1 }, log: "Ba tu\u1EA7n sau, m\u1EA1ng x\xE3 h\u1ED9i c\xF3 chuy\u1EC7n kh\xE1c \u0111\u1EC3 gi\u1EADn." }, lose: { income_mult: 0.5, flags: ["tg_suspended"], log: "B\u1EA1n b\u1ECB treo th\u1EBB h\xE0nh ngh\u1EC1 m\u1ED9t n\u0103m." } } }, "C\xF3 th\u1EC3 qua, c\xF3 th\u1EC3 m\u1EA5t th\u1EBB"),
         C6("Tr\u1EA3 th\u1EBB, r\u1EDDi ngh\u1EC1", { counters: step(c, PT), ...leave(PT), happy: -4 })
       ], 1);
-      let own = f4(c, "tg_own_tours") || f4(c, "tg_guild"), big = (c.counters.tg_rep ?? 0) >= 2;
-      return T4("Ng\u01B0\u1EDDi d\u1EABn \u0111\u01B0\u1EDDng c\xF3 t\xEAn tu\u1ED5i", `${big ? "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn tr\u01B0\u1EDBc m\u1ED9t n\u0103m." : "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn ba th\xE1ng t\u1EDBi."} M\u1ED9t t\u1EADp \u0111o\xE0n l\u1EEF h\xE0nh mu\u1ED1n ${own ? "mua l\u1EA1i th\u01B0\u01A1ng hi\u1EC7u tour c\u1EE7a b\u1EA1n" : "m\u1EDDi b\u1EA1n l\xE0m gi\xE1m \u0111\u1ED1c tuy\u1EBFn"}. C\xF9ng tu\u1EA7n, tr\u01B0\u1EDFng l\xE0ng \u1EDF thung l\u0169ng b\u1EA1n hay d\u1EABn kh\xE1ch \u0111\u1EBFn h\u1ECFi: gi\xE1 nh\u01B0 kh\xE1ch ng\u1EE7 l\u1EA1i nh\xE0 d\xE2n, ti\u1EC1n \u1EDF l\u1EA1i trong l\xE0ng.`, [
-        own ? C6("B\xE1n th\u01B0\u01A1ng hi\u1EC7u cho t\u1EADp \u0111o\xE0n", { counters: step(c, PT), money: 1, income_mult: 0.8, flags: ["tg_sold"] }, "M\u1ED9t kho\u1EA3n l\u1EDBn, r\u1ED3i l\xE0m thu\xEA tr\xEAn tour c\u1EE7a m\xECnh") : C6("Nh\u1EADn gh\u1EBF gi\xE1m \u0111\u1ED1c tuy\u1EBFn", { counters: step(c, PT), income_mult: 1.3, bw: -4, happy: -2, flags: ["tg_director"] }, "L\u01B0\u01A1ng cao, ng\u1ED3i b\xE0n gi\u1EA5y, xa \u0111\u01B0\u1EDDng m\xF2n"),
+      let own2 = f4(c, "tg_own_tours") || f4(c, "tg_guild"), big = (c.counters.tg_rep ?? 0) >= 2;
+      return T4("Ng\u01B0\u1EDDi d\u1EABn \u0111\u01B0\u1EDDng c\xF3 t\xEAn tu\u1ED5i", `${big ? "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn tr\u01B0\u1EDBc m\u1ED9t n\u0103m." : "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn ba th\xE1ng t\u1EDBi."} M\u1ED9t t\u1EADp \u0111o\xE0n l\u1EEF h\xE0nh mu\u1ED1n ${own2 ? "mua l\u1EA1i th\u01B0\u01A1ng hi\u1EC7u tour c\u1EE7a b\u1EA1n" : "m\u1EDDi b\u1EA1n l\xE0m gi\xE1m \u0111\u1ED1c tuy\u1EBFn"}. C\xF9ng tu\u1EA7n, tr\u01B0\u1EDFng l\xE0ng \u1EDF thung l\u0169ng b\u1EA1n hay d\u1EABn kh\xE1ch \u0111\u1EBFn h\u1ECFi: gi\xE1 nh\u01B0 kh\xE1ch ng\u1EE7 l\u1EA1i nh\xE0 d\xE2n, ti\u1EC1n \u1EDF l\u1EA1i trong l\xE0ng.`, [
+        own2 ? C6("B\xE1n th\u01B0\u01A1ng hi\u1EC7u cho t\u1EADp \u0111o\xE0n", { counters: step(c, PT), money: 1, income_mult: 0.8, flags: ["tg_sold"] }, "M\u1ED9t kho\u1EA3n l\u1EDBn, r\u1ED3i l\xE0m thu\xEA tr\xEAn tour c\u1EE7a m\xECnh") : C6("Nh\u1EADn gh\u1EBF gi\xE1m \u0111\u1ED1c tuy\u1EBFn", { counters: step(c, PT), income_mult: 1.3, bw: -4, happy: -2, flags: ["tg_director"] }, "L\u01B0\u01A1ng cao, ng\u1ED3i b\xE0n gi\u1EA5y, xa \u0111\u01B0\u1EDDng m\xF2n"),
         C6("M\u1EDF tour c\u1ED9ng \u0111\u1ED3ng, chia l\u1EE3i cho l\xE0ng", { counters: step(c, PT), money: -0.3, rel: 5, flags: ["tg_community"], agency: 0.02 }, "L\xE3i m\u1ECFng, l\xE0ng gi\u1EEF \u0111\u01B0\u1EE3c m\xECnh", { tier: "awakened" }),
         C6("Gi\u1EEF nh\u1ECF, t\u1EF1 d\u1EABn khi c\xF2n \u0111i \u0111\u01B0\u1EE3c", { counters: step(c, PT), happy: 4, health: -3 }, "T\u1EF1 do, \u0111\u1EA7u g\u1ED1i kh\xF4ng tr\u1EBB m\xE3i")
       ], 0);
@@ -13206,11 +13206,11 @@ var Argon = (() => {
       C6("\u0110\u1ECDc l\u1EA1i ph\u1EA7n \u0111\xE3 thu\u1ED9c, b\xE1m k\u1ECBch b\u1EA3n", { counters: step(c, TV), flags: ["tvh_scripted"], money: 0.02 }, "An to\xE0n, kh\xF4ng ai nh\u1EDB")
     ], 1), (c) => c.age >= 18),
     beat(TV, 2, 3, (c) => {
-      let own = f4(c, "tvh_own_voice");
-      return T4("Gi\u1EDD v\xE0ng, n\u0103m n\u0103m", `${own ? "Kh\xE1n gi\u1EA3 th\xEDch c\xE1ch b\u1EA1n n\xF3i nh\u01B0 ng\u01B0\u1EDDi th\u1EADt, kh\xF4ng nh\u01B0 ng\u01B0\u1EDDi \u0111\u1ECDc. " : ""}\u0110\xE0i m\u1EDDi b\u1EA1n d\u1EABn ch\u01B0\u01A1ng tr\xECnh gi\u1EDD v\xE0ng. H\u1EE3p \u0111\u1ED3ng n\u0103m n\u0103m \u0111\u1ED9c quy\u1EC1n: \u0111\xE0i quy\u1EBFt b\u1EA1n m\u1EB7c g\xEC, \u0111\u0103ng g\xEC l\xEAn m\u1EA1ng, qu\u1EA3ng c\xE1o cho ai.`, [
+      let own2 = f4(c, "tvh_own_voice");
+      return T4("Gi\u1EDD v\xE0ng, n\u0103m n\u0103m", `${own2 ? "Kh\xE1n gi\u1EA3 th\xEDch c\xE1ch b\u1EA1n n\xF3i nh\u01B0 ng\u01B0\u1EDDi th\u1EADt, kh\xF4ng nh\u01B0 ng\u01B0\u1EDDi \u0111\u1ECDc. " : ""}\u0110\xE0i m\u1EDDi b\u1EA1n d\u1EABn ch\u01B0\u01A1ng tr\xECnh gi\u1EDD v\xE0ng. H\u1EE3p \u0111\u1ED3ng n\u0103m n\u0103m \u0111\u1ED9c quy\u1EC1n: \u0111\xE0i quy\u1EBFt b\u1EA1n m\u1EB7c g\xEC, \u0111\u0103ng g\xEC l\xEAn m\u1EA1ng, qu\u1EA3ng c\xE1o cho ai.`, [
         C6("K\xFD \u0111\u1ED9c quy\u1EC1n", { counters: step(c, TV, { tvh_fame: 1 }), income_mult: 1.6, flags: ["tvh_network_contract"] }, "L\u01B0\u01A1ng cao, m\u1EA5t t\u1EF1 do"),
         C6("L\xE0m t\u1EF1 do, nh\u1EADn d\u1EABn nhi\u1EC1u n\u01A1i", { counters: step(c, TV), income_mult: 1.2, bw: -5, flags: ["tvh_freelance"] }, "Ch\u1EA1y show m\u1EC7t, kh\xF4ng ai gi\u1EEF ch\xE2n b\u1EA1n"),
-        C6("\u0110\xF2i \u0111\u1ED3ng s\u1EDF h\u1EEFu ch\u01B0\u01A1ng tr\xECnh", { counters: step(c, TV), gamble: { p: own ? 0.45 : 0.3, win: { income_mult: 1.45, flags: ["tvh_owns_show"], counters: { tvh_fame: 1 }, log: "\u0110\xE0i \u0111\u1ED3ng \xFD chia ba ph\u1EA7n m\u01B0\u1EDDi. L\u1EA7n \u0111\u1EA7u m\u1ED9t ng\u01B0\u1EDDi d\u1EABn c\xF3 t\xEAn trong gi\u1EA5y s\u1EDF h\u1EEFu." }, lose: { happy: -3, log: "H\u1ECD ch\u1ECDn ng\u01B0\u1EDDi kh\xE1c. B\u1EA1n quay v\u1EC1 b\u1EA3n tin bu\u1ED5i tr\u01B0a." } } }, "C\xF3 ph\u1EA7n c\u1EE7a m\xECnh, ho\u1EB7c m\u1EA5t gh\u1EBF gi\u1EDD v\xE0ng", { tier: "sovereign" })
+        C6("\u0110\xF2i \u0111\u1ED3ng s\u1EDF h\u1EEFu ch\u01B0\u01A1ng tr\xECnh", { counters: step(c, TV), gamble: { p: own2 ? 0.45 : 0.3, win: { income_mult: 1.45, flags: ["tvh_owns_show"], counters: { tvh_fame: 1 }, log: "\u0110\xE0i \u0111\u1ED3ng \xFD chia ba ph\u1EA7n m\u01B0\u1EDDi. L\u1EA7n \u0111\u1EA7u m\u1ED9t ng\u01B0\u1EDDi d\u1EABn c\xF3 t\xEAn trong gi\u1EA5y s\u1EDF h\u1EEFu." }, lose: { happy: -3, log: "H\u1ECD ch\u1ECDn ng\u01B0\u1EDDi kh\xE1c. B\u1EA1n quay v\u1EC1 b\u1EA3n tin bu\u1ED5i tr\u01B0a." } } }, "C\xF3 ph\u1EA7n c\u1EE7a m\xECnh, ho\u1EB7c m\u1EA5t gh\u1EBF gi\u1EDD v\xE0ng", { tier: "sovereign" })
       ], 0);
     }, (c) => c.age >= 18),
     beat(TV, 3, 4, (c) => {
@@ -18551,7 +18551,7 @@ var Argon = (() => {
     nghi_huu: "ngh\u1EC9 h\u01B0u",
     xin_loi: "\u0111i xin l\u1ED7i nh\u1EEFng ng\u01B0\u1EDDi m\xECnh l\xE0m t\u1ED5n th\u01B0\u01A1ng",
     theo_duong: "b\u01B0\u1EDBc v\xE0o m\u1ED9t con \u0111\u01B0\u1EDDng \u0111\u1EDDi \u2014 gia_tri = id con \u0111\u01B0\u1EDDng"
-  }, OUTCOMES = /* @__PURE__ */ new Set(["thanh", "nua_voi", "hong", "khong_lam_duoc"]), FAMILIES = /* @__PURE__ */ new Set(["farm", "market", "driver", "build", "factory", "teach", "health", "office", "tech", "domestic"]), HABITS = /* @__PURE__ */ new Set(["smoke", "drink", "exercise", "read", "save", "gamble", "honest", "kind"]), SECRETS = /* @__PURE__ */ new Set(["CHEATED_EXAM", "PAID_BRIBE", "DEFRAUDED_FRIEND", "STOLE_SHARED_PROFIT", "FORGED_PAPERS", "ABANDONED_PARENT"]), STAT_CAPS = { money: [-3, 3], health: [-40, 20], happy: [-20, 20], know: [-20, 20], rel: [-20, 20], bw: [-25, 15], income_mult: [0.5, 2], agency: [-0.05, 0.05] }, obj = (x) => x && typeof x == "object" && !Array.isArray(x) ? x : null, num = (x) => typeof x == "number" && Number.isFinite(x) ? x : void 0, str = (x, max) => typeof x == "string" ? x.trim().slice(0, max) : "", clamp2 = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+  }, OUTCOMES = /* @__PURE__ */ new Set(["thanh", "nua_voi", "hong", "khong_lam_duoc"]), FAMILIES = /* @__PURE__ */ new Set(["farm", "market", "driver", "build", "factory", "teach", "health", "office", "tech", "domestic"]), HABITS = /* @__PURE__ */ new Set(["smoke", "drink", "exercise", "read", "save", "gamble", "honest", "kind"]), SECRETS = /* @__PURE__ */ new Set(["CHEATED_EXAM", "PAID_BRIBE", "DEFRAUDED_FRIEND", "STOLE_SHARED_PROFIT", "FORGED_PAPERS", "ABANDONED_PARENT"]), STAT_CAPS = { money: [-3, 3], health: [-40, 20], happy: [-20, 20], know: [-20, 20], rel: [-20, 20], bw: [-25, 15], income_mult: [0.5, 2], agency: [-0.05, 0.05] }, obj = (x) => x && typeof x == "object" && !Array.isArray(x) ? x : null, num = (x) => typeof x == "number" && Number.isFinite(x) ? x : void 0, str = (x, max) => typeof x == "string" ? x.trim().slice(0, max) : "", clamp2 = (x, lo, hi) => Math.min(hi, Math.max(lo, x)), own = (table, key) => typeof key == "string" && Object.hasOwn(table, key);
   function bwCost(n11) {
     let c = 0;
     for (let k = 1; k <= n11; k++) c = k === 1 ? 3 : c + k;
@@ -18580,11 +18580,11 @@ var Argon = (() => {
         fresh++, nguoi.push({ moi: { ten, vai: str(m.vai, 20) || "ng\u01B0\u1EDDi quen" }, ...base });
       }
     }
-    let flagList = (x) => Array.isArray(x) ? [...new Set(x.filter((f5) => typeof f5 == "string" && f5 in ALLOWED_FLAGS))].slice(0, 4) : [], viec_lon = [];
+    let flagList = (x) => Array.isArray(x) ? [...new Set(x.filter((f5) => own(ALLOWED_FLAGS, f5)))].slice(0, 4) : [], viec_lon = [];
     if (Array.isArray(o.viec_lon)) for (let raw of o.viec_lon) {
       if (viec_lon.length >= 2) break;
       let a = obj(raw);
-      if (!a || typeof a.loai != "string" || !(a.loai in BIG_ACTIONS)) continue;
+      if (!a || !own(BIG_ACTIONS, a.loai)) continue;
       let loai = a.loai;
       if (!viec_lon.some((v) => v.loai === loai)) {
         if (loai === "doi_nghe") {
@@ -18592,7 +18592,7 @@ var Argon = (() => {
           continue;
         }
         if (loai === "theo_duong") {
-          typeof a.gia_tri == "string" && PATHS[a.gia_tri] && viec_lon.push({ loai, gia_tri: a.gia_tri });
+          own(PATHS, a.gia_tri) && viec_lon.push({ loai, gia_tri: a.gia_tri });
           continue;
         }
         if (loai === "vay" || loai === "tra_no") {

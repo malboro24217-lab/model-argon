@@ -22,8 +22,11 @@ node doi-nguoi/tests/repeat-test.js       # số lần lặp mỗi đời
 node doi-nguoi/tests/path-test.js
 node doi-nguoi/tests/agency-host-test.js
 node doi-nguoi/tests/review-fixes-test.js
-node doi-nguoi/tests/ui-agency-test.mjs   # cần playwright-core và Chromium; sửa đường dẫn import ở dòng 2 cho đúng máy
+node doi-nguoi/tests/fixes-1018-test.js
+# Test giao diện cần playwright-core và Chromium; đặt PW_CORE (đường dẫn playwright-core/index.mjs) và PW_CHROME (file chạy Chrome) cho đúng máy
+node doi-nguoi/tests/ui-agency-test.mjs
 node doi-nguoi/tests/ui-test.mjs
+node doi-nguoi/tests/ui-fixes-1018-test.mjs
 cd argon && node --experimental-strip-types src/agency-test.ts && node --experimental-strip-types src/narrative-test.ts
 ```
 

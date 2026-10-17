@@ -1,6 +1,6 @@
-import { chromium } from "/tmp/claude-0/pw/node_modules/playwright-core/index.mjs";
+const { chromium } = await import(process.env.PW_CORE || "/tmp/claude-0/pw/node_modules/playwright-core/index.mjs"); // PW_CORE / PW_CHROME: đường dẫn trên máy khác
 import fs from "fs";
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const browser = await chromium.launch({ executablePath: process.env.PW_CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const errors = []; page.on("pageerror", e => errors.push(e.message)); page.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
 const mock = `<script>const fake=async(i,o)=>{const t="Lời cuối (AI).";if(o&&o.onText)o.onText({text:t,delta:t});return{text:t,truncated:false}};fake.json=async(i)=>({title:"AI: Một chuyện",text:"...",concept:null,npc:null,choices:[{label:"A",fx:{happy:1}},{label:"B",fx:{happy:-1}}],def:0});fake.limits=async()=>({});window.claude={use:async n=>n==="sample"?fake:null};</script>`;

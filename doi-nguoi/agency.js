@@ -7,7 +7,7 @@ function bigActionOk(L, a) {
   if (!a || !L.alive) return false;
   const x = L.age, fl = L.lw ? L.lw.sflags : new Set();
   switch (a.loai) {
-    case "doi_nghe": return x >= 16 && FAM[a.gia_tri] !== undefined;
+    case "doi_nghe": return x >= 16 && typeof a.gia_tri === "string" && Object.hasOwn(FAM, a.gia_tri);
     case "mat_viec": return !!L.job && !L.retired;
     case "vay": return x >= 18;
     case "tra_no": case "co_cau_no": return (L.debt || 0) > 0;
@@ -20,7 +20,7 @@ function bigActionOk(L, a) {
     case "co_con": { const fAge = L.sex === "F" ? x : x - 3; return !!L.married && fAge >= 18 && fAge <= 44; }
     case "nghi_huu": return x >= 50 && !L.retired && !!L.job;
     case "xin_loi": return true;
-    case "theo_duong": { const d = Argon.PATHS[a.gia_tri]; return !!d && x >= d.ages[0] && x <= d.ages[1] + 5 && !fl.has("life_" + d.id); }
+    case "theo_duong": { const d = typeof a.gia_tri === "string" && Object.hasOwn(Argon.PATHS, a.gia_tri) ? Argon.PATHS[a.gia_tri] : null; return !!d && x >= d.ages[0] && x <= d.ages[1] + 5 && !fl.has("life_" + d.id); }
   }
   return false;
 }
@@ -111,11 +111,29 @@ function applyPeople(L, people) {
 function applyBig(L, list) {
   for (const a of list || []) {
     if (bigActionOk(L, a)) customEffect(L, bigActionToCustom(a));
-    else log(L, `(Việc "${Argon.BIG_ACTIONS[a.loai].split(" —")[0]}" chưa thể xảy ra lúc này.)`);
+    else log(L, `(Việc "${String(Object.hasOwn(Argon.BIG_ACTIONS, a.loai) ? Argon.BIG_ACTIONS[a.loai] : a.loai).split(" —")[0]}" chưa thể xảy ra lúc này.)`);
   }
 }
 function statSnap(L) { return { health: L.st.health, happy: L.st.happy, know: L.st.know, rel: L.st.rel, savings: L.savings, income: L.income }; }
 function statDeltas(a, b) { const d = {}; for (const k in a) { const v = b[k] - a[k]; if (Math.abs(v) >= (k === "savings" || k === "income" ? 1 : 0.5)) d[k] = Math.round(v); } return d; }
+/** Nút mà một câu gõ được tính là đã chọn: nút AI chỉ ra nếu người chơi đang thấy và với tới được nó, không thì nút mặc định (hoặc nút thấy được đầu tiên). */
+function typedChoiceIndex(L, p, chon) {
+  if (!p || !p.choices || !p.choices.length) return null;
+  const g = argonGate(L);
+  const ok = i => Number.isInteger(i) && !!p.choices[i] && choiceState(L, p.choices[i], g) === "show";
+  if (ok(chon)) return chon;
+  if (ok(p.def)) return p.def;
+  const first = p.choices.findIndex((c, i) => ok(i));
+  return first >= 0 ? first : (p.choices[p.def] ? p.def : 0);
+}
+/** Phần sổ sách của một thẻ (bộ đếm nhịp truyện, gỡ cờ đang chờ, hẹn chuyện sau). Câu gõ thay phần kể và hiệu ứng, nhưng mạch truyện vẫn phải đi tiếp. */
+function cardBookkeeping(fx) {
+  const keep = {};
+  if (fx && fx.counters) keep.counters = fx.counters;
+  if (fx && fx.unflags && !fx.custom) keep.unflags = fx.unflags; // gỡ cờ đi kèm một việc lớn (vd rời con đường) thì không tự gỡ
+  if (fx && fx.later) keep.later = fx.later;
+  return Object.keys(keep).length ? keep : null;
+}
 const OUTCOME_VN = { thanh: "Thành", nua_voi: "Nửa vời", hong: "Hỏng", khong_lam_duoc: "Không làm được" };
 
 /** Áp một việc gõ đã làm sạch (đồng bộ — dùng cả khi tua lại đời). kind: "proactive" | "scene". */
@@ -127,6 +145,8 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
   if (forcedSeq !== undefined) L.actSeq = Math.max(L.actSeq || 0, forcedSeq);
   const p = kind === "scene" ? L.pending : { id: "tu_quyet", key: `act@${L.age}#${seq}`, title: "Tự quyết", text: "", choices: [{ label: "Không làm gì" }], npc: null };
   const engineScene = kind === "scene" && !isFreeScene(p);
+  // Thẻ tự do (storylet): luôn tính theo nút mặc định, AI không chọn hộ. Thẻ engine: nút AI chỉ ra nếu hợp lệ.
+  const pick = kind === "scene" ? typedChoiceIndex(L, p, engineScene ? chon : null) : null;
   L.pending = null;
   const mark = markChoice(L, p, -1, text);
   try {
@@ -137,6 +157,7 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
     if (eff.income_mult > 1) { eff.income_mult = Math.max(1, Math.min(eff.income_mult, 2 / y.mult)); y.mult *= eff.income_mult; }
     if (eff.money > 0) { eff.money = Math.max(0, Math.min(eff.money, 3 - y.money)); y.money += eff.money; }
     applyEffect(L, eff, p.npc ? p.npc.id : undefined);
+    if (!engineScene && pick !== null) { const keep = cardBookkeeping(p.choices[pick] && p.choices[pick]._fx); if (keep) applyEffect(L, keep, p.npc ? p.npc.id : undefined); }
     applyEffect(L, { bw: -Argon.bwCost(L.actsThisYear.n) });
     const reactions = applyPeople(L, act.nguoi);
     if (L.alive) applyBig(L, act.viec_lon);
@@ -153,8 +174,8 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
       L.stories.push(st); story = st.title;
     }
     L.actLog = L.actLog || [];
-    L.actLog.push({ age: L.age, seq, kind, key: mark ? mark.key : p.key, text, result: act, chon: engineScene ? chon : null });
-    if (engineScene) { const k = chon !== null && chon !== undefined && p.choices[chon] ? chon : p.def; L.curMark = mark; L.pending = null; const ch = p.choices[k]; if (ch && ch.fx) ch.fx(L); else resolveCore(L, p, k, L.r, L.c); }
+    L.actLog.push({ age: L.age, seq, kind, key: mark ? mark.key : p.key, text, result: act, chon: pick });
+    if (engineScene) { const k = pick; L.curMark = mark; L.pending = null; const ch = p.choices[k]; if (ch && ch.fx) ch.fx(L); else resolveCore(L, p, k, L.r, L.c); }
     return { text: act.ke, outcome: act.ket_qua, outcomeVN: OUTCOME_VN[act.ket_qua], deltas: statDeltas(before, statSnap(L)), reactions: reactions.slice(0, 3), story };
   } finally { L.curMark = null; if (kind === "scene") { if (p.story) nextStory(L); livingFollowUp(L); } }
 }
@@ -179,7 +200,8 @@ async function agencyAct(L, text, sample) {
   if (!L.alive) return { ok: false, error: "Đời đã khép lại." };
   if (L.pending !== p0) return { ok: false, error: "Tình huống đã đổi trong lúc chờ — gõ lại nhé." };
   const chon = raw && Number.isInteger(raw.chon) ? raw.chon : null;
-  return { ok: true, card: applyAct(L, act, L.pending ? "scene" : "proactive", text, chon) };
+  try { return { ok: true, card: applyAct(L, act, L.pending ? "scene" : "proactive", text, chon) }; }
+  catch (e) { console.error(e); return { ok: false, error: "Có lỗi khi áp kết quả — thử lại hoặc gõ cách khác." }; }
 }
 
 /* ================= CHUYỆN ĐANG DỞ ================= */

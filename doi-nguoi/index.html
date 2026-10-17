@@ -4622,11 +4622,11 @@ var Argon = (() => {
       C6("R\u1EE7 m\u1EA5y ng\u01B0\u1EDDi \u1EDF nh\xE0 l\u1EADp b\u1EBFp chung, chia l\u1EDDi", { counters: step(c, H, { hmk_self: 1 }), agency: 0.03, gamble: { p: 0.5, win: { flags: ["hmk_coop"], money: 0.08, log: "B\u1ED1n ng\u01B0\u1EDDi, m\u1ED7i ng\u01B0\u1EDDi m\u1ED9t ng\xE0y \u0111\u1EE9ng b\u1EBFp. L\u1EA7n \u0111\u1EA7u ti\xEAn b\u1EA1n c\xF3 m\u1ED9t ng\xE0y trong tu\u1EA7n kh\xF4ng ph\u1EA3i n\u1EA5u." }, lose: { rel: -2, log: "Sau hai th\xE1ng, chuy\u1EC7n ai n\u1EA5u nhi\u1EC1u ai n\u1EA5u \xEDt l\xE0m nh\xF3m tan." } } }, "Nh\u1EB9 g\xE1nh, chung ch\u1EA1 d\u1EC5 sinh chuy\u1EC7n", { tier: "sovereign" })
     ], 0)),
     beat(H, 3, 4, (c, N) => {
-      let { who } = earner(c, N), kitchen = f4(c, "hmk_side_income") || f4(c, "hmk_coop"), own = f4(c, "hmk_own_account");
-      return T4("Ng\u01B0\u1EDDi ki\u1EBFm ti\u1EC1n m\u1EA5t vi\u1EC7c", `${cap(who)} b\u1ECB c\u1EAFt vi\u1EC7c sau m\u1ED9t \u0111\u1EE3t t\xE1i c\u1EA5u tr\xFAc. Ti\u1EC1n ti\u1EBFt ki\u1EC7m c\u1EE7a c\u1EA3 nh\xE0 ch\u1EC9 \u0111\u1EE7 ba th\xE1ng. ${own ? "T\xE0i kho\u1EA3n ri\xEAng c\u1EE7a b\u1EA1n c\xF2n m\u1ED9t kho\u1EA3n nh\u1ECF g\xF3p t\u1EEBng th\xE1ng. " : "Kh\xF4ng c\xF3 \u0111\u1ED3ng n\xE0o \u0111\u1EE9ng t\xEAn b\u1EA1n. "}${kitchen ? "B\u1EBFp c\u01A1m th\xE1ng l\xE0 kho\u1EA3n thu duy nh\u1EA5t c\xF2n \u0111\u1EC1u." : "H\xF3a \u0111\u01A1n v\u1EABn \u0111\u1EBFn \u0111\xFAng ng\xE0y."}`, [
+      let { who } = earner(c, N), kitchen = f4(c, "hmk_side_income") || f4(c, "hmk_coop"), own2 = f4(c, "hmk_own_account");
+      return T4("Ng\u01B0\u1EDDi ki\u1EBFm ti\u1EC1n m\u1EA5t vi\u1EC7c", `${cap(who)} b\u1ECB c\u1EAFt vi\u1EC7c sau m\u1ED9t \u0111\u1EE3t t\xE1i c\u1EA5u tr\xFAc. Ti\u1EC1n ti\u1EBFt ki\u1EC7m c\u1EE7a c\u1EA3 nh\xE0 ch\u1EC9 \u0111\u1EE7 ba th\xE1ng. ${own2 ? "T\xE0i kho\u1EA3n ri\xEAng c\u1EE7a b\u1EA1n c\xF2n m\u1ED9t kho\u1EA3n nh\u1ECF g\xF3p t\u1EEBng th\xE1ng. " : "Kh\xF4ng c\xF3 \u0111\u1ED3ng n\xE0o \u0111\u1EE9ng t\xEAn b\u1EA1n. "}${kitchen ? "B\u1EBFp c\u01A1m th\xE1ng l\xE0 kho\u1EA3n thu duy nh\u1EA5t c\xF2n \u0111\u1EC1u." : "H\xF3a \u0111\u01A1n v\u1EABn \u0111\u1EBFn \u0111\xFAng ng\xE0y."}`, [
         C6("\u0110i l\xE0m l\u1EA1i ngay, nh\u1EADn ch\u0103m b\u1EC7nh thu\xEA", { counters: step(c, H), unflags: [life(H)], custom: "become:caregiver", flags: ["hmk_back_to_work"], health: -2 }, "C\xF3 ti\u1EC1n ngay, c\u0103n nh\xE0 thi\u1EBFu ng\u01B0\u1EDDi"),
         kitchen ? C6("Nh\u1EADn th\xEAm su\u1EA5t c\u01A1m, g\xE1nh nh\xE0 m\u1ED9t th\u1EDDi gian", { counters: step(c, H, { hmk_self: 1 }), money: 0.25, health: -4, flags: ["hmk_breadwinner"] }, "Nh\xE0 tr\u1EE5 \u0111\u01B0\u1EE3c, l\u01B0ng b\u1EA1n g\xE1nh") : C6("Th\u1EAFt l\u01B0ng bu\u1ED9c b\u1EE5ng, ch\u1EDD ng\u01B0\u1EDDi kia t\xECm vi\u1EC7c", { counters: step(c, H, { hmk_dep: 1 }), money: -0.3, bw: -5, flags: ["hmk_held_on"] }, "Gi\u1EEF n\u1EBFp nh\xE0, s\u1ED1ng trong lo \xE2u"),
-        own ? C6("R\xFAt ti\u1EC1n ri\xEAng ra g\xE1nh, ghi r\xF5 l\xE0 cho vay", { counters: step(c, H, { hmk_self: 1 }), money: 0.1, agency: 0.02, flags: ["hmk_lent_home"] }, "Nh\xE0 qua c\u01A1n, ti\u1EC1n c\u1EE7a b\u1EA1n c\xF3 t\xEAn", { tier: "awakened" }) : C6("Vay h\u1ECD h\xE0ng, t\u1EF1 \u0111\u1EE9ng t\xEAn kho\u1EA3n n\u1EE3", { counters: step(c, H, { hmk_self: 1 }), custom: "borrow:0.3", agency: 0.02, flags: ["hmk_own_debt"] }, "Nh\xE0 qua c\u01A1n, n\u1EE3 mang t\xEAn b\u1EA1n", { tier: "awakened" })
+        own2 ? C6("R\xFAt ti\u1EC1n ri\xEAng ra g\xE1nh, ghi r\xF5 l\xE0 cho vay", { counters: step(c, H, { hmk_self: 1 }), money: 0.1, agency: 0.02, flags: ["hmk_lent_home"] }, "Nh\xE0 qua c\u01A1n, ti\u1EC1n c\u1EE7a b\u1EA1n c\xF3 t\xEAn", { tier: "awakened" }) : C6("Vay h\u1ECD h\xE0ng, t\u1EF1 \u0111\u1EE9ng t\xEAn kho\u1EA3n n\u1EE3", { counters: step(c, H, { hmk_self: 1 }), custom: "borrow:0.3", agency: 0.02, flags: ["hmk_own_debt"] }, "Nh\xE0 qua c\u01A1n, n\u1EE3 mang t\xEAn b\u1EA1n", { tier: "awakened" })
       ], 1);
     }),
     beat(H, 4, 5, (c, N) => {
@@ -12026,9 +12026,9 @@ var Argon = (() => {
         C6("Im l\u1EB7ng, ch\u1EDD chuy\u1EC7n l\u1EAFng xu\u1ED1ng", { counters: step(c, PT), gamble: { p: 0.5, win: { counters: { tg_rep: -1 }, log: "Ba tu\u1EA7n sau, m\u1EA1ng x\xE3 h\u1ED9i c\xF3 chuy\u1EC7n kh\xE1c \u0111\u1EC3 gi\u1EADn." }, lose: { income_mult: 0.5, flags: ["tg_suspended"], log: "B\u1EA1n b\u1ECB treo th\u1EBB h\xE0nh ngh\u1EC1 m\u1ED9t n\u0103m." } } }, "C\xF3 th\u1EC3 qua, c\xF3 th\u1EC3 m\u1EA5t th\u1EBB"),
         C6("Tr\u1EA3 th\u1EBB, r\u1EDDi ngh\u1EC1", { counters: step(c, PT), ...leave(PT), happy: -4 })
       ], 1);
-      let own = f4(c, "tg_own_tours") || f4(c, "tg_guild"), big = (c.counters.tg_rep ?? 0) >= 2;
-      return T4("Ng\u01B0\u1EDDi d\u1EABn \u0111\u01B0\u1EDDng c\xF3 t\xEAn tu\u1ED5i", `${big ? "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn tr\u01B0\u1EDBc m\u1ED9t n\u0103m." : "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn ba th\xE1ng t\u1EDBi."} M\u1ED9t t\u1EADp \u0111o\xE0n l\u1EEF h\xE0nh mu\u1ED1n ${own ? "mua l\u1EA1i th\u01B0\u01A1ng hi\u1EC7u tour c\u1EE7a b\u1EA1n" : "m\u1EDDi b\u1EA1n l\xE0m gi\xE1m \u0111\u1ED1c tuy\u1EBFn"}. C\xF9ng tu\u1EA7n, tr\u01B0\u1EDFng l\xE0ng \u1EDF thung l\u0169ng b\u1EA1n hay d\u1EABn kh\xE1ch \u0111\u1EBFn h\u1ECFi: gi\xE1 nh\u01B0 kh\xE1ch ng\u1EE7 l\u1EA1i nh\xE0 d\xE2n, ti\u1EC1n \u1EDF l\u1EA1i trong l\xE0ng.`, [
-        own ? C6("B\xE1n th\u01B0\u01A1ng hi\u1EC7u cho t\u1EADp \u0111o\xE0n", { counters: step(c, PT), money: 1, income_mult: 0.8, flags: ["tg_sold"] }, "M\u1ED9t kho\u1EA3n l\u1EDBn, r\u1ED3i l\xE0m thu\xEA tr\xEAn tour c\u1EE7a m\xECnh") : C6("Nh\u1EADn gh\u1EBF gi\xE1m \u0111\u1ED1c tuy\u1EBFn", { counters: step(c, PT), income_mult: 1.3, bw: -4, happy: -2, flags: ["tg_director"] }, "L\u01B0\u01A1ng cao, ng\u1ED3i b\xE0n gi\u1EA5y, xa \u0111\u01B0\u1EDDng m\xF2n"),
+      let own2 = f4(c, "tg_own_tours") || f4(c, "tg_guild"), big = (c.counters.tg_rep ?? 0) >= 2;
+      return T4("Ng\u01B0\u1EDDi d\u1EABn \u0111\u01B0\u1EDDng c\xF3 t\xEAn tu\u1ED5i", `${big ? "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn tr\u01B0\u1EDBc m\u1ED9t n\u0103m." : "L\u1ECBch c\u1EE7a b\u1EA1n k\xEDn ba th\xE1ng t\u1EDBi."} M\u1ED9t t\u1EADp \u0111o\xE0n l\u1EEF h\xE0nh mu\u1ED1n ${own2 ? "mua l\u1EA1i th\u01B0\u01A1ng hi\u1EC7u tour c\u1EE7a b\u1EA1n" : "m\u1EDDi b\u1EA1n l\xE0m gi\xE1m \u0111\u1ED1c tuy\u1EBFn"}. C\xF9ng tu\u1EA7n, tr\u01B0\u1EDFng l\xE0ng \u1EDF thung l\u0169ng b\u1EA1n hay d\u1EABn kh\xE1ch \u0111\u1EBFn h\u1ECFi: gi\xE1 nh\u01B0 kh\xE1ch ng\u1EE7 l\u1EA1i nh\xE0 d\xE2n, ti\u1EC1n \u1EDF l\u1EA1i trong l\xE0ng.`, [
+        own2 ? C6("B\xE1n th\u01B0\u01A1ng hi\u1EC7u cho t\u1EADp \u0111o\xE0n", { counters: step(c, PT), money: 1, income_mult: 0.8, flags: ["tg_sold"] }, "M\u1ED9t kho\u1EA3n l\u1EDBn, r\u1ED3i l\xE0m thu\xEA tr\xEAn tour c\u1EE7a m\xECnh") : C6("Nh\u1EADn gh\u1EBF gi\xE1m \u0111\u1ED1c tuy\u1EBFn", { counters: step(c, PT), income_mult: 1.3, bw: -4, happy: -2, flags: ["tg_director"] }, "L\u01B0\u01A1ng cao, ng\u1ED3i b\xE0n gi\u1EA5y, xa \u0111\u01B0\u1EDDng m\xF2n"),
         C6("M\u1EDF tour c\u1ED9ng \u0111\u1ED3ng, chia l\u1EE3i cho l\xE0ng", { counters: step(c, PT), money: -0.3, rel: 5, flags: ["tg_community"], agency: 0.02 }, "L\xE3i m\u1ECFng, l\xE0ng gi\u1EEF \u0111\u01B0\u1EE3c m\xECnh", { tier: "awakened" }),
         C6("Gi\u1EEF nh\u1ECF, t\u1EF1 d\u1EABn khi c\xF2n \u0111i \u0111\u01B0\u1EE3c", { counters: step(c, PT), happy: 4, health: -3 }, "T\u1EF1 do, \u0111\u1EA7u g\u1ED1i kh\xF4ng tr\u1EBB m\xE3i")
       ], 0);
@@ -13714,11 +13714,11 @@ var Argon = (() => {
       C6("\u0110\u1ECDc l\u1EA1i ph\u1EA7n \u0111\xE3 thu\u1ED9c, b\xE1m k\u1ECBch b\u1EA3n", { counters: step(c, TV), flags: ["tvh_scripted"], money: 0.02 }, "An to\xE0n, kh\xF4ng ai nh\u1EDB")
     ], 1), (c) => c.age >= 18),
     beat(TV, 2, 3, (c) => {
-      let own = f4(c, "tvh_own_voice");
-      return T4("Gi\u1EDD v\xE0ng, n\u0103m n\u0103m", `${own ? "Kh\xE1n gi\u1EA3 th\xEDch c\xE1ch b\u1EA1n n\xF3i nh\u01B0 ng\u01B0\u1EDDi th\u1EADt, kh\xF4ng nh\u01B0 ng\u01B0\u1EDDi \u0111\u1ECDc. " : ""}\u0110\xE0i m\u1EDDi b\u1EA1n d\u1EABn ch\u01B0\u01A1ng tr\xECnh gi\u1EDD v\xE0ng. H\u1EE3p \u0111\u1ED3ng n\u0103m n\u0103m \u0111\u1ED9c quy\u1EC1n: \u0111\xE0i quy\u1EBFt b\u1EA1n m\u1EB7c g\xEC, \u0111\u0103ng g\xEC l\xEAn m\u1EA1ng, qu\u1EA3ng c\xE1o cho ai.`, [
+      let own2 = f4(c, "tvh_own_voice");
+      return T4("Gi\u1EDD v\xE0ng, n\u0103m n\u0103m", `${own2 ? "Kh\xE1n gi\u1EA3 th\xEDch c\xE1ch b\u1EA1n n\xF3i nh\u01B0 ng\u01B0\u1EDDi th\u1EADt, kh\xF4ng nh\u01B0 ng\u01B0\u1EDDi \u0111\u1ECDc. " : ""}\u0110\xE0i m\u1EDDi b\u1EA1n d\u1EABn ch\u01B0\u01A1ng tr\xECnh gi\u1EDD v\xE0ng. H\u1EE3p \u0111\u1ED3ng n\u0103m n\u0103m \u0111\u1ED9c quy\u1EC1n: \u0111\xE0i quy\u1EBFt b\u1EA1n m\u1EB7c g\xEC, \u0111\u0103ng g\xEC l\xEAn m\u1EA1ng, qu\u1EA3ng c\xE1o cho ai.`, [
         C6("K\xFD \u0111\u1ED9c quy\u1EC1n", { counters: step(c, TV, { tvh_fame: 1 }), income_mult: 1.6, flags: ["tvh_network_contract"] }, "L\u01B0\u01A1ng cao, m\u1EA5t t\u1EF1 do"),
         C6("L\xE0m t\u1EF1 do, nh\u1EADn d\u1EABn nhi\u1EC1u n\u01A1i", { counters: step(c, TV), income_mult: 1.2, bw: -5, flags: ["tvh_freelance"] }, "Ch\u1EA1y show m\u1EC7t, kh\xF4ng ai gi\u1EEF ch\xE2n b\u1EA1n"),
-        C6("\u0110\xF2i \u0111\u1ED3ng s\u1EDF h\u1EEFu ch\u01B0\u01A1ng tr\xECnh", { counters: step(c, TV), gamble: { p: own ? 0.45 : 0.3, win: { income_mult: 1.45, flags: ["tvh_owns_show"], counters: { tvh_fame: 1 }, log: "\u0110\xE0i \u0111\u1ED3ng \xFD chia ba ph\u1EA7n m\u01B0\u1EDDi. L\u1EA7n \u0111\u1EA7u m\u1ED9t ng\u01B0\u1EDDi d\u1EABn c\xF3 t\xEAn trong gi\u1EA5y s\u1EDF h\u1EEFu." }, lose: { happy: -3, log: "H\u1ECD ch\u1ECDn ng\u01B0\u1EDDi kh\xE1c. B\u1EA1n quay v\u1EC1 b\u1EA3n tin bu\u1ED5i tr\u01B0a." } } }, "C\xF3 ph\u1EA7n c\u1EE7a m\xECnh, ho\u1EB7c m\u1EA5t gh\u1EBF gi\u1EDD v\xE0ng", { tier: "sovereign" })
+        C6("\u0110\xF2i \u0111\u1ED3ng s\u1EDF h\u1EEFu ch\u01B0\u01A1ng tr\xECnh", { counters: step(c, TV), gamble: { p: own2 ? 0.45 : 0.3, win: { income_mult: 1.45, flags: ["tvh_owns_show"], counters: { tvh_fame: 1 }, log: "\u0110\xE0i \u0111\u1ED3ng \xFD chia ba ph\u1EA7n m\u01B0\u1EDDi. L\u1EA7n \u0111\u1EA7u m\u1ED9t ng\u01B0\u1EDDi d\u1EABn c\xF3 t\xEAn trong gi\u1EA5y s\u1EDF h\u1EEFu." }, lose: { happy: -3, log: "H\u1ECD ch\u1ECDn ng\u01B0\u1EDDi kh\xE1c. B\u1EA1n quay v\u1EC1 b\u1EA3n tin bu\u1ED5i tr\u01B0a." } } }, "C\xF3 ph\u1EA7n c\u1EE7a m\xECnh, ho\u1EB7c m\u1EA5t gh\u1EBF gi\u1EDD v\xE0ng", { tier: "sovereign" })
       ], 0);
     }, (c) => c.age >= 18),
     beat(TV, 3, 4, (c) => {
@@ -19059,7 +19059,7 @@ var Argon = (() => {
     nghi_huu: "ngh\u1EC9 h\u01B0u",
     xin_loi: "\u0111i xin l\u1ED7i nh\u1EEFng ng\u01B0\u1EDDi m\xECnh l\xE0m t\u1ED5n th\u01B0\u01A1ng",
     theo_duong: "b\u01B0\u1EDBc v\xE0o m\u1ED9t con \u0111\u01B0\u1EDDng \u0111\u1EDDi \u2014 gia_tri = id con \u0111\u01B0\u1EDDng"
-  }, OUTCOMES = /* @__PURE__ */ new Set(["thanh", "nua_voi", "hong", "khong_lam_duoc"]), FAMILIES = /* @__PURE__ */ new Set(["farm", "market", "driver", "build", "factory", "teach", "health", "office", "tech", "domestic"]), HABITS = /* @__PURE__ */ new Set(["smoke", "drink", "exercise", "read", "save", "gamble", "honest", "kind"]), SECRETS = /* @__PURE__ */ new Set(["CHEATED_EXAM", "PAID_BRIBE", "DEFRAUDED_FRIEND", "STOLE_SHARED_PROFIT", "FORGED_PAPERS", "ABANDONED_PARENT"]), STAT_CAPS = { money: [-3, 3], health: [-40, 20], happy: [-20, 20], know: [-20, 20], rel: [-20, 20], bw: [-25, 15], income_mult: [0.5, 2], agency: [-0.05, 0.05] }, obj = (x) => x && typeof x == "object" && !Array.isArray(x) ? x : null, num = (x) => typeof x == "number" && Number.isFinite(x) ? x : void 0, str = (x, max) => typeof x == "string" ? x.trim().slice(0, max) : "", clamp2 = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+  }, OUTCOMES = /* @__PURE__ */ new Set(["thanh", "nua_voi", "hong", "khong_lam_duoc"]), FAMILIES = /* @__PURE__ */ new Set(["farm", "market", "driver", "build", "factory", "teach", "health", "office", "tech", "domestic"]), HABITS = /* @__PURE__ */ new Set(["smoke", "drink", "exercise", "read", "save", "gamble", "honest", "kind"]), SECRETS = /* @__PURE__ */ new Set(["CHEATED_EXAM", "PAID_BRIBE", "DEFRAUDED_FRIEND", "STOLE_SHARED_PROFIT", "FORGED_PAPERS", "ABANDONED_PARENT"]), STAT_CAPS = { money: [-3, 3], health: [-40, 20], happy: [-20, 20], know: [-20, 20], rel: [-20, 20], bw: [-25, 15], income_mult: [0.5, 2], agency: [-0.05, 0.05] }, obj = (x) => x && typeof x == "object" && !Array.isArray(x) ? x : null, num = (x) => typeof x == "number" && Number.isFinite(x) ? x : void 0, str = (x, max) => typeof x == "string" ? x.trim().slice(0, max) : "", clamp2 = (x, lo, hi) => Math.min(hi, Math.max(lo, x)), own = (table, key) => typeof key == "string" && Object.hasOwn(table, key);
   function bwCost(n11) {
     let c = 0;
     for (let k = 1; k <= n11; k++) c = k === 1 ? 3 : c + k;
@@ -19088,11 +19088,11 @@ var Argon = (() => {
         fresh++, nguoi.push({ moi: { ten, vai: str(m.vai, 20) || "ng\u01B0\u1EDDi quen" }, ...base });
       }
     }
-    let flagList = (x) => Array.isArray(x) ? [...new Set(x.filter((f5) => typeof f5 == "string" && f5 in ALLOWED_FLAGS))].slice(0, 4) : [], viec_lon = [];
+    let flagList = (x) => Array.isArray(x) ? [...new Set(x.filter((f5) => own(ALLOWED_FLAGS, f5)))].slice(0, 4) : [], viec_lon = [];
     if (Array.isArray(o.viec_lon)) for (let raw of o.viec_lon) {
       if (viec_lon.length >= 2) break;
       let a = obj(raw);
-      if (!a || typeof a.loai != "string" || !(a.loai in BIG_ACTIONS)) continue;
+      if (!a || !own(BIG_ACTIONS, a.loai)) continue;
       let loai = a.loai;
       if (!viec_lon.some((v) => v.loai === loai)) {
         if (loai === "doi_nghe") {
@@ -19100,7 +19100,7 @@ var Argon = (() => {
           continue;
         }
         if (loai === "theo_duong") {
-          typeof a.gia_tri == "string" && PATHS[a.gia_tri] && viec_lon.push({ loai, gia_tri: a.gia_tri });
+          own(PATHS, a.gia_tri) && viec_lon.push({ loai, gia_tri: a.gia_tri });
           continue;
         }
         if (loai === "vay" || loai === "tra_no") {
@@ -20062,7 +20062,7 @@ function bigActionOk(L, a) {
   if (!a || !L.alive) return false;
   const x = L.age, fl = L.lw ? L.lw.sflags : new Set();
   switch (a.loai) {
-    case "doi_nghe": return x >= 16 && FAM[a.gia_tri] !== undefined;
+    case "doi_nghe": return x >= 16 && typeof a.gia_tri === "string" && Object.hasOwn(FAM, a.gia_tri);
     case "mat_viec": return !!L.job && !L.retired;
     case "vay": return x >= 18;
     case "tra_no": case "co_cau_no": return (L.debt || 0) > 0;
@@ -20075,7 +20075,7 @@ function bigActionOk(L, a) {
     case "co_con": { const fAge = L.sex === "F" ? x : x - 3; return !!L.married && fAge >= 18 && fAge <= 44; }
     case "nghi_huu": return x >= 50 && !L.retired && !!L.job;
     case "xin_loi": return true;
-    case "theo_duong": { const d = Argon.PATHS[a.gia_tri]; return !!d && x >= d.ages[0] && x <= d.ages[1] + 5 && !fl.has("life_" + d.id); }
+    case "theo_duong": { const d = typeof a.gia_tri === "string" && Object.hasOwn(Argon.PATHS, a.gia_tri) ? Argon.PATHS[a.gia_tri] : null; return !!d && x >= d.ages[0] && x <= d.ages[1] + 5 && !fl.has("life_" + d.id); }
   }
   return false;
 }
@@ -20166,11 +20166,29 @@ function applyPeople(L, people) {
 function applyBig(L, list) {
   for (const a of list || []) {
     if (bigActionOk(L, a)) customEffect(L, bigActionToCustom(a));
-    else log(L, `(Việc "${Argon.BIG_ACTIONS[a.loai].split(" —")[0]}" chưa thể xảy ra lúc này.)`);
+    else log(L, `(Việc "${String(Object.hasOwn(Argon.BIG_ACTIONS, a.loai) ? Argon.BIG_ACTIONS[a.loai] : a.loai).split(" —")[0]}" chưa thể xảy ra lúc này.)`);
   }
 }
 function statSnap(L) { return { health: L.st.health, happy: L.st.happy, know: L.st.know, rel: L.st.rel, savings: L.savings, income: L.income }; }
 function statDeltas(a, b) { const d = {}; for (const k in a) { const v = b[k] - a[k]; if (Math.abs(v) >= (k === "savings" || k === "income" ? 1 : 0.5)) d[k] = Math.round(v); } return d; }
+/** Nút mà một câu gõ được tính là đã chọn: nút AI chỉ ra nếu người chơi đang thấy và với tới được nó, không thì nút mặc định (hoặc nút thấy được đầu tiên). */
+function typedChoiceIndex(L, p, chon) {
+  if (!p || !p.choices || !p.choices.length) return null;
+  const g = argonGate(L);
+  const ok = i => Number.isInteger(i) && !!p.choices[i] && choiceState(L, p.choices[i], g) === "show";
+  if (ok(chon)) return chon;
+  if (ok(p.def)) return p.def;
+  const first = p.choices.findIndex((c, i) => ok(i));
+  return first >= 0 ? first : (p.choices[p.def] ? p.def : 0);
+}
+/** Phần sổ sách của một thẻ (bộ đếm nhịp truyện, gỡ cờ đang chờ, hẹn chuyện sau). Câu gõ thay phần kể và hiệu ứng, nhưng mạch truyện vẫn phải đi tiếp. */
+function cardBookkeeping(fx) {
+  const keep = {};
+  if (fx && fx.counters) keep.counters = fx.counters;
+  if (fx && fx.unflags && !fx.custom) keep.unflags = fx.unflags; // gỡ cờ đi kèm một việc lớn (vd rời con đường) thì không tự gỡ
+  if (fx && fx.later) keep.later = fx.later;
+  return Object.keys(keep).length ? keep : null;
+}
 const OUTCOME_VN = { thanh: "Thành", nua_voi: "Nửa vời", hong: "Hỏng", khong_lam_duoc: "Không làm được" };
 
 /** Áp một việc gõ đã làm sạch (đồng bộ — dùng cả khi tua lại đời). kind: "proactive" | "scene". */
@@ -20182,6 +20200,8 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
   if (forcedSeq !== undefined) L.actSeq = Math.max(L.actSeq || 0, forcedSeq);
   const p = kind === "scene" ? L.pending : { id: "tu_quyet", key: `act@${L.age}#${seq}`, title: "Tự quyết", text: "", choices: [{ label: "Không làm gì" }], npc: null };
   const engineScene = kind === "scene" && !isFreeScene(p);
+  // Thẻ tự do (storylet): luôn tính theo nút mặc định, AI không chọn hộ. Thẻ engine: nút AI chỉ ra nếu hợp lệ.
+  const pick = kind === "scene" ? typedChoiceIndex(L, p, engineScene ? chon : null) : null;
   L.pending = null;
   const mark = markChoice(L, p, -1, text);
   try {
@@ -20192,6 +20212,7 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
     if (eff.income_mult > 1) { eff.income_mult = Math.max(1, Math.min(eff.income_mult, 2 / y.mult)); y.mult *= eff.income_mult; }
     if (eff.money > 0) { eff.money = Math.max(0, Math.min(eff.money, 3 - y.money)); y.money += eff.money; }
     applyEffect(L, eff, p.npc ? p.npc.id : undefined);
+    if (!engineScene && pick !== null) { const keep = cardBookkeeping(p.choices[pick] && p.choices[pick]._fx); if (keep) applyEffect(L, keep, p.npc ? p.npc.id : undefined); }
     applyEffect(L, { bw: -Argon.bwCost(L.actsThisYear.n) });
     const reactions = applyPeople(L, act.nguoi);
     if (L.alive) applyBig(L, act.viec_lon);
@@ -20208,8 +20229,8 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
       L.stories.push(st); story = st.title;
     }
     L.actLog = L.actLog || [];
-    L.actLog.push({ age: L.age, seq, kind, key: mark ? mark.key : p.key, text, result: act, chon: engineScene ? chon : null });
-    if (engineScene) { const k = chon !== null && chon !== undefined && p.choices[chon] ? chon : p.def; L.curMark = mark; L.pending = null; const ch = p.choices[k]; if (ch && ch.fx) ch.fx(L); else resolveCore(L, p, k, L.r, L.c); }
+    L.actLog.push({ age: L.age, seq, kind, key: mark ? mark.key : p.key, text, result: act, chon: pick });
+    if (engineScene) { const k = pick; L.curMark = mark; L.pending = null; const ch = p.choices[k]; if (ch && ch.fx) ch.fx(L); else resolveCore(L, p, k, L.r, L.c); }
     return { text: act.ke, outcome: act.ket_qua, outcomeVN: OUTCOME_VN[act.ket_qua], deltas: statDeltas(before, statSnap(L)), reactions: reactions.slice(0, 3), story };
   } finally { L.curMark = null; if (kind === "scene") { if (p.story) nextStory(L); livingFollowUp(L); } }
 }
@@ -20234,7 +20255,8 @@ async function agencyAct(L, text, sample) {
   if (!L.alive) return { ok: false, error: "Đời đã khép lại." };
   if (L.pending !== p0) return { ok: false, error: "Tình huống đã đổi trong lúc chờ — gõ lại nhé." };
   const chon = raw && Number.isInteger(raw.chon) ? raw.chon : null;
-  return { ok: true, card: applyAct(L, act, L.pending ? "scene" : "proactive", text, chon) };
+  try { return { ok: true, card: applyAct(L, act, L.pending ? "scene" : "proactive", text, chon) }; }
+  catch (e) { console.error(e); return { ok: false, error: "Có lỗi khi áp kết quả — thử lại hoặc gõ cách khác." }; }
 }
 
 /* ================= CHUYỆN ĐANG DỞ ================= */
@@ -20355,7 +20377,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 let G={life:null,peers:[],speed:1,paused:false,timer:null,acc:0,last:0,autoDecide:false,yearMs:2600};
 const BIRTHS_PER_SEC=4.2,DEATHS_PER_SEC=2.0;
 
-function intro(){stop();document.body.classList.remove("tunnel");clearInterval(G.timerIv);const past=store.get();const t0=performance.now();
+function intro(){stop();clearTimeout(G.endT);G.endT=null;document.body.classList.remove("tunnel");clearInterval(G.timerIv);const past=store.get();const t0=performance.now();
   app.innerHTML=`<section class="intro">
   <div><div class="label">Mô phỏng · ${COUNTRIES.length} quốc gia · số liệu thống kê thực · động cơ Argon</div>
    <h1>Một lần <em>chào đời</em></h1>
@@ -20377,7 +20399,7 @@ function intro(){stop();document.body.classList.remove("tunnel");clearInterval(G
   document.getElementById("born").onclick=birth;
 }
 
-function birth(){const seed=(Math.random()*2**32)>>>0;const L=createLife(seed);G.life=L;
+function birth(){clearTimeout(G.endT);G.endT=null;const seed=(Math.random()*2**32)>>>0;const L=createLife(seed);G.life=L;
   G.peers=[1,2,3].concat([4]).map(k=>simulatePeer((seed+k*7919)>>>0));
   const now=new Date();const nth=1+Math.floor(Math.random()*4);
   app.innerHTML=`<section class="cert">
@@ -20430,12 +20452,18 @@ function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.story
 
 function askQuit(){const d=document.getElementById("dec");d.innerHTML=`<div class="decision"><h3>Rời khỏi cuộc đời này?</h3><p style="margin:0">Cuộc đời đang sống sẽ không được lưu.</p>
   <div class="choices"><button class="btn" id="qy">Thoát về trang đầu</button><button class="btn" id="qn">Sống tiếp</button></div></div>`;
-  document.getElementById("qy").onclick=intro;document.getElementById("qn").onclick=()=>{G.paused=false;render()}}
+  document.getElementById("qy").onclick=intro;document.getElementById("qn").onclick=()=>{d.innerHTML="";G.paused=false;render()}}
 
 function start(){stop();G.last=performance.now();G.acc=0;const loop=t=>{G.timer=requestAnimationFrame(loop);const dt=t-G.last;G.last=t;const L=G.life;
-  if(!L||G.paused||L.pending||!L.alive||G.acting||G.card)return;
-  if(L.storyDue){if(!G.storyLoading){G.storyLoading=true;render();storyTick(L).finally(()=>{G.storyLoading=false;render()})}return}
-  if(narratorWaiting(L)){if(!G.waitShown){G.waitShown=true;render()}return}G.waitShown=false;G.acc+=dt*G.speed;if(G.acc>=G.yearMs){G.acc=0;stepYear(L);narratorPlan(L);render();if(!L.alive)setTimeout(ending,1400)}};G.timer=requestAnimationFrame(loop)}
+  if(!L)return;
+  if(!L.alive){endSoon(L);return} // mọi đường chết (bấm nút, phím, hết giờ, tự chơi, năm trôi) đều về màn kết
+  if(L.pending||G.acting||G.card)return;
+  // Chuyện đến hẹn vẫn được tải khi đang tạm dừng (tải cảnh không làm thời gian trôi); trừ khi đang mở hộp thoại thoát.
+  if(L.storyDue){if(!G.storyLoading&&!document.getElementById("qy")){G.storyLoading=true;render();storyTick(L).finally(()=>{G.storyLoading=false;render()})}return}
+  if(G.paused)return;
+  if(narratorWaiting(L)){if(!G.waitShown){G.waitShown=true;render()}return}G.waitShown=false;G.acc+=dt*G.speed;if(G.acc>=G.yearMs){G.acc=0;stepYear(L);narratorPlan(L);render();if(!L.alive)endSoon(L)}};G.timer=requestAnimationFrame(loop)}
+/* Màn kết sau 1,4 giây — chỉ một lần, và chỉ cho đúng đời vừa mất (không bắn nhầm sang đời mới). */
+function endSoon(L){if(G.endT||G.endFor===L)return;G.endFor=L;G.endT=setTimeout(()=>{G.endT=null;if(G.life===L&&!L.alive)ending()},1400)}
 function stop(){if(G.timer)cancelAnimationFrame(G.timer);G.timer=null}
 
 /* ---- Ô "Tôi muốn…" ---- */
@@ -20449,7 +20477,7 @@ async function wantSubmit(){const L=G.life;const inp=document.getElementById("wa
   if(!L||!L.alive||G.acting||G.card||G.autoDecide)return;const text=inp.value.trim();if(!text){inp.focus();return}
   G.acting=true;render();
   try{const r=await agencyAct(L,text);if(G.life!==L)return;if(r.ok){inp.value="";msg.textContent="";G.card=r.card;G.card.typed=text;G.card.age=L.age}else{msg.textContent=r.error;msg.classList.add("err")}}
-  finally{G.acting=false;clearInterval(G.timerIv);G.timerKey=null;render();if(!L.alive)setTimeout(ending,1400)}}
+  finally{G.acting=false;if(G.life===L){clearInterval(G.timerIv);G.timerKey=null;render();if(!L.alive)endSoon(L)}}}
 const DELTA_VN={health:"sức khỏe",happy:"hạnh phúc",know:"kiến thức",rel:"quan hệ",savings:"tiền",income:"thu nhập/năm"};
 function renderActCard(L,dec){const c=G.card;
   const ds=Object.entries(c.deltas||{}).map(([k,v])=>`<span class="${v>0?"up":"dn"}">${DELTA_VN[k]||k} ${v>0?"+":"−"}${k==="savings"||k==="income"?fmtPPP(Math.abs(v)):Math.abs(v)}</span>`).join("");
@@ -20485,7 +20513,8 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   const fr=document.getElementById("frugal");if(fr)fr.onclick=()=>{L.ar.frugal=!L.ar.frugal;render()};
   // quyết định
   const dec=document.getElementById("dec");
-  if(G.card)renderActCard(L,dec);
+  if(dec.querySelector("#qy")){/* hộp thoại thoát đang mở: giữ nguyên */}
+  else if(G.card)renderActCard(L,dec);
   else if(G.storyLoading&&L.storyDue)dec.innerHTML=`<div class="decision"><span class="label">Chuyện đang dở · tuổi ${L.age}</span><h3>${esc(L.storyDue.title)}</h3><p style="margin:0" class="muted">Chuyện đang tiếp diễn…</p></div>`;
   else if(L.pending){const p=L.pending;const g=argonGate(L);const key=p.key||p.id+L.age;
     const states=p.choices.map(c=>choiceState(L,c,g));const anyHidden=states.includes("hidden"),anyLocked=states.includes("locked");
@@ -20503,8 +20532,9 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
        const doors=choiceDoors(c);return`<button class="btn${st==="locked"?" locked":""}" data-i="${i}" ${st==="locked"?"disabled":""}><b>${esc(c.label)}</b><small>${st==="locked"?"không với tới được lúc này":esc(c.hint||"")}</small>${doors.map(d=>`<span class="doorbadge">đóng cửa: ${esc(CH.DOOR_VN(d).vi)}</span>`).join("")}</button>`}).join("")}</div></div>`;
     if(G.acting)dec.querySelectorAll("[data-i]").forEach(b=>b.disabled=true);
     dec.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(G.acting)return;clearInterval(G.timerIv);G.timerKey=null;resolve(L,+b.dataset.i);render()});
-    if(g.bw<50&&L.ar&&G.timerKey!==key){clearInterval(G.timerIv);G.timerKey=key;const total=(6+24*(g.bw/100))*1000;const t0=performance.now();
-      G.timerIv=setInterval(()=>{if(G.acting)return;const bar=document.getElementById("timerbar");if(!bar||!L.pending||L.pending.key!==key){clearInterval(G.timerIv);return}const left=Math.max(0,1-(performance.now()-t0)/total);bar.style.width=(left*100)+"%";
+    if(g.bw<50&&L.ar&&G.timerKey!==key){clearInterval(G.timerIv);G.timerKey=key;const total=(6+24*(g.bw/100))*1000;let t0=performance.now(),tLast=t0;
+      G.timerIv=setInterval(()=>{const now=performance.now();const held=G.paused||G.acting||!!G.card||!!document.getElementById("qy");if(held)t0+=now-tLast;tLast=now; // đồng hồ đứng khi tạm dừng, khi AI đang viết, khi mở hộp thoại
+        const bar=document.getElementById("timerbar");if(!L.pending||L.pending.key!==key||(!bar&&!held)){clearInterval(G.timerIv);G.timerKey=null;return}const left=Math.max(0,1-(now-t0)/total);if(bar)bar.style.width=(left*100)+"%";if(held)return;
         if(left<=0){clearInterval(G.timerIv);G.timerKey=null;const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);const pickI=ok.includes(p.def)?p.def:(ok[0]??0);log(L,"Bạn không kịp nghĩ. Bạn làm điều dễ nhất.","bad");resolve(L,pickI);render()}},250)}
     const ddb=document.getElementById("dd");if(ddb)ddb.onclick=()=>{if(dueDiligence(L,key,ddCost))render()}}
   else if(narratorWaiting(L))dec.innerHTML=`<div class="decision"><span class="label">Người kể chuyện đang viết một tình huống cho tuổi ${L.nextAi}…</span><p style="margin:0" class="muted">Lần đầu, trình duyệt sẽ hỏi bạn có cho phép trang này dùng Claude không. Có thể tắt AI kể chuyện trên thanh trên để chơi với kịch bản sẵn.</p></div>`;

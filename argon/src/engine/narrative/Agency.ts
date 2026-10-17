@@ -47,6 +47,8 @@ const obj = (x: unknown): Record<string, unknown> | null => (x && typeof x === "
 const num = (x: unknown): number | undefined => (typeof x === "number" && Number.isFinite(x) ? x : undefined);
 const str = (x: unknown, max: number): string => (typeof x === "string" ? x.trim().slice(0, max) : "");
 const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
+/** Khóa riêng của bảng, không lọt "toString", "constructor", "__proto__"… từ chữ AI viết. */
+const own = (table: object, key: unknown): key is string => typeof key === "string" && Object.hasOwn(table, key);
 
 /** Chi phí sức lực bắt buộc của việc gõ thứ n trong năm: 3, 5, 8, 12, 17, 23… */
 export function bwCost(n: number): number { let c = 0; for (let k = 1; k <= n; k++) c = k === 1 ? 3 : c + k; return c; }
@@ -71,15 +73,15 @@ function sanitizeEffects(o: Record<string, unknown>, castIds: ReadonlySet<string
     const m = obj(p.moi);
     if (!id && m && fresh < 1) { const ten = str(m.ten, 30); if (!ten) continue; fresh++; nguoi.push({ moi: { ten, vai: str(m.vai, 20) || "người quen" }, ...base }); }
   }
-  const flagList = (x: unknown) => (Array.isArray(x) ? [...new Set(x.filter((f): f is string => typeof f === "string" && f in ALLOWED_FLAGS))].slice(0, 4) : []);
+  const flagList = (x: unknown) => (Array.isArray(x) ? [...new Set(x.filter((f): f is string => own(ALLOWED_FLAGS, f)))].slice(0, 4) : []);
   const viec_lon: BigAction[] = [];
   if (Array.isArray(o.viec_lon)) for (const raw of o.viec_lon) {
     if (viec_lon.length >= 2) break;
-    const a = obj(raw); if (!a || typeof a.loai !== "string" || !(a.loai in BIG_ACTIONS)) continue;
+    const a = obj(raw); if (!a || !own(BIG_ACTIONS, a.loai)) continue;
     const loai = a.loai as BigActionKind;
     if (viec_lon.some((v) => v.loai === loai)) continue; // mỗi loại việc lớn một lần mỗi kết quả
     if (loai === "doi_nghe") { if (typeof a.gia_tri === "string" && FAMILIES.has(a.gia_tri)) viec_lon.push({ loai, gia_tri: a.gia_tri }); continue; }
-    if (loai === "theo_duong") { if (typeof a.gia_tri === "string" && PATHS[a.gia_tri]) viec_lon.push({ loai, gia_tri: a.gia_tri }); continue; }
+    if (loai === "theo_duong") { if (own(PATHS, a.gia_tri)) viec_lon.push({ loai, gia_tri: a.gia_tri }); continue; }
     if (loai === "vay" || loai === "tra_no") { if (child) continue; const v = num(a.gia_tri); if (v !== undefined && v > 0) viec_lon.push({ loai, gia_tri: Math.min(3, v) }); continue; }
     if (loai === "ket_hon") { const ten = str(a.gia_tri, 30).replace(/[|:]/g, "").trim(); viec_lon.push(ten ? { loai, gia_tri: ten } : { loai }); continue; }
     viec_lon.push({ loai });
