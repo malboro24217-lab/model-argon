@@ -18586,26 +18586,28 @@ var Argon = (() => {
       let a = obj(raw);
       if (!a || typeof a.loai != "string" || !(a.loai in BIG_ACTIONS)) continue;
       let loai = a.loai;
-      if (loai === "doi_nghe") {
-        typeof a.gia_tri == "string" && FAMILIES.has(a.gia_tri) && viec_lon.push({ loai, gia_tri: a.gia_tri });
-        continue;
+      if (!viec_lon.some((v) => v.loai === loai)) {
+        if (loai === "doi_nghe") {
+          typeof a.gia_tri == "string" && FAMILIES.has(a.gia_tri) && viec_lon.push({ loai, gia_tri: a.gia_tri });
+          continue;
+        }
+        if (loai === "theo_duong") {
+          typeof a.gia_tri == "string" && PATHS[a.gia_tri] && viec_lon.push({ loai, gia_tri: a.gia_tri });
+          continue;
+        }
+        if (loai === "vay" || loai === "tra_no") {
+          if (child) continue;
+          let v = num(a.gia_tri);
+          v !== void 0 && v > 0 && viec_lon.push({ loai, gia_tri: Math.min(3, v) });
+          continue;
+        }
+        if (loai === "ket_hon") {
+          let ten = str(a.gia_tri, 30).replace(/[|:]/g, "").trim();
+          viec_lon.push(ten ? { loai, gia_tri: ten } : { loai });
+          continue;
+        }
+        viec_lon.push({ loai });
       }
-      if (loai === "theo_duong") {
-        typeof a.gia_tri == "string" && PATHS[a.gia_tri] && viec_lon.push({ loai, gia_tri: a.gia_tri });
-        continue;
-      }
-      if (loai === "vay" || loai === "tra_no") {
-        if (child) continue;
-        let v = num(a.gia_tri);
-        v !== void 0 && v > 0 && viec_lon.push({ loai, gia_tri: Math.min(3, v) });
-        continue;
-      }
-      if (loai === "ket_hon") {
-        let ten = str(a.gia_tri, 30);
-        viec_lon.push(ten ? { loai, gia_tri: ten } : { loai });
-        continue;
-      }
-      viec_lon.push({ loai });
     }
     let thoi_quen = {}, tq = obj(o.thoi_quen);
     if (tq) for (let [k, v] of Object.entries(tq)) {

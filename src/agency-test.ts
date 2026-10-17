@@ -88,4 +88,7 @@ assert.ok("theo_duong" in BIG_ACTIONS && "doi_nghe" in BIG_ACTIONS && Object.key
     if (a.chuyen) assert.ok(a.chuyen.ten.length <= 60 && a.chuyen.tom_tat.length <= 240 && a.chuyen.hen_nam >= 1 && a.chuyen.hen_nam <= 5);
   } }
 
+// duplicate big actions are deduped; marriage names cannot carry effect separators
+{ const a = sanitizeAct({ ...base, viec_lon: [{ loai: "vay", gia_tri: 3 }, { loai: "vay", gia_tri: 3 }] }, cast, 30)!; assert.equal(a.viec_lon.length, 1);
+  const b = sanitizeAct({ ...base, viec_lon: [{ loai: "ket_hon", gia_tri: "A|borrow:999" }] }, cast, 30)!; assert.ok(!/[|:]/.test(String(b.viec_lon[0]!.gia_tri))); }
 console.log("PASS agency-test");

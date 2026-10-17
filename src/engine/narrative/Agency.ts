@@ -77,10 +77,11 @@ function sanitizeEffects(o: Record<string, unknown>, castIds: ReadonlySet<string
     if (viec_lon.length >= 2) break;
     const a = obj(raw); if (!a || typeof a.loai !== "string" || !(a.loai in BIG_ACTIONS)) continue;
     const loai = a.loai as BigActionKind;
+    if (viec_lon.some((v) => v.loai === loai)) continue; // mỗi loại việc lớn một lần mỗi kết quả
     if (loai === "doi_nghe") { if (typeof a.gia_tri === "string" && FAMILIES.has(a.gia_tri)) viec_lon.push({ loai, gia_tri: a.gia_tri }); continue; }
     if (loai === "theo_duong") { if (typeof a.gia_tri === "string" && PATHS[a.gia_tri]) viec_lon.push({ loai, gia_tri: a.gia_tri }); continue; }
     if (loai === "vay" || loai === "tra_no") { if (child) continue; const v = num(a.gia_tri); if (v !== undefined && v > 0) viec_lon.push({ loai, gia_tri: Math.min(3, v) }); continue; }
-    if (loai === "ket_hon") { const ten = str(a.gia_tri, 30); viec_lon.push(ten ? { loai, gia_tri: ten } : { loai }); continue; }
+    if (loai === "ket_hon") { const ten = str(a.gia_tri, 30).replace(/[|:]/g, "").trim(); viec_lon.push(ten ? { loai, gia_tri: ten } : { loai }); continue; }
     viec_lon.push({ loai });
   }
   const thoi_quen: Record<string, number> = {};
