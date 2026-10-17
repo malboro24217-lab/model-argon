@@ -45,6 +45,8 @@ export const step = (c: FactContext, path: string, more: Record<string, number> 
   ({ [`p_${path}`]: 1, [`p_${path}_at`]: c.age - (c.counters[`p_${path}_at`] ?? 0), ...more });
 
 const inAges = (c: FactContext, a: [number, number]) => c.age >= a[0] && c.age <= a[1];
+/** Một con đường chỉ có chuyện khi đã đủ tuổi bước vào nó. */
+const adult = (c: FactContext, path: string) => c.age >= (PATHS[path]?.ages[0] ?? 0);
 
 /** Năng khiếu hồi nhỏ. Lựa chọn "nuôi" năng khiếu phải có flags: [talentFlag(path)]; mọi lựa chọn phải có counters: { talents_seen: 1 }. */
 export function talent(path: string, id: string, ages: [number, number], when: (c: FactContext) => boolean, build: Build): Storylet {
@@ -72,7 +74,7 @@ export function door(path: string, id: string, ages: [number, number], when: (c:
 export function beat(path: string, n: number, gapYears: number, build: Build, when: (c: FactContext) => boolean = () => true): Storylet {
   return {
     id: `${path}_b${n}`, category: "arc", urgency: 84, cooldownYears: 99, once: true, tension: 6 + n,
-    prerequisites: (c) => f(c, life(path)) && (c.counters[`p_${path}`] ?? 0) === n - 1 && c.counters[`p_${path}_at`] !== undefined &&
+    prerequisites: (c) => f(c, life(path)) && adult(c, path) && (c.counters[`p_${path}`] ?? 0) === n - 1 && c.counters[`p_${path}_at`] !== undefined &&
       c.age - c.counters[`p_${path}_at`]! >= gapYears && when(c),
     specificity: () => 7, causes: () => [prov.flag(life(path))], build, meta: { path, kind: "beat" },
   };
@@ -82,7 +84,7 @@ export function beat(path: string, n: number, gapYears: number, build: Build, wh
 export function daily(path: string, id: string, ages: [number, number], cooldown: number, build: Build, when: (c: FactContext) => boolean = () => true): Storylet {
   return {
     id, category: "micro", urgency: 18, cooldownYears: Math.max(6, cooldown), tension: 1, maxPerLife: repeatCap(build),
-    prerequisites: (c) => f(c, life(path)) && inAges(c, ages) && when(c),
+    prerequisites: (c) => f(c, life(path)) && adult(c, path) && inAges(c, ages) && when(c),
     specificity: () => 5, causes: () => [prov.flag(life(path))], build, meta: { path, kind: "daily" },
   };
 }
@@ -91,7 +93,7 @@ export function daily(path: string, id: string, ages: [number, number], cooldown
 export function cross(path: string, id: string, ages: [number, number], when: (c: FactContext) => boolean, build: Build): Storylet {
   return {
     id, category: "micro", urgency: 18, cooldownYears: 99, once: true, maxPerLife: 1, tension: 2,
-    prerequisites: (c) => f(c, life(path)) && inAges(c, ages) && when(c),
+    prerequisites: (c) => f(c, life(path)) && adult(c, path) && inAges(c, ages) && when(c),
     specificity: () => 5, causes: () => [prov.flag(life(path))], build, meta: { path, kind: "cross" },
   };
 }
