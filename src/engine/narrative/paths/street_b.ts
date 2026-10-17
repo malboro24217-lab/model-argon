@@ -375,4 +375,119 @@ const FNR_CARDS: Storylet[] = [
   }),
 ];
 
-export const PACK_STREET_B: Storylet[] = [...GRD_CARDS, ...HMK_CARDS, ...FNR_CARDS];
+/* =====================================================================
+ * NGƯỜI CHĂM BỆNH — tiền tố cgv_
+ * Bệnh tật và cái chết kể bằng sự dịu dàng; không tả chi tiết thân thể. Gánh nặng là của người chăm.
+ * ===================================================================== */
+const CG = "caregiver";
+
+const CGV_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(CG, "cgv_t_grandma", [9, 15], () => true, () => T("Bà chỉ uống thuốc khi bạn đưa", "Bà nằm một chỗ đã nửa năm. Người lớn đi làm cả ngày; chỉ có bạn biết cách đỡ bà ngồi dậy, bón từng thìa cháo, và bà chỉ chịu uống thuốc khi bạn đưa. Cô y tá khu phố đến khám, bảo bạn có đôi tay của người chăm bệnh.", [
+    C("Xin ở nhà với bà sau giờ học", { flags: [talentFlag(CG)], counters: { talents_seen: 1 }, rel: 2, know: -2 }, "Bà yên lòng, bạn lỡ nhiều buổi chơi, mở một con đường"),
+    C("Để người lớn thuê người chăm bà", { money: -0.02, happy: 1, counters: { talents_seen: 1 } }, "Tuổi thơ nhẹ hơn, bà phải quen người lạ")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(CG, "cgv_d_ward", [18, 55], () => true, (c) => T("Giường bệnh cần người ngồi cạnh", vn(c)
+    ? "Ở hành lang bệnh viện tỉnh, những người nuôi bệnh thuê ngồi chờ khách trên chiếu gấp. Một người quen bảo bạn: trả theo ngày, bao ăn, ngủ ngay cạnh giường bệnh. Khách lúc nào cũng thiếu người."
+    : "Một trung tâm dưỡng lão tuyển nhân viên chăm sóc, ca mười hai tiếng, nhận cả người chưa có chứng chỉ và đào tạo ba tuần. Lương thấp, nhưng trung tâm lúc nào cũng thiếu người.", [
+    C("Nhận việc ngay tuần này", { ...become(CG), counters: { doors_seen: 1 }, health: -1 }, "Có việc ngay, học nghề bằng chính đôi tay"),
+    C("Học một khóa ngắn trước rồi mới nhận", { counters: { doors_seen: 1 }, money: -0.05, know: 2, gamble: { p: 0.55, win: { ...become(CG), flags: ["cgv_certified"], log: "Bạn cầm chứng chỉ đi xin việc. Ngay tuần đầu đã có ba nơi gọi." }, lose: { happy: -1, log: "Khóa học dời lịch hai lần. Bạn tìm việc khác trong lúc chờ." } } }, "Tốn tiền và thời gian, vào nghề vững hơn"),
+    C("Thôi, nghề này cực quá", { counters: { doors_seen: 1 } }, "Giữ sức mình, bỏ qua một nghề luôn thiếu người")], 0)),
+  door(CG, "cgv_d_neighbor", [25, 60], (c) => c.parent_sick && (!!role(c, "father") || !!role(c, "mother")), (c, N) => { const p = (role(c, "father") ?? role(c, "mother"))!;
+    return T("Sau hai năm chăm cha mẹ", `Bạn đã gác việc hai năm để chăm ${N(p)} ốm. Một người hàng xóm thấy bạn kiên nhẫn, sang hỏi bạn có nhận chăm người chồng nằm liệt của bà không, trả theo tháng, nhà ngay đầu ngõ.`, [
+      C("Nhận, vừa chăm cha mẹ vừa chăm thuê", { ...become(CG), counters: { doors_seen: 1 }, bw: -4, trust: { npc: p, delta: -0.05 } }, "Có thu nhập lại, sức chia đôi"),
+      C("Từ chối, chỉ lo cho cha mẹ", { counters: { doors_seen: 1 }, trust: { npc: p, delta: 0.1 }, money: -0.05 }, "Cha mẹ trọn vẹn, nhà vẫn hụt tiền"),
+      C("Nhận, rủ một người bạn cùng thay ca", { counters: { doors_seen: 1 }, agency: 0.02, gamble: { p: 0.55, win: { ...become(CG), flags: ["cgv_shift_partner"], log: "Bạn và một người bạn cũ chia ca sáng tối. Không ai phải thức trắng." }, lose: { bw: -2, log: "Người bạn bận việc riêng. Bà hàng xóm tìm được người khác." } } }, "Bền sức hơn, phải chia tiền", { tier: "awakened" })], 0, { npc: p }); }),
+  door(CG, "cgv_d_hospice", [22, 50], () => true, () => T("Ca đêm ở khoa cuối đời", "Một khoa chăm sóc giảm nhẹ cần người trực đêm ngồi bên những người sắp đi xa, để không ai phải đi một mình. Lương thấp, có bảo hiểm và một chỗ ngủ.", [
+    C("Nhận ca đêm ở khoa", { ...become(CG), counters: { doors_seen: 1 }, happy: -1, flags: ["cgv_hospice"] }, "Một nghề có ý nghĩa, nhiều đêm nặng lòng"),
+    C("Chỉ đến làm tình nguyện cuối tuần", { counters: { doors_seen: 1 }, rel: 2, bw: -2 }, "Giữ việc cũ, chạm vào nghề từ xa")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(CG, 1, 1, (c) => T("Người bệnh đầu tiên", "Ông cụ sau tai biến không chịu cho bạn lau người, hất đổ bát cháo, gọi bạn là người lạ trong nhà. Con gái ông trả tiền theo ngày và nói thẳng: hai người trước đều bỏ sau một tuần.", [
+    C("Kiên nhẫn từng chút, hỏi ông về nghề cũ", { counters: step(c, CG), bw: -3, gamble: { p: 0.55, win: { counters: { cgv_bond: 1 }, flags: ["cgv_patient"], log: "Ông từng là thợ sửa đồng hồ. Tuần thứ hai, ông để bạn lau tay, vừa lau vừa kể chuyện những chiếc đồng hồ." }, lose: { happy: -2, log: "Ông vẫn hất đổ bát cháo. Bạn lau sàn ba lần một ngày." } } }, "Mất sức, có thể chạm được ông"),
+    C("Làm đúng việc, giữ khoảng cách", { counters: step(c, CG), money: 0.02, flags: ["cgv_distance"] }, "Đỡ hao lòng, ông vẫn coi bạn là người lạ")], 0)),
+  beat(CG, 2, 3, (c) => T("Ba lời mời cùng một lúc", `Tiếng lành đồn xa. ${f(c, "cgv_patient") ? "Con gái ông cụ thợ đồng hồ đã giới thiệu bạn cho bốn nhà. " : ""}Một gia đình khá giả muốn bạn ở hẳn nhà họ chăm bà cụ, lương gấp ba, mỗi tháng nghỉ một ngày. Một trung tâm môi giới muốn đưa bạn vào danh sách, giữ lại ba phần mười. Mấy người cùng nghề thì rủ bạn lập nhóm.`, [
+    C("Ở hẳn nhà họ, lương gấp ba", { counters: step(c, CG), income_mult: 1.6, flags: ["cgv_live_in"], rel: -3 }, "Tiền nhiều, đời bạn thu vào một căn phòng"),
+    C("Ký với trung tâm, họ giữ ba phần mười", { counters: step(c, CG), income_mult: 1.2, flags: ["cgv_agency"] }, "Đều khách, có người đứng giữa, mất một phần lương"),
+    C("Lập nhóm cùng nghề, tự đặt giá và ca nghỉ", { counters: step(c, CG), agency: 0.03, gamble: { p: 0.5, win: { flags: ["cgv_collective"], income_mult: 1.3, log: "Tám người, một bảng giá chung, ai cũng được nghỉ một ngày mỗi tuần." }, lose: { income_mult: 1.05, log: "Nhóm cãi nhau chuyện chia khách, tan sau nửa năm." } } }, "Tự làm luật cho nghề, chung chạ dễ vỡ", { tier: "sovereign" })], 0)),
+  beat(CG, 3, 4, (c) => T("Đêm bà cụ ngã", `Đã ${f(c, "cgv_live_in") ? "năm tuần bạn không có ngày nghỉ" : "hai mươi tiếng bạn chưa chợp mắt"}. Bốn giờ sáng, bà cụ tự đứng dậy và ngã. Bạn đỡ kịp, nhưng lưng bạn nhói lên, còn tay bà bị nứt xương. Gia đình nói bạn sơ suất, đòi trừ hai tháng lương. ${f(c, "cgv_agency") ? "Trung tâm môi giới bảo đây là chuyện giữa bạn và gia đình. " : ""}${f(c, "cgv_collective") ? "Nhóm của bạn đề nghị cử người thay ca để bạn đi khám lưng." : ""}`, [
+    C("Nhận lỗi, chịu trừ lương", { counters: step(c, CG, { cgv_load: 1 }), money: -0.15 }, "Giữ việc, nuốt nỗi oan, lưng chưa được khám"),
+    C("Đưa sổ ghi ca, chỉ ra số giờ không được nghỉ", { counters: step(c, CG, { honest: 1 }), gamble: { p: f(c, "cgv_collective") ? 0.65 : 0.4, win: { flags: ["cgv_stood_ground"], money: 0.05, log: "Gia đình xem sổ, im lặng rất lâu, rồi thuê thêm một người trực đêm." }, lose: { flags: ["cgv_fired"], money: -0.1, log: "Họ cho bạn nghỉ ngay hôm sau, không trả nốt tháng lương." } } }, "Đòi công bằng, có thể mất khách", { tier: "awakened" }),
+    C("Bỏ nghề, đi chữa lưng", { counters: step(c, CG), ...leave(CG), health: 3, flags: ["ex_caregiver"] }, "Giữ thân mình, rời người bệnh")], 0)),
+  beat(CG, 4, 5, (c) => {
+    if (n(c, "cgv_load") >= 2 || (f(c, "cgv_live_in") && !f(c, "cgv_stood_ground"))) return T("Cái lưng không còn của mình", "Bác sĩ chỉ vào hai đốt sống trên phim chụp: bao năm đỡ người đã để lại dấu. Không được bê vác nặng nữa. Người bạn đang chăm vẫn gọi tên bạn mỗi sáng.", [
+      C("Chuyển sang trực đêm, chỉ ngồi canh", { counters: step(c, CG), income_mult: 0.75, flags: ["cgv_night_watch"] }, "Giữ nghề, lương giảm"),
+      C("Mổ lưng, nghỉ nửa năm", { counters: step(c, CG), money: -0.4, gamble: { p: 0.6, win: { health: 8, log: "Ca mổ thành công. Sáu tháng sau bạn đứng thẳng được, nhưng không bê ai nữa." }, lose: { health: -3, log: "Lưng đỡ được một phần. Mưa trở trời vẫn nhức." } } }, "Tốn tiền, có thể đứng thẳng lại", { longterm: true }),
+      C("Rời nghề, tìm một việc nhẹ hơn", { counters: step(c, CG), ...leave(CG), flags: ["ex_caregiver"] }, "Cứu cái lưng, bỏ lại người cần bạn")], 0);
+    if (f(c, "cgv_collective")) return T("Bệnh viện muốn ký với cả nhóm", `Bệnh viện ${vn(c) ? "tỉnh" : "khu vực"} muốn ký hợp đồng chăm sóc với cả nhóm của bạn: ca tám tiếng, bảo hiểm đầy đủ. Đổi lại, họ muốn bạn đứng tên điều phối và chịu trách nhiệm cho mọi sai sót của cả nhóm.`, [
+      C("Ký, đứng tên điều phối", { counters: step(c, CG), income_mult: 1.4, bw: -4, flags: ["cgv_coordinator"] }, "Lương và luật cho cả nhóm, bạn gánh trách nhiệm"),
+      C("Đề nghị chia trách nhiệm theo ca, ai trực người ấy ký", { counters: step(c, CG), agency: 0.03, gamble: { p: 0.5, win: { flags: ["cgv_shared_charter"], income_mult: 1.25, log: "Bệnh viện đồng ý. Bản quy chế của nhóm bạn được các khoa khác xin chép lại." }, lose: { income_mult: 1.05, log: "Bệnh viện chuyển sang ký với một công ty lớn." } } }, "Công bằng cho từng người, có thể mất hợp đồng", { tier: "sovereign" }),
+      C("Giữ nhóm nhỏ, tự nhận khách như cũ", { counters: step(c, CG), happy: 3, flags: ["cgv_small_team"] }, "Tự do, không có bảo hiểm")], 0);
+    return T("Lá thư từ văn phòng luật sư", "Người bạn chăm lâu nhất đã ra đi êm trong giấc ngủ. Di chúc để lại cho bạn một khoản bằng ba năm lương, kèm một lá thư viết tay. Các con của người ấy nói bạn lợi dụng lúc cha mẹ họ yếu, và dọa kiện.", [
+      C("Nhận đúng phần được để lại, ra tòa nếu cần", { counters: step(c, CG), gamble: { p: 0.55, win: { money: 1.5, log: "Tòa giữ nguyên di chúc. Lá thư viết tay được đọc to trước phiên tòa." }, lose: { money: -0.2, log: "Bạn thua kiện, trả cả án phí. Lá thư vẫn là của bạn." } } }, "Có thể đổi đời, có thể mất cả án phí"),
+      C("Trả lại cho các con, chỉ giữ lá thư", { counters: step(c, CG, { cgv_bond: 1 }), rel: 2, flags: ["cgv_returned_gift"] }, "Không tiền, lòng thanh thản"),
+      C("Lập quỹ khám bệnh cho người chăm bệnh nghèo", { counters: step(c, CG), agency: 0.03, money: 0.2, flags: ["cgv_fund"] }, "Biến món quà thành việc chung, các con vẫn có thể kiện", { tier: "sovereign" })], 1);
+  }),
+  beat(CG, 5, 6, (c) => T("Đến lượt mình cần người nhắc thuốc", `${f(c, "cgv_returned_gift") ? "Lá thư viết tay năm ấy vẫn nằm trong ngăn kéo. " : f(c, "cgv_fund") ? "Quỹ mang tên người ấy đã giúp ba mươi người chăm bệnh đi khám lưng. " : f(c, "cgv_night_watch") ? "Bạn vẫn trực đêm, chiếc ghế gấp đã thay đến lần thứ tư. " : ""}Một buổi sáng, bạn nhận ra chính mình cũng cần ai đó nhắc uống thuốc. Trung tâm dạy nghề mời bạn đứng lớp cho những người chăm bệnh trẻ.`, [
+    C("Đứng lớp, dạy hết những gì mình biết", { counters: step(c, CG), flags: ["passed_on"], happy: 3, money: 0.03 }, "Để lại đôi tay nghề cho người sau, mệt thêm"),
+    C("Dành dụm cho tuổi già của mình", { counters: step(c, CG), money: -0.2, flags: ["cgv_own_plan"] }, "Bớt tiền bây giờ, về sau không phải trông vào ai", { longterm: true }),
+    C("Nghỉ hẳn, về với người nhà", { counters: step(c, CG), ...leave(CG), rel: 3 }, "Có thời gian cho người thân, hết lương")], 0), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(CG, "cgv_cot", [18, 65], 8, (c) => T("Chiếc ghế gấp cạnh giường", vary("cgvc", c.age, [
+    "Đêm thứ ba mươi, bạn ngủ trên chiếc ghế gấp cạnh giường. Người bệnh gọi bạn mỗi giờ một lần.",
+    "Phòng bệnh sáu giường, mười hai người nhà và người chăm thuê nằm dưới sàn. Đèn không bao giờ tắt."]), [
+    C("Ở lại, ngủ chập chờn", { health: -3, counters: { cgv_bond: 1 } }, "Người bệnh yên, bạn mỏi"),
+    C("Xin người nhà trực thay một đêm mỗi tuần", { gamble: { p: 0.5, win: { health: 2, flags: ["cgv_night_off"], log: "Người con trai nhận trực tối thứ bảy. Đêm đầu tiên anh ấy gọi cho bạn bốn lần." }, lose: { money: -0.02, log: "Họ bảo trả tiền để bạn trực, không phải để họ trực. Tháng ấy bị trừ một ngày lương." } } }, "Giữ sức, có thể bị cho là lười")], 0)),
+  daily(CG, "cgv_quarrel", [18, 65], 9, () => T("Các con cãi nhau bên giường", "Ba người con cãi nhau chuyện chia đất ngay cạnh giường mẹ. Bà nằm quay mặt vào tường, nắm chặt tay bạn.", [
+    C("Đẩy xe đưa bà ra hành lang hóng gió", { counters: { cgv_bond: 1 }, rel: -1 }, "Che cho bà, họ thấy bạn tự ý"),
+    C("Nhắc thẳng họ ra ngoài mà nói", { gamble: { p: 0.5, win: { counters: { cgv_bond: 1 }, log: "Họ im, lần lượt ra ngoài. Bà ngủ được một giấc dài." }, lose: { money: -0.05, flags: ["cgv_dismissed"], log: "Người con cả bảo bạn chỉ là người làm thuê. Tuần sau bạn bị cho nghỉ." } } }, "Bảo vệ bà, có thể mất việc"),
+    C("Im lặng làm việc của mình", { happy: -2, counters: { cgv_load: 1 } }, "Giữ việc, nghe hết những lời ấy")], 0)),
+  daily(CG, "cgv_witness", [20, 65], 9, () => T("Chữ ký làm chứng", "Người con út nhờ bạn ký làm chứng vào bản di chúc mới của người bệnh, đúng hôm người bệnh lúc tỉnh lúc mê. Anh ta dúi vào tay bạn một phong bì.", [
+    C("Ký, nhận phong bì", { money: 0.1, counters: { honest: -1 }, secret: { tag: "FORGED_PAPERS", severity: 0.45, fuse_years: [2, 8], note: "ký làm chứng di chúc khi người bệnh không còn tỉnh" } }, "Tiền dễ, một chữ ký có thể quay lại"),
+    C("Từ chối ký", { counters: { honest: 1 }, rel: -1 }, "Sạch tay, mất lòng người trả lương"),
+    C("Đề nghị mời luật sư và bác sĩ xác nhận", { gamble: { p: 0.5, win: { counters: { cgv_bond: 1 }, flags: ["cgv_proper_will"], log: "Bác sĩ xác nhận ngày người bệnh tỉnh táo. Di chúc được làm lại, có đủ các con chứng kiến." }, lose: { money: -0.05, log: "Người con út cho bạn nghỉ việc ngay chiều ấy." } } }, "Đúng việc cho người bệnh, có thể mất khách", { tier: "awakened" })], 1)),
+  daily(CG, "cgv_sea", [18, 65], 9, () => T("Muốn nhìn biển một lần nữa", "Người bệnh muốn được nhìn biển một lần trước khi đi xa, cách hai trăm cây số. Gia đình bảo quá nguy hiểm. Bác sĩ nói: nếu đi thì trong tháng này.", [
+    C("Thuyết phục gia đình cùng đi", { bw: -3, gamble: { p: 0.5, win: { counters: { cgv_bond: 2 }, flags: ["cgv_sea_trip"], log: "Cả nhà ngồi trên bãi cát một buổi chiều. Người bệnh ngủ thiếp đi, miệng còn cười." }, lose: { rel: -1, log: "Gia đình nói không. Bạn mở cho người bệnh nghe tiếng sóng trên điện thoại." } } }, "Có thể cho người bệnh một buổi chiều, mất lòng gia đình", { tier: "awakened" }),
+    C("Làm theo ý gia đình", { happy: -2, counters: { cgv_load: 1 } }, "Không rủi ro, một ước nguyện bỏ lỡ")], 0)),
+  daily(CG, "cgv_dawn", [18, 65], 8, (c) => T("Rạng sáng hôm ấy", vary("cgvd", c.age, [
+    "Rạng sáng, người bạn chăm hai năm thở chậm dần rồi đi, tay vẫn trong tay bạn. Gia đình chưa ai kịp đến.",
+    "Người bệnh đi trong giấc ngủ, đúng ca bạn trực. Căn phòng bỗng im đến lạ."]), [
+    C("Ngồi lại, lần lượt gọi từng người con", { happy: -3, counters: { cgv_bond: 1, cgv_load: 1 } }, "Gia đình biết ai ở bên cuối cùng, bạn mang thêm nỗi buồn"),
+    C("Nghỉ một tuần trước khi nhận khách mới", { money: -0.03, health: 3, counters: { cgv_load: -1 } }, "Hụt tiền, lòng được nghỉ"),
+    C("Nhận khách mới ngay hôm sau", { money: 0.03, counters: { cgv_load: 1 } }, "Có tiền, nỗi buồn chưa kịp đặt xuống")], 0)),
+  daily(CG, "cgv_course", [18, 60], 9, () => T("Lớp chăm sóc cuối tuần", "Một trung tâm y tế mở lớp chăm sóc người bệnh nằm lâu ngày: sáu cuối tuần, có chứng chỉ, học cách đỡ người mà không hại lưng mình.", [
+    C("Đi học, lấy chứng chỉ", { money: -0.04, know: 4, bw: -2, flags: ["cgv_certified"], counters: { cgv_load: -1 } }, "Mất sáu cuối tuần và tiền học, đỡ cho lưng về sau"),
+    C("Nghề này học bằng tay, không cần giấy", { money: 0.02 }, "Giữ thêm ngày công, mãi là người không bằng cấp")], 0)),
+  daily(CG, "cgv_wrong_name", [18, 65], 9, () => T("Bà gọi bạn bằng tên người khác", "Bà cụ mất trí nhớ gọi bạn bằng tên con gái mình, người đã đi xa ba mươi năm trước. Mỗi sáng bà hỏi con đi đâu về muộn thế.", [
+    C("Đáp lời như người con ấy", { counters: { cgv_bond: 1 }, bw: -2, happy: -1 }, "Bà yên lòng, bạn mang thêm một vai"),
+    C("Nhẹ nhàng nói thật mỗi lần", { flags: ["cgv_truthful"], happy: -1 }, "Đúng sự thật, bà buồn lại mỗi sáng"),
+    C("Xin gia đình mang ảnh cũ đến kể chuyện cùng bà", { gamble: { p: 0.6, win: { counters: { cgv_bond: 1 }, flags: ["cgv_memory_box"], log: "Hộp ảnh cũ thành giờ kể chuyện mỗi chiều. Có hôm bà gọi đúng tên bạn." }, lose: { happy: -1, log: "Gia đình bận, không ai mang ảnh đến." } } }, "Mở một lối khác, phụ thuộc vào gia đình", { tier: "awakened" })], 0)),
+  daily(CG, "cgv_unpaid", [18, 65], 9, () => T("Ba tháng lương bị khất", "Gia đình người bệnh khất lương ba tháng, lần nào cũng hứa tuần sau. Người bệnh không biết, vẫn hỏi bạn đã ăn cơm chưa.", [
+    C("Ở lại vì người bệnh, chờ thêm", { money: -0.1, counters: { cgv_bond: 1 } }, "Người bệnh có bạn, túi bạn rỗng"),
+    C("Nghỉ việc, đòi bằng được", { flags: ["cgv_left_client"], gamble: { p: 0.5, win: { money: 0.1, log: "Họ trả đủ, kèm một câu xin lỗi ngắn." }, lose: { money: -0.1, log: "Họ chặn số điện thoại của bạn." } } }, "Giữ phẩm giá, người bệnh mất người quen"),
+    C("Rủ người cùng nghề lập sổ đen các nhà quỵt lương", { agency: 0.02, flags: ["cgv_blacklist"], rel: 1 }, "Bảo vệ cả nghề, có nhà sẽ dọa kiện", { tier: "sovereign" })], 0)),
+  daily(CG, "cgv_app", [18, 60], 9, () => T("Ứng dụng chấm sao người chăm bệnh", "Một ứng dụng mới cho gia đình đặt người chăm bệnh theo giờ, chấm sao sau mỗi ca, giữ lại một phần năm tiền công. Khách quen bắt đầu hỏi sao bạn chưa có trên đó.", [
+    C("Đăng ký lên ứng dụng", { income_mult: 1.1, bw: -2, flags: ["cgv_app"] }, "Nhiều khách hơn, sống theo những ngôi sao"),
+    C("Giữ khách quen truyền miệng", { income_mult: 0.95, counters: { cgv_bond: 1 } }, "Ít khách, giữ được nhịp của mình")], 0)),
+  daily(CG, "cgv_quit", [30, 65], 99, () => T("Một ca làm tám tiếng", "Một người quen mời bạn đứng quầy ở nhà thuốc: ca tám tiếng, ngày nào cũng được về nhà ngủ, không phải bê đỡ ai.", [
+    C("Nhận lời, rời nghề chăm bệnh", { ...leave(CG), flags: ["ex_caregiver"], health: 2 }, "Đêm được ngủ, bỏ lại người đang cần bạn"),
+    C("Ở lại với người bệnh", { counters: { cgv_bond: 1 }, health: -1 }, "Giữ một mối gắn bó, thân thể tiếp tục trả giá")], 1), (c) => c.happy < 50 || c.broke),
+
+  /* ---------- gia đình ---------- */
+  cross(CG, "cgv_family", [22, 65], (c) => (c.parent_sick && (!!role(c, "father") || !!role(c, "mother"))) || (c.kids_teen > 0 && !!role(c, "child")), (c, N) => {
+    const p = role(c, "father") ?? role(c, "mother");
+    if (c.parent_sick && p) return T("Người nhà của bạn cũng ốm", `${N(p)} ốm nằm ở nhà, trong khi bạn ngồi cạnh giường người lạ để lấy lương. Anh chị em bảo bạn là người biết chăm nhất nhà.`, [
+      C("Thuê người chăm cha mẹ, mình đi làm tiếp", { money: -0.1, trust: { npc: p, delta: -0.1 } }, "Giữ thu nhập, cha mẹ quen tay người lạ"),
+      C("Nghỉ khách, về chăm cha mẹ", { money: -0.3, trust: { npc: p, delta: 0.3 }, flags: ["cgv_home_care"] }, "Cha mẹ có bạn, nhà hụt một nguồn tiền"),
+      C("Đề nghị anh chị em góp tiền, chia ca", { gamble: { p: 0.5, win: { trust: { npc: p, delta: 0.2 }, flags: ["cgv_family_rota"], log: "Mỗi người nhận một ngày trong tuần. Lần đầu tiên bạn không phải gánh một mình." }, lose: { rel: -2, log: "Ai cũng có lý do. Cuối cùng vẫn là bạn." } } }, "Chia gánh công bằng, có thể sứt mẻ anh em", { tier: "awakened" })], 1, { npc: p });
+    const k = role(c, "child")!;
+    return T("Cha mẹ chăm người khác giỏi thế", `${N(k)} nhắn: cả tháng nay chỉ thấy cha mẹ qua điện thoại. Cha mẹ chăm người khác giỏi thế, sao không ở nhà với con?`, [
+      C("Xin bớt ca, dành tối thứ bảy cho con", { income_mult: 0.9, trust: { npc: k, delta: 0.2 } }, "Gần con, bớt lương"),
+      C("Giải thích tiền học của con từ những ca ấy", { trust: { npc: k, delta: -0.05 }, money: 0.02 }, "Nói thật, con vẫn thấy thiếu"),
+      C("Dẫn con theo một buổi đến thăm người bệnh", { gamble: { p: 0.5, win: { trust: { npc: k, delta: 0.25 }, log: `${N(k)} ngồi nghe ông cụ kể chuyện cả buổi chiều. Trên đường về, nó nắm tay bạn.` }, lose: { trust: { npc: k, delta: -0.05 }, log: `${N(k)} ngồi bấm điện thoại suốt buổi, về nhà không nói gì.` } } }, "Có thể hiểu nhau hơn, có thể chẳng đổi gì", { tier: "awakened" })], 0, { npc: k });
+  }),
+];
+
+export const PACK_STREET_B: Storylet[] = [...GRD_CARDS, ...HMK_CARDS, ...FNR_CARDS, ...CGV_CARDS];

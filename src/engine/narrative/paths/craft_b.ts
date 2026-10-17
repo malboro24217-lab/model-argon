@@ -346,4 +346,120 @@ const AGT_CARDS: Storylet[] = [
       C("Thôi, không giải thích nữa", { happy: -2, flags: ["agt_unspoken"] }, "Đỡ cãi nhau, khoảng cách ở lại")], 0, { npc: p! }); }),
 ];
 
-export const PACK_CRAFT_B: Storylet[] = [...BKR_CARDS, ...HRB_CARDS, ...AGT_CARDS];
+/* =====================================================================
+ * NGƯỜI NUÔI TRỒNG THỦY SẢN — tiền tố aqf_
+ * ===================================================================== */
+const FF = "fish_farmer";
+const pond = (c: FactContext): string => (vn(c) ? "đầm tôm" : c.poor_country ? "ao cá" : "trại nuôi cá");
+
+const AQF_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(FF, "aqf_t_night", [9, 15], () => true, (c) => T("Đêm canh ao", `Mùa hè nóng nhất, bạn theo chú ra canh ${pond(c)} lúc nửa đêm. Bạn là người đầu tiên thấy đàn con nuôi ngoi lên đớp khí, chạy đi bật máy quạt nước vừa kịp. Chú bảo bạn có con mắt của người nuôi.`, [
+    C("Xin theo chú canh ao mỗi đêm hè", { health: -1, know: 2, flags: [talentFlag(FF)], counters: { talents_seen: 1 } }, "Mất ngủ cả hè, mở một con đường"),
+    C("Về ngủ, mai còn đi học", { happy: 1, counters: { talents_seen: 1 } }, "Ngủ ngon, ao là chuyện của chú")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(FF, "aqf_d_lease", [18, 40], () => true, (c) => T(vn(c) ? "Đầm tôm bỏ hoang" : "Ao nuôi bỏ hoang", `Một ${pond(c)} bị bỏ hoang sau hai vụ thất bát, chủ cũ ôm nợ đi nơi khác. Giá thuê rẻ, nhưng bờ sạt, cống hỏng, đáy đầy bùn. Người trong vùng bảo đất ấy xui.`, [
+    C("Vay tiền, thuê lại, tự tay đắp bờ", { custom: "borrow:0.4|become:fish_farmer", counters: { doors_seen: 1 }, health: -2 }, "Nợ và việc nặng, có cái ao của mình"),
+    C("Góp vốn với người quen, chia đôi lời lỗ", { counters: { doors_seen: 1 }, gamble: { p: 0.45, win: { ...become(FF), log: "Người quen đồng ý. Vụ đầu hòa vốn, bạn quyết làm hẳn." }, lose: { money: -0.05, log: "Người quen rút vốn giữa chừng. Bạn mất tiền cọc." } } }, "Ít nợ, phải chia quyền"),
+    C("Không dính vào đất xui", { counters: { doors_seen: 1 } }, "Không mất gì, không có gì")], 0)),
+  door(FF, "aqf_d_convert", [25, 55], () => true, (c) => { const field = vn(c) || c.poor_country ? "ruộng lúa" : "cánh đồng";
+    return T("Đào ruộng thành ao", `${vn(c) ? "Nước mặn lấn vào, lúa không lên nổi." : "Cánh đồng của nhà mất mùa ba năm liền."} Hàng xóm hai bên đã đào ${field} thành ao nuôi, năm đầu lời gấp mấy lần trồng trọt. Đào ao rồi thì đất ấy không trồng lại được nữa.`, [
+      C("Đào ao, chuyển hẳn sang nuôi", { custom: "borrow:0.3|become:fish_farmer", counters: { doors_seen: 1 }, flags: ["aqf_converted"] }, "Có thể lời lớn, mất đất trồng vĩnh viễn"),
+      C("Đào một nửa, giữ nửa kia để trồng", { counters: { doors_seen: 1 }, money: -0.08, gamble: { p: 0.4, win: { ...become(FF), log: "Nửa ao lời hơn cả mảnh ruộng ngày trước. Bạn bắt đầu sống bằng nghề nuôi." }, lose: { log: "Nước ao thấm sang nửa ruộng còn lại. Cả hai đều kém." } } }, "Giữ đường lui, có thể hỏng cả hai"),
+      C("Giữ đất, chờ giống cây chịu hạn mặn", { counters: { doors_seen: 1 }, happy: -1 }, "Chậm, nghèo, giữ được đất")], 0); }),
+
+  /* ---------- mạch truyện ---------- */
+  beat(FF, 1, 1, (c) => T("Mẻ giống đầu tiên", `Vụ đầu, bạn cần ba trăm nghìn con giống cho ${pond(c)}. Trại giống có giấy chứng nhận sạch bệnh bán gấp đôi giá xe giống dạo không rõ nguồn. Tiền vay chỉ đủ cho một lựa chọn.`, [
+    C("Mua giống rẻ ở xe dạo", { counters: step(c, FF), flags: ["aqf_cheap_seed"], gamble: { p: 0.5, win: { money: 0.1, log: "Giống lớn nhanh. Vụ đầu bạn có lời." }, lose: { money: -0.2, log: "Sang tháng thứ hai, con giống chết rải rác. Bạn phải bán non." } } }, "Đỡ tiền, đánh cược với bệnh"),
+    C("Mua giống sạch bệnh, thả thưa", { counters: step(c, FF, { aqf_water: 1 }), flags: ["aqf_clean_seed"], money: -0.1 }, "Tốn tiền, ít con, ít rủi ro")], 1)),
+  beat(FF, 2, 3, (c) => T("Dải rừng sau ao", `Ba vụ suôn sẻ. Phía sau ao là dải ${vn(c) || c.poor_country ? "rừng ngập mặn" : "đầm lầy ven biển"}; nhiều người đã phá để mở ao, chưa ai bị phạt. Một công ty thức ăn đề nghị đầu tư bạt lót, máy quạt để nuôi siêu thâm canh, trả nợ bằng sản lượng.`, [
+    C("Phá rừng, mở thêm ba ao", { counters: step(c, FF, { aqf_water: -1 }), flags: ["aqf_cleared"], income_mult: 1.4 }, "Gấp đôi diện tích, mất tấm chắn sóng"),
+    C("Nhận đầu tư, nuôi siêu thâm canh", { counters: step(c, FF), flags: ["aqf_intensive"], custom: "borrow:0.6", income_mult: 1.6, bw: -5 }, "Sản lượng gấp ba, nợ và rủi ro cũng gấp ba"),
+    C("Giữ rừng, nuôi xen dưới tán, xin chứng nhận sinh thái", { counters: step(c, FF, { aqf_water: 2 }), flags: ["aqf_eco"], agency: 0.03, gamble: { p: 0.5, win: { income_mult: 1.25, log: "Lô đầu tiên được nhà nhập khẩu trả cao hơn một phần ba." }, lose: { income_mult: 1.0, log: "Hồ sơ chứng nhận kéo dài hai năm. Sản lượng thấp, giá vẫn như chợ." } } }, "Sản lượng thấp, có thể có giá riêng", { tier: "sovereign", longterm: true })], 0)),
+  beat(FF, 3, 4, (c, N) => { const nb = role(c, "neighbor");
+    return T("Dịch quét qua ao", `Sáng ra, con nuôi chết nổi kín mặt ${f(c, "aqf_intensive") ? "cả bốn ao siêu thâm canh, trong khi khoản nợ đầu tư còn nguyên" : "hai ao lớn"}. Kỹ sư huyện nói là dịch, phải xử lý nước trước khi xả, mất hai tuần và ba tháng thu nhập. ${nb ? `${N(nb)} xin bạn đừng xả ra kênh chung: ao nhà ấy vừa thả giống.` : "Con kênh chung đang cấp nước cho cả xóm."}`, [
+      C("Xả ngay ra kênh cho nhanh", { counters: step(c, FF, { aqf_water: -2 }), flags: ["aqf_dumped"], money: -0.1, ...(nb ? { memory: { npc: nb, tag: "BETRAYED_PARTNERSHIP" as const, weight: -0.4, note: "xả nước ao dịch ra kênh chung" } } : {}) }, "Đỡ tiền, dịch đi theo dòng kênh"),
+      C("Giữ nước, xử lý đủ hai tuần", { counters: step(c, FF, { aqf_water: 1 }), money: -0.25, flags: ["aqf_treated"] }, "Mất tiền và thời gian, kênh sạch"),
+      C("Báo xã, đề nghị cả vùng tạm ngừng thả giống", { counters: step(c, FF, { aqf_water: 2 }), agency: 0.03, money: -0.25, gamble: { p: 0.5, win: { flags: ["aqf_quarantine"], log: "Cả vùng ngừng thả một tháng. Dịch dừng lại ở ao của bạn." }, lose: { log: "Một nửa số hộ vẫn thả giống. Dịch lan sang ba ao nữa." } } }, "Tốn tiền, đụng lợi ích cả xóm", { tier: "sovereign" }),
+      C("Bán ao, bỏ nghề", { counters: step(c, FF), ...leave(FF), money: -0.2, happy: -4 }, "Cắt lỗ, mất cả nghề")], 1, nb ? { npc: nb } : {}); }),
+  beat(FF, 4, 5, (c) => {
+    if (f(c, "aqf_dumped")) return T("Cả con kênh chết", "Dịch theo con kênh lan sang mười bảy ao của cả xóm. Người ta biết ao nào xả trước tiên. Một nhóm hộ gửi đơn lên huyện đòi bồi thường; trên bờ ao của bạn có người viết chữ bằng sơn đỏ.", [
+      C("Nhận lỗi, vay tiền bồi thường theo khả năng", { counters: step(c, FF, { honest: 2 }), custom: "apologize|borrow:0.5", flags: ["aqf_repaid_canal"] }, "Nợ nhiều năm, còn được ở lại làng"),
+      C("Chối, thuê luật sư", { counters: step(c, FF, { honest: -1 }), money: -0.2, close_doors: ["village_trust"] }, "Có thể thắng kiện, mất cả làng"),
+      C("Bán ao, dọn đi nơi khác", { counters: step(c, FF), ...leave(FF), close_doors: ["return_home"], money: 0.1 }, "Thoát chuyện, không về được nữa")], 0);
+    if (f(c, "aqf_cleared") && !f(c, "aqf_eco")) return T("Triều cường phá bờ", "Mùa bão năm nay, triều cường dâng vào đúng chỗ dải rừng cũ đã bị phá. Bờ ba ao vỡ trong một đêm, cả vụ trôi ra biển. Ao nhà bên còn rừng chắn thì gần như nguyên vẹn.", [
+      C("Vay tiền đắp lại bờ cao hơn", { counters: step(c, FF), custom: "borrow:0.5", income_mult: 0.9 }, "Giữ ao, nợ chồng nợ"),
+      C("Trả một ao về cho rừng, trồng lại cây", { counters: step(c, FF, { aqf_water: 2 }), income_mult: 0.8, flags: ["aqf_replanted"], agency: 0.02 }, "Mất diện tích, có lại tấm chắn", { tier: "awakened", longterm: true }),
+      C("Bỏ ao, lên thành phố làm thuê", { counters: step(c, FF), ...leave(FF), happy: -3 }, "Hết nợ ao, mất nghề")], 1);
+    if (f(c, "aqf_eco") || f(c, "aqf_quarantine") || n(c, "aqf_water") >= 2) return T("Nhà nhập khẩu tìm đến tận bờ ao", `${f(c, "aqf_eco") ? "Lô hàng sinh thái của bạn" : "Vùng nuôi của bạn, nơi dịch dừng lại mà không lan,"} lọt vào mắt một nhà nhập khẩu lớn. Họ muốn ký hợp đồng mười năm cho cả vùng, với điều kiện truy xuất được nguồn gốc từng ao.`, [
+      C("Ký riêng cho ao mình, giá cao nhất", { counters: step(c, FF), income_mult: 1.5, flags: ["aqf_export"] }, "Giàu riêng, hàng xóm đứng ngoài"),
+      C("Đứng ra lập tổ hợp tác cả vùng cùng ký", { counters: step(c, FF, { aqf_water: 1 }), agency: 0.03, bw: -5, gamble: { p: 0.55, win: { income_mult: 1.35, flags: ["aqf_export", "aqf_coop"], log: "Ba mươi hai hộ cùng ký. Lần đầu tiên cả vùng có một cái giá chung." }, lose: { income_mult: 1.1, log: "Vài hộ gian lận nhật ký nuôi. Nhà nhập khẩu chỉ ký với nửa vùng." } } }, "Chia phần lời, gánh trách nhiệm cả vùng", { tier: "sovereign" }),
+      C("Từ chối, bán chợ cho tự do", { counters: step(c, FF), happy: 2 }, "Không ràng buộc, giá thất thường")], 1);
+    return T("Mười năm bùn và nợ", "Mười năm nuôi, chưa vụ nào bạn lời trọn. Đáy ao bạc màu, con giống lớn chậm hơn ngày đầu. Một tập đoàn muốn mua lại để gom thành vùng nuôi công nghiệp, trả gấp rưỡi giá đất.", [
+      C("Bán cho tập đoàn", { counters: step(c, FF), ...leave(FF), money: 0.6 }, "Một khoản lớn, đất thành của người"),
+      C("Cho ao nghỉ một năm, cải tạo đáy", { counters: step(c, FF, { aqf_water: 1 }), money: -0.2, health: 1 }, "Mất một năm thu nhập, ao có thể hồi"),
+      C("Vay thêm, thả dày để gỡ", { counters: step(c, FF), custom: "borrow:0.3", gamble: { p: 0.4, win: { money: 0.5, log: "Vụ ấy trúng lớn. Bạn trả được nửa nợ cũ." }, lose: { money: -0.3, log: "Ao quá tải, con nuôi chết dần từ tháng thứ ba." } } }, "Cược tất, có thể gỡ, có thể chìm")], 1);
+  }),
+  beat(FF, 5, 6, (c) => T("Mép nước lùi vào", `Biển lấn vào mỗi năm vài mét. Bờ ao bạn đắp năm đầu giờ ngập mỗi kỳ triều cường. ${f(c, "aqf_replanted") || f(c, "aqf_eco") ? "Chỉ dải cây bạn giữ lại là còn đứng vững." : f(c, "aqf_coop") ? "Tổ hợp tác đang bàn chuyện cả vùng lùi vào trong." : "Ao bên cạnh đã bỏ hoang hai năm."} Chính quyền mở chương trình trả tiền cho ai trả đất ven biển về cho rừng.`, [
+    C("Trả đất về cho rừng, nhận tiền hỗ trợ", { counters: step(c, FF, { aqf_water: 2 }), ...leave(FF), money: 0.3, flags: ["passed_on"] }, "Khép nghề, để lại một dải rừng"),
+    C("Giao ao cho con cháu hoặc người làm lâu năm", { counters: step(c, FF), rel: 3, flags: ["aqf_handed_down"] }, "Nghề sống tiếp, nước vẫn lên"),
+    C("Đắp bờ cao thêm, nuôi đến khi không nuôi nổi", { counters: step(c, FF), money: -0.15, health: -2 }, "Giữ đến cùng, năm nào cũng tốn")], 0), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(FF, "aqf_power", [18, 75], 7, (c) => T("Mất điện lúc hai giờ sáng", vary("aqfpo", c.age, ["Cả vùng mất điện lúc hai giờ sáng. Máy quạt nước dừng, trời oi không một ngọn gió. Máy phát của bạn chỉ đủ chạy hai trong bốn ao.", "Trạm biến áp cháy, điện lực hẹn sáng mai mới sửa. Ao nhà bên không có máy phát."]), [
+    C("Chạy máy phát cho hai ao đông nhất", { health: -2, money: -0.05, flags: ["aqf_triage"] }, "Cứu được một nửa, mất một nửa"),
+    C("Cho nhà bên mượn máy phát một tiếng", { money: -0.08, rel: 3, flags: ["aqf_shared_generator"] }, "Mất phần mình, được lòng xóm", { tier: "awakened" }),
+    C("Thức trắng, khuấy nước bằng tay", { health: -5, gamble: { p: 0.5, win: { log: "Trời sáng, bạn mất chưa đến một phần mười." }, lose: { money: -0.1, log: "Không kịp. Sáng ra một ao nổi trắng." } } }, "Thân thể trả giá, có thể không đủ")], 0)),
+  daily(FF, "aqf_trader", [18, 75], 8, (c) => T("Cân của thương lái", vary("aqftr", c.age, ["Ngày thu hoạch, thương lái mang cân của họ và trả thấp hơn giá chợ một phần năm. Ai cũng biết cân ấy thiếu.", "Thương lái chỉ chịu mua nếu bạn bán chịu, ba tháng sau mới trả tiền."]), [
+    C("Bán, con nuôi không chờ được", { money: -0.05, counters: { aqf_squeezed: 1 } }, "Mất lời, hết lo"),
+    C("Mang cân của mình ra, đòi cân lại", { flags: ["aqf_own_scale"], gamble: { p: 0.5, win: { money: 0.03, log: "Họ cân lại, chênh gần một tạ." }, lose: { money: -0.07, log: "Họ bỏ về. Ba ngày sau bạn phải bán rẻ hơn." } } }, "Có thể được giá thật, có thể mất mối"),
+    C("Rủ năm hộ gom hàng bán thẳng cho nhà máy", { bw: -4, agency: 0.02, flags: ["aqf_group_sale"], money: 0.03 }, "Tốn công gom, bỏ qua thương lái", { tier: "sovereign" })], 0)),
+  daily(FF, "aqf_drug", [18, 75], 9, () => T("Thùng thuốc không nhãn", "Đại lý mang đến một thùng thuốc không nhãn, bảo “tạt vào là hết bệnh”. Hàng xuất khẩu mà dính dư lượng thì cả lô bị trả về, và người ăn không ai biết.", [
+    C("Dùng, cứu vụ này trước đã", { money: 0.08, counters: { aqf_water: -1, honest: -1 }, flags: ["aqf_banned_drug"] }, "Qua vụ này, một quả bom dư lượng"),
+    C("Không dùng, chấp nhận hao hụt", { money: -0.06, counters: { aqf_water: 1 } }, "Mất con, hàng sạch"),
+    C("Gửi mẫu cho trạm thủy sản kiểm tra", { bw: -2, money: -0.01, gamble: { p: 0.5, win: { flags: ["aqf_tipped_off"], log: "Thùng thuốc có chất cấm. Đại lý bị phạt, cả vùng biết." }, lose: { log: "Trạm hẹn tháng sau mới có kết quả." } } }, "Tốn công, có thể cứu cả vùng", { tier: "awakened" })], 1)),
+  daily(FF, "aqf_theft", [18, 75], 8, (c) => T("Trộm ao ban đêm", vary("aqfth", c.age, ["Gần ngày thu hoạch, ba đêm liền có người kéo lưới trộm ao của bạn.", "Một đêm, bạn bắt gặp hai thanh niên trong xóm đang kéo lưới ở ao số hai. Một đứa là con nhà quen."]), [
+    C("Dựng chòi, ngủ ngoài bờ đến hết vụ", { health: -3, flags: ["aqf_pond_hut"] }, "Giữ được ao, mất giấc ngủ"),
+    C("Báo công an", { bw: -2, rel: -2, flags: ["aqf_police_report"] }, "Đúng luật, cả xóm xì xào"),
+    C("Thuê chính mấy người ấy canh ao", { money: -0.03, flags: ["aqf_hired_thieves"], gamble: { p: 0.55, win: { rel: 3, log: "Từ đó không ai trộm ao bạn nữa." }, lose: { money: -0.05, log: "Hai tuần sau họ lấy luôn cái máy bơm." } } }, "Liều, có thể biến kẻ trộm thành người canh", { tier: "sovereign" })], 0)),
+  daily(FF, "aqf_heat", [18, 75], 7, (c) => T("Nước ao nóng như canh", vary("aqfhe", c.age, ["Đợt nắng nóng kéo dài hai tuần. Nước ao nóng đến mức con nuôi bỏ ăn, nổi lờ đờ mỗi trưa.", "Mưa trái mùa đổ xuống sau một tuần nắng gắt. Nước ao đổi màu chỉ trong một đêm."]), [
+    C("Thay nước liên tục, chạy quạt cả ngày", { money: -0.07, counters: { aqf_water: 1 } }, "Tốn điện tốn nước, giữ được con"),
+    C("Thu hoạch non, bán sớm", { money: 0.02, income_mult: 0.97, flags: ["aqf_early_sale"] }, "Có tiền ngay, mất giá"),
+    C("Che lưới, trồng thêm cây quanh bờ", { money: -0.03, bw: -2, flags: ["aqf_shade"], counters: { aqf_water: 1 } }, "Chậm có tác dụng, bền về sau", { longterm: true })], 0)),
+  daily(FF, "aqf_feed", [18, 75], 8, () => T("Thức ăn mua chịu", "Giá thức ăn tăng gấp rưỡi. Đại lý cho bạn mua chịu cả vụ, đổi lại khi thu hoạch phải bán cho họ, giá do họ định.", [
+    C("Mua chịu, bán cho đại lý", { flags: ["aqf_feed_tied"], income_mult: 0.95, money: 0.05 }, "Đủ ăn cho ao, giá bán nằm trong tay người khác"),
+    C("Thả thưa đi một nửa", { money: -0.04, counters: { aqf_water: 1 } }, "Sản lượng thấp, ao sạch hơn"),
+    C("Tự làm thức ăn từ phụ phẩm trong vùng", { bw: -4, gamble: { p: 0.5, win: { money: 0.06, flags: ["aqf_own_feed"], log: "Con nuôi lớn chậm hơn chút, nhưng mỗi vụ đỡ một phần ba tiền thức ăn." }, lose: { money: -0.06, log: "Thức ăn tự làm làm bẩn nước. Bạn quay lại mua của đại lý." } } }, "Tự chủ, có thể hỏng nước", { tier: "awakened" })], 0)),
+  daily(FF, "aqf_storm", [18, 75], 8, (c) => T("Bão vào cửa sông", vary("aqfst", c.age, ["Bão mạnh sẽ đổ bộ trong hai ngày. Con nuôi mới được ba phần tư thời gian, bán bây giờ chỉ được nửa giá.", "Áp thấp đổi hướng bất ngờ, nước sông dâng lên trong đêm."]), [
+    C("Thu hoạch gấp, bán nửa giá", { money: -0.06, flags: ["aqf_early_harvest"] }, "Chắc ăn, lỗ"),
+    C("Gia cố bờ, đánh cược với bão", { health: -2, gamble: { p: 0.55, win: { money: 0.1, log: "Bão đi lệch. Ao còn nguyên, giá lên vì nhiều nhà đã bán non." }, lose: { money: -0.3, log: "Bờ vỡ lúc ba giờ sáng. Cả vụ trôi theo nước." } } }, "Có thể được giá, có thể mất trắng")], 0)),
+  daily(FF, "aqf_engineer", [18, 75], 9, () => T("Cô kỹ sư mang máy đo nước", "Một kỹ sư trẻ từ thành phố mời bạn lắp hệ thống đo nước tự động: oxy, độ mặn, nhiệt độ báo thẳng lên điện thoại. Giá bằng tiền lời một vụ.", [
+    C("Lắp cho cả bốn ao", { money: -0.15, counters: { aqf_water: 1 }, flags: ["aqf_sensors"] }, "Tốn một vụ lời, biết ao từng giờ"),
+    C("Không cần, nhìn màu nước là biết", { happy: 1, flags: ["aqf_old_eye"] }, "Đỡ tiền, dựa vào kinh nghiệm"),
+    C("Rủ năm hộ cùng lắp chung một trạm đo kênh", { money: -0.04, bw: -3, agency: 0.02, flags: ["aqf_shared_station"], counters: { aqf_water: 1 } }, "Chia tiền, chia quyền, cả kênh cùng biết", { tier: "sovereign" })], 1)),
+  daily(FF, "aqf_neighbor", [18, 75], 9, (c, N) => { const nb = role(c, "neighbor")!;
+    return T("Nước thải từ ao nhà bên", `${N(nb)} xả nước ao cũ ra kênh ngay trước cống lấy nước của bạn. Nước đục ngầu, bốc mùi. Ao của bạn vừa thả giống được một tuần.`, [
+      C("Sang nói thẳng, đòi thôi xả", { gamble: { p: 0.5, win: { memory: { npc: nb, tag: "KEPT_PROMISE", weight: 0.15, note: "hứa thôi xả nước ao ra kênh" }, log: "Họ xin lỗi, hứa lần sau báo trước." }, lose: { memory: { npc: nb, tag: "HUMILIATED_ME", weight: -0.2, note: "to tiếng về chuyện nước thải ao" }, log: "Hai nhà to tiếng. Từ đó không ai chào ai." } } }, "Rõ ràng, có thể thành thù"),
+      C("Đóng cống, chịu thiếu nước một tuần", { money: -0.04, counters: { aqf_water: 1 } }, "Không va chạm, ao mình chịu thiệt"),
+      C("Rủ cả xóm lập lịch xả nước chung", { bw: -3, agency: 0.02, flags: ["aqf_canal_rules"], memory: { npc: nb, tag: "WIN_WIN_DEAL", weight: 0.2, note: "cùng lập lịch xả nước chung của xóm" } }, "Tốn công họp, kênh có luật chung", { tier: "sovereign" })], 2, { npc: nb }); }, (c) => !!role(c, "neighbor")),
+  daily(FF, "aqf_audit", [18, 75], 9, () => T("Nhật ký nuôi bỏ trống ba tháng", "Tuần sau đoàn đánh giá chứng nhận xuất khẩu đến. Nhật ký nuôi của bạn bỏ trống ba tháng mùa mưa. Một người quen nói có thể “viết bù” trong một đêm.", [
+    C("Viết bù nhật ký cho đủ", { money: 0.08, secret: { tag: "FORGED_PAPERS", severity: 0.3, fuse_years: [2, 8], note: "nhật ký nuôi viết bù cho đoàn chứng nhận" } }, "Qua kỳ đánh giá, một trang giả nằm trong hồ sơ"),
+    C("Nộp nhật ký thật, chờ lần sau", { money: -0.05, counters: { honest: 1, aqf_water: 1 } }, "Mất một mùa giá xuất khẩu, hồ sơ sạch")], 1)),
+  daily(FF, "aqf_quit", [25, 75], 99, () => T("Bờ ao sụt sau mùa mưa", "Bờ ao sụt thêm một mét sau mùa mưa. Lưng bạn không còn kéo nổi lưới. Một xưởng chế biến trên thị trấn tuyển tổ trưởng, lương tháng nào cũng như tháng nào.", [
+    C("Lên thị trấn làm tổ trưởng", { ...leave(FF), money: 0.08, flags: ["ex_fish_farmer"] }, "Lương đều, xa mùi bùn"),
+    C("Đắp lại bờ, nuôi tiếp", { health: -3, counters: { aqf_water: 1 } }, "Thân thể trả giá, còn nghề")], 1), (c) => c.broke || c.health < 40 || c.happy < 45),
+
+  /* ---------- gia đình ---------- */
+  cross(FF, "aqf_family", [22, 75], (c) => (c.kids_teen > 0 && !!role(c, "child")) || !!role(c, "father") || !!role(c, "mother"), (c, N) => { const k = role(c, "child"); const p = role(c, "father") ?? role(c, "mother");
+    if (c.kids_teen > 0 && k) return T(`${N(k)} ngủ gục trong lớp`, `Mùa thu hoạch, ${N(k)} ra bờ ao canh cùng bạn đến hai giờ sáng. Cô giáo gọi điện: cả tuần nay ${N(k)} ngủ gục trong lớp, điểm tụt.`, [
+      C("Không cho con ra ao nữa, thuê người canh", { money: -0.05, trust: { npc: k, delta: 0.1 } }, "Tốn tiền, con được ngủ"),
+      C("Vẫn cần con, chỉ mùa này thôi", { money: 0.03, trust: { npc: k, delta: -0.1 }, flags: ["aqf_kid_on_pond"] }, "Đỡ tiền, con đuối dần"),
+      C("Cho con canh ca đầu hôm, dạy con đọc màu nước", { trust: { npc: k, delta: 0.2 }, promise: { to: k, what: "không bắt con thức quá mười một giờ mùa thu hoạch", years: 1 } }, "Chia việc, giữ cả việc học lẫn nghề", { tier: "awakened" })], 2, { npc: k });
+    const field = vn(c) || c.poor_country ? "ruộng lúa" : "cánh đồng";
+    return T(`Chỗ này từng là ${field}`, `${N(p!)} ra bờ ao đứng rất lâu. Chỗ này ngày xưa là ${field} ${N(p!)} làm suốt bốn mươi năm. ${N(p!)} hỏi bạn có bao giờ định trả nó về như cũ không.`, [
+      C("Nói thật là không bao giờ", { trust: { npc: p!, delta: -0.1 }, happy: -1, flags: ["aqf_no_return"] }, "Thật lòng, người già buồn"),
+      C("Chừa một góc đất trồng cấy cho người già", { money: -0.03, trust: { npc: p!, delta: 0.3 }, flags: ["aqf_field_corner"] }, "Mất chút diện tích, giữ một kỷ niệm", { tier: "awakened" })], 1, { npc: p! }); }),
+];
+
+export const PACK_CRAFT_B: Storylet[] = [...BKR_CARDS, ...HRB_CARDS, ...AGT_CARDS, ...AQF_CARDS];
