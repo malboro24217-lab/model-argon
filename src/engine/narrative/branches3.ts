@@ -137,6 +137,6 @@ export const TEMPER2_ECHO: Storylet[] = [
     C("Ngồi lên đầu, tự giới thiệu", { rel: 2, gamble: { p: 0.5, win: { income_mult: 1.04 }, lose: {} } }), C("Ngồi cuối", {})])),
   R("t5_kind", "temper2_kind", [16, 45], 99, () => T("Đứa ngồi một mình", "Ngày đầu đi học bạn đã ngồi cạnh đứa không ai chơi. Hôm nay có một người mới cũng đang đứng một mình.", [
     C("Lại gần", { rel: 2, counters: { kind: 1 } }), C("Thôi", {})])),
-  R("t5_tough", "temper2_tough", [16, 45], 99, () => T("Gồng", "Ngày đầu đi học, bạn đã gồng lên để không ai thấy mình nhớ mẹ. Hôm nay có chuyện buồn ở chỗ làm, và bạn lại gồng lên như thế.", [
+  R("t5_tough", "temper2_tough", [16, 45], 99, () => T("Nuốt vào trong", "Ngày đầu đi học, bạn đã gồng lên để không ai thấy mình nhớ mẹ. Hôm nay có chuyện buồn ở chỗ làm, và bạn lại gồng lên như thế.", [
     C("Giữ trong lòng", { bw: -2 }), C("Kể cho một người", { rel: 2, bw: 2 })])),
 ];
