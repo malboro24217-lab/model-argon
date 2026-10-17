@@ -355,4 +355,121 @@ const BRB_CARDS: Storylet[] = [
   }),
 ];
 
-export const PACK_CRAFT_A: Storylet[] = [...ATN_CARDS, ...FSH_CARDS, ...BRB_CARDS];
+/* =====================================================================
+ * THỢ MỘC — tiền tố cpn_
+ * ===================================================================== */
+const CP = "carpenter";
+
+const CPN_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(CP, "cpn_t_stool", [10, 15], () => true, () => T("Chiếc ghế từ thùng gỗ cũ", "Bạn tháo mấy tấm ván thùng hàng cũ, đóng thành một chiếc ghế đẩu. Ông ngồi thử, rồi đứng hẳn lên. Ghế không rung. Ông thợ mộc cuối xóm đi ngang, cầm chiếc ghế lật lên xem mặt dưới.", [
+    C("Xin theo ông thợ mộc cả mùa hè", { money: -0.02, health: -1, flags: [talentFlag(CP)], counters: { talents_seen: 1 } }, "Mất hè, phồng tay, có một cái nghề"),
+    C("Để chiếc ghế ở góc bếp, đi chơi tiếp", { happy: 1, counters: { talents_seen: 1 } }, "Một mùa hè thong thả")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(CP, "cpn_d_apprentice", [15, 30], () => true, () => T("Hai năm quét mùn cưa", "Xưởng mộc đầu phố cần người học việc. Ông chủ nói trước: hai năm đầu chỉ quét mùn cưa, chà giấy nhám và khiêng gỗ, chưa được cầm đục.", [
+    C("Vào học, chịu hai năm quét mùn cưa", { ...become(CP), counters: { doors_seen: 1 }, money: -0.03, health: -1 }, "Hai năm vất vả ít tiền, đổi lấy cái nghề"),
+    C("Hỏi xin học việc ở xưởng máy cho nhanh", { counters: { doors_seen: 1 }, gamble: { p: 0.35, win: { ...become(CP), flags: ["cpn_machine_shop"], log: "Xưởng máy nhận bạn đứng máy cưa ngay tuần đầu." }, lose: { log: "Xưởng máy chỉ nhận người đã có nghề." } } }, "Nhanh có lương, học lệch tay"),
+    C("Thôi, tìm việc khác", { counters: { doors_seen: 1 }, money: 0.02 }, "Có tiền ngay, không có nghề tay")], 0)),
+  door(CP, "cpn_d_formwork", [20, 45], () => true, () => T("Thợ cốp pha ở công trường", "Ở công trường, bạn làm phụ hồ đã hai năm. Tổ trưởng tổ cốp pha thiếu người: lương cao hơn một phần ba, nhưng đứng trên giàn giáo tầng mười hai, ghép ván khuôn cho bê tông.", [
+    C("Chuyển sang tổ cốp pha", { ...become(CP), counters: { doors_seen: 1 }, money: 0.05, health: -2 }, "Lương cao, đứng trên cao mỗi ngày"),
+    C("Xin học nghề mộc ở xưởng của tổ trưởng", { counters: { doors_seen: 1 }, gamble: { p: 0.4, win: { ...become(CP), flags: ["cpn_joinery"], log: "Tổ trưởng có một xưởng nhỏ. Ông dạy bạn làm mộng vào buổi tối." }, lose: { log: "Ông bảo xưởng đang vắng việc, để năm sau." } } }, "Chậm hơn, nghề sâu hơn"),
+    C("Ở lại phụ hồ", { counters: { doors_seen: 1 } }, "Đỡ nguy hiểm, lương không lên")], 0)),
+  door(CP, "cpn_d_storm", [22, 50], (c) => c.poor_country || c.econ_phase !== "boom", () => T("Lớp nghề sau cơn bão", "Sau trận bão, cả một xóm mất mái và cửa. Một tổ chức cứu trợ mở lớp nghề mộc ba tháng có trợ cấp: học xong, mỗi học viên dựng lại năm căn nhà cho xóm.", [
+    C("Đăng ký học, bỏ việc đang làm", { ...become(CP), counters: { doors_seen: 1 }, money: -0.06, rel: 3 }, "Mất thu nhập ba tháng, có nghề và có ơn với xóm"),
+    C("Chỉ đi khuân vác giúp, không học", { counters: { doors_seen: 1 }, rel: 2, health: -1 }, "Giúp được người, không có gì mới cho mình")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(CP, 1, 1, (c) => T("Chiếc tủ không một cây đinh", `Khách đặt một chiếc tủ quần áo. ${f(c, "cpn_machine_shop") ? "Ở xưởng máy bạn chỉ quen bắn vít, nhưng ông thợ già bên cạnh" : "Ông thầy"} bảo làm mộng, không một cây đinh: mất ba tuần. Khách muốn xong trong năm ngày, dùng ván ép bắn vít, giá rẻ hơn một nửa.`, [
+    C("Làm mộng, xin khách chờ ba tuần", { counters: step(c, CP, { cpn_craft: 1 }), money: -0.02, flags: ["cpn_joinery"] }, "Lỗ công, chiếc tủ sống được năm mươi năm"),
+    C("Làm ván ép bắn vít cho kịp", { counters: step(c, CP), money: 0.04, flags: ["cpn_quick"] }, "Có lời, chiếc tủ chẳng ai nhớ"),
+    C("Làm khung mộng, cánh ván ép, nói rõ với khách", { counters: step(c, CP), money: 0.01, know: 1 }, "Vừa túi khách, vừa đủ bền")], 0), (c) => c.age >= 18),
+  beat(CP, 2, 3, (c) => T("Năm trăm bộ bàn ghế mỗi tháng", `Bạn đã có xưởng riêng.${f(c, "cpn_joinery") ? " Khách đặt tủ năm nào giới thiệu thêm bốn nhà nữa." : ""} Một công ty xuất khẩu đồ gỗ đưa hợp đồng ba năm: thuê máy cắt điều khiển số, làm năm trăm bộ bàn ghế mỗi tháng theo bản vẽ của họ.`, [
+    C("Ký, thuê máy, làm hàng loạt", { counters: step(c, CP), custom: "borrow:0.5", income_mult: 1.6, flags: ["cpn_cnc"] }, "Tiền đều, nợ máy, sống theo bản vẽ người khác"),
+    C("Giữ làm đồ đặt riêng từng món", { counters: step(c, CP, { cpn_craft: 1 }), income_mult: 1.15, flags: ["cpn_custom"] }, "Ít tiền, mỗi món một câu chuyện"),
+    C("Góp với năm xưởng trong phố, chung máy chung sổ", { counters: step(c, CP), agency: 0.03, gamble: { p: 0.4 + 0.1 * Math.min(2, n(c, "cpn_craft")), win: { flags: ["cpn_guild"], income_mult: 1.35, counters: { cpn_craft: 1 }, log: "Sáu xưởng chung một máy, một sổ đơn hàng. Đơn lớn chia đều, không ai phải vay một mình." }, lose: { income_mult: 1.05, log: "Lịch chạy máy cãi nhau mỗi tuần. Sau một năm, nhóm tan." } } }, "Chia quyền, chia nợ, cần người giữ lời", { tier: "sovereign" })], 0), (c) => c.age >= 18),
+  beat(CP, 3, 4, (c) => T("Lưỡi cưa cuối ngày", `Cuối một ngày làm mười bốn tiếng${f(c, "cpn_cnc") ? " cho kịp đơn xuất khẩu" : ""}, tay bạn trượt trên bàn cưa. Bạn mất một đốt ngón trỏ. Bác sĩ dặn nghỉ ba tháng. Trong xưởng còn ${f(c, "cpn_cnc") ? "hai mươi thợ chờ lương và một container phải đóng" : f(c, "cpn_guild") ? "phần đơn chung bạn đã nhận với năm xưởng kia" : "bốn đơn hàng đã nhận cọc"}.`, [
+    C("Nghỉ đủ ba tháng", { counters: step(c, CP), income_mult: 0.8, money: -0.2, health: 4 }, "Mất đơn, giữ được bàn tay"),
+    C("Băng tay, quay lại xưởng sau một tuần", { counters: step(c, CP), money: 0.2, gamble: { p: 0.5, win: { log: "Bạn kịp giao hàng. Ngón tay lành chậm và cứng mãi." }, lose: { health: -8, income_mult: 0.7, log: "Vết thương nhiễm trùng. Bạn nằm viện thêm một tháng." } } }, "Giữ đơn, đặt cược thân thể"),
+    C("Giao xưởng cho thợ cả, bạn chuyển sang vẽ và dạy", { counters: step(c, CP), income_mult: 0.9, agency: 0.02, flags: ["cpn_delegated"] }, "Bớt quyền, xưởng không còn chỉ dựa vào tay bạn", { tier: "awakened" }),
+    C("Bán đồ nghề, rời nghề mộc", { counters: step(c, CP), ...leave(CP), money: 0.1, flags: ["ex_carpenter"] }, "Có ít vốn, khép lại cái nghề")], 0), (c) => c.age >= 18),
+  beat(CP, 4, 5, (c) => {
+    if (f(c, "cpn_cnc") && !f(c, "cpn_guild")) return T("Container bị trả về", "Khách nước ngoài trả về nguyên một container: gỗ chưa sấy đủ, mặt bàn nứt sau ba tuần đi biển. Hợp đồng ghi xưởng chịu toàn bộ chi phí. Tiền thuê máy vẫn chạy mỗi tháng.", [
+      C("Xin giãn nợ, bán rẻ hàng trong nước", { counters: step(c, CP), custom: "restructure", money: -0.2, income_mult: 0.75 }, "Sống sót, nhỏ lại nhiều năm"),
+      C("Trả máy, quay về làm đồ đặt riêng", { counters: step(c, CP, { cpn_craft: 1 }), income_mult: 0.85, unflags: ["cpn_cnc"], flags: ["cpn_back_to_hand"] }, "Mất đà, lấy lại tay nghề", { tier: "awakened" }),
+      C("Đóng xưởng", { counters: step(c, CP), ...leave(CP), money: -0.3, flags: ["ex_carpenter"] }, "Cắt lỗ, mất cả cái nghề")], 0);
+    if (n(c, "cpn_craft") >= 2 || f(c, "cpn_guild") || f(c, "cpn_joinery") || f(c, "cpn_delegated")) return T("Cột gỗ hai trăm năm", `${vn(c) ? "Ngôi đình làng" : "Ngôi nhà họp bằng gỗ của thị trấn"} hai trăm năm tuổi được trùng tu, bạn được mời làm thợ cả. Nhà thầu muốn thay mấy cây cột mục bằng cột bê tông sơn giả vân gỗ, rẻ một nửa, nhanh gấp ba; phần chênh lệch "chia nhau".`, [
+      C("Dựng cột bê tông, nhận phần chia", { counters: step(c, CP), money: 0.4, happy: -4, secret: { tag: "STOLE_SHARED_PROFIT", severity: 0.45, fuse_years: [3, 10], note: "chia nhau tiền chênh lệch khi thay cột gỗ bằng cột bê tông lúc trùng tu" } }, "Tiền lớn, cột giả đứng đó mãi"),
+      C("Đòi gỗ thật, mộng thật như ngày xưa", { counters: step(c, CP, { cpn_craft: 2 }), gamble: { p: 0.5, win: { income_mult: 1.3, flags: ["cpn_restorer"], log: "Hội đồng nghiệm thu đứng về phía bạn. Tên bạn được khắc dưới xà ngang." }, lose: { income_mult: 0.85, log: "Nhà thầu thay bạn bằng người khác. Cột bê tông vẫn được dựng." } } }, "Đúng nghề, có thể mất việc"),
+      C("Ghi lại mọi mộng gỗ, dạy mười thợ trẻ ngay tại công trình", { counters: step(c, CP), money: -0.1, agency: 0.02, flags: ["cpn_school"] }, "Tốn tiền túi, cái biết không chết theo ngôi nhà", { longterm: true })], 1);
+    return T("Đồ gỗ đóng hộp", "Một siêu thị nội thất khổng lồ mở cách xưởng hai cây số: bàn ghế đóng hộp, tự lắp, giá bằng một phần ba đồ bạn làm. Tháng này xưởng chỉ có hai đơn sửa cửa.", [
+      C("Nhận lắp ráp thuê cho siêu thị", { counters: step(c, CP), income_mult: 0.85, flags: ["cpn_installer"] }, "Có việc đều, tay thành tay vặn ốc"),
+      C("Chuyên sửa và phục chế đồ cũ", { counters: step(c, CP, { cpn_craft: 1 }), income_mult: 0.9, flags: ["cpn_repair"] }, "Ít tiền, giữ được nghề tay"),
+      C("Đóng xưởng", { counters: step(c, CP), ...leave(CP), flags: ["ex_carpenter"] }, "Thôi lo, mất cái nghề")], 1);
+  }, (c) => c.age >= 18),
+  beat(CP, 5, 6, (c) => T("Bộ đục mòn theo bàn tay", `${f(c, "cpn_restorer") ? "Tên bạn còn khắc dưới xà ngang ngôi nhà gỗ cổ. " : f(c, "cpn_school") ? "Mấy thợ trẻ học ở công trình năm ấy giờ đã có xưởng riêng. " : f(c, "cpn_installer") ? "Bạn đã lắp hàng nghìn chiếc tủ đóng hộp. " : ""}Cán bộ đục của bạn đã mòn theo đúng hình bàn tay bạn. Một người thợ trẻ xin mua lại cả bộ. Một công ty bất động sản muốn mua đất xưởng.`, [
+    C("Tặng bộ đục cho thợ trẻ, kèm sổ ghi các mộng", { counters: step(c, CP), happy: 4, flags: ["passed_on"] }, "Không lấy tiền, nghề có người cầm tiếp"),
+    C("Bán đất xưởng", { counters: step(c, CP), money: 0.8, flags: ["cpn_sold_land"] }, "Tiền dưỡng già, xưởng thành nhà cao tầng"),
+    C("Giữ xưởng, mỗi ngày làm một món nhỏ", { counters: step(c, CP), happy: 3, income_mult: 0.8 }, "Thu nhập ít đi, vẫn nghe mùi gỗ mỗi sáng")], 0), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(CP, "cpn_logs", [20, 60], 9, () => T("Xe gỗ không giấy tờ", "Gỗ tốt khan hiếm. Một mối quen chở đến một xe gỗ quý, giá bằng một nửa, không hóa đơn, không giấy nguồn gốc. Anh ta nói giấy tờ có thể 'làm sau'.", [
+    C("Mua, giấy tờ tính sau", { money: 0.15, secret: { tag: "FORGED_PAPERS", severity: 0.45, fuse_years: [2, 9], note: "mua gỗ quý không rõ nguồn gốc rồi hợp thức giấy tờ" } }, "Lời lớn, một khu rừng ở đâu đó mất cây"),
+    C("Chỉ dùng gỗ rừng trồng có giấy", { money: -0.03, counters: { honest: 1 } }, "Lời mỏng, ngủ yên"),
+    C("Mua lại gỗ từ những ngôi nhà cũ bị phá dỡ", { bw: -3, flags: ["cpn_reclaimed"], gamble: { p: 0.5, win: { money: 0.03, counters: { cpn_craft: 1 }, log: "Gỗ cũ đanh chắc, khách quý chính những vết đinh xưa." }, lose: { money: -0.02, log: "Nửa số gỗ mục ruột, phải bỏ." } } }, "Mất công tìm, có loại gỗ không ai có", { tier: "awakened" })], 1)),
+  daily(CP, "cpn_dust", [25, 70], 9, () => T("Tai ù đến tối", "Sau mỗi ngày đứng cạnh máy cưa và máy bào, tai bạn ù đến tối. Mùi bụi gỗ bám vào cả giấc ngủ. Một bộ hút bụi và chụp tai cho cả xưởng giá bằng hai tháng thu nhập.", [
+    C("Mua bộ hút bụi, bắt cả xưởng đeo chụp tai", { money: -0.15, health: 5, flags: ["cpn_safe"] }, "Tốn hai tháng thu nhập, giữ phổi và tai"),
+    C("Mở toang cửa, làm tiếp", { health: -5, counters: { dust: 1 } }, "Giữ tiền, cơ thể trả dần")], 1)),
+  daily(CP, "cpn_deposit", [20, 65], 8, () => T("Khách hủy khi gỗ đã xẻ", "Một khách đặt bộ bàn ăn, cọc ba phần mười. Gỗ đã xẻ, mộng đã đục một nửa thì khách gọi hủy, đòi lại tiền cọc vì 'chưa giao gì cả'.", [
+    C("Trả lại đủ tiền cọc", { money: -0.04, rel: 2 }, "Mất tiền gỗ, giữ tiếng dễ chịu"),
+    C("Giữ cọc theo thỏa thuận", { money: 0.02, rel: -2, flags: ["cpn_kept_deposit"] }, "Đúng giấy tờ, khách đi nói xấu"),
+    C("Làm xong, bán cho khách khác rồi hoàn cọc", { bw: -2, gamble: { p: 0.6, win: { money: 0.03, counters: { cpn_craft: 1 }, log: "Bộ bàn bán được sau hai tuần. Khách cũ nhận lại cọc, lần sau quay lại đặt." }, lose: { money: -0.03, log: "Bộ bàn nằm trong xưởng ba tháng." } } }, "Ôm hàng một thời gian, không ai thiệt hẳn", { tier: "awakened" })], 2)),
+  daily(CP, "cpn_coffin", [25, 70], 10, () => T("Cỗ quan tài trả góp", "Một gia đình nghèo trong xóm có người mất đêm qua. Họ cần một cỗ quan tài trước trưa mai, chỉ trả được một phần ba, phần còn lại xin trả dần.", [
+    C("Đóng ngay, cho trả dần", { money: -0.03, rel: 4, flags: ["cpn_coffin_credit"] }, "Ôm một khoản nợ khó đòi, được lòng xóm"),
+    C("Đóng, không lấy tiền", { money: -0.06, rel: 5, counters: { kind: 1 } }, "Mất tiền gỗ và hai đêm công"),
+    C("Giới thiệu sang cơ sở mai táng", { rel: -1 }, "Không thiệt gì, xóm nhớ bạn đã từ chối")], 0)),
+  daily(CP, "cpn_kid", [22, 65], 9, () => T("Cậu thiếu niên đứng ở cửa xưởng", "Một cậu thiếu niên mười sáu tuổi ngày nào cũng đứng ở cửa xưởng nhìn bạn bào gỗ. Nhà cậu nghèo, cậu đã nghỉ học. Hôm nay cậu xin học việc.", [
+    C("Nhận, trả chút tiền và dạy từ đầu", { money: -0.04, bw: -2, flags: ["cpn_apprentice"] }, "Tốn tiền và kiên nhẫn, có người nối nghề"),
+    C("Khuyên cậu đi học lại, hè hãy đến", { rel: 1, counters: { kind: 1 } }, "Đúng lẽ, cậu có thể không quay lại"),
+    C("Từ chối, xưởng không có chỗ", { money: 0.01 }, "Đỡ một gánh, mất một người")], 0)),
+  daily(CP, "cpn_storm", [20, 65], 8, (c) => T("Cả xóm cần cửa mới", vary("cpnst", c.age, [
+    "Bão quét qua đêm qua. Sáng ra, nửa xóm mất cửa, tốc mái. Điện thoại của bạn reo liên tục.",
+    "Sau trận lũ, cửa gỗ nhà nào cũng trương nở, không đóng được. Người ta xếp hàng chờ bạn."]), [
+    C("Tăng giá gấp ba, ai trả trước làm trước", { money: 0.15, rel: -4, counters: { honest: -1 } }, "Lời to, xóm nhớ mãi"),
+    C("Giữ giá cũ, làm theo thứ tự", { money: 0.05, rel: 2 }, "Lời vừa, công bằng"),
+    C("Sửa trước cho nhà người già và nhà neo người", { money: 0.01, rel: 5, counters: { kind: 1 } }, "Gần như không lời, được cả xóm tin", { longterm: true })], 1)),
+  daily(CP, "cpn_contractor", [22, 60], 9, () => T("Hai mươi căn tủ bếp chưa trả", "Một nhà thầu thuê bạn làm tủ bếp cho bốn mươi căn hộ. Lắp xong hai mươi căn, họ chưa trả đồng nào, hẹn 'sau đợt bàn giao'.", [
+    C("Dừng làm cho đến khi được trả", { gamble: { p: 0.55, win: { money: 0.2, log: "Họ trả đủ hai mươi căn trong tuần." }, lose: { money: -0.15, log: "Họ thuê xưởng khác làm tiếp. Tiền hai mươi căn cũ vẫn treo." } } }, "Có thể đòi được, có thể mất hợp đồng"),
+    C("Làm tiếp, tin lời hứa", { gamble: { p: 0.4, win: { money: 0.35, log: "Bàn giao xong, họ trả đủ cả bốn mươi căn." }, lose: { money: -0.35, flags: ["cpn_burned"], log: "Nhà thầu phá sản. Tên bạn nằm trong danh sách chủ nợ." } } }, "Được ăn cả, ngã về không"),
+    C("Rủ các xưởng cùng bị nợ, nộp đơn chung", { bw: -4, agency: 0.02, flags: ["cpn_creditors_group"], gamble: { p: 0.5, win: { money: 0.15, log: "Sáu xưởng cùng đứng đơn. Nhà thầu phải ký lịch trả nợ." }, lose: { money: -0.1, log: "Đơn nằm ở tòa hai năm. Mỗi xưởng nhận lại một ít." } } }, "Đông người thì mạnh, chậm và mệt", { tier: "awakened" })], 0)),
+  daily(CP, "cpn_chair", [22, 65], 9, () => T("Chiếc ghế gãy chân", "Một chiếc ghế bạn đóng hai năm trước gãy chân khi khách đang ngồi. Bà ấy bị bầm lưng, đăng ảnh lên mạng kèm tên xưởng.", [
+    C("Đến xin lỗi, đổi ghế mới, kiểm lại cả bộ", { money: -0.04, counters: { cpn_craft: 1 } }, "Tốn tiền, giữ tiếng"),
+    C("Xem kỹ, chỉ ra ghế bị kê lên đứng", { gamble: { p: 0.5, win: { log: "Ảnh chân ghế cho thấy vết dập. Bà ấy gỡ bài." }, lose: { counters: { cpn_craft: -1 }, log: "Người ta chỉ nhớ bạn đổ lỗi cho khách." } } }, "Có thể đúng, dễ thành đổ lỗi")], 0)),
+  daily(CP, "cpn_tree", [22, 70], 9, (c) => T("Thân cây ông trồng", `Một gia đình chở đến thân cây ${vn(c) ? "mít" : "lớn"} trong vườn, cây do người ông đã khuất trồng, vừa đổ sau trận gió. Họ muốn làm một chiếc bàn ăn cho cả nhà. Gỗ còn tươi, nhiều mắt, dễ nứt.`, [
+    C("Nhận, sấy một năm, làm thật kỹ", { bw: -3, gamble: { p: 0.6, win: { rel: 2, counters: { cpn_craft: 1 }, log: "Một năm sau, cả nhà ngồi quanh chiếc bàn. Bà cụ sờ mãi vân gỗ." }, lose: { money: -0.03, log: "Mặt bàn nứt một đường dài. Bạn chèn nêm hình cánh bướm; họ vẫn nhận." } } }, "Giữ chỗ một năm, có thể hỏng"),
+    C("Khuyên làm vài món nhỏ thay vì bàn", { money: 0.02, know: 1, flags: ["cpn_small_keepsakes"] }, "Chắc chắn, không thành điều họ mong"),
+    C("Từ chối, gỗ này không làm được", { rel: -1 }, "Không rủi ro, họ đi tìm người khác")], 0)),
+  daily(CP, "cpn_tender", [22, 60], 9, (c, N) => { const r = role(c, "rival")!; return T("Bốn trăm bộ bàn ghế trường học", `Trường học trong ${vn(c) ? "huyện" : "vùng"} mời thầu bốn trăm bộ bàn ghế. ${N(r)} cũng dự thầu, và nói thẳng: muốn trúng thì phải "lại quả" cho người chấm.`, [
+    C("Lại quả như người ta", { money: 0.2, secret: { tag: "PAID_BRIBE", severity: 0.35, fuse_years: [2, 8], note: "lại quả để trúng thầu bàn ghế trường học" } }, "Có hợp đồng, có một bí mật"),
+    C("Bỏ thầu sạch", { counters: { honest: 1 }, gamble: { p: 0.3, win: { money: 0.15, log: "Năm ấy có đoàn thanh tra. Hồ sơ sạch của bạn thắng." }, lose: { log: "Hợp đồng về tay người khác, như dự đoán." } } }, "Có thể trượt, giữ sạch tay"),
+    C(`Rủ ${N(r)} đứng thầu chung, công khai giá`, { gamble: { p: 0.4, win: { money: 0.1, memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.3, note: "cùng đứng thầu bàn ghế trường học, công khai giá" }, log: "Hai xưởng chia đôi đơn. Bảng giá dán ngay cổng trường." }, lose: { trust: { npc: r, delta: -0.1 }, log: `${N(r)} đi báo trước với người chấm thầu.` } } }, "Đổi luật chơi, có thể bị bán đứng", { tier: "sovereign" })], 1, { npc: r }); }, (c) => !!role(c, "rival")),
+  daily(CP, "cpn_quit", [30, 60], 99, () => T("Trưởng ca ở nhà máy ván ép", "Một nhà máy ván ép tuyển trưởng ca kiểm hàng: lương đều, có bảo hiểm, không phải cầm đục, không phải đứng cạnh lưỡi cưa nữa.", [
+    C("Nhận, đóng xưởng", { ...leave(CP), flags: ["ex_carpenter"] }, "Ổn định, tay không còn mùi gỗ"),
+    C("Ở lại xưởng", { happy: 1, counters: { cpn_craft: 1 } }, "Túng thêm vài năm, còn nghề")], 1), (c) => c.happy < 50 || c.broke),
+
+  /* ---------- gia đình ---------- */
+  cross(CP, "cpn_family", [22, 65], (c) => (c.kids_teen > 0 && !!role(c, "child")) || (c.married && !!role(c, "spouse")), (c, N) => {
+    const k = role(c, "child");
+    if (c.kids_teen > 0 && k) return T(`${N(k)} muốn bỏ học theo nghề mộc`, `${N(k)} muốn theo bạn học nghề mộc ngay bây giờ, bỏ năm cuối phổ thông. ${N(k)} đã tự đóng một chiếc kệ sách, mộng còn hở nhưng đứng vững.`, [
+      C("Cho theo, dạy từ đầu", { trust: { npc: k, delta: 0.2 }, flags: ["cpn_child_apprentice"] }, "Có người nối nghề, con dở dang bằng cấp"),
+      C("Bắt học xong phổ thông", { trust: { npc: k, delta: -0.1 } }, "Chắc đường học, con thấy bị cản"),
+      C("Dạy cuối tuần, học xong rồi tính", { trust: { npc: k, delta: 0.15 }, promise: { to: k, what: "dạy con nghề mộc khi con học xong phổ thông", years: 2 } }, "Cả hai cùng chờ, treo một lời hứa", { tier: "awakened" })], 2, { npc: k });
+    const sp = role(c, "spouse")!;
+    return T("Tủ bếp nhà mình thiếu cánh", `${N(sp)} chỉ vào tủ bếp nhà mình: ba năm nay vẫn thiếu hai cánh cửa. "Nhà thợ mộc mà như nhà không ai ở," ${N(sp)} nói, nửa đùa nửa thật.`, [
+      C("Gác đơn hàng, dành bốn Chủ nhật làm", { money: -0.03, trust: { npc: sp, delta: 0.2 } }, "Mất bốn ngày công, nhà ra nhà"),
+      C("Hứa làm xong sau mùa đơn hàng", { trust: { npc: sp, delta: -0.05 }, promise: { to: sp, what: "làm xong cánh tủ bếp nhà mình", years: 1 } }, "Không mất việc, treo một lời hứa"),
+      C("Thuê một thợ khác làm cho nhanh", { money: -0.04, happy: -1, trust: { npc: sp, delta: -0.05 } }, "Nhanh gọn, thành chuyện cười trong họ")], 0, { npc: sp });
+  }),
+];
+
+export const PACK_CRAFT_A: Storylet[] = [...ATN_CARDS, ...FSH_CARDS, ...BRB_CARDS, ...CPN_CARDS];

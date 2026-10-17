@@ -237,4 +237,113 @@ const HRB_CARDS: Storylet[] = [
       C("Xin thông cảm, người bệnh không chờ được", { trust: { npc: s!, delta: -0.2 }, money: 0.03 }, "Giữ nghề, nhà nguội dần")], 0, { npc: s! }); }),
 ];
 
-export const PACK_CRAFT_B: Storylet[] = [...BKR_CARDS, ...HRB_CARDS];
+/* =====================================================================
+ * NÔNG DÂN CÔNG NGHỆ CAO — tiền tố agt_
+ * ===================================================================== */
+const AG = "agritech";
+
+const AGT_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(AG, "agt_t_sensor", [10, 16], () => true, (c) => T("Luống rau biết kêu khát", `Bạn tháo một cái điện thoại hỏng, nối dây vào luống rau của ${vn(c) ? "ông nội" : "ông"} để nó kêu khi đất khô. Ông cười bạn, nhưng mùa ấy luống rau ấy xanh nhất vườn. Thầy dạy công nghệ hỏi bạn có muốn vào câu lạc bộ chế tạo của trường không.`, [
+    C("Vào câu lạc bộ, ở lại trường đến tối", { money: -0.01, know: 3, rel: -1, flags: [talentFlag(AG)], counters: { talents_seen: 1 } }, "Ít thời gian với bạn bè, mở một con đường"),
+    C("Thôi, nối dây cho vui", { happy: 1, counters: { talents_seen: 1 } }, "Vui một mùa, rồi quên")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(AG, "agt_d_return", [22, 45], () => true, (c) => T("Mảnh ruộng bỏ không ở quê", `Mảnh ruộng của nhà ở quê bỏ hoang ba năm vì không ai làm. Một chương trình ${c.poor_country ? "của một tổ chức phát triển" : "của chính quyền"} cho vay ưu đãi để dựng nhà kính, tưới nhỏ giọt, gắn cảm biến đo đất. Lãi thấp, nhưng phải thế chấp chính mảnh ruộng ấy.`, [
+    C("Bỏ việc thành phố, vay vốn, về dựng nhà kính", { custom: "borrow:0.6|become:agritech", counters: { doors_seen: 1 }, agency: 0.02, happy: 2 }, "Thế chấp đất nhà, cược vào một kiểu làm nông mới"),
+    C("Làm thử một nhà kính nhỏ bằng tiền tiết kiệm", { counters: { doors_seen: 1 }, money: -0.15, gamble: { p: 0.4, win: { ...become(AG), log: "Vụ đầu lời gấp ba ruộng lúa. Bạn nghỉ việc thành phố." }, lose: { log: "Sâu bệnh phá nửa vụ. Bạn quay lại thành phố, nhà kính để đó." } } }, "Ít rủi ro, ít đà"),
+    C("Cho người khác thuê ruộng", { counters: { doors_seen: 1 }, money: 0.03 }, "Có chút tiền thuê, đất là chuyện của người ta")], 0)),
+  door(AG, "agt_d_fair", [20, 40], () => true, () => T("Hội chợ nông nghiệp thông minh", "Ở hội chợ, một công ty bán hệ thống trồng rau thủy canh trọn gói: giàn, đèn, phần mềm theo dõi trên điện thoại, cam kết thu mua rau hai năm đầu. Giá bằng một năm thu nhập, trả góp.", [
+    C("Ký trả góp, dựng trang trại trên sân thượng thuê", { custom: "borrow:0.8|become:agritech", counters: { doors_seen: 1 }, flags: ["agt_turnkey"] }, "Có ngay cả hệ thống, buộc chặt vào một công ty"),
+    C("Tự học, tự lắp từng phần cho rẻ", { counters: { doors_seen: 1 }, bw: -5, gamble: { p: 0.4, win: { ...become(AG), flags: ["agt_diy"], log: "Sau tám tháng mày mò, giàn rau đầu tiên của bạn cho thu hoạch." }, lose: { log: "Hệ thống tự lắp rò nước làm hỏng trần nhà thuê. Bạn dừng lại." } } }, "Rẻ, chậm, có thể hỏng cả"),
+    C("Cầm tờ rơi về rồi quên", { counters: { doors_seen: 1 } }, "Không mất gì, không có gì")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(AG, 1, 1, (c) => T("Gói vật tư trả sau", `Vụ đầu tiên. ${f(c, "agt_turnkey") ? "Hệ thống trọn gói chạy đúng như quảng cáo, chỉ có dung dịch dinh dưỡng phải mua của chính hãng." : "Nhà kính dựng xong, đất đã làm."} Đại lý vật tư đầu xã đề nghị giao trọn gói giống, phân và thuốc, trả sau thu hoạch, chỉ cần làm đúng lịch phun của họ.`, [
+    C("Lấy trọn gói, phun đúng lịch đại lý", { counters: step(c, AG), flags: ["agt_dealer_credit"], money: 0.1 }, "Dễ, năng suất cao, dư lượng khó biết"),
+    C("Dùng tiền tiết kiệm, tự đo đất, phun khi cần", { counters: step(c, AG, { agt_data: 1 }), flags: ["agt_own_inputs"], money: -0.15, bw: -3 }, "Tốn tiền và đầu óc, hiểu ruộng mình")], 0)),
+  beat(AG, 2, 3, (c) => T("Hợp đồng bao tiêu năm năm", `Năng suất của bạn gấp đôi ruộng bên cạnh. Một công ty xuất khẩu đề nghị bao tiêu toàn bộ trong năm năm với giá cố định, nhưng phải trồng giống của họ và chỉ bán cho họ. ${c.econ_phase === "boom" ? "Giá chợ đang cao hơn giá họ đưa." : "Giá chợ đang lên xuống thất thường."}`, [
+    C("Ký bao tiêu", { counters: step(c, AG), flags: ["agt_contract"], income_mult: 1.3 }, "Yên tâm đầu ra, mất quyền với ruộng mình"),
+    C("Bán tự do ở chợ đầu mối", { counters: step(c, AG), gamble: { p: 0.5, win: { income_mult: 1.4, log: "Hai năm giá tốt. Bạn trả xong nửa khoản nợ." }, lose: { income_mult: 0.9, log: "Vụ được mùa mà giá rớt. Thương lái trả bằng nửa giá vốn." } } }, "Tự do, giá lên xuống theo trời"),
+    C("Lập hợp tác xã hai mươi hộ, cùng mặc cả", { counters: step(c, AG, { agt_data: 1 }), agency: 0.03, bw: -4, gamble: { p: f(c, "agt_own_inputs") ? 0.6 : 0.45, win: { flags: ["agt_coop"], income_mult: 1.25, log: "Hai mươi hộ góp đất, chung kho lạnh. Công ty phải ký với cả hợp tác xã, giá cao hơn một phần năm." }, lose: { income_mult: 1.05, log: "Mười hộ rút vì sợ rủi ro. Hợp tác xã còn một nửa, bạn vẫn giữ sổ sách." } } }, "Tốn công tổ chức, mạnh khi mặc cả", { tier: "sovereign" })], 0)),
+  beat(AG, 3, 4, (c) => T("Lô hàng bị trả về", `Một container ${vn(c) ? "sầu riêng" : "nông sản"} của bạn bị nước nhập khẩu trả về vì dư lượng thuốc vượt ngưỡng. ${f(c, "agt_dealer_credit") ? "Lịch phun của đại lý có một loại thuốc bạn chưa từng đọc nhãn. " : "Nhật ký phun của bạn sạch; nghi ngờ rơi vào ruộng bên cạnh. "}${f(c, "agt_contract") ? "Công ty bao tiêu dẫn điều khoản, hủy hợp đồng. " : ""}${f(c, "agt_coop") ? "Cả hợp tác xã bị đưa vào danh sách cảnh báo. " : ""}Ngân hàng gọi hỏi lịch trả nợ.`, [
+    C("Tiêu hủy cả lô, xét nghiệm lại từng luống", { counters: step(c, AG, { agt_data: 1, honest: 1 }), money: -0.6, flags: ["agt_clean_restart"] }, "Mất trắng một vụ, làm lại có bằng chứng"),
+    C("Đổi bao bì, bán rẻ vào chợ trong nước", { counters: step(c, AG, { honest: -2 }), money: -0.15, flags: ["agt_dumped_local"] }, "Gỡ được ít vốn, người ăn không biết gì"),
+    C("Bán nhà kính trả nợ, về lại thành phố", { counters: step(c, AG), ...leave(AG), money: -0.3, happy: -4 }, "Hết nợ, hết giấc mơ trang trại")], 0)),
+  beat(AG, 4, 5, (c) => {
+    if (f(c, "agt_dumped_local")) return T("Rau nhiễm thuốc lên báo", "Một phóng viên lần theo lô hàng bị trả về và thấy nó đã nằm trên sạp chợ trong nước. Bài báo có ảnh nhà kính của bạn. Thương lái quen không nghe máy, ngân hàng hẹn gặp.", [
+      C("Xin lỗi công khai, mời đoàn kiểm tra vào", { counters: step(c, AG, { honest: 2 }), custom: "apologize", money: -0.4, flags: ["agt_owned_up"] }, "Đau một lần, có thể làm lại"),
+      C("Đổi tên trang trại, tìm thương lái mới", { counters: step(c, AG), income_mult: 0.75, flags: ["agt_renamed"] }, "Sống tiếp, mang theo một cái tên giấu"),
+      C("Bán đất, rời nghề nông", { counters: step(c, AG), ...leave(AG), close_doors: ["village_trust"], money: 0.2 }, "Hết nợ, làng không còn tin bạn")], 0);
+    if (f(c, "agt_clean_restart") || f(c, "agt_coop") || n(c, "agt_data") >= 2) return T("Năm mươi héc-ta", `${f(c, "agt_coop") ? "Hợp tác xã của bạn" : "Trang trại của bạn"} có chứng nhận an toàn và nhiều năm nhật ký đồng ruộng. Một quỹ đầu tư muốn rót vốn mở lên năm mươi héc-ta bằng cách thuê lại ruộng của cả xóm trong ba mươi năm; nông dân thành công nhân.`, [
+      C("Nhận vốn, gom đất, thành chủ trang trại lớn", { counters: step(c, AG), income_mult: 1.7, flags: ["agt_estate"], close_doors: ["village_trust"] }, "Giàu lớn, hàng xóm thành người làm thuê"),
+      C("Giữ quy mô nhỏ, bán thẳng cho bếp ăn trường học", { counters: step(c, AG), income_mult: 1.1, happy: 4, flags: ["agt_small_school"] }, "Không giàu, ăn ngủ yên"),
+      C("Đòi quỹ góp vốn vào hợp tác xã, đất vẫn của dân", { counters: step(c, AG), agency: 0.03, gamble: { p: 0.4, win: { income_mult: 1.45, flags: ["agt_coop", "agt_shared_model"], log: "Quỹ chấp nhận. Mỗi hộ giữ giấy tờ đất, chia cổ tức theo phần đất góp." }, lose: { income_mult: 1.05, log: "Quỹ rút, sang tỉnh bên gom đất. Bạn giữ được làng, mất thương vụ." } } }, "Đặt luật chơi mới, dễ mất cả thương vụ", { tier: "sovereign" })], 0);
+    return T("Kỳ trả nợ cuối cùng", "Khoản vay dựng nhà kính đến hạn cuối. Hai vụ liền giá thấp, cảm biến hỏng một nửa, phần mềm của hãng thôi cập nhật. Một người muốn mua lại cả trang trại với giá vừa đủ trả nợ.", [
+      C("Bán trang trại, trả hết nợ", { counters: step(c, AG), ...leave(AG), money: 0.1, happy: -3 }, "Sạch nợ, mất trang trại"),
+      C("Xin giãn nợ, quay về trồng cây truyền thống", { counters: step(c, AG), custom: "restructure", income_mult: 0.85 }, "Còn đất, bớt công nghệ, thu nhập thấp"),
+      C("Bán nhật ký đồng ruộng cho công ty phần mềm", { counters: step(c, AG), money: 0.3, flags: ["agt_sold_data"] }, "Qua cơn nợ, dữ liệu ruộng mình thành của người")], 1);
+  }),
+  beat(AG, 5, 6, (c) => T("Ba mươi mùa vụ trong máy", `Trong máy tính của bạn có dữ liệu ba mươi mùa vụ: mưa, nắng, độ ẩm đất, bệnh của từng luống. ${f(c, "agt_estate") ? "Năm mươi héc-ta giờ do một giám đốc vùng quản lý; bạn ít khi ra đồng." : f(c, "agt_coop") ? "Hợp tác xã giờ có ba thế hệ xã viên." : "Ruộng bên cạnh vẫn trồng theo kiểu cũ."} Một công ty muốn mua dữ liệu để dạy phần mềm tư vấn trồng trọt, bán cho nông dân cả nước.`, [
+    C("Bán độc quyền", { counters: step(c, AG), money: 0.7, flags: ["agt_sold_data"] }, "Tiền lớn, nông dân phải trả tiền mới được dùng"),
+    C("Công bố miễn phí cho mọi nông dân", { counters: step(c, AG), flags: ["passed_on"], happy: 5, agency: 0.02 }, "Không tiền, cái biết đi xa"),
+    C("Giao trang trại cho người trẻ, về hưu", { counters: step(c, AG), ...leave(AG), happy: 4 }, "Nghỉ ngơi, dữ liệu theo người kế nghiệp")], 1), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(AG, "agt_drought", [20, 75], 7, (c) => T(vn(c) ? "Nước mặn vào sớm" : "Mùa khô không dứt", vary("agtdr", c.age, [vn(c) ? "Nước mặn lấn sâu vào kênh sớm hơn mọi năm hai tháng. Máy đo độ mặn kêu suốt đêm." : "Ba tháng không một giọt mưa. Giếng khoan của trang trại tụt xuống từng tuần.", "Hồ chứa của vùng chỉ còn một phần ba. Nước chia theo ngày, nhà kính của bạn cần gấp ba nhà bên."]), [
+    C("Mua nước chở bồn, cứu cả vụ", { money: -0.15, counters: { agt_data: 1 } }, "Mất lời cả vụ, giữ được cây"),
+    C("Bỏ một nửa diện tích, dồn nước cho nửa kia", { money: -0.05, happy: -2, flags: ["agt_halved"] }, "Mất nửa vụ, còn vốn"),
+    C("Vay đào hồ trữ nước cho cả xóm dùng chung", { custom: "borrow:0.3", agency: 0.02, flags: ["agt_reservoir"], rel: 3 }, "Nợ thêm, lần sau cả xóm có nước", { tier: "awakened", longterm: true })], 1)),
+  daily(AG, "agt_alarm", [20, 75], 8, (c) => T("Nhà kính báo nóng giữa đêm", vary("agtal", c.age, ["Điện thoại rú lên: nhiệt độ nhà kính số ba vượt bốn mươi độ. Có thể cảm biến hỏng, có thể quạt hỏng thật.", "Ứng dụng báo máy bơm dừng. Trời đang mưa to, nhà kính cách nhà hai cây số."]), [
+    C("Dậy, chạy ra kiểm tra", { health: -2, bw: -2, counters: { agt_data: 1 } }, "Mất ngủ, chắc chắn"),
+    C("Tin hệ thống, ngủ tiếp", { gamble: { p: 0.6, win: { log: "Sáng ra mọi thứ bình thường. Cảm biến báo nhầm." }, lose: { money: -0.08, log: "Quạt hỏng thật. Sáng ra nửa nhà kính rau héo rũ." } } , flags: ["agt_trusts_system"] }, "Ngủ yên, có thể mất nửa nhà kính"),
+    C("Thuê một người trực đêm", { money: -0.03, flags: ["agt_night_hand"] }, "Tốn lương, ngủ được")], 0)),
+  daily(AG, "agt_drone", [20, 75], 9, () => T("Máy bay phun thuốc", "Bạn có thể mua một máy bay không người lái để phun thuốc, mỗi vụ đỡ mười ngày công. Ông nuôi ong ở đồi bên hỏi bạn, giọng lo lắng, mùa hoa năm nay bạn phun vào lúc nào.", [
+    C("Mua máy, cho cả xã thuê", { money: -0.1, income_mult: 1.08, flags: ["agt_drone"] }, "Thêm nguồn thu, khó kiểm thuốc bay đi đâu"),
+    C("Mua máy, hẹn lịch phun với người nuôi ong", { money: -0.1, bw: -2, flags: ["agt_drone", "agt_bee_pact"], rel: 2 }, "Tốn công phối hợp, giữ được láng giềng", { tier: "awakened" }),
+    C("Vẫn phun tay, thuê người", { money: -0.02, health: -1, flags: ["agt_hand_spray"] }, "Chậm, tốn sức, không thêm nợ")], 1)),
+  daily(AG, "agt_pickers", [20, 75], 8, () => T("Thiếu người thu hoạch", "Vụ thu hoạch chỉ có mười ngày. Thanh niên trong vùng đã đi làm xa hết. Một người môi giới mang đến ba chục lao động, giá rẻ bằng nửa; hắn giữ giấy tờ tùy thân của họ “cho khỏi trốn”.", [
+    C("Thuê qua môi giới, không hỏi thêm", { money: 0.08, counters: { honest: -1 }, flags: ["agt_broker_labor"] }, "Rẻ, kịp mùa, có người bị giữ giấy"),
+    C("Trả giá cao, thuê trực tiếp người tự đến", { money: -0.06, rel: 2, flags: ["agt_fair_hire"] }, "Đắt, chậm, sạch lương tâm"),
+    C("Thuê họ, bắt trả giấy tờ, trả lương tận tay", { money: 0.03, agency: 0.01, gamble: { p: 0.5, win: { flags: ["agt_fair_labor"], log: "Môi giới bỏ đi. Hai mươi người ở lại làm, năm sau tự quay về." }, lose: { money: -0.05, log: "Môi giới rút cả nhóm. Nửa vụ chín rụng ngoài ruộng." } } }, "Có thể mất người giữa mùa", { tier: "sovereign" })], 1)),
+  daily(AG, "agt_seed", [20, 75], 9, () => T("Hạt giống có bản quyền", "Giống cây đang cho bạn năng suất cao là giống có bản quyền, vụ nào cũng phải mua hạt mới. Hạt giữ lại từ vụ trước vẫn mọc được, nhưng hợp đồng cấm.", [
+    C("Mua hạt mới mỗi vụ", { money: -0.05, counters: { honest: 1 } }, "Đúng luật, tiền giống năm nào cũng tăng"),
+    C("Gieo lén hạt giữ lại", { money: 0.03, flags: ["agt_saved_seed"], counters: { honest: -1 } }, "Đỡ tiền, có thể bị kiện"),
+    C("Cùng bà con chọn lọc giống địa phương của riêng mình", { bw: -4, know: 3, flags: ["agt_local_seed"], counters: { agt_data: 1 } }, "Mất mấy mùa năng suất, tự chủ hạt giống", { tier: "sovereign", longterm: true })], 0)),
+  daily(AG, "agt_tour", [20, 75], 8, (c) => T("Đoàn khách tham quan nhà kính", vary("agtto", c.age, ["Một công ty du lịch muốn đưa khách đến trang trại mỗi cuối tuần: xem nhà kính, tự hái rau, chụp ảnh.", "Một trường học muốn đưa học sinh đến học về nông nghiệp mỗi tháng một lần."]), [
+    C("Nhận, mở cổng mỗi cuối tuần", { money: 0.06, bw: -3, flags: ["agt_agritourism"] }, "Thêm thu nhập, cây bị dẫm, mất ngày nghỉ"),
+    C("Từ chối, nhà kính không phải sân chơi", { happy: 1 }, "Yên ổn, bỏ lỡ một nguồn thu")], 0)),
+  daily(AG, "agt_subsidy", [20, 75], 9, (c, N) => { const o = role(c, "official");
+    return T("Hồ sơ xin hỗ trợ", `Có một khoản hỗ trợ cho nông nghiệp công nghệ cao, bằng nửa năm thu nhập của bạn. ${o ? N(o) : "Một cán bộ"} nói hồ sơ “sẽ nhanh hơn” nếu bạn để lại một phần ba.`, [
+      C("Để lại một phần ba", { money: 0.2, secret: { tag: "PAID_BRIBE", severity: 0.35, fuse_years: [2, 9], note: "chia một phần ba tiền hỗ trợ nông nghiệp" }, ...(o ? { trust: { npc: o, delta: 0.15 } } : {}) }, "Có tiền ngay, có một bí mật"),
+      C("Nộp đúng quy trình, chờ", { counters: { honest: 1 }, gamble: { p: 0.35, win: { money: 0.3, log: "Mười tháng sau, tiền về đủ." }, lose: { happy: -2, log: "Hồ sơ “đang xem xét” suốt hai năm." } } }, "Sạch, có thể không bao giờ được"),
+      C("Rủ các hộ cùng nộp, công khai danh sách", { bw: -3, agency: 0.02, flags: ["agt_public_list"], ...(o ? { trust: { npc: o, delta: -0.2 } } : {}) }, "Khó ai ăn chặn, cán bộ để ý bạn", { tier: "sovereign" })], 1, o ? { npc: o } : {}); }),
+  daily(AG, "agt_neighbor", [20, 75], 9, (c, N) => { const nb = role(c, "neighbor")!;
+    return T("Thuốc bay sang từ ruộng bên", `${N(nb)} phun thuốc theo kiểu cũ, gió đưa sang đúng nhà kính đang chờ chứng nhận của bạn. Hai tuần nữa đoàn đánh giá mới đến.`, [
+      C("Báo chính quyền xã", { flags: ["agt_reported_neighbor"], memory: { npc: nb, tag: "GOSSIP_HEARD_BAD", weight: -0.25, note: "bị báo lên xã chuyện phun thuốc" } }, "Ruộng mình an toàn, hàng xóm thành thù"),
+      C("Trả tiền để ông ấy đổi sang thuốc sinh học", { money: -0.04, memory: { npc: nb, tag: "WIN_WIN_DEAL", weight: 0.2, note: "được trả tiền đổi sang thuốc sinh học" } }, "Tốn tiền, êm chuyện một mùa"),
+      C("Rủ ông ấy cùng làm, dạy cách đo đất", { bw: -3, gamble: { p: 0.5, win: { memory: { npc: nb, tag: "HELPED_IN_CRISIS", weight: 0.35, note: "được dạy cách trồng mới" }, counters: { agt_data: 1 }, log: "Ông ấy cằn nhằn cả mùa, nhưng mùa sau ruộng ông đạt chứng nhận." }, lose: { log: "Ông ấy bảo trồng cả đời chưa cần ai dạy." } } }, "Tốn công, có thể thêm một người cùng chí", { tier: "awakened" })], 1, { npc: nb }); }, (c) => !!role(c, "neighbor")),
+  daily(AG, "agt_storm", [20, 75], 8, (c) => T("Mái nhà kính rách toạc", vary("agtst", c.age, ["Một cơn giông lốc đi qua lúc nửa đêm. Sáng ra, ba trong năm nhà kính chỉ còn khung sắt.", "Mưa đá to bằng hạt ngô trong mười phút, xé thủng mái màng của cả dãy nhà kính."]), [
+    C("Vay tiền dựng lại khung chịu bão", { custom: "borrow:0.25", flags: ["agt_storm_frame"] }, "Nợ thêm, lần sau đứng vững"),
+    C("Vá tạm, trồng tiếp cho kịp vụ", { money: -0.04, gamble: { p: 0.6, win: { log: "Mái vá trụ được hết mùa." }, lose: { money: -0.1, log: "Cơn gió tháng sau xé toạc chỗ vá, mất cả lứa cây." } } }, "Rẻ, có thể mất lần nữa"),
+    C("Vá tạm, mua bảo hiểm mùa vụ từ năm sau", { money: -0.06, flags: ["agt_insured"] }, "Mất phí mỗi năm, lần sau có đệm", { longterm: true })], 0)),
+  daily(AG, "agt_traders", [20, 75], 8, (c) => T("Thương lái đồng loạt hạ giá", vary("agttr", c.age, ["Đúng ngày bạn thu hoạch, cả năm thương lái quen cùng trả một giá, thấp hơn tuần trước một nửa.", "Thương lái chê hàng của bạn “không đẹp mã”, chỉ chịu mua giá loại hai."]), [
+    C("Bán cho xong, rau không chờ được", { money: -0.06, counters: { agt_data: -1 } }, "Mất lời, không mất hàng"),
+    C("Tự bán trên mạng, giao tận nhà", { bw: -4, gamble: { p: 0.5, win: { money: 0.05, flags: ["agt_direct_sales"], log: "Ba trăm khách đặt trong một tuần. Bạn có danh sách khách riêng." }, lose: { money: -0.08, log: "Đơn về chậm, nửa số rau hỏng trong kho." } } }, "Có thể có khách riêng, có thể mất cả"),
+    C("Gửi rau vào kho lạnh chung, chờ giá", { money: -0.02, counters: { agt_data: 1 }, flags: ["agt_cold_storage"] }, "Trả phí kho, chờ được giá")], 1)),
+  daily(AG, "agt_quit", [25, 75], 99, () => T("Bảng sao kê cuối vụ", "Bảng sao kê ngân hàng cuối vụ: lời của cả năm không đủ trả lãi. Một người bạn cũ mời bạn về thành phố làm kỹ thuật viên cho một công ty thiết bị nông nghiệp, lương đều.", [
+    C("Về thành phố, cho thuê lại nhà kính", { ...leave(AG), money: 0.1, flags: ["ex_agritech"] }, "Lương đều, ruộng vào tay người khác"),
+    C("Ở lại thêm một vụ", { happy: -2, counters: { agt_data: 1 } }, "Còn hy vọng, còn nợ")], 1), (c) => c.broke || c.happy < 45 || c.debt_ratio > 1),
+
+  /* ---------- gia đình ---------- */
+  cross(AG, "agt_family", [22, 75], (c) => !!role(c, "father") || !!role(c, "mother") || (c.kids_teen > 0 && !!role(c, "child")), (c, N) => { const k = role(c, "child"); const p = role(c, "father") ?? role(c, "mother");
+    if (c.kids_teen > 0 && k) return T(`${N(k)} không muốn làm nông`, `${N(k)} nói thẳng: lớn lên sẽ không ở lại với cái nhà kính và mấy cái cảm biến. ${N(k)} muốn đi học xa, rồi có thể ở luôn nơi khác.`, [
+      C("Để con đi, đóng học phí", { trust: { npc: k, delta: 0.25 }, money: -0.1 }, "Con có đường riêng, trang trại thiếu người nối"),
+      C("Giao con quản một nhà kính, chia lời", { trust: { npc: k, delta: 0.1 }, flags: ["agt_heir_trial"], promise: { to: k, what: "chia cho con phần lời nhà kính con tự quản", years: 2 } }, "Có thể giữ con lại, có thể con thấy bị trói", { tier: "awakened" }),
+      C("Bảo con: đất ông bà để lại, không được bỏ", { trust: { npc: k, delta: -0.25 } }, "Nói rõ ý mình, con xa dần")], 0, { npc: k });
+    return T("Học hết đại học để về ruộng", `${N(p!)} vẫn kể với họ hàng rằng nuôi bạn ăn học bao năm để rồi bạn về lại ruộng. Mỗi lần thấy bạn cầm điện thoại đứng giữa nhà kính, ${N(p!)} lắc đầu.`, [
+      C("Dẫn đi xem nhà kính và sổ thu chi", { gamble: { p: 0.6, win: { trust: { npc: p!, delta: 0.3 }, log: `${N(p!)} xem rất lâu, rồi hỏi cái cảm biến giá bao nhiêu.` }, lose: { trust: { npc: p!, delta: -0.05 }, log: `${N(p!)} nói ruộng nhà mình ba đời chưa từng cần điện thoại.` } } }, "Có thể được hiểu, có thể bị chê"),
+      C("Thôi, không giải thích nữa", { happy: -2, flags: ["agt_unspoken"] }, "Đỡ cãi nhau, khoảng cách ở lại")], 0, { npc: p! }); }),
+];
+
+export const PACK_CRAFT_B: Storylet[] = [...BKR_CARDS, ...HRB_CARDS, ...AGT_CARDS];

@@ -260,4 +260,119 @@ const HMK_CARDS: Storylet[] = [
   }),
 ];
 
-export const PACK_STREET_B: Storylet[] = [...GRD_CARDS, ...HMK_CARDS];
+/* =====================================================================
+ * NGƯỜI LÀM NGHỀ TANG LỄ — tiền tố fnr_
+ * Cái chết kể bằng sự dịu dàng của người tiễn đưa; không tả thân thể, chỉ kể việc, giá và lòng người.
+ * ===================================================================== */
+const FW = "funeral_worker";
+
+const FNR_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(FW, "fnr_t_vigil", [12, 16], () => true, (c) => T("Đêm thức canh linh cữu", `${vn(c) ? "Trong đám tang ông nội ở quê" : "Trong đám tang của người ông"}, người lớn khóc, trẻ con sợ. Chỉ có bạn ngồi cạnh bác làm dịch vụ tang lễ suốt đêm: đưa nến, xếp ghế, ghi sổ người đến viếng không sót một ai. Bác bảo hiếm đứa trẻ nào bình tĩnh được như thế.`, [
+    C("Xin theo bác phụ việc mùa hè", { flags: [talentFlag(FW)], counters: { talents_seen: 1 }, money: 0.02, rel: -1 }, "Bị bạn bè trêu, mở một con đường"),
+    C("Thôi, chuyện buồn để người lớn lo", { happy: 1, counters: { talents_seen: 1 } }, "Tuổi thơ nhẹ nhõm, sự bình tĩnh ấy để yên")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(FW, "fnr_d_hire", [18, 50], () => true, () => T("Cơ sở tang lễ tuyển người", "Một cơ sở dịch vụ tang lễ cần người phụ việc: trực điện thoại đêm, đi đón người mất, dựng rạp, lo giấy tờ. Lương cao hơn mặt bằng một nửa vì ít ai chịu làm. Người nhà bạn nghe xong thì im lặng rất lâu.", [
+    C("Nhận việc, chịu lời ra tiếng vào", { ...become(FW), counters: { doors_seen: 1 }, rel: -2 }, "Lương khá, nhiều người sẽ ngại bạn"),
+    C("Làm thử một tháng, giữ việc cũ", { counters: { doors_seen: 1 }, bw: -3, gamble: { p: 0.45, win: { ...become(FW), log: "Hết tháng, bạn nhận ra mình làm được việc mà nhiều người không làm được. Bạn ở lại." }, lose: { happy: -2, log: "Đến đám thứ năm, bạn xin thôi. Đêm nào cũng mơ thấy tiếng kèn." } } }, "Ít liều hơn, mệt gấp đôi"),
+    C("Thôi, nghề này nặng quá", { counters: { doors_seen: 1 } }, "Nhẹ đầu, bỏ qua một nghề ít người tranh")], 0)),
+  door(FW, "fnr_d_uncle", [22, 55], () => true, () => T("Cửa hàng của người chú", "Người chú họ làm nghề tang lễ ba mươi năm, nay yếu, các con chú không ai chịu nối nghề. Chú gọi bạn đến, đưa chùm chìa khóa và cuốn sổ ghi tên mấy nghìn người chú đã tiễn.", [
+    C("Nhận cửa hàng, học nghề từ chú", { ...become(FW), counters: { doors_seen: 1 }, money: -0.1, flags: ["fnr_heir"] }, "Có nghề và cửa hàng, gánh cả tiếng tăm của chú"),
+    C("Giúp chú bán cửa hàng lấy tiền dưỡng già", { counters: { doors_seen: 1 }, rel: 2, happy: 1 }, "Chú yên tuổi già, cuốn sổ khép lại"),
+    C("Từ chối, bận việc của mình", { counters: { doors_seen: 1 }, rel: -1 }, "Giữ đời mình, chú buồn")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(FW, 1, 1, (c) => T("Người đầu tiên bạn tiễn", "Một cụ bà mất ở nhà lúc gần sáng. Con gái cụ xin cho mẹ mặc chiếc áo cụ tự may từ ngày cưới, và muốn tự tay chải tóc cho mẹ lần cuối. Theo lệ của cơ sở, người nhà không vào phòng chuẩn bị. Hôm ấy còn ba đám đang chờ.", [
+    C("Mời người con vào cùng chải tóc cho mẹ", { counters: step(c, FW, { fnr_grace: 1 }), bw: -2, flags: ["fnr_family_in"] }, "Chậm cả lịch, người nhà nhớ mãi"),
+    C("Làm đúng lệ, nhanh và chu đáo", { counters: step(c, FW), money: 0.02, flags: ["fnr_by_rule"] }, "Kịp ba đám kia, người con đứng ngoài cửa")], 0)),
+  beat(FW, 2, 3, (c) => T("Bảng giá ba hạng", `${f(c, "fnr_heir") ? "Một chuỗi dịch vụ tang lễ đề nghị gắn biển hiệu của họ lên cửa hàng của chú, kèm bảng giá ba hạng và một kịch bản bán hàng:" : "Cơ sở bắt đầu bán gói trọn gói. Quản lý đưa bạn một kịch bản bán hàng:"} gặp gia đình khi họ chưa kịp khóc, giới thiệu gói đắt nhất trước, nhắc rằng ai cũng muốn tiễn cha mẹ cho đàng hoàng. Theo kịch bản, thu nhập của bạn sẽ gần gấp đôi.`, [
+    C("Theo kịch bản, mời gói đắt nhất trước", { counters: step(c, FW, { honest: -1 }), income_mult: 1.5, flags: ["fnr_upsell"] }, "Thu nhập vọt lên, nỗi đau được tính theo giá"),
+    C("Đưa đủ bảng giá, để gia đình tự chọn", { counters: step(c, FW, { fnr_grace: 1 }), income_mult: 1.1, flags: ["fnr_fair_price"] }, "Thu nhập vừa phải, người ta tin bạn"),
+    C("Mở dịch vụ nhỏ của mình, niêm yết giá công khai", { counters: step(c, FW), money: -0.4, agency: 0.03, gamble: { p: 0.5, win: { flags: ["fnr_own_house"], income_mult: 1.3, log: "Bảng giá dán ngay cửa và đăng lên mạng. Tháng thứ sáu, khách đến vì nghe người quen kể." }, lose: { income_mult: 0.8, log: "Ba tháng đầu không có đám nào. Bạn phải nhận làm thuê thêm cho chỗ cũ." } } }, "Tự chủ, minh bạch, vốn và tên tuổi đặt cược", { tier: "sovereign" })], 1)),
+  beat(FW, 3, 4, (c) => T("Tuần có quá nhiều đám", `${c.poor_country ? "Sau trận lũ lớn" : "Giữa một đợt dịch"}, chỉ trong một tuần cơ sở nhận bốn mươi người mất, gấp mười ngày thường. Phòng lạnh đã kín chỗ, xe chạy suốt đêm. Chính quyền yêu cầu làm nhanh, gọn, hạn chế người đến viếng. ${f(c, "fnr_upsell") ? "Quản lý gợi ý tính giá mùa cao điểm. " : ""}Bạn đã ngủ bốn tiếng trong hai ngày.`, [
+    C("Làm không nghỉ, đủ lễ cho từng người", { counters: step(c, FW, { fnr_grace: 2, fnr_weight: 2 }), health: -8 }, "Giữ phẩm giá cho người mất, thân bạn trả giá"),
+    C("Làm theo yêu cầu: nhanh, gọn, đủ giấy tờ", { counters: step(c, FW, { fnr_weight: 1 }), money: 0.1, flags: ["fnr_followed_order"] }, "Kịp việc, nhiều gia đình không kịp chào"),
+    f(c, "fnr_upsell")
+      ? C("Tính giá mùa cao điểm như quản lý bảo", { counters: step(c, FW, { honest: -2 }), money: 0.4, flags: ["fnr_profiteer"] }, "Tiền nhiều, tên bạn nằm trên từng hóa đơn")
+      : C("Gọi tình nguyện viên, gọi video cho người nhà", { counters: step(c, FW, { fnr_grace: 1 }), agency: 0.03, gamble: { p: 0.55, win: { flags: ["fnr_volunteers"], log: "Mười hai người tình nguyện đến. Đám nào cũng có một cuộc gọi video cho người thân ở xa." }, lose: { bw: -5, log: "Chỉ ba người đến. Bạn vẫn phải làm gần hết." } } }, "Mở cửa cho cộng đồng, thêm việc phải điều phối", { tier: "sovereign" }),
+    C("Xin nghỉ, rời khỏi nghề", { counters: step(c, FW), ...leave(FW), flags: ["ex_funeral"], happy: -3 }, "Thoát khỏi tuần ấy, mang nó theo")], 0)),
+  beat(FW, 4, 5, (c) => {
+    if (f(c, "fnr_profiteer")) return T("Bài báo về giá tang lễ mùa dịch", "Một tờ báo đăng loạt bài về các cơ sở tang lễ tăng giá giữa mùa dịch. Hóa đơn có chữ ký của bạn nằm trong ảnh minh họa. Ba gia đình đòi hoàn tiền; quản lý nói với nhà báo rằng nhân viên tự quyết định giá.", [
+      C("Công khai xin lỗi, hoàn tiền cho các gia đình", { counters: step(c, FW, { honest: 2 }), custom: "apologize", money: -0.4, flags: ["fnr_repaid"] }, "Mất tiền, gỡ lại một phần tên mình"),
+      C("Im lặng, để công ty lo", { counters: step(c, FW), income_mult: 0.85, happy: -5, flags: ["fnr_hid"] }, "Giữ tiền, mang tiếng suốt nghề"),
+      C("Bỏ nghề, chuyển đi nơi khác", { counters: step(c, FW), ...leave(FW), flags: ["ex_funeral"], rel: -2 }, "Tránh được ánh mắt, mất cả nghề")], 0);
+    if (n(c, "fnr_grace") >= 3 || f(c, "fnr_own_house") || f(c, "fnr_fair_price") || f(c, "fnr_volunteers")) return T("Người cả vùng tin cậy", `${f(c, "fnr_own_house") ? "Cơ sở nhỏ của bạn" : "Tên bạn"} được cả vùng tin: nhiều nhà dặn con cháu khi nào mình đi thì gọi người ấy. Một chuỗi dịch vụ lớn muốn ${f(c, "fnr_own_house") ? "mua lại cơ sở" : "mời bạn về làm giám đốc chi nhánh"}, với điều kiện dùng bảng giá và kịch bản của họ.`, [
+      C("Nhận lời, đổi lấy tiền lớn", { counters: step(c, FW), ...(f(c, "fnr_own_house") ? { money: 1.2 } : { income_mult: 1.5 }), flags: ["fnr_sold"] }, "Đủ đầy, bảng giá không còn là của bạn"),
+      C("Lập hội tang lễ tương trợ cho cả phố", { counters: step(c, FW), agency: 0.03, gamble: { p: 0.5, win: { flags: ["fnr_mutual_fund"], counters: { fnr_grace: 1 }, log: "Ba trăm hộ tham gia. Không nhà nào trong hội phải đi vay để lo tang." }, lose: { money: -0.2, log: "Quỹ thiếu người đóng, hai năm sau phải giải tán. Bạn bù phần còn thiếu." } } }, "Làm luật mới cho cả phố, tiền chung dễ sinh chuyện", { tier: "sovereign" }),
+      C("Giữ nguyên quy mô, nhận học trò", { counters: step(c, FW), flags: ["fnr_mentor"], happy: 3 }, "Không giàu thêm, nghề có người nối")], 0);
+    return T("Mười năm nỗi buồn của người khác", "Bạn bắt đầu mất ngủ. Tiếng khóc ở các đám đi theo bạn về nhà, vào cả bữa cơm. Có hôm đang nói chuyện với người thân, bạn bỗng không nghe được gì. Một đồng nghiệp lớn tuổi bảo: nghề này ai rồi cũng đến lúc ấy.", [
+      C("Đi gặp chuyên gia tâm lý, nói hết", { counters: step(c, FW, { fnr_weight: -2 }), money: -0.05, health: 4, flags: ["fnr_therapy"] }, "Tốn tiền và thời gian, có thể nhẹ lòng", { tier: "awakened" }),
+      C("Uống vài ly mỗi tối cho dễ ngủ", { counters: step(c, FW, { drink: 2 }), health: -5 }, "Ngủ được, gan trả giá"),
+      C("Chuyển sang làm giấy tờ, không gặp gia đình", { counters: step(c, FW), income_mult: 0.85, flags: ["fnr_back_office"] }, "Đỡ nặng lòng, xa phần ý nghĩa của nghề")], 0);
+  }),
+  beat(FW, 5, 6, (c) => T("Bản dặn dò của chính mình", `Một người đàn ông trung niên tìm đến: cha anh vừa mất, và anh muốn chính bạn lo. ${f(c, "fnr_family_in") ? "Anh là cháu của cụ bà năm xưa, người được con gái tự tay chải tóc. " : ""}Tối ấy, bạn ngồi viết bản dặn dò cho đám tang của mình. ${f(c, "fnr_profiteer") ? "Bạn gạch đi rồi viết lại dòng về tiền nhiều lần." : f(c, "fnr_mutual_fund") ? "Bạn ghi số thẻ hội viên của hội tương trợ lên đầu trang." : "Chỉ vài dòng, không kèn trống."}`, [
+    C("Nhận lo cho cha anh, dẫn học trò theo", { counters: step(c, FW, { fnr_grace: 1 }), flags: ["passed_on"], health: -1 }, "Thêm một đám nặng, để lại cách làm nghề"),
+    C("Giới thiệu người trẻ lo, mình nghỉ hẳn", { counters: step(c, FW), ...leave(FW), happy: 4 }, "Khép nghề nhẹ người, anh ấy hơi buồn"),
+    C("Viết bản dặn dò thành sổ tay cho các gia đình", { counters: step(c, FW), money: -0.03, agency: 0.01, flags: ["fnr_guidebook"] }, "Tốn công, nhiều nhà bớt hoang mang", { tier: "awakened" })], 0), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(FW, "fnr_short", [18, 65], 8, (c) => T("Gia đình chỉ đủ một phần ba", vary("fnrs", c.age, [
+    "Một gia đình nghèo chỉ trả được một phần ba gói rẻ nhất. Người con trai đặt lên bàn chiếc nhẫn cưới của mẹ.",
+    "Một người đàn ông sống một mình mất trong phòng trọ. Người duy nhất đến lo là bà chủ trọ, với một phong bì mỏng."]), [
+    C("Làm đủ lễ, bù bằng tiền của mình", { money: -0.05, counters: { fnr_grace: 1 } }, "Đúng lòng, hụt túi"),
+    C("Làm đúng phần tiền họ trả", { money: 0.01, counters: { fnr_weight: 1 } }, "Đúng sổ sách, áy náy về nhà"),
+    C(`Gọi ${vn(c) ? "nhà chùa và hội người cao tuổi" : "nhóm thiện nguyện trong khu"} cùng góp`, { gamble: { p: 0.6, win: { counters: { fnr_grace: 1 }, flags: ["fnr_network"], log: "Trong một buổi chiều, đủ tiền và đủ người khiêng. Đám tang đông hơn người ta tưởng." }, lose: { money: -0.03, log: "Không ai trả lời kịp. Bạn bù phần thiếu." } } }, "Có thể đủ cả lễ lẫn tiền, tốn một buổi gọi điện", { tier: "awakened" })], 0)),
+  daily(FW, "fnr_siblings", [18, 65], 9, () => T("Hai người con, hai cách tiễn", "Hai người con cãi nhau ngay trong nhà tang lễ: một người muốn hỏa táng theo di nguyện, người kia muốn chôn cất theo lệ họ. Cả hai cùng quay sang hỏi bạn.", [
+    C("Tìm người làm chứng di nguyện, theo đúng ý người mất", { bw: -2, gamble: { p: 0.6, win: { counters: { fnr_grace: 1 }, log: "Người bạn già của người mất đọc lại tờ giấy viết tay. Hai anh em lặng lẽ ký." }, lose: { rel: -2, log: "Không ai có giấy tờ. Người em bỏ về giữa chừng." } } }, "Đúng ý người mất, có thể mất lòng người sống"),
+    C("Làm theo người đứng tên trả tiền", { money: 0.03, counters: { honest: -1 } }, "Nhanh gọn, một người con ôm hận"),
+    C("Đề nghị một lễ nhỏ theo mỗi cách", { bw: -3, counters: { fnr_grace: 1 }, flags: ["fnr_two_rites"] }, "Tốn thêm một ngày, cả hai được tiễn theo cách mình", { tier: "awakened" })], 0)),
+  daily(FW, "fnr_stigma", [18, 65], 8, (c) => T("Không ai muốn bắt tay", vary("fnrg", c.age, [
+    "Ở một đám cưới, nghe bạn làm nghề gì, người ngồi cạnh lặng lẽ đổi chỗ.",
+    "Chủ nhà trọ nghe nghề của bạn thì bảo phòng vừa có người thuê. Hôm sau tấm biển cho thuê vẫn còn đó."]), [
+    C("Giấu nghề, nói mình làm tổ chức sự kiện", { flags: ["fnr_hidden_job"], happy: -2 }, "Đỡ ánh mắt, sống hai mặt"),
+    C("Nói thẳng, ai sợ thì thôi", { rel: -2, counters: { fnr_pride: 1 } }, "Đứng thẳng, ít bạn đi")], 1)),
+  daily(FW, "fnr_night_call", [18, 65], 8, (c) => T("Cuộc gọi lúc ba giờ sáng", vary("fnrn", c.age, [
+    "Ba giờ sáng, điện thoại trực reo. Một người mất ở nhà, gia đình hoảng loạn, không biết phải làm gì trước.",
+    "Đêm mưa to, một gia đình ở xóm ven sông gọi. Đường ngập đến đầu gối."]), [
+    C("Đi ngay", { health: -2, counters: { fnr_grace: 1 } }, "Gia đình yên lòng, bạn mất giấc"),
+    C("Hướng dẫn qua điện thoại, sáng sớm đến", { health: 1, counters: { fnr_weight: 1 } }, "Giữ sức, họ trải qua đêm một mình")], 0)),
+  daily(FW, "fnr_rites", [18, 65], 9, () => T("Nghi lễ bạn chưa từng làm", "Một gia đình mới đến định cư theo một tôn giáo bạn chưa từng tiếp xúc. Họ cần những nghi thức riêng, có giờ giấc riêng, và không ai trong cơ sở biết làm.", [
+    C("Ngồi học từ người già trong gia đình họ", { know: 3, bw: -2, counters: { fnr_grace: 1 }, flags: ["fnr_many_rites"] }, "Tốn thời gian, mở lòng với một cộng đồng"),
+    C("Giới thiệu sang cơ sở khác", { money: -0.02, flags: ["fnr_referred"] }, "Không làm sai, mất khách")], 0)),
+  daily(FW, "fnr_kickback", [18, 65], 9, () => T("Hoa hồng ở nhà xác bệnh viện", "Một nhân viên nhà xác bệnh viện gợi ý: mỗi gia đình anh ta chỉ sang chỗ bạn, bạn gửi lại một phần mười. Anh ta bảo các cơ sở khác đều làm vậy.", [
+    C("Đồng ý chia phần", { income_mult: 1.15, counters: { honest: -1 }, secret: { tag: "PAID_BRIBE", severity: 0.3, fuse_years: [2, 8], note: "trả hoa hồng cho người chỉ khách ở nhà xác bệnh viện" } }, "Đông khách, một bí mật"),
+    C("Từ chối", { income_mult: 0.95, counters: { honest: 1 } }, "Sạch tay, mất khách"),
+    C("Báo ban giám đốc bệnh viện", { counters: { honest: 1 }, gamble: { p: 0.4, win: { flags: ["fnr_reported"], log: "Bệnh viện dán bảng danh sách các cơ sở tang lễ, ghi rõ: gia đình tự chọn." }, lose: { rel: -2, log: "Không ai bị kỷ luật. Bạn bị cả giới tang lễ trong vùng xa lánh." } } }, "Sửa luật chơi, có thể bị cô lập", { tier: "awakened" })], 1)),
+  daily(FW, "fnr_sleepless", [18, 65], 8, (c) => T("Tiếng khóc theo về nhà", vary("fnrl", c.age, [
+    "Đã ba đêm bạn không ngủ được. Gương mặt một người mẹ ở đám hôm thứ hai cứ trở lại.",
+    "Mùa này nhiều đám người trẻ. Về nhà, bạn ngồi im trong bóng tối rất lâu."]), [
+    C("Ngồi nói chuyện với đồng nghiệp lâu năm", { counters: { fnr_weight: -1 }, rel: 1, bw: -1 }, "Nhẹ lòng, phải mở lòng"),
+    C("Uống vài ly cho dễ ngủ", { counters: { drink: 1 }, health: -2 }, "Ngủ được đêm nay"),
+    C("Làm tiếp, bận thì quên", { counters: { fnr_weight: 1 }, money: 0.02 }, "Có thêm tiền, nỗi nặng tích lại")], 0)),
+  daily(FW, "fnr_simple", [18, 65], 9, () => T("Tang lễ không kèn không trống", "Một gia đình trẻ muốn tiễn người cha thật giản dị: không kèn, không vòng hoa, tro cốt trồng dưới gốc cây. Họ hàng lớn tuổi bảo làm thế là bất hiếu, rồi nhìn bạn chờ bạn can.", [
+    C("Đứng về phía di nguyện, giải thích với họ hàng", { gamble: { p: 0.55, win: { flags: ["fnr_green"], counters: { fnr_grace: 1 }, log: "Buổi tiễn chỉ có hai mươi người và một cây non. Một bà cụ trong họ dặn bạn sau này làm cho bà như thế." }, lose: { rel: -2, log: "Họ hàng bỏ về. Gia đình trẻ vẫn cảm ơn bạn." } } }, "Đúng người mất, mất lòng người già"),
+    C("Khuyên gia đình thêm vài nghi lễ cho êm", { money: 0.03, flags: ["fnr_compromise"] }, "Êm họ, di nguyện bớt đi một phần")], 0)),
+  daily(FW, "fnr_film", [20, 65], 9, () => T("Máy quay trong nhà tang lễ", "Một người làm phim tài liệu muốn quay một ngày làm việc của bạn cho loạt phim về những nghề ít ai thấy. Họ hứa không quay mặt người mất.", [
+    C("Nhận lời, kể thật về nghề", { gamble: { p: 0.5, win: { counters: { fnr_grace: 1 }, flags: ["fnr_documentary"], log: "Phim được chiếu khắp nơi. Ba người trẻ viết thư xin học nghề." }, lose: { rel: -2, log: "Một gia đình nhận ra đám của nhà mình trong phim, gọi đến trách." } } }, "Nghề được hiểu hơn, riêng tư dễ vỡ"),
+    C("Từ chối, nghề này cần kín đáo", { flags: ["fnr_private"] }, "Giữ kín cho các gia đình, nghề vẫn bị hiểu lầm")], 1)),
+  daily(FW, "fnr_quit", [30, 60], 99, () => T("Lời mời sang nghề tiệc cưới", "Một người quen mở công ty tổ chức sự kiện, cần người cẩn thận, giỏi lo hậu cần dưới áp lực. Họ bảo: tiệc cưới cũng là một buổi lễ, chỉ vui hơn.", [
+    C("Nhận lời, rời nghề tang lễ", { ...leave(FW), flags: ["ex_funeral"], happy: 2 }, "Vui hơn, bỏ lại những gia đình cần bạn"),
+    C("Ở lại với nghề", { counters: { fnr_grace: 1 }, happy: -1 }, "Giữ nghề, nỗi buồn vẫn theo về")], 1), (c) => c.happy < 50 || c.broke),
+
+  /* ---------- gia đình ---------- */
+  cross(FW, "fnr_family", [22, 60], (c) => (c.kids_teen > 0 && !!role(c, "child")) || !!role(c, "father") || !!role(c, "mother"), (c, N) => {
+    const k = role(c, "child");
+    if (c.kids_teen > 0 && k) return T("Không ai ngồi cạnh con ở lớp", `${N(k)} về nhà, ném cặp xuống: bạn cùng lớp không ai chịu ngồi cạnh vì biết nghề của bạn.`, [
+      C("Đến lớp nói chuyện về nghề với cả lớp", { gamble: { p: 0.5, win: { trust: { npc: k, delta: 0.25 }, log: `Bạn kể chuyện chải tóc cho một cụ bà. Cả lớp im phăng phắc. Hôm sau có người ngồi cạnh ${N(k)}.` }, lose: { trust: { npc: k, delta: -0.15 }, log: `Cả lớp cười khúc khích. ${N(k)} không nói chuyện với bạn ba ngày.` } } }, "Có thể đổi cả lớp, có thể làm con ngượng thêm", { tier: "awakened" }),
+      C("Dặn con đừng nói nghề của cha mẹ với ai", { trust: { npc: k, delta: -0.1 }, flags: ["fnr_hidden_job"] }, "Con đỡ bị trêu, học cách giấu"),
+      C("Ôm con, kể vì sao mình chọn nghề", { trust: { npc: k, delta: 0.1 }, happy: -1 }, "Gần con, chuyện ở lớp vẫn còn đó")], 2, { npc: k });
+    const p = (role(c, "father") ?? role(c, "mother"))!;
+    return T("Lời dặn của cha mẹ", `${N(p)} gọi bạn ngồi xuống, nói chậm: "Sau này đến lượt cha mẹ, con lo nhé. Đừng to, đừng tốn. Nhưng con lo."`, [
+      C("Hứa sẽ tự tay lo", { trust: { npc: p, delta: 0.2 }, promise: { to: p, what: "tự tay lo một đám tang giản dị cho cha mẹ", years: 10 } }, "Cha mẹ yên lòng, một lời hứa nặng"),
+      C("Bảo cha mẹ đừng nói chuyện gở", { trust: { npc: p, delta: -0.05 }, happy: 1 }, "Né được câu chuyện, bỏ lỡ một lời dặn"),
+      C("Ngồi ghi lại cùng cha mẹ từng mong muốn", { trust: { npc: p, delta: 0.25 }, happy: -1, flags: ["fnr_parent_wishes"] }, "Một buổi tối nặng lòng, sau này không phải đoán", { tier: "awakened" })], 2, { npc: p });
+  }),
+];
+
+export const PACK_STREET_B: Storylet[] = [...GRD_CARDS, ...HMK_CARDS, ...FNR_CARDS];
