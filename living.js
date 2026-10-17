@@ -96,12 +96,17 @@ function applyEffect(L, e, npcId) {
 function becomePath(L, id) {
   const d = Argon.PATHS[id]; if (!d || !L.lw) return false;
   const fl = L.lw.sflags;
+  const cur = [...fl].map(k => k.startsWith("life_") && Argon.PATHS[k.slice(5)]).find(o => o && o.kind === "career");
   if (d.kind === "career") for (const k of [...fl]) { const o = k.startsWith("life_") && Argon.PATHS[k.slice(5)]; if (o && o.kind === "career") fl.delete(k); }
   fl.add("life_" + id); L.lw.counters["p_" + id] = 0; L.lw.counters["p_" + id + "_at"] = L.age;
   L.lw.queue = L.lw.queue.filter(q => q.custom !== "job_new"); // "job_lose|become:x" = đổi đường, không tìm việc mới nữa
-  const fam = famOf(L); const base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4);
+  // Thu nhập nền: đang đi một con đường nghề thì gỡ hệ số của con đường đó ra, không gỡ hệ số họ nghề (tránh hao hụt khi đổi đường nhiều lần).
+  const fam = famOf(L); let base;
+  if (cur && L.lw.pathBase > 0) base = cur.incomeMult > 0 && L.income > 0 ? L.income / cur.incomeMult : L.lw.pathBase;
+  else base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4);
+  L.lw.pathBase = base;
   if (d.fam && FAM[d.fam]) { for (const k in FAM) fl.delete("job_" + k); fl.add("job_" + d.fam); }
-  L.job = d.title; L.lastJob = d.title; L.income = base * d.incomeMult; L.retired = false;
+  L.job = d.title; L.lastJob = d.title; L.income = base * d.incomeMult; if (d.kind === "career") L.retired = false;
   log(L, `Bạn bước vào con đường ${d.vn}.`, "big");
   return true;
 }

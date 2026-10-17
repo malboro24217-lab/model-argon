@@ -35,7 +35,7 @@ function bigActionToCustom(a) {
     case "ve_que": return "return_home";
     case "chuyen_thanh_pho": return "move_city";
     case "di_hoc": return "study";
-    case "ket_hon": return "marry" + (a.gia_tri ? ":" + a.gia_tri : "");
+    case "ket_hon": { const n = String(a.gia_tri || "").replace(/[|:]/g, "").trim(); return "marry" + (n ? ":" + n : ""); }
     case "ly_hon": return "spouse_leave";
     case "co_con": return "have_child";
     case "nghi_huu": return "retire";
@@ -58,6 +58,7 @@ LUẬT:
 - Chỉ dùng cờ trong co_cho_phep và việc lớn trong viec_lon_cho_phep. Muốn đổi nghề, đi nước ngoài, cưới, ly hôn, đi tu, thành ca sĩ… thì phải dùng viec_lon.
 - money tính theo SỐ NĂM thu nhập hộ (vd -0.3 = mất 3,6 tháng thu nhập). Dưới 12 tuổi: không tiền, không đổi lòng tin.
 - Nếu việc này sẽ còn chuyện về sau (mở quán, yêu ai đó, kiện tụng…), mở "chuyen" với hen_nam 1–5.
+- Nếu tinh_huong_dang_cho.la_chuyen_dang_do: trả "chuyen" {"ten","tom_tat","hen_nam"} nếu chuyện còn tiếp, hoặc "chuyen": null nếu cách xử lý này khép chuyện lại.
 - Nếu đang có tinh_huong_dang_cho: câu gõ là cách người chơi xử lý tình huống đó. Nếu tình huống có "can_chon": true thì BẮT BUỘC trả "chon" = chỉ số nút gần nhất với cách xử lý (0-based).
 CHỈ TRẢ VỀ JSON đúng khuôn:
 {"ke":"...","ket_qua":"thanh|nua_voi|hong|khong_lam_duoc","chi_so":{"money":0,"health":0,"happy":0,"know":0,"rel":0,"bw":0,"income_mult":1,"agency":0},
@@ -73,7 +74,7 @@ function actPacket(L, text) {
   const ty = L.actsThisYear && L.actsThisYear.age === L.age ? L.actsThisYear : { texts: [] };
   pk.nam_nay_da_lam = ty.texts.slice(-8);
   const bw = L.ar.state.capitals.cognitiveBandwidth.value; pk.suc_luc = Math.round(bw); pk.kiet_suc = bw < 30;
-  if (L.pending) pk.tinh_huong_dang_cho = { tieu_de: L.pending.title, noi_dung: String(L.pending.text || "").slice(0, 500), nut: L.pending.choices.map(c => c.label), can_chon: !isFreeScene(L.pending) };
+  if (L.pending) pk.tinh_huong_dang_cho = { tieu_de: L.pending.title, noi_dung: String(L.pending.text || "").slice(0, 500), nut: L.pending.choices.map(c => c.label), can_chon: !isFreeScene(L.pending), la_chuyen_dang_do: !!L.pending.story };
   pk.co_cho_phep = Argon.ALLOWED_FLAGS;
   pk.viec_lon_cho_phep = Argon.BIG_ACTIONS;
   pk.con_duong = Argon.PATH_LIST.map(d => d.id + ": " + d.vn).join("; ");
@@ -130,17 +131,22 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
   const mark = markChoice(L, p, -1, text);
   try {
     log(L, act.ke, act.ket_qua === "thanh" ? "good" : act.ket_qua === "hong" || act.ket_qua === "khong_lam_duoc" ? "bad" : "");
-    applyEffect(L, actToEffect(act), p.npc ? p.npc.id : undefined);
+    // Trần theo năm cho phần được lợi: thu nhập tối đa ×2, tiền tối đa +3 năm thu nhập, dù gõ bao nhiêu lần.
+    const y = L.actsThisYear; y.mult = y.mult || 1; y.money = y.money || 0;
+    const eff = actToEffect(act);
+    if (eff.income_mult > 1) { eff.income_mult = Math.max(1, Math.min(eff.income_mult, 2 / y.mult)); y.mult *= eff.income_mult; }
+    if (eff.money > 0) { eff.money = Math.max(0, Math.min(eff.money, 3 - y.money)); y.money += eff.money; }
+    applyEffect(L, eff, p.npc ? p.npc.id : undefined);
     applyEffect(L, { bw: -Argon.bwCost(L.actsThisYear.n) });
     const reactions = applyPeople(L, act.nguoi);
-    applyBig(L, act.viec_lon);
+    if (L.alive) applyBig(L, act.viec_lon);
     let story = null;
     const inStory = kind === "scene" && p.story && (L.stories || []).find(s => s.id === p.story);
     if (inStory) {
       const stage = +(String(p.key).split("#")[1]) || inStory.stage + 1;
       advanceStory(L, inStory, stage, act.ke, text, act.chuyen ? { hen_nam: act.chuyen.hen_nam, tom_tat: act.chuyen.tom_tat } : null, act.chuyen ? null : "Chuyện khép lại theo cách của bạn.");
       if (!inStory.closed) story = inStory.title;
-    } else if (act.chuyen) {
+    } else if (act.chuyen && L.alive) {
       L.stories = L.stories || [];
       const st = { id: "st" + seq, title: act.chuyen.ten, summary: act.chuyen.tom_tat, openedAge: L.age, nextAge: L.age + act.chuyen.hen_nam, stage: 0,
         log: [{ age: L.age, text: act.ke, choice: text }], people: (act.nguoi || []).map(x => x.id).filter(Boolean), originMark: mark ? mark.id : null, closed: false, failures: 0 };
@@ -162,19 +168,18 @@ async function agencyAct(L, text, sample) {
   if (!text || !L.alive) return { ok: false, error: "Chưa có gì để làm." };
   if (!sample) return { ok: false, error: "Người kể chuyện chưa trả lời — thử lại" };
   const castIds = new Set([...L.lw.cast.values()].filter(m => m.alive).map(m => m.id));
+  const p0 = L.pending;
   const prompt = AGENCY_RULES + "\n\nBỐI CẢNH:\n" + JSON.stringify(actPacket(L, text));
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const raw = await withTimeout(sample.json(prompt, { modelTier: "default", cache: false }), AGENCY_TIMEOUT);
-      const act = Argon.sanitizeAct(raw, castIds, L.age);
-      if (!act) continue;
-      if (!L.alive) return { ok: false, error: "Đời đã khép lại." };
-      const chon = raw && Number.isInteger(raw.chon) ? raw.chon : null;
-      const card = applyAct(L, act, L.pending ? "scene" : "proactive", text, chon);
-      return { ok: true, card };
-    } catch (e) { /* thử lại */ }
+  let act = null, raw = null;
+  for (let attempt = 0; attempt < 2 && !act; attempt++) {
+    try { raw = await withTimeout(sample.json(prompt, { modelTier: "default", cache: false }), AGENCY_TIMEOUT); act = Argon.sanitizeAct(raw, castIds, L.age); }
+    catch (e) { act = null; /* thử lại */ }
   }
-  return { ok: false, error: "Người kể chuyện chưa trả lời — thử lại" };
+  if (!act) return { ok: false, error: "Người kể chuyện chưa trả lời — thử lại" };
+  if (!L.alive) return { ok: false, error: "Đời đã khép lại." };
+  if (L.pending !== p0) return { ok: false, error: "Tình huống đã đổi trong lúc chờ — gõ lại nhé." };
+  const chon = raw && Number.isInteger(raw.chon) ? raw.chon : null;
+  return { ok: true, card: applyAct(L, act, L.pending ? "scene" : "proactive", text, chon) };
 }
 
 /* ================= CHUYỆN ĐANG DỞ ================= */
@@ -260,9 +265,10 @@ function replayProactive(L) {
   L.replayDone = L.replayDone || new Set();
   const recs = L.replayActs.filter(a => a.kind === "proactive" && a.age === L.age && !L.replayDone.has(a.seq)).sort((a, b) => a.seq - b.seq);
   for (const a of recs) {
-    L.replayDone.add(a.seq);
-    if (L.override && L.override.removeAct === a.seq) continue;
+    if (L.override && L.override.removeAct === a.seq) { L.replayDone.add(a.seq); continue; }
+    if (L.pending) autoChain(L);
     if (!L.alive || L.pending) break;
+    L.replayDone.add(a.seq);
     applyAct(L, a.result, "proactive", a.text, null, a.seq);
   }
 }
@@ -274,4 +280,11 @@ function replayScript(choices, actLog) {
     else script[c.key] = c.index;
   }
   return script;
+}
+
+/** Vòng lặp giao diện gọi khi có chuyện đến hẹn: lấy chặng từ AI; ở chế độ tự chơi thì tự chọn luôn. */
+async function storyTick(L, sample) {
+  const ok = await agencyStory(L, L.storyDue, sample);
+  if (L.auto && L.pending) autoChain(L);
+  return ok;
 }
