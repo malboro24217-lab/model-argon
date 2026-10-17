@@ -129,4 +129,230 @@ const ATN_CARDS: Storylet[] = [
   }),
 ];
 
-export const PACK_CRAFT_A: Storylet[] = [...ATN_CARDS];
+/* =====================================================================
+ * THỢ MAY THÀNH NHÀ THIẾT KẾ — tiền tố fsh_
+ * ===================================================================== */
+const FS = "fashion";
+
+const FSH_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(FS, "fsh_t_doll", [9, 14], () => true, () => T("Áo cho búp bê bằng vải vụn", "Bạn cắt vạt áo cũ của mẹ, khâu tay cho con búp bê của em một bộ đầm có cả túi và cổ lá sen. Bà thợ may đầu ngõ nhìn đường khâu, hỏi ai dạy. Không ai dạy cả.", [
+    C("Xin ra tiệm bà ngồi xem mỗi chiều", { money: -0.01, know: 2, flags: [talentFlag(FS)], counters: { talents_seen: 1 } }, "Mất giờ chơi, mua kim chỉ, mở một con đường"),
+    C("Giấu cái đầm đi, sợ bị mắng cắt áo", { happy: -1, counters: { talents_seen: 1 } }, "Không bị mắng, đôi tay nằm im")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(FS, "fsh_d_alley", [16, 30], () => true, () => T("Tiệm may trong ngõ cần người học", "Tiệm may trong ngõ cần người học việc: ba năm, bao cơm trưa, tháng đầu chỉ được nhặt chỉ và là quần áo. Bà chủ nói người kiên nhẫn thì năm thứ hai được cầm kéo.", [
+    C("Vào học, chịu ba năm lương ít", { ...become(FS), counters: { doors_seen: 1 }, money: -0.03, agency: 0.01 }, "Ba năm gần như không lương, đổi lấy cái nghề"),
+    C("Học buổi tối, ban ngày đi làm", { counters: { doors_seen: 1 }, bw: -4, gamble: { p: 0.35, win: { ...become(FS), log: "Một năm sau, bà chủ giao cho bạn may đồ cho khách quen." }, lose: { log: "Tiệm cần người cả ngày. Bà chủ nhận một người khác." } } }, "Đỡ thiệt, chậm lên tay"),
+    C("Thôi, đi làm nơi khác", { counters: { doors_seen: 1 }, money: 0.02 }, "Có tiền ngay, kim chỉ để sau")], 0)),
+  door(FS, "fsh_d_line", [18, 40], () => true, () => T("Một nghìn hai trăm ống tay mỗi ngày", "Ở xưởng may, mỗi ngày bạn may đúng một đường ống tay, một nghìn hai trăm lần. Bà chủ một tiệm thời trang nhỏ thấy bạn may lại chiếc áo của mình, mời về may mẫu cho tiệm: lương bằng một nửa, nhưng được làm trọn cả chiếc áo.", [
+    C("Nghỉ xưởng, về may mẫu", { ...become(FS), counters: { doors_seen: 1 }, money: -0.1, happy: 3 }, "Nửa lương, học được cả chiếc áo"),
+    C("May mẫu vào Chủ nhật", { counters: { doors_seen: 1 }, health: -2, gamble: { p: 0.35, win: { ...become(FS), log: "Mẫu của bạn bán chạy nhất tiệm. Bà chủ trả lương bằng xưởng để bạn về hẳn." }, lose: { log: "Bà chủ cần người cả tuần, tìm được người khác." } } }, "Giữ lương, mất ngày nghỉ"),
+    C("Ở lại xưởng, lương đều", { counters: { doors_seen: 1 }, money: 0.03 }, "Đủ ăn, vẫn chỉ là một đường may")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(FS, 1, 1, (c) => T("Tấm ảnh trong tạp chí", `Một cô dâu mang đến ảnh chụp ${vn(c) ? "chiếc áo dài cưới" : "chiếc váy cưới"} của một nhà mốt nổi tiếng, muốn may y hệt, hẹn ba tuần. Bạn đã phác sẵn một mẫu khác hợp dáng cô hơn: cổ thuyền, tay lỡ, ít đính kết.`, [
+    C("May y hệt tấm ảnh", { counters: step(c, FS), money: 0.04, flags: ["fsh_copier"] }, "Khách vui, bạn chỉ là đôi tay chép"),
+    C("Thuyết phục cô thử mẫu của bạn", { counters: step(c, FS), gamble: { p: 0.5, win: { flags: ["fsh_own_style"], counters: { fsh_name: 1 }, happy: 4, log: "Ảnh cưới được chia sẻ khắp nơi. Ba cô dâu khác tìm đến hỏi đúng mẫu ấy." }, lose: { money: -0.02, happy: -3, log: "Cô dâu khóc trong phòng thử. Bạn may lại theo ảnh, không lấy thêm tiền." } } }, "Có thể có tên, có thể mất khách")], 1), (c) => c.age >= 18),
+  beat(FS, 2, 3, (c) => T("Mười hai bộ đầu tay", `Mười hai bộ đồ đầu tay của bạn${f(c, "fsh_own_style") ? ", nối tiếp chiếc váy cưới năm nào," : ""} được một người mẫu đăng lên mạng. Một chuỗi thời trang nhanh muốn mua đứt cả mười hai mẫu để sản xuất năm mươi nghìn chiếc. Một nhà đầu tư muốn rót vốn, đổi lấy năm mươi mốt phần trăm nhãn hiệu.`, [
+    C("Bán đứt mẫu cho chuỗi thời trang", { counters: step(c, FS), money: 0.6, flags: ["fsh_sold_designs"] }, "Tiền ngay, mẫu của bạn mang tên người khác"),
+    C("Nhận vốn, nhường quyền chi phối", { counters: step(c, FS), income_mult: 1.6, flags: ["fsh_investor"] }, "Lớn nhanh, người khác cầm lái"),
+    C("Mở đặt trước, chỉ may số đã trả tiền", { counters: step(c, FS), agency: 0.03, bw: -5, gamble: { p: 0.4 + 0.1 * Math.min(2, n(c, "fsh_name")), win: { flags: ["fsh_preorder"], income_mult: 1.3, counters: { fsh_name: 1, fsh_team: 1 }, log: "Bốn trăm đơn đặt trước trong một tuần. Bạn thuê sáu thợ may trong khu, trả theo giờ." }, lose: { income_mult: 1.05, log: "Được chín mươi đơn: đủ tiền vải, chưa đủ trả công mình." } } }, "Chậm, không ai cầm lái thay bạn", { tier: "sovereign" })], 0), (c) => c.age >= 18),
+  beat(FS, 3, 4, (c) => T("Cửa sắt khóa từ bên ngoài", `Đơn hàng tăng gấp năm${f(c, "fsh_investor") ? "; nhà đầu tư chỉ định một xưởng gia công rẻ nhất" : ""}. Hai giờ sáng, bạn ghé xưởng gia công lấy hàng mẫu: ba mươi thợ vẫn đang may, cửa sắt khóa từ bên ngoài, lối thoát hiểm chất đầy cuộn vải. Sáng mai là ngày giao hàng cho đợt mở bán lớn nhất của bạn.`, [
+    C("Nhận hàng, coi như không thấy", { counters: step(c, FS, { honest: -1 }), money: 0.2, flags: ["fsh_sweatshop"] }, "Kịp mở bán, một bức ảnh có thể quay lại"),
+    C("Rút hàng, chuyển sang xưởng trả lương đàng hoàng", { counters: step(c, FS), money: -0.3, income_mult: 0.85, flags: ["fsh_fair_made"] }, "Lỡ đợt bán lớn, ngủ yên"),
+    C("Báo thanh tra lao động, công khai nơi may", { counters: step(c, FS), bw: -5, gamble: { p: f(c, "fsh_investor") ? 0.35 : 0.5, win: { flags: ["fsh_open_supply"], counters: { fsh_name: 2 }, log: "Xưởng bị buộc mở lối thoát hiểm và trả lương làm thêm. Khách hàng đứng về phía bạn." }, lose: { income_mult: 0.8, log: "Nhà đầu tư nói bạn 'làm ồn' rồi rút vốn. Đợt mở bán bị hủy." } } }, "Có thể mất vốn, xưởng phải mở cửa", { tier: "awakened" }),
+    C("Bỏ nhãn hiệu, về làm thợ may thuê", { counters: step(c, FS), ...leave(FS), flags: ["ex_designer"], happy: -3 }, "Hết lo nhãn hiệu, giấc mơ khép lại")], 1), (c) => c.age >= 18),
+  beat(FS, 4, 5, (c) => {
+    if (f(c, "fsh_sweatshop")) return T("Nhãn của bạn trong bức ảnh", "Một bài báo điều tra đăng ảnh xưởng gia công bị cháy một góc. Không ai chết, nhưng ảnh chụp rõ chồng áo gắn nhãn của bạn cạnh cánh cửa khóa ngoài. Điện thoại reo suốt đêm.", [
+      C("Xin lỗi công khai, trả đủ lương cho thợ xưởng", { counters: step(c, FS), custom: "apologize", money: -0.5, flags: ["fsh_repaid"] }, "Mất nhiều tiền, có thể giữ được nghề"),
+      C("Đổ hết cho xưởng gia công", { counters: step(c, FS, { honest: -1 }), income_mult: 0.7, flags: ["fsh_blamed"] }, "Tạm thoát, khách hàng không quên"),
+      C("Đóng nhãn hiệu", { counters: step(c, FS), ...leave(FS), flags: ["ex_designer"], happy: -5 }, "Dứt chuyện, mất cả sự nghiệp")], 0);
+    if (n(c, "fsh_name") >= 2 || f(c, "fsh_preorder") || f(c, "fsh_fair_made") || f(c, "fsh_open_supply")) return T("Tuần lễ thời trang gọi tên", `Bạn được mời trình diễn ở một tuần lễ thời trang lớn ở nước ngoài, chi phí bằng nửa năm doanh thu.${n(c, "fsh_team") > 0 ? " Đội thợ của bạn đã sẵn sàng thức trắng một tháng." : ""} Cùng lúc, một tập đoàn muốn mua lại nhãn hiệu, giữ bạn làm giám đốc sáng tạo năm năm.`, [
+      C("Dồn tiền đi trình diễn", { counters: step(c, FS), money: -0.4, gamble: { p: 0.45 + 0.05 * Math.min(2, n(c, "fsh_name")), win: { income_mult: 1.5, counters: { fsh_name: 2 }, log: "Hai cửa hàng lớn ở nước ngoài đặt hàng ngay sau buổi diễn." }, lose: { happy: -4, log: "Buổi diễn trùng giờ với một tên tuổi lớn. Không phóng viên nào đến." } } }, "Đặt cược nửa năm doanh thu"),
+      C("Bán nhãn hiệu cho tập đoàn", { counters: step(c, FS), money: 1.0, income_mult: 1.2, flags: ["fsh_acquired"] }, "Giàu lên, tên bạn thuộc về người khác"),
+      C("Giữ nhỏ, mở lớp cắt may cho thợ trong khu", { counters: step(c, FS, { fsh_team: 1 }), income_mult: 0.95, agency: 0.02, flags: ["fsh_school"] }, "Chậm giàu, dạy được người khác", { longterm: true })], 2);
+    return T("Tiệm vắng cuối mùa", "Tiệm ở mặt phố tăng giá thuê gấp đôi. Trên mạng có hàng chục cửa hàng bán mẫu của bạn với giá một phần ba. Tháng này bạn bán được mười một bộ.", [
+      C("Chuyển hẳn sang bán qua livestream", { counters: step(c, FS), income_mult: 1.1, bw: -5, flags: ["fsh_live"] }, "Sống được, ngày nào cũng phải nói"),
+      C("Quay về sửa đồ, may đo cho khách quen", { counters: step(c, FS), income_mult: 0.75, happy: 2, flags: ["fsh_tailor_again"] }, "Nhỏ lại, yên tâm"),
+      C("Đóng tiệm, đi thiết kế cho xưởng lớn", { counters: step(c, FS), ...leave(FS), flags: ["ex_designer"] }, "Lương đều, tên bạn biến mất")], 1);
+  }, (c) => c.age >= 18),
+  beat(FS, 5, 6, (c) => T("Kho rập giấy ba mươi năm", `${f(c, "fsh_acquired") ? "Nhãn hiệu mang tên bạn giờ có ba mươi cửa hàng, nhưng bạn không còn được chọn vải. " : f(c, "fsh_school") ? "Lớp cắt may của bạn đã có hơn trăm người ra nghề. " : f(c, "fsh_blamed") ? "Người ta vẫn hỏi bạn về xưởng gia công năm ấy. " : ""}Một trường dạy nghề xin kho rập giấy ba mươi năm của bạn làm giáo trình. Một nhà sưu tầm trả giá cao cho chính kho rập ấy.`, [
+    C("Tặng kho rập cho trường", { counters: step(c, FS), flags: ["passed_on"], rel: 4 }, "Không tiền, người trẻ học được"),
+    C("Bán cho nhà sưu tầm", { counters: step(c, FS), money: 0.5 }, "Tiền dưỡng già, rập nằm trong tủ kính"),
+    C("Giữ lại, may tiếp cho vài khách cũ", { counters: step(c, FS), happy: 3, flags: ["fsh_last_clients"] }, "Còn được cầm kéo, chẳng để lại gì")], 0), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(FS, "fsh_rush", [18, 65], 7, (c) => T("Bốn mươi đơn trong mười ngày", vn(c)
+    ? vary("fshru", c.age, ["Tháng Chạp, khách đặt áo dài Tết dồn về: bốn mươi bộ trong mười ngày.", "Mùa cưới đến sớm. Ba nhà đặt áo cho cả họ, giao trước rằm."])
+    : vary("fshru", c.age, ["Mùa lễ cuối năm, bốn mươi đơn may đo dồn về trong mười ngày.", "Mùa cưới đến sớm. Ba gia đình đặt đồ cho cả họ, giao trong hai tuần."]), [
+    C("Nhận hết, thức thâu đêm", { money: 0.08, health: -4 }, "Tiền nhiều, thân thể trả giá"),
+    C("Nhận một nửa, hẹn khách lần sau", { money: 0.03, rel: -1 }, "Đỡ mệt, mất vài khách"),
+    C("Thuê thợ thời vụ, kèm họ từng đường", { money: 0.05, bw: -3, counters: { fsh_team: 1 } }, "Mệt đầu, tiệm có thêm người", { tier: "awakened" })], 1)),
+  daily(FS, "fsh_influencer", [18, 60], 8, () => T("Mượn đầm đi tiệc", "Một người có hai triệu người theo dõi muốn mặc bộ đầm mới của bạn đến một buổi tiệc, đổi lại gắn tên tiệm. Họ không trả tiền và không hứa trả lại đồ.", [
+    C("Tặng, đổi lấy một lần nhắc tên", { money: -0.03, gamble: { p: 0.4, win: { money: 0.06, counters: { fsh_name: 1 }, log: "Tiệm hết hàng trong ba ngày." }, lose: { log: "Họ đăng ảnh, không gắn tên tiệm." } } }, "Mất một bộ, có thể nổi"),
+    C("Báo giá như mọi khách", { happy: 1, flags: ["fsh_no_freebies"] }, "Giữ giá, mất một cơ hội")], 1)),
+  daily(FS, "fsh_silk", [20, 60], 9, () => T("Lô vải sờ như lụa", "Mối vải quen chào một lô vải bóng mượt, sờ như lụa, giá bằng một nửa. Họ nói thẳng: một nửa là sợi tổng hợp, nhưng tiệm nào cũng ghi là lụa.", [
+    C("Mua, ghi nhãn lụa", { money: 0.1, secret: { tag: "FORGED_PAPERS", severity: 0.3, fuse_years: [2, 8], note: "ghi nhãn lụa cho vải pha sợi tổng hợp" } }, "Lời nhiều, nhãn mác nói dối"),
+    C("Mua, ghi đúng thành phần", { money: 0.03, counters: { honest: 1 } }, "Lời ít, khách tin"),
+    C("Đặt lụa dệt tay của một làng dệt, trả trước", { money: -0.06, flags: ["fsh_handwoven"], counters: { fsh_name: 1 } }, "Đắt và chậm, có chuyện để kể", { tier: "awakened" })], 1)),
+  daily(FS, "fsh_size", [18, 60], 8, () => T("Nhãn cỡ trong phòng thử", "Một khách quen thì thầm nhờ bạn khâu nhãn cỡ S vào chiếc váy cỡ M. Cô nói cô không chịu nổi chữ M mỗi lần mở tủ.", [
+    C("Khâu nhãn S cho khách vui", { rel: 1, counters: { fsh_kind: 1 } }, "Khách vui, một lời nói dối nhỏ"),
+    C("Từ chối, nói thật về số đo", { rel: -1, counters: { honest: 1 } }, "Thật thà, có thể mất khách"),
+    C("Bỏ hẳn nhãn S, M, L, chỉ ghi số đo thật", { bw: -2, flags: ["fsh_no_sizes"], gamble: { p: 0.5, win: { counters: { fsh_name: 1 }, log: "Khách bắt đầu gọi đây là tiệm 'không có cỡ'." }, lose: { money: -0.03, log: "Một số khách thấy phiền, sang tiệm khác." } } }, "Đổi luật của tiệm, có người không quen", { tier: "sovereign" })], 0)),
+  daily(FS, "fsh_collar", [20, 60], 9, () => T("Cổ áo của bạn ở cửa hàng lớn", "Bộ sưu tập mới của một hãng thời trang lớn có đúng chiếc cổ áo bạn vẽ và bán từ hai năm trước, xếp nếp y hệt.", [
+    C("Đăng ảnh so sánh lên mạng", { flags: ["fsh_public_fight"], gamble: { p: 0.5, win: { counters: { fsh_name: 1 }, log: "Người xem đứng về phía bạn. Đơn hàng tăng." }, lose: { happy: -3, log: "Hãng nói xếp nếp là kỹ thuật chung. Bạn bị gọi là kẻ ăn theo." } } }, "Có thể được ủng hộ, có thể bị chê"),
+    C("Thuê luật sư", { money: -0.15, gamble: { p: 0.3, win: { money: 0.4, log: "Hãng chịu dàn xếp ngoài tòa." }, lose: { happy: -4, log: "Mẫu áo chưa đăng ký, vụ kiện dừng lại." } } }, "Tốn tiền chắc, thắng không chắc"),
+    C("Im lặng, làm mẫu tiếp theo nhanh hơn", { know: 2, happy: -1 }, "Không tốn gì, nuốt cục tức")], 2)),
+  daily(FS, "fsh_eyes", [30, 70], 9, () => T("Kim không xâu được nữa", "Mười mấy năm may dưới ánh đèn bàn, giờ bạn phải nheo mắt mới xâu được kim. Bác sĩ dặn bớt làm đêm, đeo kính, nghỉ mắt mỗi giờ.", [
+    C("Thuê một thợ trẻ làm phần chi tiết", { money: -0.05, health: 2, counters: { fsh_team: 1 } }, "Tốn lương, giữ được mắt"),
+    C("Cứ làm như cũ", { health: -4, money: 0.02 }, "Đỡ tốn, mắt kém dần")], 0)),
+  daily(FS, "fsh_scraps", [20, 60], 8, (c) => T("Hai trăm ký vải vụn", vary("fshsc", c.age, [
+    "Cuối năm, bạn đếm được hơn hai trăm ký vải vụn chất trong kho, sắp bị đem đi đổ.",
+    "Xe rác không chịu chở mấy bao vải vụn của tiệm nữa, bảo phải thuê xe riêng."]), [
+    C("Làm một dòng đồ chắp vá từ vải vụn", { bw: -3, gamble: { p: 0.45, win: { money: 0.06, flags: ["fsh_patchwork"], log: "Dòng chắp vá bán hết trong một tháng." }, lose: { log: "Chỉ bán được vài chiếc. Số còn lại bạn tặng trường mầm non." } } }, "Thêm việc, có thể ra một dòng mới"),
+    C("Bán rẻ cho người thu gom", { money: 0.01 }, "Nhanh gọn, vải thành rác ở nơi khác")], 1)),
+  daily(FS, "fsh_vanished", [20, 60], 9, () => T("Cửa hàng ký gửi biến mất", "Cửa hàng nhận ký gửi sáu mươi bộ đồ của bạn đóng cửa sau một đêm. Chủ cửa hàng không nghe máy. Số tiền bằng gần hai tháng thu nhập.", [
+    C("Đến tận nhà đòi", { money: -0.15, bw: -4, gamble: { p: 0.4, win: { money: 0.1, log: "Bà ấy trả một nửa, khóc nói chồng nợ cờ bạc." }, lose: { log: "Nhà khóa cửa. Hàng xóm nói họ đã chuyển đi." } } }, "Mất sức, có thể đòi lại một phần"),
+    C("Đăng lên mạng cảnh báo các tiệm khác", { money: -0.15, rel: 2, flags: ["fsh_warned_others"] }, "Mất tiền, giữ người khác khỏi mất"),
+    C("Soạn hợp đồng ký gửi mẫu cho mọi đơn về sau", { money: -0.15, agency: 0.01, flags: ["fsh_contracts"] }, "Mất tiền lần này, đóng cửa lần sau", { tier: "awakened" })], 2)),
+  daily(FS, "fsh_mentor", [22, 65], 99, (c, N) => { const m = role(c, "mentor")!; return T("Tiệm may của người thầy", `${N(m)}, người dạy bạn cầm kéo, phải nghỉ vì đau lưng. Tiệm may nhỏ ấy còn hơn trăm khách quen ba mươi năm và hai chiếc máy may cũ. ${N(m)} hỏi bạn có muốn nhận lại không.`, [
+    C("Nhận tiệm, giữ khách của thầy", { money: -0.1, bw: -4, memory: { npc: m, tag: "KEPT_PROMISE", weight: 0.3, note: "nhận lại tiệm may và khách quen của thầy" } }, "Thêm gánh nặng, giữ được một nơi"),
+    C("Từ chối, việc mình đã quá sức", { trust: { npc: m, delta: -0.1 } }, "Giữ sức, tiệm cũ đóng cửa"),
+    C("Nhận, chia lãi cho thầy hằng tháng", { money: -0.05, income_mult: 1.05, memory: { npc: m, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "chia lãi tiệm may cho thầy lúc về già" } }, "Bớt lãi, thầy có chỗ dựa", { tier: "awakened" })], 0, { npc: m }); }, (c) => !!role(c, "mentor")),
+  daily(FS, "fsh_rival", [20, 60], 8, (c, N) => { const r = role(c, "rival")!; return T("Bị tố chép mẫu", `${N(r)} mở nhãn hiệu cùng năm với bạn, nay đăng lên mạng ảnh hai chiếc áo đặt cạnh nhau, tố bạn chép mẫu.`, [
+    C("Đăng bản phác thảo có ghi ngày tháng", { gamble: { p: 0.6, win: { counters: { fsh_name: 1 }, memory: { npc: r, tag: "HUMILIATED_ME", weight: -0.2, note: "bị bóc trần lời tố chép mẫu áo" }, log: "Bản phác thảo của bạn có trước bốn tháng. Bài tố bị gỡ." }, lose: { happy: -2, log: "Người xem vẫn chia hai phe." } } }, "Có thể thắng, kết thêm một mối thù"),
+    C("Mời làm chung một bộ sưu tập", { gamble: { p: 0.4, win: { memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.3, note: "làm chung một bộ sưu tập sau vụ tố chép mẫu" }, money: 0.05, log: "Bộ sưu tập chung bán hết. Hai bên thôi đá xéo nhau." }, lose: { log: "Họ coi lời mời là nhận tội." } } }, "Biến đối thủ thành đồng minh, hoặc mất mặt", { tier: "awakened" }),
+    C("Im lặng", { happy: -3, counters: { fsh_name: -1 } }, "Không ồn ào, mang tiếng")], 0, { npc: r }); }, (c) => !!role(c, "rival")),
+  daily(FS, "fsh_quit", [28, 60], 99, () => T("Phòng rập của hãng đồng phục", "Một hãng may đồng phục mời bạn làm trưởng phòng rập, lương đều, có bảo hiểm. Từ nay chỉ còn áo sơ mi trắng và quần tây xanh.", [
+    C("Nhận, gác giấc mơ nhãn hiệu", { ...leave(FS), flags: ["ex_designer"] }, "Yên ổn, mất cái tên của mình"),
+    C("Ở lại với tiệm", { happy: 1, counters: { fsh_name: 1 } }, "Túng thêm vài năm")], 1), (c) => c.happy < 50 || c.broke),
+
+  /* ---------- gia đình ---------- */
+  cross(FS, "fsh_family", [22, 65], (c) => (c.kids_teen > 0 && !!role(c, "child")) || !!role(c, "father") || !!role(c, "mother"), (c, N) => {
+    const k = role(c, "child");
+    if (c.kids_teen > 0 && k) return T("Chiếc áo khoác bị ném vào góc", `${N(k)} về nhà, ném chiếc áo khoác bạn may vào góc: cả lớp chê đồ "nhà làm", đứa nào cũng mặc đồ hiệu.`, [
+      C("Mua cho con một chiếc đồ hiệu", { money: -0.04, trust: { npc: k, delta: 0.1 } }, "Con vui, bạn chạnh lòng"),
+      C("Cùng con vẽ chiếc áo con muốn mặc", { bw: -2, trust: { npc: k, delta: 0.2 }, flags: ["fsh_kid_design"] }, "Mất mấy buổi tối, con có thứ không ai có", { tier: "awakened" }),
+      C("Bảo con đừng để ý lời người khác", { trust: { npc: k, delta: -0.1 } }, "Nhanh, con thấy không ai hiểu mình")], 1, { npc: k });
+    const p = (role(c, "father") ?? role(c, "mother"))!;
+    return T("Áo cho ngày mừng thọ", `${N(p)} sắp mừng thọ bảy mươi, ${vn(c) ? "cả họ sẽ về" : "cả nhà sẽ tụ họp"}. ${N(p)} muốn mặc lại kiểu áo ngày cưới, nhờ bạn may, nhưng chỉ còn một tấm ảnh đen trắng đã mờ.`, [
+      C("Gác đơn hàng một tuần để may", { money: -0.04, happy: 3, trust: { npc: p, delta: 0.3 } }, "Mất một tuần thu nhập, có một ngày đẹp"),
+      C("May kiểu mới cho hợp tuổi", { gamble: { p: 0.5, win: { trust: { npc: p, delta: 0.15 }, log: `${N(p)} mặc vào, soi gương rất lâu.` }, lose: { trust: { npc: p, delta: -0.1 }, log: `${N(p)} bảo đẹp, nhưng không phải cái áo ấy.` } } }, "Nhanh hơn, có thể sai ý"),
+      C("Nhờ thợ trong tiệm may thay", { money: -0.01, trust: { npc: p, delta: -0.05 } }, "Không lỡ việc, không phải tay bạn")], 0, { npc: p });
+  }),
+];
+
+/* =====================================================================
+ * THỢ CẮT TÓC — tiền tố brb_
+ * ===================================================================== */
+const BB = "barber";
+
+const BRB_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(BB, "brb_t_scissors", [10, 15], () => true, () => T("Cây kéo cắt vải của mẹ", "Nhà không có tiền ra tiệm, bạn cắt tóc cho em bằng cây kéo cắt vải của mẹ. Lần đầu lởm chởm, lần thứ ba thì gọn gàng đến mức mấy đứa trẻ hàng xóm xếp hàng trước hiên chờ.", [
+    C("Cắt cho cả xóm, lấy vài đồng", { money: 0.01, rel: 2, flags: [talentFlag(BB)], counters: { talents_seen: 1 } }, "Có tiền tiêu vặt, bài vở bị bỏ dở"),
+    C("Cất kéo, sợ cắt hỏng tóc người ta", { counters: { talents_seen: 1 } }, "Không ai trách, đôi tay quên dần")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(BB, "brb_d_oldchair", [16, 40], () => true, (c) => T("Chiếc ghế của ông thợ già", `${vn(c) ? "Ông thợ cắt tóc dưới gốc cây đầu chợ có một tấm gương đóng vào thân cây và một chiếc ghế sắt, ba mươi năm không đổi." : "Ông thợ cắt tóc ở góc phố có một tiệm hai ghế, ba mươi năm không đổi."} Mắt ông kém rồi. Ông bảo nếu bạn chịu theo ông một năm, ông giao lại chỗ ngồi và cả sổ khách quen.`, [
+    C("Theo ông, nhận lại chỗ", { ...become(BB), counters: { doors_seen: 1 }, money: -0.03, flags: ["brb_old_chair"] }, "Một năm lương ít, có sẵn khách quen"),
+    C("Học vào cuối tuần", { counters: { doors_seen: 1 }, bw: -3, gamble: { p: 0.35, win: { ...become(BB), flags: ["brb_old_chair"], log: "Ông khen tay bạn chắc. Ông về quê, để lại cây kéo." }, lose: { log: "Ông nhận một người theo học cả tuần. Chỗ ngồi thuộc về người ấy." } } }, "Giữ việc, có thể chậm chân"),
+    C("Thôi, nghề này đứng cả ngày", { counters: { doors_seen: 1 } }, "Không phải đứng, không có nghề tay")], 0)),
+  door(BB, "brb_d_academy", [18, 35], () => true, () => T("Khóa học sáu tháng không lương", "Một chuỗi tiệm tóc mở khóa đào tạo sáu tháng không lương. Học xong được đứng một ghế, hưởng bốn mươi phần trăm tiền công; học phí trừ dần vào lương hai năm.", [
+    C("Ký, học sáu tháng", { ...become(BB), counters: { doors_seen: 1 }, money: -0.08, flags: ["brb_chain_trained"] }, "Nửa năm không lương, nghề bài bản"),
+    C("Học khóa hai tuần ở trung tâm rẻ", { counters: { doors_seen: 1 }, money: -0.02, gamble: { p: 0.3, win: { ...become(BB), log: "Một tiệm nhỏ nhận bạn đứng ghế thử. Tháng sau họ giữ bạn lại." }, lose: { log: "Học xong, chưa tiệm nào dám giao khách cho bạn." } } }, "Rẻ, nhanh, tay còn non"),
+    C("Không ký", { counters: { doors_seen: 1 } }, "Giữ tự do, không có nghề mới")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(BB, 1, 1, (c) => T("Kiểu tóc trong điện thoại", `Vị khách đầu tiên trong ngày ngồi vào ${f(c, "brb_old_chair") ? "chiếc ghế của ông thầy" : "ghế của bạn"}, chìa ra ảnh một cầu thủ với kiểu tóc cạo hai bên, vẽ đường kẻ. Bạn chưa làm kiểu này bao giờ. Ngoài cửa còn ba người đang chờ.`, [
+    C("Nói thật, đề nghị kiểu bạn làm chắc tay", { counters: step(c, BB, { brb_regulars: 1 }), money: -0.01 }, "Mất một lần lấy le, được một khách tin"),
+    C("Làm thử, chậm mà kỹ", { counters: step(c, BB), gamble: { p: 0.5, win: { flags: ["brb_bold_cuts"], happy: 4, log: "Cậu ta chụp ảnh đăng lên mạng. Hôm sau năm đứa bạn cậu kéo đến." }, lose: { happy: -3, log: "Đường kẻ lệch. Cậu ta đội mũ đi về, không quay lại." } } }, "Có thể nổi, có thể mất mặt")], 0), (c) => c.age >= 18),
+  beat(BB, 2, 3, (c) => T("Mặt bằng ở phố chính", `${n(c, "brb_regulars") >= 2 ? "Khách quen đã đủ để bạn ít khi ngồi chơi." : "Khách đến đều hơn, nhưng chưa ai gọi bạn bằng tên."} Một mặt bằng ở phố chính cho thuê giá gấp ba chỗ cũ. Một chuỗi tiệm tóc mời bạn mở tiệm nhượng quyền: họ lo biển hiệu và khách, bạn trả phí hằng tháng và theo bảng giá của họ.`, [
+    C("Vay tiền, thuê mặt bằng đứng tên mình", { counters: step(c, BB), custom: "borrow:0.4", income_mult: 1.4, flags: ["brb_own_shop"] }, "Nợ một khoản, tiệm là của mình"),
+    C("Mở tiệm nhượng quyền của chuỗi", { counters: step(c, BB), income_mult: 1.3, flags: ["brb_franchise"] }, "Khách có sẵn, luật là của họ"),
+    C("Rủ ba thợ chung tiệm, chia đều ghế và tiền thuê", { counters: step(c, BB), agency: 0.03, gamble: { p: 0.45 + 0.1 * Math.min(2, n(c, "brb_regulars")), win: { flags: ["brb_collective"], income_mult: 1.3, counters: { brb_regulars: 1 }, log: "Bốn chiếc ghế, một cuốn sổ thu chi treo trên tường, ai cũng xem được." }, lose: { income_mult: 1.05, log: "Nửa năm sau, một thợ rút đi với nửa số khách. Tiệm co lại còn hai ghế." } } }, "Chia quyền, chia rủi ro, cần người tin nhau", { tier: "sovereign" })], 0), (c) => c.age >= 18),
+  beat(BB, 3, 4, (c) => T("Sáu mươi ngày để dọn đi", `Tòa nhà bị bán. Chủ mới dán thông báo lên cửa kính: sáu mươi ngày nữa phải dọn đi để ${c.poor_country ? "làm cửa hàng điện thoại" : "xây cao ốc"}. ${f(c, "brb_franchise") ? "Chuỗi tiệm đòi bạn tự bỏ tiền dựng lại tiệm theo mẫu của họ ở chỗ mới, nếu không sẽ phạt hợp đồng." : f(c, "brb_collective") ? "Ba thợ cùng tiệm nhìn bạn, chờ quyết định." : "Toàn bộ đồ nghề của bạn chất vừa hai chuyến xe."}`, [
+    C("Dời vào ngõ nhỏ, giá thuê rẻ", { counters: step(c, BB), income_mult: 0.8, flags: ["brb_alley"] }, "Đỡ tiền thuê, mất khách vãng lai"),
+    C("Cắt tóc lưu động: tận nhà, viện dưỡng lão", { counters: step(c, BB), bw: -4, flags: ["brb_mobile"], gamble: { p: 0.3 + 0.1 * Math.min(3, n(c, "brb_regulars")), win: { counters: { brb_regulars: 2 }, income_mult: 1.1, log: "Khách quen gọi điện đặt lịch. Viện dưỡng lão đặt bạn mỗi tuần một buổi." }, lose: { income_mult: 0.75, log: "Một ngày chạy ba nơi, chỉ cắt được sáu đầu tóc." } } }, "Không cần mặt bằng, sống nhờ khách quen", { tier: "awakened" }),
+    C("Vay lớn, mua đứt một gian ở góc chợ", { counters: step(c, BB), custom: "borrow:1", income_mult: 1.1, flags: ["brb_bought_space"] }, "Nợ nặng, từ nay không ai đuổi được"),
+    C("Gác kéo, đi làm việc khác", { counters: step(c, BB), ...leave(BB), flags: ["ex_barber"], happy: -3 }, "Hết lo mặt bằng, mất cái nghề")], 0), (c) => c.age >= 18),
+  beat(BB, 4, 5, (c, N) => {
+    if (f(c, "brb_franchise")) return T("Phí nhượng quyền tăng một nửa", "Chuỗi tiệm đổi chủ. Phí hằng tháng tăng một nửa, bảng giá mới cao đến mức khách quen của bạn bắt đầu sang tiệm khác. Hợp đồng còn bốn năm.", [
+      C("Phá hợp đồng, chịu phạt, treo biển tên mình", { counters: step(c, BB), money: -0.3, agency: 0.02, unflags: ["brb_franchise"], flags: ["brb_own_shop"] }, "Mất một khoản phạt, lấy lại tiệm"),
+      C("Chịu, theo bảng giá mới", { counters: step(c, BB, { brb_regulars: -1 }), income_mult: 0.85 }, "Yên chuyện hợp đồng, khách quen thưa dần"),
+      C("Rủ các tiệm nhượng quyền khác cùng đàm phán lại", { counters: step(c, BB), bw: -4, gamble: { p: 0.45, win: { income_mult: 1.1, flags: ["brb_franchise_union"], log: "Hai mươi ba tiệm cùng ký một lá thư. Chuỗi rút lại một nửa mức tăng." }, lose: { money: -0.1, log: "Chuỗi tách từng tiệm ra nói chuyện riêng. Bạn bị ghi tên là người cầm đầu." } } }, "Đông thì mạnh, đứng đầu thì dễ bị nhắm", { tier: "awakened" })], 1);
+    if (n(c, "brb_regulars") >= 3 || f(c, "brb_collective") || f(c, "brb_mobile")) return T("Người thợ biết tên cả khu", `Tiệm của bạn thành chỗ cả khu ghé ${vn(c) ? "uống trà đá" : "uống cà phê"}, nghe chuyện. Một đoạn phim ngắn về "người thợ biết tên cả khu phố" có hàng triệu lượt xem. Một chuỗi lớn muốn mua tiệm và cả tên bạn; một quỹ xã hội muốn bạn mở lớp nghề cho thanh niên vừa ra trại.`, [
+      C("Bán tiệm và tên cho chuỗi", { counters: step(c, BB), money: 0.8, income_mult: 0.9, flags: ["brb_sold"] }, "Có một khoản lớn, tiệm không còn của mình"),
+      C("Mở lớp nghề cho thanh niên ra trại", { counters: step(c, BB), income_mult: 0.95, rel: 4, agency: 0.02, flags: ["brb_school"] }, "Ít lời, dạy được người khác", { longterm: true }),
+      C("Giữ nguyên, thêm một ghế cho thợ trẻ", { counters: step(c, BB, { brb_regulars: 1 }), income_mult: 1.15 }, "Lớn chậm, giữ nguyên chất tiệm")], 2);
+    const r = role(c, "rival");
+    return T("Tiệm đèn neon bên kia đường", `${r ? `${N(r)} mở` : "Bên kia đường mở"} một tiệm tóc kiểu mới: đèn neon, nhạc to, ba thợ trẻ, giá bằng bạn. Cuối ngày, tay bạn bắt đầu run nhẹ mỗi khi cầm dao cạo.`, [
+      C("Chuyên cạo mặt, cắt kiểu cổ điển cho khách lớn tuổi", { counters: step(c, BB), income_mult: 0.9, happy: 2, flags: ["brb_classic"] }, "Ít khách hơn, đúng sở trường"),
+      C("Nhận một thợ trẻ, học kiểu mới từ cậu ấy", { counters: step(c, BB), gamble: { p: 0.5, win: { income_mult: 1.15, counters: { brb_regulars: 1 }, log: "Cậu thợ trẻ kéo khách trẻ về. Bạn giữ khách già. Tiệm đông cả hai đầu." }, lose: { money: -0.05, log: "Cậu ta học xong nghề cạo của bạn rồi sang tiệm neon." } } }, "Học lại từ người trẻ, có thể bị bỏ", { tier: "awakened" }),
+      C("Treo kéo, nghỉ nghề", { counters: step(c, BB), ...leave(BB), flags: ["ex_barber"] }, "Nghỉ ngơi, mất thu nhập")], 0, r ? { npc: r } : {});
+  }, (c) => c.age >= 18),
+  beat(BB, 5, 6, (c) => T("Lần cạo mặt cuối cho ông khách", `Ông khách ngồi ghế của bạn mỗi sáng thứ Bảy suốt hai mươi năm nay nằm viện, không dậy được. Gia đình gọi: ông muốn được cắt tóc, cạo mặt một lần nữa. Hôm ấy là ngày đông khách nhất tuần.${f(c, "brb_school") ? " Một học trò lớp nghề đang đứng ghế bên cạnh bạn." : f(c, "brb_sold") ? " Tiệm giờ mang biển hiệu của chuỗi, nhưng ông vẫn chỉ đòi bạn." : ""}`, [
+    C("Đóng tiệm một ngày, vào viện", { counters: step(c, BB), money: -0.02, happy: 5, rel: 3, flags: ["brb_last_shave"] }, "Mất ngày đông khách, giữ trọn một lời hẹn"),
+    C("Cử thợ trẻ đi thay, giữ ca đông khách", { counters: step(c, BB), money: 0.02, happy: -3 }, "Không mất tiền, mang một nỗi áy náy"),
+    C("Đi cùng thợ trẻ, để cậu ấy cạo, bạn đứng cạnh", { counters: step(c, BB), happy: 3, flags: ["passed_on"] }, "Truyền nghề tận tay, ông khách có thể phật ý", { tier: "awakened" })], 0), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(BB, "brb_towel", [18, 65], 8, () => T("Chuyện kể dưới khăn nóng", "Một khách quen, dưới chiếc khăn nóng, kể rằng ông sắp kiện một khách quen khác của tiệm vì món nợ cũ. Chiều nay người kia đến cắt tóc, hỏi bạn có nghe ngóng được gì không.", [
+    C("Giữ kín, chuyện trên ghế để lại trên ghế", { counters: { brb_regulars: 1, honest: 1 } }, "Giữ chữ tín, người kia không được báo trước"),
+    C("Nói cho người kia biết", { rel: -2, counters: { brb_regulars: -1 }, flags: ["brb_gossip"] }, "Giúp một người, mất tiếng kín miệng"),
+    C("Gợi ý hai người ngồi lại ở tiệm, bạn pha trà", { gamble: { p: 0.4, win: { rel: 3, counters: { brb_regulars: 1 }, log: "Họ ngồi đến tối. Không ai phải ra tòa." }, lose: { rel: -2, log: "Hai người to tiếng, một người không bao giờ quay lại." } } }, "Có thể hòa giải, có thể mất cả hai", { tier: "awakened" })], 0)),
+  daily(BB, "brb_inspect", [18, 65], 9, () => T("Dao cạo dùng một lần", "Quy định mới: dao cạo dùng một lần, khăn phải hấp, phải có giấy chứng nhận vệ sinh. Mỗi tháng tốn thêm bằng ba ngày công. Tiệm bên cạnh nói cứ dùng như cũ, ai mà kiểm.", [
+    C("Làm đúng quy định", { money: -0.04, flags: ["brb_clean"] }, "Tốn tiền đều, ngủ yên"),
+    C("Dùng như cũ", { gamble: { p: 0.6, win: { money: 0.02, log: "Năm ấy không ai đến kiểm tra." }, lose: { money: -0.08, counters: { brb_regulars: -1 }, log: "Đoàn kiểm tra đến đúng sáng thứ Bảy. Biên bản dán lên cửa." } } }, "Đỡ tốn, có thể mất mặt")], 0)),
+  daily(BB, "brb_firstcut", [18, 65], 8, (c) => T("Lần cắt tóc đầu đời", vary("brbfc", c.age, [
+    "Một bé trai ba tuổi gào khóc trên ghế trong lần cắt tóc đầu đời. Mẹ cậu bé xin lỗi rối rít, khách chờ bắt đầu sốt ruột.",
+    "Một bé gái nhất định không chịu ngồi ghế, chỉ chịu ngồi trong lòng bố. Hai bố con chiếm ghế đã nửa tiếng."]), [
+    C("Dừng tay, dỗ cho đến khi bé chịu", { money: -0.01, counters: { brb_regulars: 1 } }, "Mất cả giờ, được một gia đình khách"),
+    C("Cắt nhanh cho xong", { money: 0.01, rel: -1 }, "Kịp khách sau, bé nhớ cái ghế đáng sợ")], 0)),
+  daily(BB, "brb_monday", [20, 65], 9, () => T("Sáng thứ Hai dưới gầm cầu", "Mỗi sáng thứ Hai, ngày tiệm vắng, bạn cắt tóc miễn phí cho mấy người vô gia cư dưới gầm cầu. Có người quay lại đăng lên mạng; người ta bắt đầu hỏi số tài khoản để ủng hộ.", [
+    C("Mở tài khoản quyên góp đứng tên mình", { money: 0.05, bw: -3, flags: ["brb_own_fund"] }, "Có tiền mua đồ nghề, dễ bị nghi ngờ"),
+    C("Nhờ người đăng gỡ đoạn phim", { happy: 1, counters: { honest: 1 } }, "Giữ việc nhỏ cho nhỏ"),
+    C("Lập nhóm thợ tình nguyện, công khai thu chi", { bw: -4, rel: 4, agency: 0.02, flags: ["brb_free_monday"] }, "Thêm việc sổ sách, việc tốt lan rộng", { tier: "awakened" })], 1)),
+  daily(BB, "brb_legs", [25, 70], 9, () => T("Mười một tiếng đứng", "Bạn đứng mười một tiếng mỗi ngày. Tĩnh mạch ở bắp chân nổi xanh, tối về lưng đau không cúi được. Bác sĩ bảo phải bớt giờ, hoặc tập cắt tóc ngồi.", [
+    C("Mua ghế yên ngựa, bớt hai giờ mỗi ngày", { income_mult: 0.95, health: 4, flags: ["brb_saddle_stool"] }, "Bớt thu nhập, giữ được đôi chân"),
+    C("Cứ đứng, còn phải trả nợ", { health: -5, money: 0.03 }, "Đủ tiền, chân trả giá")], 0)),
+  daily(BB, "brb_dye", [20, 65], 9, () => T("Hộp thuốc nhuộm không nhãn", "Người bán hàng chào một loại thuốc nhuộm không nhãn, rẻ bằng một phần ba. Ai cũng dùng, anh ta nói. Trên hộp không ghi thành phần.", [
+    C("Mua về dùng", { money: 0.04, gamble: { p: 0.7, win: { log: "Không khách nào bị sao." }, lose: { money: -0.1, counters: { brb_regulars: -1 }, log: "Một khách bị bỏng da đầu, đòi bồi thường." } } }, "Lời thêm, có thể làm hại khách"),
+    C("Dùng loại có kiểm định", { money: -0.03, flags: ["brb_safe_dye"] }, "Lời ít, an tâm")], 1)),
+  daily(BB, "brb_argue", [18, 65], 8, (c) => T("Hai khách quen to tiếng", vary("brbar", c.age, [
+    "Hai khách quen cãi nhau về bầu cử, to đến mức khách mới đứng ngoài cửa không dám vào.",
+    "Trận bóng tối qua khiến hai ông khách quen suýt ném lược vào nhau."]), [
+    C("Treo biển: ở đây chỉ bàn chuyện tóc", { rel: -1, flags: ["brb_no_politics"] }, "Tiệm yên, mất cái chất quán xóm"),
+    C("Để họ cãi, ai cũng có quyền nói", { rel: 1, money: -0.01 }, "Giữ không khí tự do, mất khách mới"),
+    C("Pha trà, mỗi người nói hai phút, không ai ngắt lời", { bw: -2, rel: 2, counters: { brb_regulars: 1 } }, "Mất thời gian, tiệm có luật riêng", { tier: "sovereign" })], 1)),
+  daily(BB, "brb_rival", [20, 60], 8, (c, N) => { const r = role(c, "rival")!; return T("Băng rôn giảm nửa giá", `${N(r)} mở tiệm ngay đối diện, treo băng rôn giảm nửa giá suốt một tháng, đứng trước cửa mời cả khách của bạn.`, [
+    C("Giảm giá theo", { money: -0.05, trust: { npc: r, delta: -0.1 } }, "Giữ khách, cả hai cùng lỗ"),
+    C("Sang gặp, đề nghị chia giờ mở cửa", { gamble: { p: 0.5, win: { money: 0.03, memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.3, note: "chia giờ mở cửa hai tiệm tóc đối diện" }, log: "Tiệm bạn mở sớm, tiệm kia mở khuya. Cả hai bên đều đông hơn." }, lose: { log: `${N(r)} cười, bảo không cần.` } } }, "Có thể cùng có lời, có thể bị cười", { tier: "awakened" }),
+    C("Kệ, giữ giá", { money: -0.02, counters: { brb_regulars: 1 } }, "Vắng một tháng, lọc ra khách thật")], 2, { npc: r }); }, (c) => !!role(c, "rival")),
+  daily(BB, "brb_app", [20, 60], 9, () => T("Ứng dụng chấm sao", "Một ứng dụng đặt lịch hứa đưa khách mới đến mỗi ngày, đổi lại lấy hai mươi phần trăm mỗi lần cắt và cho khách chấm điểm bạn bằng sao.", [
+    C("Tham gia", { income_mult: 1.1, bw: -2, flags: ["brb_app"] }, "Thêm khách, sống theo điểm sao"),
+    C("Không, giữ sổ khách viết tay", { income_mult: 0.98, counters: { brb_regulars: 1 } }, "Ít khách mới, khách cũ thân hơn")], 1)),
+  daily(BB, "brb_wedding", [18, 65], 8, (c) => T("Năm giờ sáng ngày cưới", `Chú rể và sáu người bạn gọi cửa lúc năm giờ sáng ngày cưới, đòi cắt, cạo, vuốt sáp cho kịp giờ ${vn(c) ? "rước dâu" : "làm lễ"}.`, [
+    C("Mở cửa, tính giá gấp ba", { money: 0.05, health: -1 }, "Lời to, mất giấc ngủ"),
+    C("Mở cửa, lấy giá thường, dặn nhớ giới thiệu", { money: 0.02, health: -1, counters: { brb_regulars: 1 } }, "Lời ít, thêm bảy người biết tiệm"),
+    C("Hẹn tám giờ như mọi ngày", { happy: 1, rel: -1 }, "Ngủ đủ, họ đi tiệm khác")], 1)),
+  daily(BB, "brb_quit", [28, 60], 99, () => T("Thợ tóc trên tàu biển", "Một công ty tàu du lịch tuyển thợ cắt tóc: hợp đồng chín tháng trên biển, lương gấp ba. Về đến nơi là mất hết khách quen.", [
+    C("Ký hợp đồng, bỏ tiệm", { ...leave(BB), money: 0.1, flags: ["ex_barber"] }, "Tiền nhiều, mất chỗ đứng trên phố"),
+    C("Ở lại với ghế của mình", { happy: 1, counters: { brb_regulars: 1 } }, "Túng thêm vài năm, khách vẫn còn")], 1), (c) => c.happy < 50 || c.broke),
+
+  /* ---------- gia đình ---------- */
+  cross(BB, "brb_family", [22, 65], (c) => (c.kids_teen > 0 && !!role(c, "child")) || !!role(c, "father") || !!role(c, "mother"), (c, N) => {
+    const k = role(c, "child");
+    if (c.kids_teen > 0 && k) return T("Tóc xanh lá cho cuối tuần", `${N(k)} muốn nhuộm tóc màu xanh lá. Trường cấm, nên ${N(k)} xin bạn làm lén vào tối thứ Sáu.`, [
+      C("Nhuộm cho con", { trust: { npc: k, delta: 0.2 }, rel: -1 }, "Con vui, nhà trường có thể mời bạn lên"),
+      C("Không, nội quy là nội quy", { trust: { npc: k, delta: -0.15 } }, "Không rắc rối, con thấy bạn cứng nhắc"),
+      C("Nhuộm loại gội trôi, chỉ để cuối tuần", { money: -0.01, trust: { npc: k, delta: 0.15 }, flags: ["brb_weekend_green"] }, "Cả hai cùng nhường một nửa", { tier: "awakened" })], 2, { npc: k });
+    const p = (role(c, "father") ?? role(c, "mother"))!;
+    return T("Người nhà ngồi vào ghế", `${N(p)} xưa nay chưa từng để bạn cắt tóc, vẫn nói nghề này là "nghề tạm". Hôm nay ${N(p)} bước vào tiệm, ngồi xuống ghế của bạn, không nói lý do.`, [
+      C("Cắt thật kỹ, không lấy tiền, không hỏi gì", { happy: 3, trust: { npc: p, delta: 0.25 } }, "Im lặng mà gần, có thể bỏ lỡ chuyện cần nói"),
+      C("Hỏi xem ở nhà có chuyện gì", { gamble: { p: 0.5, win: { trust: { npc: p, delta: 0.3 }, log: `${N(p)} kể chuyện đi khám bệnh tuần trước. Hai người nói chuyện đến lúc đóng cửa.` }, lose: { trust: { npc: p, delta: -0.05 }, log: `${N(p)} bảo không có gì, cắt xong thì về.` } } }, "Có thể mở lòng, có thể làm người ấy ngại")], 0, { npc: p });
+  }),
+];
+
+export const PACK_CRAFT_A: Storylet[] = [...ATN_CARDS, ...FSH_CARDS, ...BRB_CARDS];

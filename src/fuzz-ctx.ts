@@ -19,7 +19,7 @@ export function randomCtx(r: ReturnType<typeof createRng>, focusPaths: string[] 
   const tier = r.pick(["autopilot", "awakened", "sovereign"] as const);
   const bw = r.next() * 100;
   return {
-    age, sex: r.chance(0.5) ? "M" : "F", country: "VN", luck: r.next(), gdp: 1500 + r.next() * 60000, poor_country: r.chance(0.5), family_wealth: r.next(),
+    age, sex: r.chance(0.5) ? "M" : "F", country: r.pick(["VN", "VN", "US", "IN", "NG", "NO", "BR", "PH"]), luck: r.next(), gdp: 1500 + r.next() * 60000, poor_country: r.chance(0.5), family_wealth: r.next(),
     in_school: age >= 6 && age < 18 && r.chance(0.8), years_school: Math.min(12, Math.max(0, age - 6)), has_degree: r.chance(0.3), has_job: age >= 16 && age < 65 && r.chance(0.85), job: "x", farmer: r.chance(0.3), worker: r.chance(0.25), retired: age >= 62,
     married: age >= 20 && r.chance(0.6), widowed: age > 50 && r.chance(0.2), kids_alive: age > 22 ? Math.floor(r.next() * 4) : 0, kids_teen: age > 35 ? Math.floor(r.next() * 2) : 0, kids_school: age > 28 ? Math.floor(r.next() * 3) : 0,
     parents_alive: age < 50 ? 2 : Math.floor(r.next() * 3), parent_old: age > 35, parent_sick: r.chance(0.2), sibling_alive: !!cast.sibling,

@@ -238,4 +238,234 @@ const RHD_CARDS: Storylet[] = [
   }),
 ];
 
-export const PACK_STREET_A: Storylet[] = [...SHP_CARDS, ...RHD_CARDS];
+/* =====================================================================
+ * NGƯỜI BÁN HÀNG RONG — tiền tố hrg_
+ * ===================================================================== */
+const HV = "street_vendor";
+/** Món hàng rong: rẽ theo nước, để chi tiết Việt Nam chỉ hiện ở Việt Nam. */
+const dish = (c: FactContext): string => (vn(c) ? "xôi" : c.poor_country ? "bánh rán" : "bánh mì kẹp");
+
+const HRG_CARDS: Storylet[] = [
+  /* ---------- năng khiếu ---------- */
+  talent(HV, "hrg_t_call", [9, 14], () => true, (c) => T("Tiếng rao của bà", `Bà bạn bán ${dish(c)} ở đầu chợ từ năm giờ sáng. Hôm bà đau lưng, bạn ra bán thay trước giờ học. Bạn nhớ tên từng người mua, ai ít hành, ai không cay. Gánh hàng hết trước bảy giờ.`, [
+    C("Xin ra bán cùng bà mỗi sáng", { rel: 2, know: -1, health: -1, flags: [talentFlag(HV)], counters: { talents_seen: 1 } }, "Dậy sớm, mệt, học được cách giữ khách"),
+    C("Ngủ đủ giấc, để bà tự lo", { health: 1, counters: { talents_seen: 1 } }, "Khỏe người, gánh hàng là chuyện của bà")], 0)),
+  talent(HV, "hrg_t_change", [10, 15], () => true, () => T("Thối tiền nhanh hơn máy tính", "Ở cổng trường, bạn bán kẹo bông giúp chú hàng xóm giờ tan học. Ba mươi đứa trẻ chìa tiền cùng lúc, bạn thối đúng từng đồng, không cần ghi. Chú bảo cháu mà bán hàng thì không ai lừa được.", [
+    C("Phụ chú bán mỗi chiều", { money: 0.01, know: -1, flags: [talentFlag(HV)], counters: { talents_seen: 1 } }, "Có tiền tiêu vặt, bớt giờ chơi"),
+    C("Ham chơi đá bóng hơn", { rel: 2, counters: { talents_seen: 1 } }, "Vui với bạn bè, năng khiếu ngủ yên")], 0)),
+
+  /* ---------- cơ hội bước vào ---------- */
+  door(HV, "hrg_d_corner", [18, 60], () => true, (c) => T("Góc phố của bà cụ", `Bà cụ bán ${dish(c)} ở góc phố ba mươi năm nay về quê ở với con. Bà muốn sang lại chiếc xe đẩy, nồi niêu, và quan trọng nhất là cái góc: người ta quen tìm đến đó mỗi sáng.`, [
+    C("Bỏ tiền dành dụm, nhận lại góc phố", { ...become(HV), counters: { doors_seen: 1 }, money: -0.1, agency: 0.01 }, "Có khách sẵn, cược hết vốn"),
+    C("Xin bà cho bán thử một tháng rồi trả", { counters: { doors_seen: 1 }, gamble: { p: 0.5, win: { ...become(HV), log: "Hết tháng, khách cũ đã gọi bạn là \"cháu bà\". Bạn trả đủ tiền." }, lose: { log: "Bà đã sang cho người khác trả tiền ngay." } } }, "Ít rủi ro, có thể mất góc"),
+    C("Thôi, đứng bếp nắng mưa không nổi", { counters: { doors_seen: 1 }, health: 1 }, "Giữ sức, giữ việc cũ")], 0)),
+  door(HV, "hrg_d_arrival", [18, 45], (c) => c.migrated || c.poor_country || c.broke, (c) => T("Thúng hàng của chị phòng bên", `Bạn ${c.migrated ? "mới đến nơi đất khách" : "mới lên thành phố"}, chưa ai nhận vào làm. Chị phòng trọ bên cạnh đi bán trái cây cắt sẵn, bảo: "Mai đi lấy hàng với chị, chị chỉ chỗ đứng".`, [
+    C("Theo chị đi lấy hàng từ ba giờ sáng", { ...become(HV), counters: { doors_seen: 1 }, health: -2, rel: 3 }, "Có việc ngay, đời bắt đầu từ ba giờ sáng"),
+    C("Chờ xin vào xưởng may", { counters: { doors_seen: 1 }, money: -0.04, gamble: { p: 0.4, win: { log: "Hai tuần sau xưởng nhận. Bạn vẫn hay mua trái cây của chị." }, lose: { happy: -3, log: "Xưởng không tuyển nữa. Tiền trọ đến hạn." } } }, "Việc có lương, phải chờ")], 0)),
+  door(HV, "hrg_d_recipe", [25, 60], (c) => c.broke || c.has_job || c.married, () => T("Nồi chè của mẹ", "Thu nhập trong nhà không đủ. Bạn còn nhớ công thức nồi chè mẹ nấu ngày xưa, cả xóm khen. Một người bạn bảo: \"Nấu đi, đẩy ra cổng bệnh viện bán buổi chiều\".", [
+    C("Nấu một nồi, đẩy ra cổng bệnh viện", { ...become(HV), counters: { doors_seen: 1 }, money: -0.03, happy: 2 }, "Vốn nhỏ, việc nặng, món của nhà"),
+    C("Chỉ nấu bán cho người quen đặt trước", { counters: { doors_seen: 1 }, money: 0.02 }, "Ít việc, ít tiền, không ra đường")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(HV, 1, 1, (c) => {
+    return T("Góc phố có chủ", "Sáng đầu tiên, bạn vừa dựng xe thì bà bán nước bên cạnh sang nói thẳng: góc này mười năm nay của nhà bà. Không có giấy tờ nào, chỉ có mười năm và một cái ghế nhựa đỏ.", [
+      C("Dời sang góc vắng bên kia đường", { counters: step(c, HV), income_mult: 0.85, happy: -1 }, "Yên chuyện, ít khách"),
+      C("Đứng lại, ai đến trước bán trước", { counters: step(c, HV), gamble: { p: 0.5, win: { log: "Bà bỏ đi chỗ khác. Bạn có góc, có cả ánh mắt của cả dãy." }, lose: { money: -0.03, rel: -3, log: "Sáng hôm sau, xe bạn bị xì lốp." } } }, "Có thể giữ góc, chắc chắn có thù"),
+      C("Đề nghị chung góc: bà bán nước, bạn bán đồ ăn", { counters: step(c, HV, { hrg_regulars: 1 }), rel: 3, agency: 0.02, flags: ["hrg_shared_corner"] }, "Chia khách, có đồng minh", { tier: "sovereign" })], 0);
+  }, A18),
+  beat(HV, 2, 3, (c) => T("Lên mạng sau một đêm", `Một người làm video ẩm thực quay món ${dish(c)} của bạn. Sáng hôm sau, hàng người xếp dài đến cuối phố, toàn mặt lạ. Khách quen đứng ngoài rìa, không chen vào được.`, [
+    C("Tăng giá gấp đôi khi còn nổi", { counters: step(c, HV, { hrg_regulars: -2 }), income_mult: 1.4, flags: ["hrg_price_up"] }, "Lời nhanh, mất khách quen"),
+    C("Giữ giá, dậy sớm hơn hai tiếng", { counters: step(c, HV, { hrg_regulars: 2 }), income_mult: 1.15, health: -4 }, "Giữ khách quen, mất ngủ"),
+    C("Vay thuê một quầy cố định", { counters: step(c, HV), custom: "borrow:0.4", gamble: { p: 0.55, win: { income_mult: 1.5, flags: ["hrg_kiosk"], log: "Quầy mới đông như xe đẩy cũ. Bạn có mái che, có số nhà." }, lose: { income_mult: 0.9, flags: ["hrg_kiosk"], log: "Cơn sốt qua sau hai tháng. Tiền thuê quầy thì không qua." } } }, "Có chỗ đứng hợp pháp, gánh nợ thuê")], 1), A18),
+  beat(HV, 3, 4, (c) => T(f(c, "hrg_kiosk") ? "Giá thuê quầy tăng gấp ba" : "Đợt dẹp vỉa hè", f(c, "hrg_kiosk")
+    ? "Chủ nhà báo hết hợp đồng sẽ tăng giá thuê quầy gấp ba, vì khu này giờ đã \"lên\". Một chuỗi cửa hàng tiện lợi đang chờ lấy chỗ."
+    : `${vn(c) ? "Phường ra quân lập lại trật tự vỉa hè." : "Thành phố mở đợt dọn dẹp người bán rong ở khu trung tâm."} Chiếc xe đẩy của bạn bị thu, kèm biên bản phạt bằng một tháng bán. Muốn lấy lại xe phải nộp phạt trong mười ngày.`, [
+    C(f(c, "hrg_kiosk") ? "Chấp nhận giá mới, làm thêm giờ" : "Nộp phạt, chuộc xe về", { counters: step(c, HV), money: -0.15, health: -2 }, "Giữ chỗ bán, mất tiền dành dụm"),
+    C(f(c, "hrg_kiosk") ? "Trả quầy, quay lại đẩy xe" : "Mua xe mới, bán né giờ kiểm tra", { counters: step(c, HV), money: -0.05, bw: -4, flags: ["hrg_cat_mouse"] }, "Ít tốn hơn, sống trong nơm nớp"),
+    C("Cùng cả dãy viết đơn xin khu bán có giờ", { counters: step(c, HV), bw: -4, agency: 0.03, gamble: { p: 0.4 + Math.min(0.3, n(c, "hrg_regulars") * 0.1), win: { flags: ["hrg_market_zone"], rel: 5, log: "Sau ba tháng, thành phố kẻ vạch cho một khu bán buổi tối. Tên bạn đứng đầu lá đơn." }, lose: { money: -0.05, log: "Lá đơn nằm ở đâu đó trong một ngăn kéo. Cả dãy vẫn chạy mỗi lần có xe tới." } } }, "Mất công, có thể đổi luật cho cả dãy", { tier: "sovereign" }),
+    C("Gác gánh, đi làm thuê", { counters: step(c, HV), ...leave(HV), happy: -3 }, "Hết nơm nớp, mất cái nghề tự chủ")], 0), A18),
+  beat(HV, 4, 5, (c) => {
+    if (f(c, "hrg_market_zone")) return T("Chợ đêm mang tên mình", "Khu bán buổi tối giờ có sáu mươi gian hàng. Người ta gọi là chợ của bạn. Ban quản lý muốn bạn làm trưởng chợ, có phụ cấp, và một công ty muốn thuê lại cả khu để làm phố ẩm thực có vé vào cổng.", [
+      C("Làm trưởng chợ, giữ luật chia gian công bằng", { counters: step(c, HV), income_mult: 1.2, agency: 0.03, flags: ["leader", "hrg_market_head"] }, "Có tiếng nói, có trăm việc lo", { tier: "sovereign" }),
+      C("Ủng hộ công ty thuê, lấy suất gian đẹp nhất", { counters: step(c, HV), income_mult: 1.5, rel: -6, flags: ["hrg_sold_market"] }, "Bạn lời, nhiều người mất chỗ"),
+      C("Chỉ bán hàng, không dính vào việc chung", { counters: step(c, HV), happy: 2 }, "Nhẹ đầu, người khác quyết thay")], 0);
+    if (f(c, "hrg_cat_mouse")) return T("Lần bị thu xe thứ ba", `Lần thứ ba trong năm, chiếc xe đẩy bị thu.${n(c, "hrg_regulars") >= 2 ? " Mấy khách quen góp tiền đặt trước cả tháng để bạn có vốn làm lại." : " Không ai đứng ra nói giúp bạn câu nào."}`, [
+      C("Làm lại từ đầu ở khu khác", { counters: step(c, HV), money: -0.1, income_mult: 0.85 }, "Còn nghề, mất khách cũ"),
+      C("Chuyển sang bán hàng qua điện thoại cho khách quen", { counters: step(c, HV), income_mult: n(c, "hrg_regulars") >= 2 ? 1.1 : 0.8, agency: 0.02, flags: ["hrg_preorder"] }, "Không cần vỉa hè, cần người tin bạn", { tier: "awakened" }),
+      C("Bỏ nghề, đi phụ bếp nhà hàng", { counters: step(c, HV), ...leave(HV), money: 0.04 }, "Lương đều, nấu món của người khác")], 0);
+    return T("Người mua công thức", `Một công ty thực phẩm muốn mua công thức món ${dish(c)} của bạn để làm hàng đóng gói, trả một khoản bằng năm năm bán hàng, kèm điều kiện bạn thôi bán món ấy.`, [
+      C("Bán công thức, nghỉ ngơi", { counters: step(c, HV), money: 2, ...leave(HV), happy: -2, flags: ["hrg_sold_recipe"] }, "Một khoản đổi đời, mất cái nghề"),
+      C("Không bán, giữ món của nhà", { counters: step(c, HV), happy: 3, flags: ["hrg_kept_recipe"] }, "Giữ món ăn, giữ cái nghèo quen thuộc"),
+      C("Đòi tên mình trên bao bì và phần trăm mỗi gói", { counters: step(c, HV), gamble: { p: 0.4, win: { money: 0.8, income_mult: 1.3, flags: ["hrg_royalty"], log: "Họ đồng ý. Mặt bạn in trên bao bì, bạn vẫn đẩy xe mỗi sáng." }, lose: { log: "Họ tìm một người khác chịu bán đứt." } } }, "Giữ cả hai, có thể mất cả hai", { tier: "sovereign" })], 1);
+  }, A18),
+  beat(HV, 5, 6, (c, N) => {
+    const k = role(c, "child");
+    return T("Ai giữ lửa bếp", `Tay bạn bắt đầu run khi bê nồi. ${f(c, "hrg_apprentice") ? "Đứa trẻ bạn cho ăn năm nào giờ đứng bếp thạo hơn bạn." : k ? `${N(k)} đã có việc văn phòng, thỉnh thoảng về phụ cuối tuần.` : "Không có ai trong nhà muốn nối nghề."}${f(c, "hrg_sold_market") ? " Gian hàng đẹp nhất phố ẩm thực vẫn mang tên bạn." : ""} Khách quen hỏi: \"Sau này ai bán món này?\".`, [
+      C("Truyền hết cho người học việc", { counters: step(c, HV), happy: 4, rel: 3, flags: ["passed_on"] }, "Món ăn còn sống, không còn là của bạn"),
+      C("Viết công thức thành sổ, ai muốn thì học", { counters: step(c, HV), know: 2, agency: 0.02, flags: ["hrg_open_recipe"] }, "Không giữ bí quyết, ai cũng được", { tier: "sovereign" }),
+      C("Bán đến khi nào không bán nổi nữa", { counters: step(c, HV), health: -3, money: 0.05 }, "Còn góc phố, còn mình")], 0);
+  }, (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(HV, "hrg_rain", [18, 70], 6, (c) => T("Cơn mưa lúc mười giờ", vary("hrgr", c.age, ["Mưa đổ lúc mười giờ, nồi hàng còn quá nửa. Mai không bán lại được.", "Trời mưa dầm ba ngày liền, hàng ế đến chiều."]), [
+    C("Mang biếu đội thợ xây công trình bên cạnh", { rel: 3, counters: { hrg_regulars: 1, kind: 1 } }, "Mất vốn hôm nay, có khách ngày mai"),
+    C("Bán nửa giá cho ai đi qua", { money: 0.005 }, "Gỡ được ít vốn"),
+    C("Đem về nhà ăn dần", { happy: -1, money: -0.01 }, "Không mất mặt, cả nhà ăn một món ba ngày")], 0)),
+  daily(HV, "hrg_tab", [18, 70], 7, () => T("Cuốn sổ ghi nợ", "Một anh phụ hồ ăn chịu đã ba tuần, hứa cuối tháng lĩnh lương sẽ trả. Hôm nay anh lại đến, cúi đầu xin thêm một suất.", [
+    C("Cho ăn, ghi thêm vào sổ", { money: -0.01, counters: { hrg_regulars: 1, kind: 1 }, gamble: { p: 0.6, win: { log: "Cuối tháng anh trả đủ, còn dắt theo ba người bạn." }, lose: { money: -0.01, log: "Công trình xong, anh đi mất. Trang sổ ấy bạn không xé." } } }, "Có thể mất tiền, có thể được khách"),
+    C("Từ chối, nói trả hết nợ đã", { counters: { hrg_regulars: -1 } }, "Giữ vốn, mất một người"),
+    C("Đổi luật: ai cũng được nợ tối đa ba bữa", { flags: ["hrg_tab_rule"], agency: 0.01, money: -0.01 }, "Có luật rõ, bớt khó xử", { tier: "awakened" })], 0)),
+  daily(HV, "hrg_fakebill", [18, 70], 8, () => T("Tờ tiền giả trong túi", "Tối đếm tiền, bạn thấy một tờ tiền mệnh giá lớn nhất là tiền giả, bằng nửa ngày bán. Ai đưa, bạn không nhớ nổi.", [
+    C("Xé đi, chịu mất", { money: -0.01, counters: { honest: 1 } }, "Mất nửa ngày công, tay sạch"),
+    C("Trả lại cho khách nào đó lúc vội", { money: 0.005, counters: { honest: -1 }, happy: -1 }, "Không mất tiền, đẩy cái mất cho người khác")], 0)),
+  daily(HV, "hrg_protection", [18, 70], 9, (c, N) => { const b = role(c, "bully"); return T("Tiền đứng đường", `${b ? `${N(b)}, kẻ hay bắt nạt bạn ngày xưa, giờ` : "Một nhóm thanh niên xăm trổ"} đi thu \"phí đứng đường\" của cả dãy hàng rong mỗi tuần, bằng tiền một ngày bán.`, [
+    C("Nộp cho yên", { money: -0.04, flags: ["hrg_pays_fee"] }, "Yên ổn, mất một phần bảy thu nhập"),
+    C("Không nộp", { gamble: { p: 0.4, win: { log: "Họ dọa vài lần rồi thôi, chuyển sang dãy khác." }, lose: { money: -0.05, health: -3, log: "Nồi hàng bị hất đổ giữa phố." } } }, "Giữ tiền, có thể mất hàng"),
+    C("Cùng cả dãy ký đơn trình báo", { agency: 0.02, bw: -3, ...(b ? { memory: { npc: b, tag: "HUMILIATED_ME", weight: -0.2, note: "bị cả dãy hàng rong trình báo chuyện thu tiền" } } : {}), gamble: { p: 0.5, win: { flags: ["leader"], log: "Công an khu vực lập biên bản. Từ đó không ai đến thu nữa." }, lose: { money: -0.03, log: "Đơn bị bỏ đó. Tuần sau họ đến thu gấp đôi." } } }, "Có thể dẹp được, có thể bị trả đũa", { tier: "sovereign" })], 0, b ? { npc: b } : {}); }),
+  daily(HV, "hrg_graduate", [20, 70], 99, () => T("Cô sinh viên năm tư", "Một cô sinh viên ăn sáng ở xe bạn suốt bốn năm, hôm nay đưa tấm thiệp mời dự lễ tốt nghiệp. Lễ vào đúng buổi sáng đông khách nhất tuần.", [
+    C("Nghỉ bán một buổi, đi dự lễ", { money: -0.01, happy: 6, counters: { hrg_regulars: 1 }, flags: ["hrg_went_graduation"] }, "Mất một buổi bán, có một tấm ảnh"),
+    C("Gửi tặng một hộp đồ ăn, vẫn đi bán", { money: 0.005, happy: 1, counters: { hrg_regulars: 1 } }, "Đủ tình, đủ tiền, thiếu một buổi")], 0)),
+  daily(HV, "hrg_legs", [25, 70], 7, (c) => T("Mười tiếng đứng bếp", vary("hrgl", c.age, ["Chân bạn nổi gân xanh sau mười năm đứng bếp, tối về phải gác lên tường.", "Khói than làm bạn ho cả mùa khô. Bác sĩ dặn đổi sang bếp điện."]), [
+    C("Mua ghế cao và bếp mới", { money: -0.04, health: 4 }, "Tốn tiền, đỡ được tấm thân"),
+    C("Chịu đựng thêm vài năm nữa", { health: -4, money: 0.01, counters: { hrg_tough: 1 } }, "Giữ vốn, cơ thể trả lãi")], 0)),
+  daily(HV, "hrg_supplier", [18, 70], 8, () => T("Mối hàng giá rẻ", "Một mối hàng sỉ chào nguyên liệu rẻ hơn ba mươi phần trăm, không có giấy tờ nguồn gốc, đóng trong bao không nhãn.", [
+    C("Lấy hàng rẻ", { money: 0.03, gamble: { p: 0.75, win: { log: "Chưa ai kêu gì. Lãi tháng này khá hơn." }, lose: { counters: { hrg_regulars: -2 }, money: -0.05, log: "Mấy khách bị đau bụng. Cả khu đồn ầm lên." } } }, "Lãi cao hơn, có thể mất cả khách"),
+    C("Giữ mối hàng cũ, đắt mà rõ ràng", { counters: { hrg_regulars: 1 } }, "Lãi mỏng, ngủ yên")], 1)),
+  daily(HV, "hrg_qr", [18, 70], 8, () => T("Mã thanh toán dán trên xe", "Khách trẻ không còn mang tiền mặt. Ai cũng hỏi có chuyển khoản qua điện thoại không. Có tài khoản thì mọi đồng thu vào đều có dấu vết.", [
+    C("Mở tài khoản, dán mã lên xe", { income_mult: 1.08, bw: -2, flags: ["hrg_digital"] }, "Thêm khách trẻ, mọi khoản đều hiện ra"),
+    C("Chỉ nhận tiền mặt", { counters: { hrg_regulars: -1 } }, "Không phiền phức, mất khách trẻ")], 0)),
+  daily(HV, "hrg_stray", [20, 70], 99, () => T("Đứa trẻ đứng nhìn nồi hàng", "Một đứa nhỏ chừng mười bốn tuổi, quần áo bẩn, đứng nhìn nồi hàng của bạn mấy sáng liền mà không mua. Hỏi thì nó bảo bỏ nhà đi đã hai tuần.", [
+    C("Cho ăn, rồi đưa đến trung tâm bảo trợ", { money: -0.01, counters: { kind: 1 }, happy: 2 }, "Đúng việc, không biết nó sẽ ra sao"),
+    C("Cho ăn, nhận phụ việc, gọi báo gia đình nó", { money: -0.02, bw: -3, flags: ["hrg_apprentice"] }, "Thêm một miệng ăn, có thể thêm một người nối nghề", { tier: "awakened" }),
+    C("Đuổi đi cho khỏi phiền", { happy: -2 }, "Đỡ lo, mang theo ánh mắt ấy")], 1)),
+  daily(HV, "hrg_tourist", [18, 70], 8, (c) => T("Khách du lịch hỏi giá", vary("hrgt", c.age, ["Một nhóm khách nước ngoài hỏi giá, rõ ràng không biết giá thật.", "Một đoàn khách du lịch dừng lại chụp ảnh xe hàng của bạn, rồi hỏi mua cả chục phần."]), [
+    C("Nói giá gấp ba", { money: 0.02, counters: { honest: -1 }, gamble: { p: 0.6, win: { log: "Họ trả, vui vẻ đi tiếp." }, lose: { counters: { hrg_regulars: -1 }, log: "Họ viết bài chê trên mạng, kèm ảnh mặt bạn." } } }, "Lãi hôm nay, có thể mang tiếng"),
+    C("Bán đúng giá, chỉ cách ăn", { money: 0.005, counters: { hrg_regulars: 1 } }, "Lãi thường, có thể được giới thiệu")], 1)),
+  daily(HV, "hrg_copycat", [18, 70], 8, (c, N) => { const r = role(c, "rival")!; return T("Xe hàng bên cạnh", `${N(r)} dựng xe bán đúng món của bạn ngay bên cạnh, rẻ hơn hai phần mười.`, [
+    C("Hạ giá theo", { money: -0.02, memory: { npc: r, tag: "HUMILIATED_ME", weight: -0.15, note: "phá giá ngay cạnh xe hàng" } }, "Giữ khách, mất lãi"),
+    C("Đề nghị chia món: người bán sáng, người bán chiều", { gamble: { p: 0.5, win: { memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.3, note: "chia giờ bán sáng chiều" }, log: "Hai xe chia giờ. Khách quen gọi cả hai là \"góc phố\"." }, lose: { log: "Người kia bảo vỉa hè không của riêng ai." } } }, "Bớt khách, có thể bớt thù", { tier: "awakened" })], 1, { npc: r }); }, (c) => !!role(c, "rival")),
+
+  /* ---------- gia đình ---------- */
+  cross(HV, "hrg_family", [25, 70], (c) => (c.kids_teen > 0 && !!role(c, "child")) || !!role(c, "mother"), (c, N) => {
+    const k = role(c, "child");
+    if (c.kids_teen > 0 && k) return T("Giấy báo đỗ ở thành phố xa", `${N(k)} đỗ đại học ở một thành phố cách nhà cả ngày đường. Học phí năm đầu bằng gần một năm bán hàng của bạn. ${N(k)} bảo hay là con đi làm luôn.`, [
+      C("Vay tiền cho con đi học", { custom: "borrow:0.6", trust: { npc: k, delta: 0.3 }, memory: { npc: k, tag: "HELPED_IN_CRISIS", weight: 0.4, note: "vay tiền cho đi học đại học" } }, "Nợ lớn, con có con đường khác"),
+      C("Cho con đi làm như con muốn", { money: 0.05, trust: { npc: k, delta: -0.15 } }, "Không nợ, con dừng ở đây"),
+      C("Bảo con vừa học vừa làm, bạn lo nửa học phí", { money: -0.3, trust: { npc: k, delta: 0.2 }, promise: { to: k, what: "gửi nửa học phí mỗi năm", years: 4 } }, "Chia gánh, một lời hứa bốn năm", { tier: "awakened" })], 0, { npc: k });
+    const m = role(c, "mother")!;
+    return T("Mẹ muốn ra phụ bán", `${N(m)} đã yếu nhưng cứ đòi ra ngồi cạnh xe hàng của bạn, bảo ở nhà một mình buồn. Ngồi cả buổi giữa khói bụi thì mệt.`, [
+      C("Cho mẹ ra ngồi thu tiền", { trust: { npc: m, delta: 0.25 }, health: -1, counters: { hrg_regulars: 1 } }, "Mẹ vui, mẹ mệt"),
+      C("Bảo mẹ ở nhà nghỉ cho khỏe", { trust: { npc: m, delta: -0.1 } }, "Mẹ khỏe hơn, mẹ buồn hơn")], 0, { npc: m });
+  }),
+];
+
+/* =====================================================================
+ * NGƯỜI NHẶT VE CHAI — tiền tố vch_  (con đường "đời", không có năng khiếu)
+ * ===================================================================== */
+const WP = "waste_picker";
+/** Người mua phế liệu: ở Việt Nam là "vựa ve chai". */
+const yard = (c: FactContext): string => (vn(c) ? "vựa ve chai" : "bãi thu mua phế liệu");
+
+const VCH_CARDS: Storylet[] = [
+  /* ---------- cơ hội bước vào (không có năng khiếu: bốn cánh cửa) ---------- */
+  door(WP, "vch_d_oldage", [60, 75], (c) => !c.rich, () => T("Không có lương hưu", "Bạn không có lương hưu. Con cái cũng chật vật, mỗi lần đưa tiền là một lần nhìn nhau ngượng ngùng. Bà cụ cùng xóm sáng nào cũng đẩy chiếc xe nôi cũ đi gom vỏ lon, bảo: \"Tự nuôi mình thì không phải ngửa tay\".", [
+    C("Mua lại một chiếc xe đẩy cũ, đi gom", { ...become(WP), counters: { doors_seen: 1 }, agency: 0.02, health: -2 }, "Tự lo được, cái lưng già chịu"),
+    C("Nhận trông xe ở chợ, ít tiền hơn", { counters: { doors_seen: 1 }, money: 0.02, happy: -1 }, "Ngồi một chỗ, đồng lương bèo"),
+    C("Về ở với con, để con lo", { counters: { doors_seen: 1 }, rel: 2, happy: -3 }, "Yên thân, sống trong ơn người")], 0)),
+  door(WP, "vch_d_injury", [25, 58], () => true, () => T("Cái lưng không còn bê nổi", "Sau cú ngã ở công trường, bác sĩ cấm bạn mang vác nặng. Không ai thuê một thợ phụ không bê được bao xi măng. Người hàng xóm kéo xe ba gác đầy bìa các-tông qua cửa, rủ bạn đi cùng.", [
+    C("Đi cùng, học cách phân loại", { ...become(WP), counters: { doors_seen: 1 }, happy: -2, rel: 2 }, "Có việc ngay, mang tiếng \"đồng nát\""),
+    C("Đi học nghề sửa xe đạp", { counters: { doors_seen: 1 }, money: -0.06, know: 3 }, "Tốn tiền học, có nghề tay"),
+    C("Chờ lưng lành rồi tính", { counters: { doors_seen: 1 }, health: 3, money: -0.08 }, "Giữ sức, tiêu hết tiền dành dụm")], 0)),
+  door(WP, "vch_d_dump", [18, 45], (c) => c.poor_country || c.migrated || c.broke, (c) => T("Căn chòi cạnh bãi rác", `Chỗ duy nhất bạn thuê nổi là một căn chòi sát ${vn(c) ? "bãi rác ven đô" : "bãi rác lớn của thành phố"}. Mỗi khi xe rác đổ xuống, cả xóm cầm móc sắt chạy ra. Người ta nói ở đây không ai đói, chỉ là không ai sạch.`, [
+    C("Cầm móc sắt, chạy ra cùng mọi người", { ...become(WP), counters: { doors_seen: 1 }, health: -3, money: 0.02 }, "Có ăn từ hôm nay, sức khỏe hao mòn"),
+    C("Đi làm thuê theo ngày ở chợ đầu mối", { counters: { doors_seen: 1 }, gamble: { p: 0.5, win: { money: 0.03, log: "Một chủ sạp nhận bạn bốc hàng cố định." }, lose: { ...become(WP), log: "Chợ không cần thêm người. Tuần sau bạn cũng cầm móc sắt." } } }, "Việc khá hơn, chưa chắc có")], 0)),
+  door(WP, "vch_d_night", [30, 60], (c) => c.debt_ratio > 0.8 || c.broke, () => T("Ca đêm sau ca ngày", "Khoản nợ mỗi tháng ăn gần hết lương. Một người cùng xóm kể mỗi đêm anh đi gom ve chai từ mười giờ đến hai giờ sáng, đủ trả lãi mà không ai biết.", [
+    C("Đi gom ban đêm, ban ngày vẫn đi làm", { counters: { doors_seen: 1 }, health: -4, gamble: { p: 0.6, win: { ...become(WP), log: "Ba tháng sau, tiền ve chai nhiều hơn tiền lương. Bạn nghỉ việc ngày." }, lose: { money: 0.03, log: "Bạn gom được hai tháng rồi kiệt sức, thôi hẳn." } } }, "Thêm tiền trả nợ, mất giấc ngủ"),
+    C("Xin chủ nợ giãn thêm một năm", { counters: { doors_seen: 1 }, custom: "restructure", happy: -2 }, "Thở được một năm, nợ dài thêm"),
+    C("Bỏ hẳn việc, gom ve chai cả ngày", { ...become(WP), counters: { doors_seen: 1 }, agency: 0.01 }, "Tự chủ giờ giấc, mất lương cố định")], 0)),
+
+  /* ---------- mạch truyện ---------- */
+  beat(WP, 1, 1, (c) => T("Cái cân của vựa", `Bao ve chai đầu tiên của bạn nặng gần ba mươi cân, ${yard(c)} chỉ cân được hai mươi hai. Chủ vựa nói cân điện tử không bao giờ sai. Mấy người đứng sau bạn cúi đầu, không ai nói gì.`, [
+    C("Nhận tiền, không cãi", { counters: step(c, WP), money: 0.005, happy: -2 }, "Yên chuyện, mất phần tư công sức"),
+    C("Kéo xe sang vựa khác xa hơn ba cây số", { counters: step(c, WP, { vch_trust: 1 }), health: -2, money: 0.01, flags: ["vch_far_yard"] }, "Được giá đúng, mất sức"),
+    C("Mua một cái cân treo, cân trước rồi mới bán", { counters: step(c, WP, { vch_trust: 2 }), money: -0.01, agency: 0.02, flags: ["vch_own_scale"], gamble: { p: 0.6, win: { log: "Chủ vựa liếc cái cân của bạn rồi cân lại. Hai mươi chín cân." }, lose: { log: "Chủ vựa không mua của bạn nữa. Bạn chuyển sang vựa khác." } } }, "Tốn chút vốn, đòi được giá thật", { tier: "sovereign" })], 0), A18),
+  beat(WP, 2, 3, (c) => T("Con hẻm sau dãy quán", `Dãy quán ăn đầu phố đề nghị: nếu đêm nào bạn cũng dọn sạch con hẻm sau bếp, toàn bộ vỏ chai và thùng giấy là của bạn. Cùng tuần, một nhóm thiện nguyện đến xóm, vận động người nhặt ve chai lập hợp tác xã có thẻ hội viên, găng tay và giá bán chung.${f(c, "vch_own_scale") ? " Họ đã nghe chuyện cái cân của bạn." : ""}`, [
+    C("Nhận dọn hẻm, đổi lấy vỏ chai", { counters: step(c, WP), income_mult: 1.2, health: -2, flags: ["vch_route"] }, "Nguồn hàng chắc, làm không công nửa đêm"),
+    C("Vào hợp tác xã, đi họp mỗi tháng", { counters: step(c, WP, { vch_trust: 2 }), income_mult: 1.1, rel: 4, agency: 0.02, flags: ["vch_coop"] }, "Giá tốt hơn, phải chung tiếng nói", { tier: "sovereign" }),
+    C("Đi một mình như cũ", { counters: step(c, WP), happy: 1, flags: ["vch_lone"] }, "Tự do, ai ép giá cũng chịu")], 1), A18),
+  beat(WP, 3, 4, (c) => T("Giá phế liệu rớt một nửa", `Giá bìa giấy và nhựa trên thế giới rớt một nửa trong hai tháng. Cùng lúc, thành phố thông báo xây nhà máy phân loại rác, cấm bới thùng rác ở khu trung tâm.${f(c, "vch_coop") ? " Hợp tác xã họp khẩn ngay tối hôm đó." : " Ở vựa, chủ vựa lắc đầu không mua bìa nữa."}`, [
+    C("Gom gấp đôi để bù giá", { counters: step(c, WP), health: -6, money: 0.02 }, "Đủ ăn, cơ thể trả giá"),
+    C("Tích trữ trong nhà, chờ giá lên", { counters: step(c, WP), money: -0.06, gamble: { p: 0.5, win: { money: 0.15, log: "Tám tháng sau giá lên lại. Đống giấy trong nhà thành tiền." }, lose: { health: -3, money: -0.04, log: "Đống giấy ẩm mốc, chuột làm tổ. Bạn bán rẻ cho xong." } } }, "Có thể lời, nhà thành bãi chứa"),
+    ...(f(c, "vch_coop") ? [C("Cùng hợp tác xã đòi việc phân loại ở nhà máy", { counters: step(c, WP), bw: -5, agency: 0.03, gamble: { p: 0.5, win: { flags: ["vch_city_contract"], income_mult: 1.3, log: "Thành phố ký hợp đồng: hợp tác xã được phân loại ở nhà máy mới, có lương." }, lose: { income_mult: 0.85, log: "Nhà máy thuê một công ty tư nhân. Hợp tác xã vẫn họp mỗi tháng." } } }, "Đòi chỗ đứng cho cả nhóm, có thể trắng tay", { tier: "sovereign" as const })] : []),
+    C("Về quê, thôi nghề ve chai", { counters: step(c, WP), ...leave(WP), custom: "job_lose|return_home", happy: -2 }, "Hết bới rác, về với ruộng vườn")], 0), A18),
+  beat(WP, 4, 5, (c) => {
+    if (f(c, "vch_city_contract")) return T("Chiếc áo đồng phục có tên", "Ba trăm người của hợp tác xã giờ mặc áo đồng phục có tên, làm ca ở nhà máy phân loại. Họ bầu bạn làm chủ nhiệm. Một tập đoàn xử lý rác muốn \"sáp nhập\" hợp tác xã, nhận hết người vào làm công nhân với lương thấp hơn một phần năm.", [
+      C("Nhận làm chủ nhiệm, giữ hợp tác xã", { counters: step(c, WP), income_mult: 1.3, bw: -6, agency: 0.03, flags: ["leader", "vch_chair"] }, "Có tiếng nói, có trăm việc lo", { tier: "sovereign" }),
+      C("Ủng hộ sáp nhập, nhận ghế quản lý", { counters: step(c, WP), money: 0.5, income_mult: 1.4, rel: -6, flags: ["vch_merged"] }, "Bạn lên, anh em xuống lương"),
+      C("Nhường ghế cho người trẻ, làm tổ viên", { counters: step(c, WP), happy: 3, rel: 2 }, "Nhẹ đầu, mất tiếng nói")], 0);
+    return T("Chiếc túi trong thùng rác", `${f(c, "vch_route") ? "Nửa đêm dọn hẻm sau dãy quán," : "Một sáng ở khu nhà giàu,"} bạn lôi ra một chiếc túi xách còn mới. Bên trong có một hộp nhẫn vàng, giấy tờ của một căn nhà và một tờ giấy ghi địa chỉ. Số vàng bằng mấy năm bạn đi gom.`, [
+      C("Mang trả theo địa chỉ trên giấy", { counters: step(c, WP, { vch_trust: 2, honest: 1 }), bw: -2, gamble: { p: 0.5, win: { money: 0.3, flags: ["vch_returned_bag"], log: "Bà chủ khóc, ép bạn nhận một khoản tiền cảm ơn. Báo địa phương viết về bạn." }, lose: { flags: ["vch_returned_bag"], log: "Người nhận cầm túi, nghi ngờ hỏi bạn đã lấy gì chưa, rồi đóng cửa." } } }, "Không được gì chắc chắn, giữ được mình"),
+      C("Nộp cho đồn cảnh sát gần nhất", { counters: step(c, WP, { honest: 1 }), bw: -3, flags: ["vch_returned_bag"] }, "Đúng thủ tục, mất cả buổi"),
+      C("Giữ lại, coi như phần của mình", { counters: step(c, WP, { honest: -2 }), money: 1.0, happy: -3, flags: ["vch_kept_bag"] }, "Đổi đời trong một đêm, ngủ không yên")], 0);
+  }, A18),
+  beat(WP, 5, 6, (c) => T("Những thứ người ta vứt đi", `Lưng bạn không còn cúi xuống thùng rác được nữa. ${f(c, "vch_books") ? "Trong nhà bạn có ba bao tải sách nhặt được suốt mấy chục năm." : f(c, "vch_kept_bag") ? "Số vàng năm ấy đã thành mái nhà, nhưng bạn vẫn nhớ tờ giấy ghi địa chỉ." : "Bạn biết giá từng loại nhựa, từng loại sắt, hơn cả chủ vựa."}${f(c, "vch_chair") ? " Hợp tác xã muốn treo ảnh bạn ở phòng họp." : ""}`, [
+      C("Mở vựa nhỏ của mình, cân công khai", { counters: step(c, WP), money: -0.3, income_mult: 1.3, agency: 0.03, flags: ["vch_fair_yard"] }, "Thành người mua, vốn lớn", { tier: "sovereign" }),
+      C(f(c, "vch_books") ? "Mở góc đọc sách miễn phí cho trẻ trong xóm" : "Dạy lớp người mới cách phân loại và giữ sức", { counters: step(c, WP), happy: 5, rel: 4, flags: ["passed_on"] }, "Không có tiền, để lại một thứ"),
+      C("Nghỉ hẳn, sống với con cháu", { counters: step(c, WP), ...leave(WP), health: 3 }, "Nghỉ ngơi, sống nhờ người khác")], 1), (c) => c.age >= 40),
+
+  /* ---------- chuyện thường ngày ---------- */
+  daily(WP, "vch_heat", [18, 75], 6, (c) => T("Trưa bốn mươi độ", vary("vchh", c.age, ["Nắng bốn mươi độ, mặt đường hắt hơi nóng lên tận mặt. Xe đẩy mới đầy một nửa.", "Đợt nắng nóng kéo dài mười ngày. Tin tức nói đã có người ngất ngoài đường."]), [
+    C("Nghỉ trưa dưới gầm cầu, chiều đi tiếp", { money: -0.005, health: 2, counters: { vch_rest: 1 } }, "Mất một buổi gom, giữ sức"),
+    C("Gom tiếp cho kịp chuyến bán", { money: 0.01, health: -4 }, "Có tiền, có thể say nắng")], 0)),
+  daily(WP, "vch_gate", [18, 75], 8, () => T("Bảo vệ khu nhà giàu", "Bảo vệ khu biệt thự đuổi bạn khỏi dãy thùng rác, bảo cư dân phàn nàn bạn làm bừa bãi. Mà trong mấy thùng đó toàn lon và giấy sạch.", [
+    C("Đi chỗ khác", { happy: -2 }, "Yên chuyện, mất khu ngon"),
+    C("Đề nghị cư dân để riêng túi đồ tái chế ở cổng", { agency: 0.02, bw: -2, gamble: { p: 0.5, win: { flags: ["vch_sorted_street"], counters: { vch_trust: 2 }, log: "Một tháng sau, chín nhà treo túi đồ tái chế ở cổng chờ bạn." }, lose: { log: "Ban quản lý bảo không có quy định đó." } } }, "Mất công thuyết phục, có thể có nguồn sạch", { tier: "sovereign" }),
+    C("Đến lúc nửa đêm khi bảo vệ ngủ", { money: 0.01, health: -2, counters: { vch_trust: -1 } }, "Vẫn có hàng, sống như kẻ lén lút")], 1)),
+  daily(WP, "vch_glass", [18, 75], 7, () => T("Mảnh chai trong bao", "Một mảnh chai vỡ giấu trong túi rác cứa sâu vào lòng bàn tay bạn. Máu thấm qua găng vải. Trạm y tế gần nhất lấy tiền tiêm phòng uốn ván bằng ba ngày gom.", [
+    C("Đến trạm y tế tiêm phòng", { money: -0.02, health: 2, flags: ["vch_tetanus_shot"] }, "Mất ba ngày công, yên tâm"),
+    C("Rửa nước muối, băng lại, đi tiếp", { gamble: { p: 0.7, win: { log: "Vết thương lành sau hai tuần, để lại một vệt sẹo." }, lose: { health: -10, money: -0.05, log: "Tay sưng tấy, bạn nằm viện một tuần." } } }, "Giữ tiền, cược cả bàn tay")], 0)),
+  daily(WP, "vch_books", [18, 75], 99, () => T("Thùng sách ai bỏ", "Một gia đình chuyển nhà vứt ra cả thùng sách: truyện thiếu nhi, từ điển, mấy cuốn sách giáo khoa còn mới. Bán theo cân được bằng một ngày gom.", [
+    C("Bán theo cân", { money: 0.005 }, "Một ngày công, thùng sách thành bột giấy"),
+    C("Mang về, xếp lên kệ ván", { know: 2, happy: 2, flags: ["vch_books"] }, "Mất tiền bán, nhà có một góc sách")], 1)),
+  daily(WP, "vch_wet", [18, 75], 8, () => T("Bìa các-tông dầm mưa", "Mưa suốt đêm, đống bìa ngoài sân ướt sũng. Bìa ướt nặng gấp rưỡi. Có người trong xóm còn cố tình tưới nước vào bìa trước khi bán.", [
+    C("Phơi khô rồi mới bán", { money: -0.005, counters: { vch_trust: 1, honest: 1 } }, "Bán chậm, chủ vựa tin bạn"),
+    C("Bán luôn khi còn ướt", { money: 0.01, counters: { vch_trust: -1, honest: -1 }, gamble: { p: 0.7, win: { log: "Chủ vựa cân, không nói gì." }, lose: { money: -0.01, log: "Chủ vựa trừ một nửa và ghi tên bạn vào sổ đen." } } }, "Lợi hôm nay, có thể mất mối")], 0)),
+  daily(WP, "vch_camera", [18, 75], 8, () => T("Ống kính của người lạ", "Một nhóm sinh viên làm phim tài liệu xin quay bạn một tuần. Họ muốn cảnh bạn bới rác lúc trời mưa, trả một khoản bằng nửa tháng gom.", [
+    C("Đồng ý quay như họ muốn", { money: 0.02, happy: -2, flags: ["vch_filmed"] }, "Có tiền, hình ảnh do người khác kể"),
+    C("Đồng ý, nhưng đòi được tự kể chuyện mình", { agency: 0.02, gamble: { p: 0.6, win: { flags: ["vch_filmed"], happy: 5, log: "Phim mở đầu bằng câu bạn nói: \"Tôi nuôi hai đứa con ăn học bằng cái mọi người vứt đi\"." }, lose: { log: "Họ cảm ơn rồi đi tìm người khác dễ quay hơn." } } }, "Giữ phẩm giá, có thể mất khoản tiền", { tier: "sovereign" }),
+    C("Từ chối", { happy: 1 }, "Riêng tư, không có tiền")], 1)),
+  daily(WP, "vch_charity", [18, 75], 8, (c) => T("Túi quà và chiếc máy ảnh", vary("vchc", c.age, ["Một đoàn thiện nguyện phát quà cho người nhặt ve chai: gạo, dầu ăn, một phong bì. Ai nhận phải đứng cầm bảng chụp ảnh.", "Cuối năm, một công ty đến xóm phát quà, kèm ba chiếc máy quay và một người dẫn chương trình."]), [
+    C("Đứng chụp ảnh, nhận quà", { money: 0.01, happy: -2 }, "Có gạo ăn tháng này, mặt mình trên mạng"),
+    C("Xin nhận quà không chụp ảnh", { gamble: { p: 0.5, win: { money: 0.01, counters: { vch_trust: 1 }, log: "Một cô tình nguyện viên lén đưa phần quà ra sau xe." }, lose: { log: "Họ bảo không chụp thì không có báo cáo, không có quà." } } }, "Giữ thể diện, có thể về tay không")], 0)),
+  daily(WP, "vch_papers", [18, 75], 9, (c) => T("Giấy tờ cư trú", `${vn(c) ? "Công an khu vực kiểm tra tạm trú" : "Cảnh sát kiểm tra giấy tờ cư trú"} ở xóm trọ. Bạn chưa đăng ký vì chủ trọ không chịu khai. Mức phạt bằng hai tuần gom.`, [
+    C("Nộp phạt, đi đăng ký cho đúng", { money: -0.03, bw: -2, flags: ["vch_registered"] }, "Mất tiền, từ nay có tên trong sổ"),
+    C("Dúi ít tiền cho xong", { money: -0.01, secret: { tag: "PAID_BRIBE", severity: 0.1, fuse_years: [1, 4], note: "dúi tiền cho qua chuyện tạm trú" } }, "Rẻ hơn, vẫn không có giấy")], 0)),
+  daily(WP, "vch_copper", [18, 75], 9, () => T("Cuộn dây đồng giá rẻ", "Hai thanh niên lạ mặt bán cho bạn một cuộn dây đồng còn mới với giá bằng một phần ba. Đồng bán lại cho vựa được cả tháng gom. Đầu dây còn vết cắt mới.", [
+    C("Mua, bán lại ngay trong ngày", { money: 0.05, counters: { honest: -1 }, gamble: { p: 0.6, win: { log: "Không ai hỏi gì. Tiền đó trả được tiền trọ hai tháng." }, lose: { money: -0.08, flags: ["vch_police_record"], log: "Hôm sau công an đến vựa truy nguồn dây cáp bị cắt trộm. Bạn mất tiền và có tên trong biên bản." } } }, "Lời to, có thể dính vào chuyện trộm"),
+    C("Từ chối, không đụng vào", { counters: { honest: 1, vch_trust: 1 } }, "Mất cơ hội, sạch sẽ")], 1)),
+  daily(WP, "vch_kid", [20, 75], 99, () => T("Đứa nhỏ muốn đi theo", "Đứa con mười tuổi nhà bên cạnh trốn học đi theo xe đẩy của bạn, bảo đi gom vui hơn ngồi lớp. Nó nhặt lon nhanh và đếm tiền giỏi.", [
+    C("Dắt nó về trường, nói chuyện với cô giáo", { bw: -2, counters: { kind: 1 }, flags: ["vch_walked_kid"] }, "Mất buổi gom, nó còn đường đi học"),
+    C("Cho nó đi theo, chia cho vài đồng", { money: -0.005, happy: 1, counters: { vch_trust: -1 } }, "Vui cả hai, nó bỏ lỡ lớp học"),
+    C("Hẹn: đi học đủ tuần thì Chủ nhật cho đi theo", { bw: -1, agency: 0.01, flags: ["vch_walked_kid"] }, "Mất chút công, giữ được cả hai", { tier: "awakened" })], 0)),
+  daily(WP, "vch_rival", [18, 75], 8, (c, N) => { const r = role(c, "rival")!; return T("Tuyến phố của ai", `${N(r)} cũng đi gom ve chai, và bảo cả tuyến phố chợ là của mình từ trước khi bạn đến.`, [
+    C("Tránh sang tuyến khác", { money: -0.005, memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.05, note: "nhường tuyến phố chợ" } }, "Hòa khí, ít hàng hơn"),
+    C("Chia giờ: sáng một người, tối một người", { gamble: { p: 0.5, win: { memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.3, note: "chia giờ gom ở phố chợ" }, log: "Hai người chia giờ. Có hôm người kia để phần bạn một bao lon." }, lose: { memory: { npc: r, tag: "HUMILIATED_ME", weight: -0.15, note: "giành tuyến phố chợ" }, log: "Người kia không chịu. Hai xe đẩy cứ chạm nhau mỗi sáng." } } }, "Có thể yên ổn, có thể thêm thù", { tier: "awakened" })], 1, { npc: r }); }, (c) => !!role(c, "rival")),
+  daily(WP, "vch_sweeper", [25, 60], 99, () => T("Chỗ trống ở đội quét đường", "Công ty vệ sinh của quận tuyển người quét đường ca đêm: lương cố định, có bảo hộ, áo phản quang. Nhưng không được nhặt ve chai trong giờ làm.", [
+    C("Nhận, gửi lại chiếc xe đẩy", { ...leave(WP), flags: ["ex_waste_picker"], health: 2 }, "Ổn định, mất tự do và mối hàng"),
+    C("Ở lại với xe đẩy", { counters: { vch_trust: 1 }, happy: 1 }, "Tự do, không ai lo cho bạn")], 0), (c) => c.happy < 50 || c.broke),
+
+  /* ---------- gia đình ---------- */
+  cross(WP, "vch_family", [25, 75], (c) => (c.kids_teen > 0 && !!role(c, "child")) || !!role(c, "sibling"), (c, N) => {
+    const k = role(c, "child");
+    if (c.kids_teen > 0 && k) return T("Ô nghề nghiệp của bố mẹ", `Phiếu thông tin ở trường của ${N(k)} có ô \"nghề nghiệp của bố mẹ\". Bạn thấy ${N(k)} viết \"buôn bán tự do\", rồi gạch đi, rồi để trống.`, [
+      C("Bảo con cứ viết đúng: nhặt ve chai", { gamble: { p: 0.5, win: { trust: { npc: k, delta: 0.25 }, log: `${N(k)} viết \"tái chế\". Cô giáo mời bạn đến kể chuyện cho cả lớp.` }, lose: { trust: { npc: k, delta: -0.15 }, log: `${N(k)} im lặng cả tuần.` } } }, "Có thể gần con, có thể làm con xấu hổ"),
+      C("Để con viết gì cũng được", { happy: -2 }, "Giữ thể diện cho con, lòng nặng"),
+      C("Dắt con theo một buổi, cho con tự đếm tiền", { bw: -2, trust: { npc: k, delta: 0.2 }, memory: { npc: k, tag: "KEPT_PROMISE", weight: 0.2, note: "một buổi đi gom ve chai cùng bố mẹ" } }, "Mất một buổi gom, con thấy tận mắt", { tier: "awakened" })], 0, { npc: k });
+    const s = role(c, "sibling")!;
+    return T("Anh chị em gửi tiền", `${N(s)} gửi về một khoản tiền, nhắn: \"Nghỉ cái nghề đó đi, họ hàng người ta nói\". Khoản tiền đủ sống ba tháng.`, [
+      C("Nhận tiền, hứa sẽ tìm việc khác", { money: 0.25, trust: { npc: s, delta: 0.1 }, promise: { to: s, what: "bỏ nghề ve chai tìm việc khác", years: 2 } }, "Có tiền, nợ một lời hứa"),
+      C("Trả lại tiền, bảo nghề này nuôi mình được", { agency: 0.02, trust: { npc: s, delta: -0.1 }, happy: 2 }, "Giữ tự trọng, mất khoản đỡ")], 1, { npc: s });
+  }),
+];
+
+export const PACK_STREET_A: Storylet[] = [...SHP_CARDS, ...RHD_CARDS, ...HRG_CARDS, ...VCH_CARDS];
