@@ -6,6 +6,8 @@
  *   4. the matcher never returns a storylet whose prerequisites fail; selection is deterministic per seed.
  */
 import { randomCtx } from "./fuzz-ctx.ts";
+import { ALLOWED_FLAGS } from "./engine/narrative/Agency.ts";
+import { MICRO_GATES } from "./engine/index.ts";
 import { STORYLETS as _S, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, PATH_STORYLETS, PATH_LIST, VIGNETTES, selectStorylet, selectVignette, eligible, createRng, type Storylet, type FactContext, type CastRole, type Effect } from "./engine/index.ts";
 
 const STORYLETS = [..._S, ...MICRO, ...BRANCHES, ...BRANCHES2, ...LIFE_VARIANTS, ...TEMPER_LIFE, ...TEMPER2_ECHO, ...PATH_STORYLETS];
@@ -56,5 +58,25 @@ console.log("deterministic:", a === b);
   const got1 = eligible([capped], ctx, { minUrgency: 0, history: hist.slice(0, 1), age: 40 });
   if (got1.length !== 1) { console.error("FAIL maxPerLife blocks too early"); process.exit(1); }
   console.log("maxPerLife enforced: ok");
+}
+
+/* Task 2: every flag the AI may set is read by at least one storylet (toggling it changes some prerequisite). */
+{
+  const r2 = createRng(23); const unread: string[] = [];
+  for (const flag of Object.keys(ALLOWED_FLAGS)) {
+    let read = false;
+    for (let i = 0; i < 600 && !read; i++) {
+      const ctx = randomCtx(r2);
+      for (const s of STORYLETS) {
+        let a = false, b = false;
+        try { ctx.flags.add(flag); a = s.prerequisites(ctx); ctx.flags.delete(flag); b = s.prerequisites(ctx); } catch { /* reported by main fuzz */ }
+        if (a !== b) { read = true; break; }
+      }
+      for (const g of Object.values(MICRO_GATES)) { if (read) break; let a = false, b = false; try { ctx.flags.add(flag); a = g(ctx); ctx.flags.delete(flag); b = g(ctx); } catch { /* ignore */ } if (a !== b) read = true; }
+    }
+    if (!read) unread.push(flag);
+  }
+  if (unread.length) { console.error("FAIL allowed flags never read: " + unread.join(", ")); bad.push("allowed flags unread: " + unread.join(",")); }
+  else console.log("allowed flags all read: ok");
 }
 process.exit(bad.length ? 1 : 0);
