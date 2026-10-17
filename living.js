@@ -216,8 +216,9 @@ function eulogyVN(L) {
 function microScene(L, ctx) {
   const lw = L.lw; if (!lw || L.pending || !L.alive || (lw.decisions || 0) >= (lw.budget || 0)) return false;
   ctx = ctx || factContext(L);
-  const cnt = {}; for (const h of lw.history) cnt[h.id] = (cnt[h.id] || 0) + 1;
-  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.id.startsWith("m_") ? 2 : 3));
+  const cnt = {}, last = {}; for (const h of lw.history) { cnt[h.id] = (cnt[h.id] || 0) + 1; last[h.id] = h.age; }
+  // Ngân sách lặp: mỗi thẻ tối đa maxPerLife lần (mặc định 1), lần lặp phải cách lần trước ≥ 10 năm.
+  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.maxPerLife ?? 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10));
   let st = Argon.selectStorylet(pool, ctx, { minUrgency: 0, history: lw.history, age: L.age }, L.ar.rng);
   // Lấp chỗ trống: chuyện chung không theo nhánh, chỉ khi nhánh hết chuyện
   if (!st && L.ar.rng.next() < 0.6) { const fill = Argon.eligible(pools().generic.filter(s => !cnt[s.id]), ctx, { minUrgency: 0, history: lw.history, age: L.age }); if (fill.length) st = fill[Math.floor(L.ar.rng.next() * fill.length)].s; }

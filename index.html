@@ -599,6 +599,7 @@ var Argon = (() => {
     purchaseDelta: () => purchaseDelta,
     ratRace: () => ratRace,
     rawAccuracy: () => rawAccuracy,
+    repeatCap: () => repeatCap,
     reputationOf: () => reputationOf,
     resolveCauses: () => resolveCauses,
     resolveInteraction: () => resolveInteraction,
@@ -1320,6 +1321,11 @@ var Argon = (() => {
           break;
         }
       }
+      if (s.maxPerLife !== void 0) {
+        let n = 0;
+        for (let h2 of opts.history) h2.id === s.id && n++;
+        if (n >= s.maxPerLife) continue;
+      }
       if (last && (s.once || opts.age - last.age < s.cooldownYears) || s.requires_open && s.requires_open.some((d) => ctx.doors.has(d))) continue;
       let ok = !1;
       try {
@@ -1359,6 +1365,9 @@ var Argon = (() => {
       ok && (r.specificity > bestSpec ? (bestSpec = r.specificity, best = [r]) : r.specificity === bestSpec && best.push(r));
     }
     return best.length ? rng.pick(best) : null;
+  }
+  function repeatCap(build) {
+    return /\bvary\d*\(/.test(String(build)) ? 2 : 1;
   }
   function countTrue(...preds) {
     return preds.filter(Boolean).length;
@@ -1918,7 +1927,7 @@ var Argon = (() => {
       id: "child_tuition",
       category: "family",
       urgency: 80,
-      cooldownYears: 5,
+      cooldownYears: 7,
       tension: 10,
       prerequisites: (c) => c.kids_school > 0 && (c.broke || c.rat_race) && !!role(c, "child"),
       specificity: (c) => countTrue(c.rat_race, c.poor_country, c.bandwidth_locked),
@@ -2044,7 +2053,7 @@ var Argon = (() => {
       id: "creditor_knock",
       category: "ledger",
       urgency: 88,
-      cooldownYears: 4,
+      cooldownYears: 6,
       tension: 14,
       prerequisites: (c) => c.debt_ratio >= 1.2 && !!role(c, "creditor") && c.age >= 20,
       specificity: (c) => countTrue(c.scarcity, c.bandwidth_locked, op(c, role(c, "creditor")) < -0.2, c.econ_phase === "crisis"),
@@ -2290,7 +2299,7 @@ var Argon = (() => {
       specificity: () => 9,
       causes: () => [prov.flag("scandal_pending")],
       build: (c) => ({
-        title: "Chuy\u1EC7n c\u0169 v\u1EE1 l\u1EDF",
+        title: c.counters.scandal_age ? `Chuy\u1EC7n n\u0103m ${c.counters.scandal_age} tu\u1ED5i v\u1EE1 l\u1EDF` : "Chuy\u1EC7n c\u0169 v\u1EE1 l\u1EDF",
         text: `M\u1ED9t chuy\u1EC7n b\u1EA1n t\u01B0\u1EDFng \u0111\xE3 ch\xF4n t\u1EEB ${c.counters.scandal_age ?? "l\xE2u"} tu\u1ED5i b\u1ED7ng \u0111\u01B0\u1EE3c k\u1EC3 l\u1EA1i kh\u1EAFp n\u01A1i, \u0111\xFAng l\xFAc b\u1EA1n t\u01B0\u1EDFng m\xECnh \u0111\xE3 an to\xE0n.`,
         choices: [
           C("Ch\u1ED1i", { unflags: ["scandal_pending"], gamble: { p: 0.35, win: { happy: -3, log: "Ng\u01B0\u1EDDi ta b\xE1n t\xEDn b\xE1n nghi. Chuy\u1EC7n l\u1EAFng xu\u1ED1ng." }, lose: { income_mult: 0.85, rel: -10, happy: -8, log: "C\xF3 ng\u01B0\u1EDDi \u0111\u01B0a b\u1EB1ng ch\u1EE9ng. B\u1EA1n m\u1EA5t c\u1EA3 danh ti\u1EBFng l\u1EABn vi\u1EC7c." } } }, "35 % tho\xE1t"),
@@ -2304,7 +2313,7 @@ var Argon = (() => {
       id: "agency_year",
       category: "agency",
       urgency: 20,
-      cooldownYears: 3,
+      cooldownYears: 8,
       tension: -3,
       prerequisites: (c) => c.age >= 16 && c.age <= 70 && c.tier !== "sovereign",
       specificity: (c) => countTrue(c.crises_survived > 0, c.bandwidth >= 60, !c.rat_race),
@@ -2345,7 +2354,11 @@ var Argon = (() => {
         };
       }
     }))
-  ];
+  ], MAJOR_CAPS = { creditor_knock: 2, enemy_obstruct: 2, blackmail: 2, reckless: 2, agency_year: 2, parent_sick: 2, child_tuition: 2, mistake: 2 };
+  for (let st of STORYLETS) {
+    let cap = MAJOR_CAPS[st.id];
+    cap !== void 0 && (st.maxPerLife = cap);
+  }
 
   // src/engine/narrative/micro.ts
   var C2 = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), role2 = (c, r) => c.cast[r], op2 = (c, id) => id ? c.opinion[id] ?? 0 : 0, h = (c, k) => c.counters[k] ?? 0, vary = (id, age, arr) => {
@@ -2354,7 +2367,7 @@ var Argon = (() => {
     return arr[x % arr.length];
   };
   function M(id, ages, when, spec, build, extra = {}) {
-    return { id, category: "micro", urgency: 15, cooldownYears: 7, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && when(c), specificity: spec, build, ...extra };
+    return { id, category: "micro", urgency: 15, cooldownYears: 7, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && when(c), specificity: spec, maxPerLife: repeatCap(build), build, ...extra };
   }
   var any = () => 1, MICRO = [
     /* =============================== Tuổi thơ 6–12 =============================== */
@@ -3580,14 +3593,14 @@ var Argon = (() => {
   }, RECUR = { dr_night: 6, dr_crash: 12, fc_ot: 5, he_shift: 5, he_gift: 8, te_tutor: 8, te_envelope: 10, bu_scaffold: 8, bu_unpaid: 10, of_politics: 8, tc_remote: 8, sp_wait: 6, sp_sorry: 5, sp_chores: 10, sp_vote: 8, mg_room: 5, mg_scam: 10, fa_drought: 7, do_accused: 12, or_hunger: 3, or_lottery_kid: 3, or_tutor: 3, to_water: 3, bo_gang: 3, un_job: 2, un_rich: 2, dp_boss: 3 };
   for (let st of BRANCHES) {
     let cd = RECUR[st.id];
-    cd !== void 0 && (st.once = !1, st.cooldownYears = cd);
+    cd !== void 0 && (st.once = !1, st.cooldownYears = Math.max(6, cd), st.maxPerLife = repeatCap(st.build));
   }
 
   // src/engine/narrative/branches2.ts
   var C4 = (label, effects, hint, extra = {}) => ({ label, ...hint !== void 0 ? { hint } : {}, effects, ...extra }), f2 = (c, x) => c.flags.has(x), role4 = (c, r) => c.cast[r], T2 = (title, text, choices, def = 0, more = {}) => ({ title, text, choices, def, ...more });
   function R(id, gate, ages, cooldown, build) {
     let g = typeof gate == "string" ? (c) => f2(c, gate) : gate;
-    return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, build };
+    return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, maxPerLife: repeatCap(build), build };
   }
   var vary2 = (id, age, arr) => {
     let x = age * 31;
@@ -3873,11 +3886,11 @@ var Argon = (() => {
   };
   function R2(id, gate, ages, cooldown, build, extra = {}) {
     let g = typeof gate == "string" ? (c) => f3(c, gate) : gate, causes = typeof gate == "string" ? () => [prov.flag(gate)] : void 0;
-    return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, ...causes ? { causes } : {}, build, ...extra };
+    return { id, category: "micro", urgency: 18, cooldownYears: cooldown, tension: 1, prerequisites: (c) => c.age >= ages[0] && c.age <= ages[1] && g(c), specificity: () => 4, maxPerLife: repeatCap(build), ...causes ? { causes } : {}, build, ...extra };
   }
   var parent = (c) => role5(c, "mother") ?? role5(c, "father"), psBase = (c) => c.parent_sick && c.age >= 20 && !!parent(c);
   function PS(id, gate, spec, build) {
-    return { id, group: "parent_sick", category: "family", urgency: 90, cooldownYears: 6, tension: 14, prerequisites: (c) => psBase(c) && f3(c, gate), specificity: () => spec, causes: () => [prov.flag(gate)], build };
+    return { id, group: "parent_sick", maxPerLife: 2, category: "family", urgency: 90, cooldownYears: 6, tension: 14, prerequisites: (c) => psBase(c) && f3(c, gate), specificity: () => spec, causes: () => [prov.flag(gate)], build };
   }
   var sibBase = (c) => c.age >= 22 && c.age <= 45 && !!role5(c, "sibling");
   function SW(id, gate, build) {
@@ -4036,9 +4049,9 @@ var Argon = (() => {
       C5("Ngh\u1EC9 h\u1ECDc v\xE0i h\xF4m ph\u1EE5 nh\xE0", { know: -1, health: 1, rel: 2, trait: { coop: 1 } }),
       C5("V\u1EABn \u0111i h\u1ECDc", { know: 1 })
     ])),
-    R2("tc_to_cry", "temper_tough", [7, 13], 4, () => T3("Kh\xF4ng kh\xF3c", "B\u1EA1n ng\xE3 r\xE1ch \u0111\u1EA7u g\u1ED1i, m\xE1u ch\u1EA3y. M\u1EA5y \u0111\u1EE9a kh\xE1c nh\xECn.", [
-      C5("\u0110\u1EE9ng d\u1EADy, kh\xF4ng kh\xF3c", { trait: { bold: 1 }, happy: -1 }),
-      C5("Kh\xF3c, ch\u1EA1y v\u1EC1 nh\xE0", { rel: 1 })
+    R2("tc_to_road", "temper_tough", [7, 13], 4, () => T3("\u0110\u01B0\u1EDDng \u0111\u1EBFn tr\u01B0\u1EDDng", "M\xF9a m\u01B0a, con \u0111\u01B0\u1EDDng n\u0103m c\xE2y s\u1ED1 \u0111\u1EBFn tr\u01B0\u1EDDng ng\u1EADp \u0111\u1EBFn \u0111\u1EA7u g\u1ED1i. M\u1EA5y \u0111\u1EE9a trong x\xF3m \u0111\xE3 ngh\u1EC9 h\u1ECDc c\u1EA3 tu\u1EA7n.", [
+      C5("L\u1ED9i \u0111i h\u1ECDc", { know: 2, health: -2, trait: { bold: 1 } }),
+      C5("\u1EDE nh\xE0 ph\u1EE5 vi\u1EC7c", { rel: 1, know: -1 })
     ])),
     R2("tm3_to_injury", "temper_tough", [22, 60], 6, (c) => T3("\u0110au m\xE0 kh\xF4ng n\xF3i", vary3("toinj", c.age, ["B\u1EA1n \u0111au ng\u1EF1c m\u1EA5y tu\u1EA7n nay.", "V\u1EBFt th\u01B0\u01A1ng \u1EDF tay m\xE3i kh\xF4ng l\xE0nh."]), [
       C5("\u0110i kh\xE1m", { money: -0.03, health: 4 }),
@@ -4053,19 +4066,19 @@ var Argon = (() => {
       C5("Ngh\u1EC9 h\u1EB3n", { happy: -2 })
     ]))
   ], TEMPER2_ECHO = [
-    R2("t5_curious", "temper2_curious", [11, 60], 8, () => T3("C\xE2u h\u1ECFi ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc", "C\xF4 gi\xE1o n\u0103m l\u1EDBp m\u1ED9t t\u1EEBng b\u1EA3o b\u1EA1n h\u1ECFi nhi\u1EC1u qu\xE1. H\xF4m nay l\u1EA1i c\xF3 m\u1ED9t c\xE2u b\u1EA1n mu\u1ED1n h\u1ECFi gi\u1EEFa cu\u1ED9c h\u1ECDp.", [
+    R2("t5_curious", "temper2_curious", [16, 45], 99, () => T3("C\xE2u h\u1ECFi ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc", "C\xF4 gi\xE1o n\u0103m l\u1EDBp m\u1ED9t t\u1EEBng b\u1EA3o b\u1EA1n h\u1ECFi nhi\u1EC1u qu\xE1. H\xF4m nay l\u1EA1i c\xF3 m\u1ED9t c\xE2u b\u1EA1n mu\u1ED1n h\u1ECFi gi\u1EEFa cu\u1ED9c h\u1ECDp.", [
       C5("H\u1ECFi", { know: 2, gamble: { p: 0.6, win: { rel: 2 }, lose: { rel: -2 } } }),
       C5("Th\xF4i", {})
     ])),
-    R2("t5_bold", "temper2_bold", [11, 60], 8, () => T3("Th\xF3i quen ng\u1ED3i b\xE0n \u0111\u1EA7u", "T\u1EEB ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n \u0111\xE3 ch\u1ECDn ch\u1ED7 ng\u1ED3i \u0111\u1EA7u. H\xF4m nay c\u0169ng c\xF3 m\u1ED9t ch\u1ED7 ng\u1ED3i \u0111\u1EA7u, tr\u01B0\u1EDBc m\u1EB7t ng\u01B0\u1EDDi quan tr\u1ECDng.", [
+    R2("t5_bold", "temper2_bold", [16, 45], 99, () => T3("Th\xF3i quen ng\u1ED3i b\xE0n \u0111\u1EA7u", "T\u1EEB ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n \u0111\xE3 ch\u1ECDn ch\u1ED7 ng\u1ED3i \u0111\u1EA7u. H\xF4m nay c\u0169ng c\xF3 m\u1ED9t ch\u1ED7 ng\u1ED3i \u0111\u1EA7u, tr\u01B0\u1EDBc m\u1EB7t ng\u01B0\u1EDDi quan tr\u1ECDng.", [
       C5("Ng\u1ED3i l\xEAn \u0111\u1EA7u, t\u1EF1 gi\u1EDBi thi\u1EC7u", { rel: 2, gamble: { p: 0.5, win: { income_mult: 1.04 }, lose: {} } }),
       C5("Ng\u1ED3i cu\u1ED1i", {})
     ])),
-    R2("t5_kind", "temper2_kind", [11, 60], 8, () => T3("\u0110\u1EE9a ng\u1ED3i m\u1ED9t m\xECnh", "Ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n \u0111\xE3 ng\u1ED3i c\u1EA1nh \u0111\u1EE9a kh\xF4ng ai ch\u01A1i. H\xF4m nay c\xF3 m\u1ED9t ng\u01B0\u1EDDi m\u1EDBi c\u0169ng \u0111ang \u0111\u1EE9ng m\u1ED9t m\xECnh.", [
+    R2("t5_kind", "temper2_kind", [16, 45], 99, () => T3("\u0110\u1EE9a ng\u1ED3i m\u1ED9t m\xECnh", "Ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n \u0111\xE3 ng\u1ED3i c\u1EA1nh \u0111\u1EE9a kh\xF4ng ai ch\u01A1i. H\xF4m nay c\xF3 m\u1ED9t ng\u01B0\u1EDDi m\u1EDBi c\u0169ng \u0111ang \u0111\u1EE9ng m\u1ED9t m\xECnh.", [
       C5("L\u1EA1i g\u1EA7n", { rel: 2, counters: { kind: 1 } }),
       C5("Th\xF4i", {})
     ])),
-    R2("t5_tough", "temper2_tough", [11, 60], 8, () => T3("Kh\xF4ng kh\xF3c l\xFAc m\u1EB9 v\u1EC1", "Ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc b\u1EA1n kh\xF4ng kh\xF3c khi m\u1EB9 v\u1EC1. H\xF4m nay c\xF3 chuy\u1EC7n bu\u1ED3n, v\xE0 b\u1EA1n l\u1EA1i kh\xF4ng kh\xF3c.", [
+    R2("t5_tough", "temper2_tough", [16, 45], 99, () => T3("G\u1ED3ng", "Ng\xE0y \u0111\u1EA7u \u0111i h\u1ECDc, b\u1EA1n \u0111\xE3 g\u1ED3ng l\xEAn \u0111\u1EC3 kh\xF4ng ai th\u1EA5y m\xECnh nh\u1EDB m\u1EB9. H\xF4m nay c\xF3 chuy\u1EC7n bu\u1ED3n \u1EDF ch\u1ED7 l\xE0m, v\xE0 b\u1EA1n l\u1EA1i g\u1ED3ng l\xEAn nh\u01B0 th\u1EBF.", [
       C5("Gi\u1EEF trong l\xF2ng", { bw: -2 }),
       C5("K\u1EC3 cho m\u1ED9t ng\u01B0\u1EDDi", { rel: 2, bw: 2 })
     ]))
@@ -4812,8 +4825,9 @@ function eulogyVN(L) {
 function microScene(L, ctx) {
   const lw = L.lw; if (!lw || L.pending || !L.alive || (lw.decisions || 0) >= (lw.budget || 0)) return false;
   ctx = ctx || factContext(L);
-  const cnt = {}; for (const h of lw.history) cnt[h.id] = (cnt[h.id] || 0) + 1;
-  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.id.startsWith("m_") ? 2 : 3));
+  const cnt = {}, last = {}; for (const h of lw.history) { cnt[h.id] = (cnt[h.id] || 0) + 1; last[h.id] = h.age; }
+  // Ngân sách lặp: mỗi thẻ tối đa maxPerLife lần (mặc định 1), lần lặp phải cách lần trước ≥ 10 năm.
+  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.maxPerLife ?? 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10));
   let st = Argon.selectStorylet(pool, ctx, { minUrgency: 0, history: lw.history, age: L.age }, L.ar.rng);
   // Lấp chỗ trống: chuyện chung không theo nhánh, chỉ khi nhánh hết chuyện
   if (!st && L.ar.rng.next() < 0.6) { const fill = Argon.eligible(pools().generic.filter(s => !cnt[s.id]), ctx, { minUrgency: 0, history: lw.history, age: L.age }); if (fill.length) st = fill[Math.floor(L.ar.rng.next() * fill.length)].s; }
