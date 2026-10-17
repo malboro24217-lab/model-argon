@@ -123,6 +123,8 @@ export interface FactContext {
   age: number;
   sex: "M" | "F";
   country: string;
+  /** 0..1, fixed per life (from the seed): picks which slice of optional content this life can meet. */
+  luck: number;
   gdp: number;
   poor_country: boolean;
   family_wealth: number;        // 0..1 at birth
@@ -220,6 +222,8 @@ export interface Storylet {
   group?: string;
   /** Most times one storylet may fire in a life (host default 1 for micro cards). */
   maxPerLife?: number;
+  /** Authoring metadata (content packs): which life path and which kit helper produced the card. Not read by the matcher. */
+  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" };
   /** Tension this storylet adds to the storyteller when it fires. */
   tension: number;
   /** Builds the scene. May read the context and roles to write names in. */
