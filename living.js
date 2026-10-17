@@ -117,6 +117,13 @@ function customEffect(L, c, npcId) {
     case "job_new": getJob(L); break;
     case "job_switch": if (FAM[arg]) assignJob(L, arg); break;
     case "become": becomePath(L, arg); break;
+    case "move_city": L.lw.sflags.add("path_city"); L.lw.sflags.add("left_home"); if (L.income > 0) L.income *= 1.15; addSt(L, "rel", -5); log(L, "Bạn chuyển lên thành phố.", "big"); break;
+    case "study": L.lw.studying = true; if (L.income > 0) L.income *= 0.7; L.lw.queue.push({ at: L.age + 2, custom: "study_done" }); log(L, "Bạn đi học lại, vừa học vừa làm.", "big"); break;
+    case "study_done": L.lw.studying = false; addSt(L, "know", 10); if (L.school.years >= 12) { L.school.deg = true; if (L.income > 0) L.income = L.income / 0.7 * 1.1; log(L, "Bạn lấy được tấm bằng.", "good big"); } else { L.school.years = Math.min(12, L.school.years + 2); if (L.income > 0) L.income /= 0.7; log(L, `Bạn học xong lớp ${L.school.years}.`, "good"); } break;
+    case "marry": resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex) }, 0, L.r, L.c); break;
+    case "have_child": bornChild(L); break;
+    case "retire": { L.retired = true; const pen = L.c.g > 30000 ? .55 : L.c.g > 10000 ? .35 : .1; L.income *= pen; log(L, "Bạn nghỉ hưu sớm.", "big"); break; }
+    case "migrate_now": { L.flags.migAsked = true; const dest = pickWeighted(L.r, COUNTRIES.filter(d => d.g > L.c.g * 1.5 && d.g > 15000), d => d.b + (d.g > 40000 ? 1 : 0)); if (dest) resolveCore(L, { id: "migrate", data: dest.id }, 0, L.r, L.c); else log(L, "Không tìm được nơi nào nhận bạn.", "bad"); break; }
     case "scholar": L.school.target = 12; addSt(L, "know", 5); break;
     case "return_home": L.lw.sflags.delete("path_migrant"); if (L.migrated) { L.migrated = false; L.c = L.birthC; } L.income *= 0.55; log(L, `Bạn về lại ${L.birthC.n}.`, "big"); break;
     case "spouse_leave": { const sp = castRole(L, "spouse"); if (sp) { sp.roles = sp.roles.filter(r => r !== "spouse"); sp.roles.push("rival"); } L.married = false; log(L, "Hai người chia tay.", "bad big"); break; }
