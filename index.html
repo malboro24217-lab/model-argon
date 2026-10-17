@@ -124,6 +124,22 @@ body.tunnel .decision{box-shadow:inset 0 0 0 2px var(--bad)}
 .vig{font-style:italic;color:var(--muted)}
 .log .e.choice .t{font-weight:600;color:var(--accent)}.log .e.door .t{color:var(--bad);font-style:italic}.log .e.promise .t{color:var(--seal)}
 .cause{font-size:13px;border-left:3px solid var(--seal);padding:6px 10px;background:color-mix(in oklab,var(--seal) 10%,var(--sheet));border-radius:4px}
+.want{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px;padding:4px 0 10px;border-bottom:1px solid var(--line)}
+.want[hidden]{display:none}
+.want label{font-family:var(--f-display);font-size:22px;font-weight:600;color:var(--ink);white-space:nowrap}
+.want input{flex:1 1 220px;min-width:0;font:inherit;font-family:var(--f-display);font-size:20px;color:var(--ink);background:transparent;border:0;border-bottom:2px solid var(--line);padding:2px 2px 4px;outline:none}
+.want input:focus{border-bottom-color:var(--accent)}
+.want input::placeholder{color:var(--muted);opacity:.8}
+.want input:disabled{opacity:.55}
+.want-msg{flex-basis:100%;font-size:13px;color:var(--muted);min-height:0}
+.want-msg.err{color:var(--bad)}
+.actcard .out{font-family:var(--f-display);font-size:24px;margin:0}
+.actcard .out.thanh{color:var(--good)}.actcard .out.hong,.actcard .out.khong_lam_duoc{color:var(--bad)}.actcard .out.nua_voi{color:var(--seal)}
+.actcard .typed{font-family:var(--f-display);font-size:18px;margin:0;color:var(--muted)}
+.actcard .deltas{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--f-data);font-size:12px}
+.actcard .deltas .up{color:var(--good)}.actcard .deltas .dn{color:var(--bad)}
+.actcard ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.stories{display:flex;flex-direction:column;gap:8px}.stories .st{display:flex;flex-direction:column;font-size:13px}.stories .r{color:var(--muted);font-size:12px}
 .doorbadge{display:inline-block;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--bad);border:1px solid var(--bad);border-radius:3px;padding:0 5px;margin-top:4px}
 .epi{font-size:12px;color:var(--seal);font-style:italic}
 .delta{position:absolute;right:0;top:-10px;font-family:var(--f-data);font-size:11px;font-weight:600;animation:rise 1.4s ease-out forwards;pointer-events:none}
@@ -6007,16 +6023,17 @@ function play(){const L=G.life;G.paused=false;
     <div class="spacer"></div>
     <div class="seg" id="speed">${[1,2,4,8,16].map(s=>`<button class="btn${s===1?" on":""}" data-s="${s}">${s}×</button>`).join("")}</div>
     <button class="btn" id="pause">Tạm dừng</button>
-    <button class="btn" id="auto">Tự quyết: tắt</button>
+    <button class="btn" id="auto">Tự chơi: tắt</button>
     <button class="btn" id="aiBtn">AI kể chuyện</button>
     <button class="btn" id="codexBtn">Sổ tay</button>
     <button class="btn" id="quit">Thoát</button>
   </header>
   <div class="board">
    <aside class="panel" id="left"></aside>
-   <main class="panel" style="gap:12px"><div id="codex" hidden></div><div id="dec"></div><div class="label">Nhật ký cuộc đời · mới nhất trước</div><div class="log" id="log"></div></main>
+   <main class="panel" style="gap:12px"><div id="codex" hidden></div><form id="want" class="want" autocomplete="off"><label for="wantIn" id="wantLead">Tôi muốn</label><input id="wantIn" maxlength="200" enterkeyhint="go"><button class="btn" id="wantGo" type="submit">Làm</button><span class="want-msg" id="wantMsg" role="status" aria-live="polite"></span></form><div id="dec"></div><div class="label">Nhật ký cuộc đời · mới nhất trước</div><div class="log" id="log"></div></main>
    <aside class="panel">
      <div class="field"><span class="label">Những người quanh bạn</span><div class="castlist" id="cast"></div></div>
+     <div class="field" id="storiesF" hidden><span class="label">Chuyện đang dở</span><div class="stories" id="stories"></div></div>
      <div class="field"><span class="label">Bốn em bé sinh cùng giây · ở tuổi bạn</span><div id="peers"></div></div>
      <div class="field"><span class="label">Bản đồ cuộc đời · 1 ô = 1 năm</span><div class="map" id="map"></div>
        <div class="legend"><span>buồn</span><span>viền vàng: tuổi thọ TB</span><span>vui</span></div></div>
@@ -6027,6 +6044,7 @@ function play(){const L=G.life;G.paused=false;
   document.getElementById("aiBtn").onclick=()=>{if(NAR.status==="off")return;NAR.enabled=!NAR.enabled;render()};
   document.getElementById("codexBtn").onclick=()=>{const c=document.getElementById("codex");c.hidden=!c.hidden;renderCodex()};
   document.getElementById("quit").onclick=()=>{if(G.life.alive){G.paused=true;render();askQuit()}else intro()};
+  document.getElementById("want").onsubmit=e=>{e.preventDefault();wantSubmit()};
   L.auto=G.autoDecide;render();start()}
 
 function askQuit(){const d=document.getElementById("dec");d.innerHTML=`<div class="decision"><h3>Rời khỏi cuộc đời này?</h3><p style="margin:0">Cuộc đời đang sống sẽ không được lưu.</p>
@@ -6034,9 +6052,33 @@ function askQuit(){const d=document.getElementById("dec");d.innerHTML=`<div clas
   document.getElementById("qy").onclick=intro;document.getElementById("qn").onclick=()=>{G.paused=false;render()}}
 
 function start(){stop();G.last=performance.now();G.acc=0;const loop=t=>{G.timer=requestAnimationFrame(loop);const dt=t-G.last;G.last=t;const L=G.life;
-  if(!L||G.paused||L.pending||!L.alive)return;if(narratorWaiting(L)){if(!G.waitShown){G.waitShown=true;render()}return}G.waitShown=false;G.acc+=dt*G.speed;if(G.acc>=G.yearMs){G.acc=0;stepYear(L);narratorPlan(L);render();if(!L.alive)setTimeout(ending,1400)}};G.timer=requestAnimationFrame(loop)}
+  if(!L||G.paused||L.pending||!L.alive||G.acting||G.card)return;
+  if(L.storyDue){if(!G.storyLoading){G.storyLoading=true;render();agencyStory(L,L.storyDue).finally(()=>{G.storyLoading=false;render()})}return}
+  if(narratorWaiting(L)){if(!G.waitShown){G.waitShown=true;render()}return}G.waitShown=false;G.acc+=dt*G.speed;if(G.acc>=G.yearMs){G.acc=0;stepYear(L);narratorPlan(L);render();if(!L.alive)setTimeout(ending,1400)}};G.timer=requestAnimationFrame(loop)}
 function stop(){if(G.timer)cancelAnimationFrame(G.timer);G.timer=null}
 
+/* ---- Ô "Tôi muốn…" ---- */
+function renderWant(L){const w=document.getElementById("want");if(!w)return;w.hidden=!!G.autoDecide||!L.alive;
+  const off=NAR.status==="off";const inp=document.getElementById("wantIn");
+  document.getElementById("wantLead").textContent=L.pending&&!G.card?"Tôi chọn cách khác:":"Tôi muốn";
+  inp.placeholder=off?"cần bật AI kể chuyện để tự quyết":L.pending&&!G.card?"tự viết cách xử lý của bạn…":"mở quán phở, làm lành với bố, đi học lại…";
+  inp.disabled=off||!!G.acting||!!G.card||!!G.storyLoading;document.getElementById("wantGo").disabled=inp.disabled;
+  const msg=document.getElementById("wantMsg");if(G.acting){msg.textContent="Đang diễn ra…";msg.classList.remove("err")}}
+async function wantSubmit(){const L=G.life;const inp=document.getElementById("wantIn"),msg=document.getElementById("wantMsg");
+  if(!L||!L.alive||G.acting||G.card||G.autoDecide)return;const text=inp.value.trim();if(!text){inp.focus();return}
+  G.acting=true;render();
+  try{const r=await agencyAct(L,text);if(r.ok){inp.value="";msg.textContent="";G.card=r.card;G.card.typed=text;G.card.age=L.age}else{msg.textContent=r.error;msg.classList.add("err")}}
+  finally{G.acting=false;clearInterval(G.timerIv);G.timerKey=null;render();if(!L.alive)setTimeout(ending,1400)}}
+const DELTA_VN={health:"sức khỏe",happy:"hạnh phúc",know:"kiến thức",rel:"quan hệ",savings:"tiền",income:"thu nhập/năm"};
+function renderActCard(L,dec){const c=G.card;
+  const ds=Object.entries(c.deltas||{}).map(([k,v])=>`<span class="${v>0?"up":"dn"}">${DELTA_VN[k]||k} ${v>0?"+":"−"}${k==="savings"||k==="income"?fmtPPP(Math.abs(v)):Math.abs(v)}</span>`).join("");
+  dec.innerHTML=`<div class="decision actcard" id="actcard"><span class="label">Bạn tự quyết · tuổi ${c.age}</span><p class="typed">“${esc(c.typed)}”</p><h3 class="out ${c.outcome}">${esc(c.outcomeVN)}</h3><p style="margin:0" id="actText"></p>
+   ${ds?`<div class="deltas">${ds}</div>`:""}${c.reactions&&c.reactions.length?`<ul>${c.reactions.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+   ${c.story?`<div class="cause">Chuyện còn đang dở: ${esc(c.story)}. Sẽ còn quay lại.</div>`:""}
+   <div class="choices"><button class="btn" id="actOk"><b>Tiếp tục</b></button></div></div>`;
+  const t=document.getElementById("actText");const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce||c.shown)t.textContent=c.text;else{c.shown=true;let i=0;const step=()=>{if(!document.body.contains(t))return;i=Math.min(c.text.length,i+3);t.textContent=c.text.slice(0,i);if(i<c.text.length)requestAnimationFrame(step)};step()}
+  const ok=document.getElementById("actOk");ok.onclick=()=>{G.card=null;render()};ok.focus({preventScroll:true})}
 function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   document.getElementById("age").innerHTML=`${L.age}<small>tuổi</small>`;
   document.getElementById("epi").textContent=epithets(L).join(" · ");
@@ -6044,7 +6086,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   document.getElementById("pause").textContent=G.paused?"Tiếp tục":"Tạm dừng";
   document.getElementById("codexBtn").textContent=`Sổ tay (${Object.keys(L.codex||{}).length})`;
   const ab=document.getElementById("aiBtn");ab.textContent=NAR.status==="off"?"AI kể chuyện: không có":`AI kể chuyện: ${NAR.enabled?(NAR.status==="busy"?"đang viết…":"bật"):"tắt"}`;ab.classList.toggle("on",NAR.enabled&&NAR.status!=="off");ab.disabled=NAR.status==="off";renderCodex();
-  document.getElementById("auto").textContent=`Tự quyết: ${G.autoDecide?"bật":"tắt"}`;document.getElementById("auto").classList.toggle("on",G.autoDecide);
+  document.getElementById("auto").textContent=`Tự chơi: ${G.autoDecide?"bật":"tắt"}`;renderWant(L);document.getElementById("auto").classList.toggle("on",G.autoDecide);
   const st=[["Sức khỏe","health"],["Hạnh phúc","happy"],["Kiến thức","know"],["Quan hệ","rel"]];
   const foci=availableFoci(L);
   document.getElementById("left").innerHTML=`<span class="label">Trạng thái · 0–100</span>
@@ -6062,7 +6104,9 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   const fr=document.getElementById("frugal");if(fr)fr.onclick=()=>{L.ar.frugal=!L.ar.frugal;render()};
   // quyết định
   const dec=document.getElementById("dec");
-  if(L.pending){const p=L.pending;const g=argonGate(L);const key=p.key||p.id+L.age;
+  if(G.card)renderActCard(L,dec);
+  else if(G.storyLoading&&L.storyDue)dec.innerHTML=`<div class="decision"><span class="label">Chuyện đang dở · tuổi ${L.age}</span><h3>${esc(L.storyDue.title)}</h3><p style="margin:0" class="muted">Chuyện đang tiếp diễn…</p></div>`;
+  else if(L.pending){const p=L.pending;const g=argonGate(L);const key=p.key||p.id+L.age;
     const states=p.choices.map(c=>choiceState(L,c,g));const anyHidden=states.includes("hidden"),anyLocked=states.includes("locked");
     const m=p.matrix?(p.fog?fogMatrix(L,p.matrix,key):p.matrix):null;
     const ddCost=35;const canDD=L.ar&&p.fog&&!L.ar.dd[key]&&g.tier!=="autopilot";
@@ -6078,7 +6122,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
        const doors=choiceDoors(c);return`<button class="btn${st==="locked"?" locked":""}" data-i="${i}" ${st==="locked"?"disabled":""}><b>${esc(c.label)}</b><small>${st==="locked"?"không với tới được lúc này":esc(c.hint||"")}</small>${doors.map(d=>`<span class="doorbadge">đóng cửa: ${esc(CH.DOOR_VN(d).vi)}</span>`).join("")}</button>`}).join("")}</div></div>`;
     dec.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{clearInterval(G.timerIv);G.timerKey=null;resolve(L,+b.dataset.i);render()});
     if(g.bw<50&&L.ar&&G.timerKey!==key){clearInterval(G.timerIv);G.timerKey=key;const total=(6+24*(g.bw/100))*1000;const t0=performance.now();
-      G.timerIv=setInterval(()=>{const bar=document.getElementById("timerbar");if(!bar||!L.pending||L.pending.key!==key){clearInterval(G.timerIv);return}const left=Math.max(0,1-(performance.now()-t0)/total);bar.style.width=(left*100)+"%";
+      G.timerIv=setInterval(()=>{if(G.acting)return;const bar=document.getElementById("timerbar");if(!bar||!L.pending||L.pending.key!==key){clearInterval(G.timerIv);return}const left=Math.max(0,1-(performance.now()-t0)/total);bar.style.width=(left*100)+"%";
         if(left<=0){clearInterval(G.timerIv);G.timerKey=null;const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);const pickI=ok.includes(p.def)?p.def:(ok[0]??0);log(L,"Bạn không kịp nghĩ. Bạn làm điều dễ nhất.","bad");resolve(L,pickI);render()}},250)}
     const ddb=document.getElementById("dd");if(ddb)ddb.onclick=()=>{if(dueDiligence(L,key,ddCost))render()}}
   else if(narratorWaiting(L))dec.innerHTML=`<div class="decision"><span class="label">Người kể chuyện đang viết một tình huống cho tuổi ${L.nextAi}…</span><p style="margin:0" class="muted">Lần đầu, trình duyệt sẽ hỏi bạn có cho phép trang này dùng Claude không. Có thể tắt AI kể chuyện trên thanh trên để chơi với kịch bản sẵn.</p></div>`;
@@ -6091,6 +6135,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
     document.getElementById("cast").innerHTML=rows.map(m=>{const op=Argon.opinionOf(s,L.lw.mem,m.id);const col=op>=.5?"var(--good)":op<=-.35?"var(--bad)":op<=-.1?"var(--seal)":"var(--line)";const mem=m.alive?memoryLine(L,m.id):"";
       const pr=(L.lw.promises||[]).find(p=>p.to===m.id&&p.kept===null);
       return`<div class="p${m.alive?"":" dead"}" title="${esc(mem)}"><i style="background:${col}"></i><span><b>${esc(m.name)}</b> <span class="r">${esc(m.roles.map(r=>LW.ROLE_VN[r]).join(", "))}${m.alive?` · gọi bạn là “${addressOf(L,m.id)}”`:" · đã mất"}</span>${mem?`<br><span class="r">${esc(mem)}</span>`:""}${pr?`<br><span class="r" style="color:var(--seal)">bạn hứa: ${esc(pr.what)} (trước ${pr.due} tuổi)</span>`:""}</span><span class="mono r">${m.alive?(L.age+m.age_offset)+"t":""}</span></div>`}).join("")}
+  {const sf=document.getElementById("storiesF");const open=(L.stories||[]).filter(x=>!x.closed);if(sf){sf.hidden=!open.length;document.getElementById("stories").innerHTML=open.map(x=>`<div class="st"><b>${esc(x.title)}</b><span class="r">${esc(x.summary||"")}${x.summary?" · ":""}hẹn năm ${x.nextAge} tuổi</span></div>`).join("")}}
   // đường hầm khan hiếm
   {const g=argonGate(L);document.body.classList.toggle("tunnel",!!(g.bw<30||(g.scarcity&&g.scarcity.bandwidth_tax>=15)));}
   // người cùng giây
