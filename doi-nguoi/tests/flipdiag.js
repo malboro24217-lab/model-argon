@@ -1,4 +1,4 @@
-const fs=require('fs');eval(fs.readFileSync('/home/claude/doi-nguoi/tests/.head.js','utf8')+`
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/.head.js','utf8')+`
 const common={};let N=0;
 for(let i=0;i<40;i++){const P=createLife(i*29+3,{auto:true});G.life=P;let g=0;while(P.alive&&g++<130)stepYear(P);const first=P.lw.cz.marks.find(m=>m.alt_indices&&m.alt_indices.length);if(!first)continue;
  const R=replayLife(P.seed,P.choices,{key:first.key,index:first.alt_indices[0]});N++;

@@ -1,4 +1,4 @@
-const fs=require('fs');eval(fs.readFileSync('/home/claude/doi-nguoi/tests/.head.js','utf8')+`
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/.head.js','utf8')+`
 const first={},ever={},tem={},org={},sp={};let n=0;
 for(let i=0;i<200;i++){const P=createLife(i*17+5,{auto:true});let g=0;const seen=new Set();let f0=null;
  while(P.alive&&g++<130){stepYear(P);const fl=P.lw&&P.lw.sflags;if(!fl)continue;for(const k of fl){if(k.startsWith('job_')){seen.add(k);if(!f0)f0=k}}}

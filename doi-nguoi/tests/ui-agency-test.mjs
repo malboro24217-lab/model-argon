@@ -17,7 +17,7 @@ fake.json = async (prompt) => {
 };
 fake.limits = async () => ({}); window.claude = { use: async n => n === "sample" ? fake : null };
 </script>`;
-const html = "<!doctype html><html><head><meta charset=utf-8>" + mock + "</head><body>" + fs.readFileSync("/home/claude/doi-nguoi/index.html", "utf8") + "</body></html>";
+const html = "<!doctype html><html><head><meta charset=utf-8>" + mock + "</head><body>" + fs.readFileSync(new URL("../index.html", import.meta.url), "utf8") + "</body></html>";
 await page.setContent(html, { waitUntil: "load" }); await page.waitForTimeout(400);
 await page.click("#born"); await page.waitForTimeout(300); await page.click("#go"); await page.waitForTimeout(200);
 await page.click('#speed [data-s="16"]');

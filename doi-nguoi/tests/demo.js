@@ -1,4 +1,4 @@
-const fs=require('fs');eval(fs.readFileSync('/home/claude/doi-nguoi/tests/.head.js','utf8')+`
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/.head.js','utf8')+`
 function run(seed){const P=createLife(seed,{auto:true});G.life=P;let g=0;while(P.alive&&g++<130)stepYear(P);return P}
 function show(P,tag){const t=[...P.lw.sflags].filter(x=>/^temper_[a-z]+$|^job_|^origin_|^spouse_|^path_/.test(x)&&x!=="temper_deep").join(' ');
  console.log('== '+tag+' | '+P.c.n+' | '+t+' | nghề: '+P.job+' | sống '+P.age+' tuổi | '+P.choices.length+' quyết định | '+new Set(P.lw.history.map(h=>h.id)).size+' tình huống khác nhau');

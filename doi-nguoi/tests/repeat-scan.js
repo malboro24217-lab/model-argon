@@ -1,4 +1,4 @@
-const fs=require('fs');eval(fs.readFileSync('/home/claude/doi-nguoi/tests/.head.js','utf8')+`
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/.head.js','utf8')+`
 const per={};let lives=0,near=0;
 for(let i=0;i<150;i++){const P=createLife(i*17+5,{auto:true});let g=0;while(P.alive&&g++<130)stepYear(P);lives++;
  const c={};for(const h of P.lw.history){c[h.id]=(c[h.id]||0)+1}

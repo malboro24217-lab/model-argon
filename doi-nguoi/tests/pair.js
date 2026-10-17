@@ -1,4 +1,4 @@
-const fs=require('fs');eval(fs.readFileSync('/home/claude/doi-nguoi/tests/.head.js','utf8')+`
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/.head.js','utf8')+`
 const lives=[];for(let i=0;i<200;i++){const P=createLife(i*17+5,{auto:true});let g=0;while(P.alive&&g++<130)stepYear(P);if(P.age>=50)lives.push(P)}
 const dec=P=>P.choices.length;
 let uniq=[],tot=[],distinct=[];

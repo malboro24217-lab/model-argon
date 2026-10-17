@@ -1,7 +1,10 @@
+import os
+D=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+R=os.path.dirname(D)
 import re
-H='/home/claude/doi-nguoi/index.html'
+H=D+'/index.html'
 s=open(H).read()
-srcs={'argon':'/home/claude/argon/dist/argon.iife.js','bridge':'/home/claude/doi-nguoi/bridge.js','living':'/home/claude/doi-nguoi/living.js','choice':'/home/claude/doi-nguoi/choice.js','narrator':'/home/claude/doi-nguoi/narrator.js','story':'/home/claude/doi-nguoi/story.js','agency':'/home/claude/doi-nguoi/agency.js'}
+srcs={'argon':R+'/argon/dist/argon.iife.js','bridge':D+'/bridge.js','living':D+'/living.js','choice':D+'/choice.js','narrator':D+'/narrator.js','story':D+'/story.js','agency':D+'/agency.js'}
 for k,p in srcs.items():
     code=open(p).read()
 
@@ -12,5 +15,5 @@ blk=lambda k: re.search(r'<script id="%s">(.*?)</script>'%k,s,re.S).group(1)
 head=blk('argon')+"\nvar Argon=Argon;\nvar localStorage={getItem(){return null},setItem(){}};\n"
 for k in ['engine','bridge','story','living','choice','narrator','agency']: head+=blk(k)+"\n"
 head+="var G={life:null};var esc=s=>String(s);\n"
-open('/home/claude/doi-nguoi/tests/.head.js','w').write(head)
+open(D+'/tests/.head.js','w').write(head)
 print('ok',len(s))

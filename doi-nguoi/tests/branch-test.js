@@ -1,4 +1,4 @@
-const fs=require('fs');eval(fs.readFileSync('/home/claude/doi-nguoi/tests/.head.js','utf8')+`
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/.head.js','utf8')+`
 function idsOf(P){return new Set(P.lw.history.map(h=>h.id))}
 const lives=[];for(let i=0;i<200;i++){const P=createLife(i*17+5,{auto:true});let g=0;while(P.alive&&g++<130)stepYear(P);if(P.age>=40)lives.push(P)}
 let js=[];for(let i=0;i<lives.length;i++)for(let j=i+1;j<Math.min(lives.length,i+20);j++){const a=idsOf(lives[i]),b=idsOf(lives[j]);let inter=0;for(const x of a)if(b.has(x))inter++;js.push(inter/(a.size+b.size-inter))}

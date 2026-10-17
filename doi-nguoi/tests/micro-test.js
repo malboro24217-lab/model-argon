@@ -1,4 +1,4 @@
-const fs=require('fs');eval(fs.readFileSync('/home/claude/doi-nguoi/tests/.head.js','utf8')+`
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/.head.js','utf8')+`
 let errs=0,stuck=0,dec=[],micro=0,ages=[],fuses={},repeats=0;
 for(let i=0;i<500;i++){try{const P=createLife(i*13+7,{auto:true});let g=0;while(P.alive&&g++<130)stepYear(P);
  if(P.pending)stuck++;dec.push(P.choices.length);ages.push(P.age);
