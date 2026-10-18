@@ -3,6 +3,7 @@ import type { CastRole, Effect, FactContext, Storylet } from '../types.ts';
 import { C, T, slice } from '../paths/kit.ts';
 import { prov } from '../Causality.ts';
 import { linkedEffect } from './links.ts';
+import { CODEX_PLANTS, CODEX_SEASON_TAGS, pressureFor } from '../canon/codexPlants.ts';
 
 export type Tone = 'build' | 'bond' | 'probe' | 'show' | 'exit' | 'defy' | 'care' | 'deal' | 'risk' | 'truth';
 export interface Route { label: string; hook: string; after: string; keep: string; pivot: string; tone: Tone; extra: Effect; endings: [Tone,Tone] }
@@ -69,7 +70,7 @@ export function compileFork(d: Fork): Storylet[] {
   const delay = 1 + (d.id.charCodeAt(d.id.length - 1) % 3);
   const root: Storylet = {
     id: d.id, category: 'micro', urgency: 24, cooldownYears: 99, once: true, maxPerLife: 1, tension: 4,
-    meta: { kind: d.gates.split(',').includes('money') ? 'money' : 'turning_point' },
+    meta: { kind: d.gates.split(',').includes('money') ? 'money' : 'turning_point', ...(CODEX_SEASON_TAGS[d.id] ? { season: CODEX_SEASON_TAGS[d.id]! } : {}) },
     prerequisites: c => !c.flags.has(seen) && (c.counters.tp_seen ?? 0) < 50 && (c.counters.tp_open ?? 0) < 3 &&
       c.age - (c.counters.tp_last_at ?? -9) >= 2 && slice(c, d.id, 0.55) && fits(d, c),
     specificity: () => 5,
@@ -80,12 +81,17 @@ export function compileFork(d: Fork): Storylet[] {
         if (e.memory) e.memory = { ...e.memory, note: d.title.toLowerCase() + ': ' + b.label.toLowerCase() };
         // Persist the original person's identity: a later spouse/partner must not inherit their part.
         const flags = [seen, branchFlag(i), ...(npc ? [d.id + '_who:' + npc] : [])];
-        return C(b.label, merge(e, { flags, counters: { tp_seen: 1, tp_open: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), [due]: c.age + delay }, later: { years: delay, storylet: d.id + '_echo_' + i }, log: b.label + '. ' + b.hook + '.' }), b.hook);
+        // Canon event: áp lực theo tông (hoặc khai báo riêng) và vật gài. Route có vật gài không hẹn cảnh 1 bước nữa
+        // (không `later`, không mở `tp_open`/`due`): vật gài sẽ được trả bằng canon event hoặc mùa.
+        const cx = CODEX_PLANTS[d.id + '_' + i];
+        const open: Effect = { flags, counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...(cx?.plant ? {} : { tp_open: 1, [due]: c.age + delay }) },
+          pressure: cx?.pressure ?? pressureFor(d.id, b.tone), ...(cx?.plant ? { plant: cx.plant } : { later: { years: delay, storylet: d.id + '_echo_' + i } }), log: b.label + '. ' + b.hook + '.' };
+        return C(b.label, merge(e, open), b.hook);
       });
       return T(d.title, d.text.replaceAll('{person}',person), choices, 1, npc ? { npc } : {});
     },
   };
-  const echoes = d.routes.map((b,i): Storylet => ({
+  const echoes = d.routes.flatMap((b,i): Storylet[] => CODEX_PLANTS[d.id + '_' + i]?.plant ? [] : [{
     id: d.id + '_echo_' + i, category: 'arc', urgency: 82, cooldownYears: 99, once: true, maxPerLife: 1, tension: 5,
     meta: { kind: 'turning_echo' },
     prerequisites: c => c.flags.has(branchFlag(i)) && !c.flags.has(done) && c.age >= (c.counters[due] ?? Infinity),
@@ -103,6 +109,6 @@ export function compileFork(d: Fork): Storylet[] {
       return T(d.title + ' · Chuyện tiếp', bound && !alive ? `Người từng cùng bạn trải qua chuyện này không còn hiện diện trong đời bạn. Trong ghi chép cũ còn dòng: “${text}” Bạn quyết định giữ lại điều gì từ ngã rẽ ấy?` : text,
         [C(b.keep,closure(true),'Tiếp tục con đường đã mở'), C(b.pivot,closure(false),'Đổi hướng, giữ lại trải nghiệm')], 1, alive ? {npc:bound} : {});
     },
-  }));
+  }]);
   return [root,...echoes];
 }
