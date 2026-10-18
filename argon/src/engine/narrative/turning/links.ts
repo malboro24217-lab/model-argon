@@ -20,7 +20,7 @@ const LINKS: Record<string,Link> = {
   tp_c08_0:{open:{custom:'borrow:0.3|study'}}, tp_c08_1:{keep:{custom:'study'}}, tp_c08_2:{open:{custom:'borrow:0.1|study'}},
   tp_c09_0:{open:{custom:'move_city'}},
   tp_c10_2:{keep:career('artisan')}, tp_c13_2:{open:{custom:'job_lose'}},
-  tp_c16_1:{keep:career('startup')},
+  tp_c14_1:{keep:{custom:'study'}}, tp_c16_1:{keep:career('startup')},
   tp_c17_0:{open:takeCareer('restaurateur')}, tp_c17_1:{keep:career('investor')},
   tp_c22_0:{keep:career('factory_owner')}, tp_c25_1:{keep:{flags:['tp_shared_home_plan']}},
   tp_c26_0:{open:career('activist')}, tp_c29_0:{open:takeCareer('street_vendor')},

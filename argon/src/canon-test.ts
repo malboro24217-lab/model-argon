@@ -264,7 +264,9 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
   ok(eq(CANON_SEEDS.map((s) => s.id), ["no_cu", "troi_cho", "phan_boi", "noi_tieng", "di_chuc", "nam_cuoi", "ve_xa", "nuoc_len"]), "mầm: đúng 8 id");
   for (const a of AXES) if (a !== "ky") ok(CANON_SEEDS.some((s) => s.axes.includes(a)), `mầm: trục ${a} có ≥ 1 mầm`);
   ok(!CANON_SEEDS.some((s) => s.axes.includes("ky")), "mầm: trục ky không có mầm");
-  ok(!TURNING_CATALOG.some((d) => ["tp_c05", "tp_c14", "tp_c27", "tp_c39"].includes(d.id)), "mầm: c05/c14/c27/c39 đã gỡ khỏi TURNING_CATALOG");
+  /* R16: thẻ Codex gốc ở lại làm thẻ gài; mầm nâng cấp là phần trả */
+  const ELEVATED: Record<string, string> = { di_chuc: "tp_c39", nam_cuoi: "tp_c27", ve_xa: "tp_c14", nuoc_len: "tp_c05" };
+  for (const id of Object.values(ELEVATED)) ok(TURNING_CATALOG.some((d) => d.id === id), `mầm: ${id} vẫn ở lại trong TURNING_CATALOG (thẻ gài)`);
   for (const sd of CANON_SEEDS) {
     ok(!!sd.ages && sd.axes.length >= 1 && sd.axes.length <= 2, `${sd.id}: có tuổi, 1–2 trục`);
     ok(sd.doors.length >= 4, `${sd.id}: ≥ 4 cửa`);
@@ -312,6 +314,8 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
       let good = 0;
       for (let i = 0; i < 50; i++) {
         const c = inAge(lo, hi); c.pressure = P({ [ax]: 12 });
+        const card = ELEVATED[sd.id];
+        if (card && i % 3 === 0) { c.flags = new Set([...c.flags, card + "_seen"]); if (i % 2 === 0) c.flags.add(`${card}_route_${i % 4 === 0 ? 0 : 2}`); }
         const N = names(i % 5 === 0 ? "" : "Phố Mới");
         const ev = generateCanon(c, ax, [], createRng(i + 1), N, [sd], []);
         if (ev && ev.seed === sd.id && ev.doors.length === 3) good++;
@@ -329,6 +333,21 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
       const ev = generateCanon(c, sd.axes[0]!, plants, createRng(100 + i), N, [sd], []);
       ok(!!ev && ev.slots.fromPlayer >= 1 && ev.slots.what?.label === label, `${sd.id}: vật gài ${kind} điền chỗ what`);
       if (ev) { check(ev, c, N, `${sd.id}/gài ${kind}#${i}`); if (sd.who?.plants) ok(ev.slots.who === "n_cu", `${sd.id}: người gài điền chỗ who`); }
+    }
+  }
+  /* mầm nâng cấp: tiêu đề khác thẻ gốc; đã gặp thẻ gốc thì chữ gọi lại, mỗi route một kiểu */
+  for (const [sid, card] of Object.entries(ELEVATED)) {
+    const sd = CANON_SEEDS.find((x) => x.id === sid)!, codex = TURNING_CATALOG.find((d) => d.id === card)!;
+    const [lo, hi] = sd.ages!;
+    for (let i = 0; i < 12; i++) {
+      const c = inAge(lo, hi), N = names("Phố Mới");
+      const slots = fillSlots(sd, c, [], N)!;
+      const variants = [new Set<string>(), new Set([card + "_seen"]), ...[0, 1, 2].map((k) => new Set([card + "_seen", `${card}_route_${k}`]))];
+      const texts = variants.map((f) => { const cc = { ...c, flags: new Set([...c.flags, ...f]) }; return { title: sd.title(slots, cc, N), text: sd.text(slots, cc, N) }; });
+      ok(texts.every((t) => t.title !== codex.title), `${sid}: tiêu đề khác thẻ gốc «${codex.title}»`);
+      ok(new Set(texts.map((t) => t.text)).size === 5, `${sid}: chưa gặp / đã gặp / 3 route cho 5 đoạn chữ khác nhau`);
+      texts.forEach((t, k) => { txt(t.title, `${sid} gọi lại ${k} title`, 60); txt(t.text, `${sid} gọi lại ${k} text`, 700); });
+      ok(!texts[0]!.text.includes("Lần trước") && !texts[0]!.text.includes("Mấy năm trước") && !texts[0]!.text.includes("Lần nước lên trước"), `${sid}: chưa gặp thẻ gốc thì không gọi lại`);
     }
   }
   /* cả kho: mọi trục thường, tuổi 8–72 → luôn dựng được biến cố */

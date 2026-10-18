@@ -2,7 +2,7 @@
 const fs = require('fs'), assert = require('assert');
 eval(fs.readFileSync(__dirname + '/.head.js', 'utf8') + `
 assert(Array.isArray(Argon.TURNING_POINTS), 'turning-point pack is exported by the engine');
-assert.strictEqual(Argon.TURNING_POINTS.length, 196, '196 separate opening situations (c05, c14, c27, c39 became canon seeds)');
+assert.strictEqual(Argon.TURNING_POINTS.length, 200, '200 separate opening situations');
 assert(MONEY_IDS().has('tp_m01'),'new financial openings participate in the existing one-money-card-per-year budget');
 const ALL = Argon.PATH_STORYLETS;
 const ids = new Set(ALL.map(s => s.id));

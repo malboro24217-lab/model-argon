@@ -3,7 +3,9 @@
  *
  * Mỗi mầm đọc chỗ trống đã điền từ chính đời người chơi: `who` (người), `what` (vật gài hay tài sản), `noi` (nơi đang
  * sống). Chỗ trống không bắt buộc có thể trống: chữ luôn có bản dự phòng. Bốn mầm nâng từ thẻ Codex
- * (di_chuc ← c39, nam_cuoi ← c27, ve_xa ← c14, nuoc_len ← c05); các thẻ ấy đã gỡ khỏi TURNING_CATALOG.
+ * (di_chuc ← c39, nam_cuoi ← c27, ve_xa ← c14, nuoc_len ← c05). Thẻ gốc vẫn ở lại làm thẻ gài (spec §4, R16):
+ * mầm là phần trả, tiêu đề khác thẻ gốc, và khi đời này đã gặp thẻ gốc (cờ "tp_cXX_seen", route "tp_cXX_route_<i>")
+ * thì chữ gọi lại khoảnh khắc ấy.
  *
  * Quy tắc:
  *  - ≥ 4 cửa, ≥ 3 kiểu cửa, dẫn tới ≥ 2 trong 5 mùa thường.
@@ -35,6 +37,13 @@ const khi = (s: Slots, c: FactContext): string => {
 const vai = (s: Slots, c: FactContext, r: CastRole): boolean => !!s.who && (c.cast[r] === s.who || !!c.roles[s.who]?.includes(r));
 /** Bản dài nếu vừa `max` ký tự, không thì bản ngắn. */
 const vua = (dai: string, ngan: string, max = 60): string => (dai.length <= max ? dai : ngan);
+/** Đời này đã gặp thẻ Codex `id` ("tp_c39"…) chưa. */
+const daGap = (c: FactContext, id: string): boolean => c.flags.has(id + "_seen");
+/** Câu gọi lại route đã chọn ở thẻ Codex `id`, hoặc `dflt` nếu không rõ route. */
+const hoi = (c: FactContext, id: string, routes: [string, string, string], dflt: string): string => {
+  const i = [0, 1, 2].find((k) => c.flags.has(`${id}_route_${k}`));
+  return i === undefined ? dflt : routes[i]!;
+};
 /** Ký ức của người ở chỗ `who` về lựa chọn này (không có ai thì không có gì). */
 const nho = (tag: MemoryTag, weight: number, note: string) => (_c: FactContext, s: Slots): Effect =>
   (s.who ? { memory: { npc: s.who, tag, weight, note } } : {});
@@ -199,16 +208,23 @@ const NOI_TIENG: CanonSeed = {
 
 /* ------------------------------------------------------------------ 5. Ba bản di chúc (nâng từ Codex c39) */
 
-/** Di chúc của chính bạn (đã già, có từ hai con) hay của bố mẹ. */
-const diChucRieng = (c: FactContext): boolean => c.age >= 58 && c.kids_alive >= 2;
+/** Di chúc của chính bạn (đã gặp c39, hoặc đã già và có từ hai con) hay của bố mẹ. */
+const diChucRieng = (c: FactContext): boolean => daGap(c, "tp_c39") || (c.age >= 58 && c.kids_alive >= 2);
 
 const DI_CHUC: CanonSeed = {
   id: "di_chuc", axes: ["mau", "tien"], ages: [20, 72],
   who: { roles: ["father", "mother", "sibling"], plants: ["person"], required: false },
   what: { plants: ["object", "place", "promise"], owns: ["house", "land", "shop"], required: false },
-  title: (s, c) => (diChucRieng(c) ? "Ba bản di chúc của bạn" : s.what ? vua(`Ba bản di chúc và ${vat(s)}`, "Ba bản di chúc") : "Ba bản di chúc"),
+  title: (s, c) => (daGap(c, "tp_c39") ? "Bản di chúc thứ tư" : s.what ? vua(`Ai sẽ giữ ${vat(s)}`, "Những cái tên bị gạch") : "Những cái tên bị gạch"),
   text: (s, c, N) => {
     const thu = s.what ? ` Cả ba bản đều xoay quanh ${vat(s)}.` : "";
+    if (daGap(c, "tp_c39")) {
+      const quyet = hoi(c, "tp_c39", ["chia đều và nói rõ với các con khi còn sống", "giữ lại một quỹ cho việc chung của cả nhà",
+        "chia theo điều mỗi đứa cần"], "chọn một trong ba bản");
+      const tim = s.who ? ` ${ten(s, N, "")} là người tìm thấy nó.` : "";
+      const quanh = s.what ? ` Bản ấy chỉ nói về ${vat(s)}.` : "";
+      return `Mấy năm trước, bạn đã ngồi trước ba bản di chúc viết tay và quyết ${quyet}. Giờ trên bàn có bản thứ tư, đúng nét chữ của bạn, ghi một ngày bạn không còn nhớ.${tim}${quanh} Cả nhà đang chờ bạn nói bản nào là bản cuối.`;
+    }
     if (diChucRieng(c)) {
       const tim = s.who ? `${ten(s, N, "")} đã tìm thấy cả ba và gọi các con về.` : "Các con đã tìm thấy cả ba.";
       return `Ba bản di chúc bạn viết tay trong ba năm nằm cạnh nhau trên bàn, mỗi bản gạch tên một đứa con. ${tim}${thu} Cả nhà đang chờ bạn nói bản nào là bản cuối.`;
@@ -241,16 +257,21 @@ const NAM_CUOI: CanonSeed = {
   id: "nam_cuoi", axes: ["than"], ages: [30, 72],
   who: { roles: ["spouse", "childhood_friend", "sibling"], plants: ["person"], required: false },
   what: { plants: ["promise", "place", "skill"], required: false },
-  title: () => "Một năm còn lại",
+  title: (s, c) => (daGap(c, "tp_c27") ? "Lần này không ai đính chính" : "Chừng một năm"),
   text: (s, c, N) => {
-    const ve = "tấm vé cho chuyến đi bạn đã hoãn ba lần";
+    const gap = daGap(c, "tp_c27"), daDi = c.flags.has("tp_c27_route_0");
+    const ve = daDi ? "tấm vé đi lại con đường năm ấy" : "tấm vé cho chuyến đi bạn đã hoãn ba lần";
     const ai = s.who ? `${ten(s, N, "")} đứng chờ ở cửa phòng khám, tay cầm ${ve}.` : `Trong ví bạn vẫn còn ${ve}.`;
     const hen = s.what ? ` Bạn nghĩ ngay tới ${vat(s)}, thứ bạn vẫn hẹn để sau.` : "";
+    if (gap) {
+      const lan = hoi(c, "tp_c27", ["bạn đã đi ngay chuyến đi ấy", "bạn đã vội thu xếp mọi điều còn dang dở", "bạn đã xin kiểm tra lại"], "bạn đã sống như thể chỉ còn một năm");
+      return `Lần trước, một tờ kết quả cũng nói “một năm”; ${lan}, rồi người ta đính chính là nhầm. Lần này bác sĩ làm lại xét nghiệm hai lần và không đính chính gì cả. ${ai}${hen}`;
+    }
     return `Tờ kết quả gấp làm tư nằm trong túi áo. Bác sĩ nói “chừng một năm”, rồi nói thêm rằng nên làm lại xét nghiệm cho chắc. ${ai}${hen}`;
   },
   doors: [
     { kind: "danh_cuoc", season: "xu_nguoi", hint: "Sống điều mình muốn; nếu kết quả sai, bạn làm lại ở xứ lạ",
-      label: () => "Bán hết, đi chuyến đi đã hoãn, không hẹn ngày về", when: indep },
+      label: (s, c) => (c.flags.has("tp_c27_route_0") ? "Bán hết, đi lại con đường năm ấy, không hẹn ngày về" : "Bán hết, đi chuyến đi đã hoãn, không hẹn ngày về"), when: indep },
     { kind: "buong", season: "lam_lai", hint: "Một năm sống trọn, sau đó là hai bàn tay trắng",
       label: () => "Nghỉ việc, cho đi hết những gì đang có" },
     { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Hết giấu giếm, mở ra những chuyện cũ chưa ai dám nói",
@@ -271,12 +292,16 @@ const VE_XA: CanonSeed = {
   id: "ve_xa", axes: ["dat", "tien"], ages: [18, 45],
   who: { roles: ["childhood_friend", "sibling", "neighbor", "first_boss", "partner"], plants: ["person"], required: false },
   what: { plants: ["debt", "promise", "place"], required: false },
-  title: (s, c, N) => (s.who ? vua(`Tấm vé ${ten(s, N, "")} mang tới`, "Vé đi xa") : "Vé đi xa"),
+  title: (s, c, N) => (daGap(c, "tp_c14") ? "Tờ hợp đồng thứ hai" : s.who ? vua(`Tấm vé ${ten(s, N, "")} mang tới`, "Vé đi xa") : "Vé đi xa"),
   text: (s, c, N) => {
     const mo = s.who ? `${ten(s, N, "")} đặt lên bàn` : "Một người quen của người quen đặt lên bàn";
     const w = s.what;
     const ly = !w ? "" : w.kind === "place" ? ` Bạn nhìn quanh ${w.label} và tự hỏi còn gì giữ mình ở lại.`
       : ` ${cap(w.label)} là lý do bạn chưa xé tờ giấy ấy.`;
+    if (daGap(c, "tp_c14")) {
+      const lan = hoi(c, "tp_c14", ["xác minh từng chữ rồi mới chuẩn bị đi", "ở lại học tay nghề", "rủ cả nhóm đòi viết lại"], "gấp nó lại");
+      return `Lần trước, khi tờ hợp đồng đầu tiên có một dòng bị gạch, bạn đã ${lan}. Giờ ${s.who ? ten(s, N, "") : "một người quen của người quen"} đặt lên bàn tờ thứ hai: lương gấp sáu lần ở ${noi(s)}, và dòng về nơi giữ hộ chiếu lại bị gạch, đúng chỗ cũ. Máy bay cất cánh sáng thứ Hai.${ly}`;
+    }
     return `${mo} một hợp đồng làm việc ở nước ngoài, lương gấp sáu lần ở ${noi(s)}. Dòng chữ về nơi giữ hộ chiếu bị gạch bằng bút bi xanh. Máy bay cất cánh sáng thứ Hai.${ly}`;
   },
   doors: [
@@ -303,12 +328,14 @@ const NUOC_LEN: CanonSeed = {
   id: "nuoc_len", axes: ["dat", "than"], ages: [8, 16],
   who: { roles: ["neighbor", "official"], plants: ["person"], required: false },
   what: { plants: ["animal", "object"], required: false },
-  title: () => "Đêm nước lên",
+  title: () => "Nước tới bậc thềm thứ hai",
   text: (s, c, N) => {
+    /* c05 là thẻ người lớn (18–65) nên thường chưa gặp khi mầm này nổ (8–16); vẫn gọi lại nếu đã gặp. */
+    const lan = daGap(c, "tp_c05") ? ` Lần nước lên trước, ${hoi(c, "tp_c05", ["cả nhà đã theo xe lên thành phố", "bạn đã ở lại giữ đồ chung", "bạn đã rủ mọi người chở từng lượt"], "bạn đã kịp thoát")}; lần này nước lên nhanh hơn.` : "";
     const xe = s.who ? `${ten(s, N, "")} đứng trên thùng chiếc xe tải duy nhất còn nổ máy, gọi cả nhà bạn trèo lên.`
       : "Đầu ngõ, chiếc xe tải duy nhất còn nổ máy đang bóp còi gọi người.";
     const con = s.what ? `${cap(vat(s))} vẫn còn ở trong nhà.` : "Chiếc cặp sách của bạn vẫn nằm trên bàn học.";
-    return `Nửa đêm, nước ở ${noi(s)} đã lên tới bậc thềm thứ hai. ${xe} ${con} Trên xe chỉ còn chỗ cho vài người nữa.`;
+    return `Nửa đêm, nước ở ${noi(s)} đã lên tới bậc thềm thứ hai.${lan} ${xe} ${con} Trên xe chỉ còn chỗ cho vài người nữa.`;
   },
   doors: [
     { kind: "thoa_hiep", season: "lam_lai", hint: "Cả nhà an toàn, mọi thứ còn lại phải làm lại từ đầu",
