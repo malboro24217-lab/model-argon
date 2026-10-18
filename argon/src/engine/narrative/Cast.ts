@@ -35,6 +35,9 @@ const ROLE_ARCH: Record<CastRole, Archetype[]> = {
   child: ["generous_tit_for_tat", "tit_for_tat", "opportunist"],
 };
 
+/** Archetype trung tính cho vai không có trong ROLE_ARCH. */
+const NEUTRAL_ARCH: Archetype[] = ["tit_for_tat", "generous_tit_for_tat"];
+
 const ROLE_SEX: Record<CastRole, "M" | "F" | "any"> = {
   mother: "F", father: "M", sibling: "any", childhood_friend: "any", bully: "M", neighbor: "any", first_boss: "any",
   official: "M", partner: "any", creditor: "any", mentor: "any", rival: "any", spouse: "any", child: "any",
@@ -70,10 +73,12 @@ export function createCast(s: WorldState, rng: Rng, names: CastNames, playerWeal
   return cast;
 }
 
-export function addCastMember(s: WorldState, cast: Map<string, CastMember>, rng: Rng, role: "spouse" | "child", name: string, ageOffset: number, trust = 0.5, archOverride?: Archetype): CastMember {
-  const n = [...cast.values()].filter((c) => c.role === role).length;
-  const id = `cast_${role}${n ? n + 1 : ""}`;
-  const drawn = rng.pick(ROLE_ARCH[role]);
+/** Thêm một người vào dàn nhân vật giữa đời (bạn đời, con, hay người mới của một Mùa). Vai lạ dùng archetype trung tính. */
+export function addCastMember(s: WorldState, cast: Map<string, CastMember>, rng: Rng, role: CastRole, name: string, ageOffset: number, trust = 0.5, archOverride?: Archetype): CastMember {
+  let n = [...cast.values()].filter((c) => c.role === role).length;
+  let id = `cast_${role}${n ? n + 1 : ""}`;
+  while (cast.has(id) || s.npcs.has(id)) id = `cast_${role}${++n + 1}`;
+  const drawn = rng.pick(ROLE_ARCH[role] ?? NEUTRAL_ARCH);
   const arch = archOverride ?? drawn;
   const npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
   s.npcs.set(id, npc);
