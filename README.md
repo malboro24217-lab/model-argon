@@ -1,7 +1,7 @@
 # Một Lần Chào Đời / Model Argon
 
 Trò chơi mô phỏng cuộc đời theo số liệu thực, có engine lý thuyết trò chơi Argon.
-Trang game: https://claude.ai/artifact/LakKYQieoAm7osu5inVJ1B
+Trang game: https://claude.ai/artifact/Smj8uxWFib5C34KjY714Sw
 
 ## Cấu trúc
 - `argon/`: engine bằng TypeScript, gồm kinh tế, của cải (`src/engine/economy/Holdings.ts`), băng thông, NPC, storylet, ô "Tôi muốn…" (Agency) và 96 con đường đời (`src/engine/narrative/paths/`).
@@ -12,7 +12,7 @@ Trang game: https://claude.ai/artifact/LakKYQieoAm7osu5inVJ1B
 ## Build
 ```sh
 cd argon && npm install && npx esbuild src/engine/index.ts --bundle --format=iife --global-name=Argon --minify-syntax --outfile=dist/argon.iife.js && cd ..
-python3 doi-nguoi/tests/build.py   # nhúng các script vào doi-nguoi/index.html, đồng thời sinh tests/.head.js
+python3 doi-nguoi/tests/build.py   # nhúng các script vào doi-nguoi/index.html, sinh tests/.head.js, và sinh bản đăng tách file trong doi-nguoi/publish/
 ```
 
 ## Test
@@ -29,7 +29,7 @@ cd argon && node --experimental-strip-types src/agency-test.ts && node --experim
 ```
 
 ## Đăng lên trang game
-Đọc bản đang chạy trên trang game trước (Artifact read). Session khác có thể đã đăng bản mới hơn, nên gộp thay đổi của bản đó vào trước rồi mới đăng `doi-nguoi/index.html` lên cùng URL. Không dùng force.
+Đăng bản tách file trong `doi-nguoi/publish/`: trang chính `index.html` (~45KB) cùng các file `.js` đi kèm (danh sách trong `files.txt`; `argon.js` ~3,7MB là engine kèm toàn bộ nội dung). Tách để lần cập nhật sau chỉ phải đọc trang chính thay vì cả 3,9MB. Đọc bản đang chạy trước (Artifact read), gộp thay đổi của session khác, rồi đăng lên cùng URL với `capabilities: {"sample": {}}`. Không dùng force.
 
 ## Tính năng tiền (18/10/2026)
 Spec: `argon/docs/superpowers/specs/2026-10-18-tien-bac-design.md`. Người chơi dùng tiền qua thẻ (gói `money_life`, `money_assets`, `money_people`, `money_invest`, 52 thẻ) và qua ô "Tôi muốn…" (việc lớn `mua`, `ban`, `muc_song`, `gui_tiet_kiem`, `rut_tiet_kiem`, `bao_hiem`, `bo_bao_hiem`, `cho_vay`, `cho_tien`, `chu_cap`). Bảng bên phải có mục "Của cải"; màn kết có "Bạn để lại gì".

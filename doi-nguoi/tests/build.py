@@ -17,3 +17,20 @@ for k in ['engine','bridge','story','living','choice','narrator','agency','money
 head+="var G={life:null};var esc=s=>String(s);\n"
 open(D+'/tests/.head.js','w').write(head)
 print('ok',len(s))
+
+# Bản đăng tách file: trang chính chỉ còn khung + giao diện, mỗi khối script là một file đi kèm.
+# Đăng: Artifact publish file_path=doi-nguoi/publish/index.html, files={tên: doi-nguoi/publish/tên} (xem CLAUDE.md).
+P=D+'/publish'
+os.makedirs(P,exist_ok=True)
+for f in os.listdir(P): os.remove(os.path.join(P,f))
+page=s
+names=[]
+for k in ['engine','argon','bridge','story','living','choice','narrator','agency','money']:
+    code=blk(k)
+    open(P+'/%s.js'%k,'w').write(code)
+    page,n=re.subn(r'<script id="%s">.*?</script>'%k, '<script id="%s" src="%s.js"></script>'%(k,k), page, flags=re.S)
+    assert n==1,k
+    names.append(k+'.js')
+open(P+'/index.html','w').write(page)
+open(P+'/files.txt','w').write('\n'.join(names)+'\n')
+print('publish',len(page.encode()),'+',len(names),'files')
