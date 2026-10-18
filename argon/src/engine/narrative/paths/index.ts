@@ -1,5 +1,6 @@
 export { PATH_LIST, PATHS, PATH_GROUPS, type PathDef, type PathKind } from "./registry.ts";
 import type { Storylet } from "../types.ts";
+import { TURNING_STORYLETS } from '../turning/index.ts';
 import { SINGER } from "./singer.ts";
 import { PACK_STREET_B } from "./street_b.ts";
 import { PACK_CRAFT_B } from "./craft_b.ts";
@@ -34,6 +35,7 @@ import { PACK_MONEY_ASSETS } from "./money_assets.ts";
 
 /** Mọi thẻ của 96 con đường + thời sự. Các gói mới thêm vào mảng này. */
 export const PATH_STORYLETS: Storylet[] = [
+  ...TURNING_STORYLETS,
   ...SINGER,
   ...PACK_STREET_B,
   ...PACK_CRAFT_B,
@@ -67,3 +69,4 @@ export const PATH_STORYLETS: Storylet[] = [
   ...PACK_MONEY_INVEST,
   ...PACK_MONEY_ASSETS,
 ];
+

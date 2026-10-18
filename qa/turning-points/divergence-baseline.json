@@ -1,0 +1,2610 @@
+{
+  "lives": 60,
+  "forksMeasured": 232,
+  "metric": "Fraction of base future storylet IDs absent in the alternative life, after fork age",
+  "laterDiff": {
+    "p25": 0.010638297872340385,
+    "p50": 0.015625,
+    "p75": 0.02777777777777779
+  },
+  "atLeast70": 0,
+  "rows": [
+    {
+      "seed": 17,
+      "id": "tp_c07",
+      "age": 8,
+      "laterCount": 101,
+      "laterDiff": 0.00990099009900991,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 17,
+      "id": "tp_c19",
+      "age": 20,
+      "laterCount": 83,
+      "laterDiff": 0.012048192771084376,
+      "dAge": 0,
+      "dNet": 0.0015385647891555025
+    },
+    {
+      "seed": 17,
+      "id": "tp_a42",
+      "age": 31,
+      "laterCount": 56,
+      "laterDiff": 0.017857142857142905,
+      "dAge": 0,
+      "dNet": 0.03691036228095852
+    },
+    {
+      "seed": 17,
+      "id": "tp_m38",
+      "age": 42,
+      "laterCount": 32,
+      "laterDiff": 0.03125,
+      "dAge": 0,
+      "dNet": 0.0684544855265885
+    },
+    {
+      "seed": 7936,
+      "id": "tp_c02",
+      "age": 8,
+      "laterCount": 132,
+      "laterDiff": 0.007575757575757569,
+      "dAge": 0,
+      "dNet": 0.4743544230714005
+    },
+    {
+      "seed": 7936,
+      "id": "tp_c27",
+      "age": 26,
+      "laterCount": 97,
+      "laterDiff": 0.010309278350515427,
+      "dAge": 0,
+      "dNet": 0.039049864411719315
+    },
+    {
+      "seed": 7936,
+      "id": "tp_a45",
+      "age": 40,
+      "laterCount": 65,
+      "laterDiff": 0.01538461538461533,
+      "dAge": 0,
+      "dNet": 0.04087265434073481
+    },
+    {
+      "seed": 7936,
+      "id": "tp_c13",
+      "age": 54,
+      "laterCount": 33,
+      "laterDiff": 0.24242424242424243,
+      "dAge": 0,
+      "dNet": 48.6446711043933
+    },
+    {
+      "seed": 15855,
+      "id": "tp_c07",
+      "age": 9,
+      "laterCount": 132,
+      "laterDiff": 0.007575757575757569,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 15855,
+      "id": "tp_l22",
+      "age": 30,
+      "laterCount": 92,
+      "laterDiff": 0.010869565217391353,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 15855,
+      "id": "tp_a46",
+      "age": 44,
+      "laterCount": 59,
+      "laterDiff": 0.016949152542372836,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 15855,
+      "id": "tp_m32",
+      "age": 58,
+      "laterCount": 27,
+      "laterDiff": 0.03703703703703709,
+      "dAge": 0,
+      "dNet": 0.74115487006867
+    },
+    {
+      "seed": 23774,
+      "id": "tp_c07",
+      "age": 8,
+      "laterCount": 70,
+      "laterDiff": 0.014285714285714235,
+      "dAge": 0,
+      "dNet": 0.009174982626311702
+    },
+    {
+      "seed": 23774,
+      "id": "tp_m39",
+      "age": 20,
+      "laterCount": 49,
+      "laterDiff": 0.020408163265306145,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 23774,
+      "id": "tp_a30",
+      "age": 26,
+      "laterCount": 35,
+      "laterDiff": 0.02857142857142858,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 23774,
+      "id": "tp_a49",
+      "age": 33,
+      "laterCount": 20,
+      "laterDiff": 0.050000000000000044,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 31693,
+      "id": "tp_c07",
+      "age": 8,
+      "laterCount": 140,
+      "laterDiff": 0.0071428571428571175,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 31693,
+      "id": "tp_l40",
+      "age": 28,
+      "laterCount": 102,
+      "laterDiff": 0.009803921568627416,
+      "dAge": 0,
+      "dNet": 0.009334219978361357
+    },
+    {
+      "seed": 31693,
+      "id": "tp_a20",
+      "age": 43,
+      "laterCount": 63,
+      "laterDiff": 0.015873015873015928,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 31693,
+      "id": "tp_m25",
+      "age": 57,
+      "laterCount": 30,
+      "laterDiff": 0.033333333333333326,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 39612,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 134,
+      "laterDiff": 0.007462686567164201,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 39612,
+      "id": "tp_c05",
+      "age": 28,
+      "laterCount": 101,
+      "laterDiff": 0.00990099009900991,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 39612,
+      "id": "tp_a15",
+      "age": 43,
+      "laterCount": 70,
+      "laterDiff": 0.014285714285714235,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 39612,
+      "id": "tp_l45",
+      "age": 57,
+      "laterCount": 35,
+      "laterDiff": 0.02857142857142858,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 47531,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 133,
+      "laterDiff": 0.007518796992481258,
+      "dAge": 0,
+      "dNet": 0.05781163540313097
+    },
+    {
+      "seed": 47531,
+      "id": "tp_m39",
+      "age": 26,
+      "laterCount": 102,
+      "laterDiff": 0.009803921568627416,
+      "dAge": 0,
+      "dNet": 0.0028105281741731105
+    },
+    {
+      "seed": 47531,
+      "id": "tp_a16",
+      "age": 38,
+      "laterCount": 74,
+      "laterDiff": 0.013513513513513487,
+      "dAge": 0,
+      "dNet": 0.010487518031076481
+    },
+    {
+      "seed": 47531,
+      "id": "tp_c11",
+      "age": 50,
+      "laterCount": 48,
+      "laterDiff": 0.02083333333333337,
+      "dAge": 0,
+      "dNet": 0.0347123497315747
+    },
+    {
+      "seed": 63369,
+      "id": "tp_c07",
+      "age": 8,
+      "laterCount": 132,
+      "laterDiff": 0.007575757575757569,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 63369,
+      "id": "tp_m32",
+      "age": 31,
+      "laterCount": 91,
+      "laterDiff": 0.13186813186813184,
+      "dAge": 0,
+      "dNet": 10.238213485543719
+    },
+    {
+      "seed": 63369,
+      "id": "tp_c13",
+      "age": 45,
+      "laterCount": 57,
+      "laterDiff": 0.29824561403508776,
+      "dAge": 0,
+      "dNet": 14.387833053490718
+    },
+    {
+      "seed": 63369,
+      "id": "tp_l36",
+      "age": 59,
+      "laterCount": 25,
+      "laterDiff": 0.040000000000000036,
+      "dAge": 0,
+      "dNet": 0.21103430849989854
+    },
+    {
+      "seed": 71288,
+      "id": "tp_c07",
+      "age": 8,
+      "laterCount": 120,
+      "laterDiff": 0.008333333333333304,
+      "dAge": 0,
+      "dNet": 0.1987810350690839
+    },
+    {
+      "seed": 71288,
+      "id": "tp_l31",
+      "age": 26,
+      "laterCount": 88,
+      "laterDiff": 0.011363636363636354,
+      "dAge": 0,
+      "dNet": 0.01292362951406827
+    },
+    {
+      "seed": 71288,
+      "id": "tp_m24",
+      "age": 38,
+      "laterCount": 63,
+      "laterDiff": 0.015873015873015928,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 71288,
+      "id": "tp_a38",
+      "age": 50,
+      "laterCount": 37,
+      "laterDiff": 0.027027027027026973,
+      "dAge": 0,
+      "dNet": 0.035294117647057505
+    },
+    {
+      "seed": 79207,
+      "id": "tp_c02",
+      "age": 8,
+      "laterCount": 140,
+      "laterDiff": 0.0071428571428571175,
+      "dAge": 0,
+      "dNet": 0.10986574425464266
+    },
+    {
+      "seed": 79207,
+      "id": "tp_l38",
+      "age": 28,
+      "laterCount": 102,
+      "laterDiff": 0.009803921568627416,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 79207,
+      "id": "tp_c13",
+      "age": 42,
+      "laterCount": 67,
+      "laterDiff": 0.014925373134328401,
+      "dAge": 0,
+      "dNet": 0.030000000000000027
+    },
+    {
+      "seed": 79207,
+      "id": "tp_m25",
+      "age": 56,
+      "laterCount": 37,
+      "laterDiff": 0.027027027027026973,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 87126,
+      "id": "tp_c07",
+      "age": 8,
+      "laterCount": 136,
+      "laterDiff": 0.007352941176470562,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 87126,
+      "id": "tp_a16",
+      "age": 30,
+      "laterCount": 93,
+      "laterDiff": 0.010752688172043001,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 87126,
+      "id": "tp_c33",
+      "age": 44,
+      "laterCount": 59,
+      "laterDiff": 0.016949152542372836,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 87126,
+      "id": "tp_l37",
+      "age": 56,
+      "laterCount": 31,
+      "laterDiff": 0.032258064516129004,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 95045,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 83,
+      "laterDiff": 0.012048192771084376,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 95045,
+      "id": "tp_l12",
+      "age": 21,
+      "laterCount": 61,
+      "laterDiff": 0.016393442622950838,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 95045,
+      "id": "tp_c05",
+      "age": 29,
+      "laterCount": 41,
+      "laterDiff": 0.024390243902439046,
+      "dAge": 0,
+      "dNet": 0.013767352688175014
+    },
+    {
+      "seed": 95045,
+      "id": "tp_m33",
+      "age": 37,
+      "laterCount": 24,
+      "laterDiff": 0.04166666666666663,
+      "dAge": 0,
+      "dNet": 0.03661879790199229
+    },
+    {
+      "seed": 102964,
+      "id": "tp_c06",
+      "age": 10,
+      "laterCount": 136,
+      "laterDiff": 0.007352941176470562,
+      "dAge": 0,
+      "dNet": 0.12568712289156003
+    },
+    {
+      "seed": 102964,
+      "id": "tp_m22",
+      "age": 29,
+      "laterCount": 99,
+      "laterDiff": 0.010101010101010055,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 102964,
+      "id": "tp_c19",
+      "age": 45,
+      "laterCount": 62,
+      "laterDiff": 0.016129032258064502,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 102964,
+      "id": "tp_m28",
+      "age": 59,
+      "laterCount": 27,
+      "laterDiff": 0.03703703703703709,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 110883,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 137,
+      "laterDiff": 0.007299270072992692,
+      "dAge": 0,
+      "dNet": 0.02626451622823451
+    },
+    {
+      "seed": 110883,
+      "id": "tp_l31",
+      "age": 29,
+      "laterCount": 100,
+      "laterDiff": 0.010000000000000009,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 110883,
+      "id": "tp_c35",
+      "age": 43,
+      "laterCount": 68,
+      "laterDiff": 0.32352941176470584,
+      "dAge": 0,
+      "dNet": 6.503754948432073
+    },
+    {
+      "seed": 110883,
+      "id": "tp_c19",
+      "age": 57,
+      "laterCount": 35,
+      "laterDiff": 0.02857142857142858,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 118802,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 121,
+      "laterDiff": 0.008264462809917328,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 118802,
+      "id": "tp_l01",
+      "age": 25,
+      "laterCount": 94,
+      "laterDiff": 0.010638297872340385,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 118802,
+      "id": "tp_c48",
+      "age": 38,
+      "laterCount": 65,
+      "laterDiff": 0.01538461538461533,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 118802,
+      "id": "tp_a36",
+      "age": 50,
+      "laterCount": 38,
+      "laterDiff": 0.02631578947368418,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 126721,
+      "id": "tp_c03",
+      "age": 16,
+      "laterCount": 94,
+      "laterDiff": 0.010638297872340385,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 126721,
+      "id": "tp_a27",
+      "age": 24,
+      "laterCount": 75,
+      "laterDiff": 0.013333333333333308,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 126721,
+      "id": "tp_m06",
+      "age": 33,
+      "laterCount": 56,
+      "laterDiff": 0.017857142857142905,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 126721,
+      "id": "tp_a48",
+      "age": 41,
+      "laterCount": 37,
+      "laterDiff": 0.027027027027026973,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 134640,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 128,
+      "laterDiff": 0.015625,
+      "dAge": 0,
+      "dNet": 6.223121491346805
+    },
+    {
+      "seed": 134640,
+      "id": "tp_c11",
+      "age": 26,
+      "laterCount": 95,
+      "laterDiff": 0.010526315789473717,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 134640,
+      "id": "tp_a25",
+      "age": 39,
+      "laterCount": 67,
+      "laterDiff": 0.014925373134328401,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 134640,
+      "id": "tp_l37",
+      "age": 52,
+      "laterCount": 37,
+      "laterDiff": 0.027027027027026973,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 142559,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 38,
+      "laterDiff": 0.02631578947368418,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 142559,
+      "id": "tp_a38",
+      "age": 18,
+      "laterCount": 25,
+      "laterDiff": 0.040000000000000036,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 142559,
+      "id": "tp_m14",
+      "age": 20,
+      "laterCount": 21,
+      "laterDiff": 0.04761904761904767,
+      "dAge": 0,
+      "dNet": 0.043381595190702955
+    },
+    {
+      "seed": 142559,
+      "id": "tp_l32",
+      "age": 22,
+      "laterCount": 16,
+      "laterDiff": 0.0625,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 150478,
+      "id": "tp_c01",
+      "age": 8,
+      "laterCount": 132,
+      "laterDiff": 0.3257575757575758,
+      "dAge": 0,
+      "dNet": 8.309519303384896
+    },
+    {
+      "seed": 150478,
+      "id": "tp_m15",
+      "age": 24,
+      "laterCount": 102,
+      "laterDiff": 0.009803921568627416,
+      "dAge": 0,
+      "dNet": 0.040865398104691426
+    },
+    {
+      "seed": 150478,
+      "id": "tp_c42",
+      "age": 37,
+      "laterCount": 71,
+      "laterDiff": 0.014084507042253502,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 150478,
+      "id": "tp_m11",
+      "age": 49,
+      "laterCount": 43,
+      "laterDiff": 0.023255813953488413,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 158397,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 115,
+      "laterDiff": 0.008695652173912993,
+      "dAge": 0,
+      "dNet": 0.1786064521721521
+    },
+    {
+      "seed": 158397,
+      "id": "tp_m24",
+      "age": 24,
+      "laterCount": 87,
+      "laterDiff": 0.011494252873563204,
+      "dAge": 0,
+      "dNet": 0.007411527187295765
+    },
+    {
+      "seed": 158397,
+      "id": "tp_a15",
+      "age": 34,
+      "laterCount": 61,
+      "laterDiff": 0.016393442622950838,
+      "dAge": 0,
+      "dNet": 0.007195452180622523
+    },
+    {
+      "seed": 158397,
+      "id": "tp_l45",
+      "age": 44,
+      "laterCount": 39,
+      "laterDiff": 0.02564102564102566,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 166316,
+      "id": "tp_c02",
+      "age": 9,
+      "laterCount": 108,
+      "laterDiff": 0.0092592592592593,
+      "dAge": 0,
+      "dNet": 0.24346704171144004
+    },
+    {
+      "seed": 166316,
+      "id": "tp_a49",
+      "age": 23,
+      "laterCount": 83,
+      "laterDiff": 0.012048192771084376,
+      "dAge": 0,
+      "dNet": 0.0019051429045496093
+    },
+    {
+      "seed": 166316,
+      "id": "tp_a39",
+      "age": 33,
+      "laterCount": 59,
+      "laterDiff": 0.016949152542372836,
+      "dAge": 0,
+      "dNet": 0.008266284883948607
+    },
+    {
+      "seed": 166316,
+      "id": "tp_l29",
+      "age": 43,
+      "laterCount": 35,
+      "laterDiff": 0.02857142857142858,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 174235,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 123,
+      "laterDiff": 0.41463414634146345,
+      "dAge": 0,
+      "dNet": 4.56190859167922
+    },
+    {
+      "seed": 174235,
+      "id": "tp_l25",
+      "age": 25,
+      "laterCount": 94,
+      "laterDiff": 0.03191489361702127,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 174235,
+      "id": "tp_m16",
+      "age": 39,
+      "laterCount": 63,
+      "laterDiff": 0.015873015873015928,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 174235,
+      "id": "tp_m02",
+      "age": 52,
+      "laterCount": 34,
+      "laterDiff": 0.02941176470588236,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 182154,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 134,
+      "laterDiff": 0.007462686567164201,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 182154,
+      "id": "tp_c10",
+      "age": 26,
+      "laterCount": 100,
+      "laterDiff": 0.010000000000000009,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 182154,
+      "id": "tp_a30",
+      "age": 39,
+      "laterCount": 71,
+      "laterDiff": 0.014084507042253502,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 182154,
+      "id": "tp_l04",
+      "age": 49,
+      "laterCount": 47,
+      "laterDiff": 0.021276595744680882,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 190073,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 35,
+      "laterDiff": 0.02857142857142858,
+      "dAge": 0,
+      "dNet": 0.006882646002065989
+    },
+    {
+      "seed": 190073,
+      "id": "tp_c07",
+      "age": 12,
+      "laterCount": 34,
+      "laterDiff": 0.02941176470588236,
+      "dAge": 0,
+      "dNet": 0.00195713452115312
+    },
+    {
+      "seed": 190073,
+      "id": "tp_c05",
+      "age": 18,
+      "laterCount": 22,
+      "laterDiff": 0.045454545454545414,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 190073,
+      "id": "tp_c11",
+      "age": 20,
+      "laterCount": 18,
+      "laterDiff": 0.05555555555555558,
+      "dAge": 0,
+      "dNet": 0.013655211560345546
+    },
+    {
+      "seed": 197992,
+      "id": "tp_c01",
+      "age": 10,
+      "laterCount": 127,
+      "laterDiff": 0.007874015748031482,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 197992,
+      "id": "tp_a36",
+      "age": 26,
+      "laterCount": 95,
+      "laterDiff": 0.010526315789473717,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 197992,
+      "id": "tp_m29",
+      "age": 38,
+      "laterCount": 66,
+      "laterDiff": 0.015151515151515138,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 197992,
+      "id": "tp_c16",
+      "age": 50,
+      "laterCount": 38,
+      "laterDiff": 0.02631578947368418,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 205911,
+      "id": "tp_c02",
+      "age": 8,
+      "laterCount": 131,
+      "laterDiff": 0.48091603053435117,
+      "dAge": 0,
+      "dNet": 5.125949874202065
+    },
+    {
+      "seed": 205911,
+      "id": "tp_a20",
+      "age": 26,
+      "laterCount": 98,
+      "laterDiff": 0.010204081632653073,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 205911,
+      "id": "tp_m20",
+      "age": 38,
+      "laterCount": 71,
+      "laterDiff": 0.014084507042253502,
+      "dAge": 0,
+      "dNet": 0.03467680982213529
+    },
+    {
+      "seed": 205911,
+      "id": "tp_a22",
+      "age": 50,
+      "laterCount": 38,
+      "laterDiff": 0.02631578947368418,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 213830,
+      "id": "tp_c01",
+      "age": 8,
+      "laterCount": 129,
+      "laterDiff": 0.015503875968992276,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 213830,
+      "id": "tp_c27",
+      "age": 24,
+      "laterCount": 99,
+      "laterDiff": 0.02020202020202022,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 213830,
+      "id": "tp_l21",
+      "age": 37,
+      "laterCount": 67,
+      "laterDiff": 0.014925373134328401,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 213830,
+      "id": "tp_c48",
+      "age": 49,
+      "laterCount": 39,
+      "laterDiff": 0.02564102564102566,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 229668,
+      "id": "tp_c02",
+      "age": 9,
+      "laterCount": 140,
+      "laterDiff": 0.08571428571428574,
+      "dAge": 0,
+      "dNet": 0.3354063658679808
+    },
+    {
+      "seed": 229668,
+      "id": "tp_m07",
+      "age": 27,
+      "laterCount": 105,
+      "laterDiff": 0.00952380952380949,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 229668,
+      "id": "tp_c35",
+      "age": 42,
+      "laterCount": 70,
+      "laterDiff": 0.014285714285714235,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 229668,
+      "id": "tp_a22",
+      "age": 56,
+      "laterCount": 36,
+      "laterDiff": 0.02777777777777779,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 237587,
+      "id": "tp_c02",
+      "age": 9,
+      "laterCount": 52,
+      "laterDiff": 0.019230769230769273,
+      "dAge": 0,
+      "dNet": 0.013214296710191694
+    },
+    {
+      "seed": 237587,
+      "id": "tp_a02",
+      "age": 18,
+      "laterCount": 37,
+      "laterDiff": 0.027027027027026973,
+      "dAge": 0,
+      "dNet": 0.015302128441016876
+    },
+    {
+      "seed": 237587,
+      "id": "tp_a45",
+      "age": 20,
+      "laterCount": 33,
+      "laterDiff": 0.030303030303030276,
+      "dAge": 0,
+      "dNet": 0.003618068588587289
+    },
+    {
+      "seed": 237587,
+      "id": "tp_m43",
+      "age": 23,
+      "laterCount": 24,
+      "laterDiff": 0.04166666666666663,
+      "dAge": 0,
+      "dNet": 0.0022590993550038684
+    },
+    {
+      "seed": 245506,
+      "id": "tp_c02",
+      "age": 9,
+      "laterCount": 129,
+      "laterDiff": 0.007751937984496138,
+      "dAge": 0,
+      "dNet": 0.8215429469357484
+    },
+    {
+      "seed": 245506,
+      "id": "tp_l13",
+      "age": 28,
+      "laterCount": 92,
+      "laterDiff": 0.010869565217391353,
+      "dAge": 0,
+      "dNet": 0.03518607541636757
+    },
+    {
+      "seed": 245506,
+      "id": "tp_m30",
+      "age": 40,
+      "laterCount": 65,
+      "laterDiff": 0.01538461538461533,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 245506,
+      "id": "tp_m33",
+      "age": 52,
+      "laterCount": 37,
+      "laterDiff": 0.32432432432432434,
+      "dAge": 0,
+      "dNet": 2.8111230610160827
+    },
+    {
+      "seed": 253425,
+      "id": "tp_c07",
+      "age": 11,
+      "laterCount": 78,
+      "laterDiff": 0.012820512820512775,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 253425,
+      "id": "tp_c44",
+      "age": 20,
+      "laterCount": 59,
+      "laterDiff": 0.016949152542372836,
+      "dAge": 0,
+      "dNet": 0.001941783181140644
+    },
+    {
+      "seed": 253425,
+      "id": "tp_m25",
+      "age": 26,
+      "laterCount": 44,
+      "laterDiff": 0.022727272727272707,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 253425,
+      "id": "tp_l21",
+      "age": 33,
+      "laterCount": 29,
+      "laterDiff": 0.03448275862068961,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 261344,
+      "id": "tp_c02",
+      "age": 11,
+      "laterCount": 140,
+      "laterDiff": 0.0071428571428571175,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 261344,
+      "id": "tp_m45",
+      "age": 28,
+      "laterCount": 103,
+      "laterDiff": 0.009708737864077666,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 261344,
+      "id": "tp_m13",
+      "age": 42,
+      "laterCount": 68,
+      "laterDiff": 0.014705882352941124,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 261344,
+      "id": "tp_c05",
+      "age": 56,
+      "laterCount": 36,
+      "laterDiff": 0.02777777777777779,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 269263,
+      "id": "tp_c07",
+      "age": 11,
+      "laterCount": 133,
+      "laterDiff": 0.007518796992481258,
+      "dAge": 0,
+      "dNet": 0.06530389705642026
+    },
+    {
+      "seed": 269263,
+      "id": "tp_c48",
+      "age": 28,
+      "laterCount": 98,
+      "laterDiff": 0.010204081632653073,
+      "dAge": 0,
+      "dNet": 0.024573700873306525
+    },
+    {
+      "seed": 269263,
+      "id": "tp_a39",
+      "age": 43,
+      "laterCount": 64,
+      "laterDiff": 0.015625,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 269263,
+      "id": "tp_m20",
+      "age": 57,
+      "laterCount": 32,
+      "laterDiff": 0.03125,
+      "dAge": 0,
+      "dNet": 0.012388490134020536
+    },
+    {
+      "seed": 277182,
+      "id": "tp_c02",
+      "age": 10,
+      "laterCount": 126,
+      "laterDiff": 0.007936507936507908,
+      "dAge": 0,
+      "dNet": 0.03367635686280892
+    },
+    {
+      "seed": 277182,
+      "id": "tp_c10",
+      "age": 27,
+      "laterCount": 93,
+      "laterDiff": 0.010752688172043001,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 277182,
+      "id": "tp_m46",
+      "age": 39,
+      "laterCount": 64,
+      "laterDiff": 0.015625,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 277182,
+      "id": "tp_a48",
+      "age": 51,
+      "laterCount": 36,
+      "laterDiff": 0.02777777777777779,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 285101,
+      "id": "tp_c02",
+      "age": 9,
+      "laterCount": 130,
+      "laterDiff": 0.007692307692307665,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 285101,
+      "id": "tp_m24",
+      "age": 26,
+      "laterCount": 95,
+      "laterDiff": 0.010526315789473717,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 285101,
+      "id": "tp_m46",
+      "age": 38,
+      "laterCount": 68,
+      "laterDiff": 0.014705882352941124,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 285101,
+      "id": "tp_c27",
+      "age": 50,
+      "laterCount": 41,
+      "laterDiff": 0.024390243902439046,
+      "dAge": 0,
+      "dNet": 0.05999999999999907
+    },
+    {
+      "seed": 293020,
+      "id": "tp_c07",
+      "age": 11,
+      "laterCount": 122,
+      "laterDiff": 0.008196721311475419,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 293020,
+      "id": "tp_a04",
+      "age": 27,
+      "laterCount": 91,
+      "laterDiff": 0.01098901098901095,
+      "dAge": 0,
+      "dNet": 0.010624622391238382
+    },
+    {
+      "seed": 293020,
+      "id": "tp_m36",
+      "age": 41,
+      "laterCount": 58,
+      "laterDiff": 0.017241379310344862,
+      "dAge": 0,
+      "dNet": 0.00907042504009296
+    },
+    {
+      "seed": 293020,
+      "id": "tp_l23",
+      "age": 53,
+      "laterCount": 30,
+      "laterDiff": 0.033333333333333326,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 300939,
+      "id": "tp_c03",
+      "age": 16,
+      "laterCount": 70,
+      "laterDiff": 0.014285714285714235,
+      "dAge": 0,
+      "dNet": 0.0017882251076050686
+    },
+    {
+      "seed": 300939,
+      "id": "tp_l15",
+      "age": 22,
+      "laterCount": 56,
+      "laterDiff": 0.017857142857142905,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 300939,
+      "id": "tp_a29",
+      "age": 29,
+      "laterCount": 40,
+      "laterDiff": 0.625,
+      "dAge": 0,
+      "dNet": 1.5677200777962739
+    },
+    {
+      "seed": 300939,
+      "id": "tp_m45",
+      "age": 35,
+      "laterCount": 27,
+      "laterDiff": 0.03703703703703709,
+      "dAge": 0,
+      "dNet": 0.013496929180473682
+    },
+    {
+      "seed": 308858,
+      "id": "tp_c03",
+      "age": 16,
+      "laterCount": 126,
+      "laterDiff": 0.007936507936507908,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 308858,
+      "id": "tp_m46",
+      "age": 30,
+      "laterCount": 94,
+      "laterDiff": 0.010638297872340385,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 308858,
+      "id": "tp_l36",
+      "age": 45,
+      "laterCount": 59,
+      "laterDiff": 0.016949152542372836,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 308858,
+      "id": "tp_c28",
+      "age": 59,
+      "laterCount": 27,
+      "laterDiff": 0.03703703703703709,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 316777,
+      "id": "tp_c07",
+      "age": 11,
+      "laterCount": 78,
+      "laterDiff": 0.11538461538461542,
+      "dAge": 0,
+      "dNet": 0.7042769678042891
+    },
+    {
+      "seed": 316777,
+      "id": "tp_c49",
+      "age": 22,
+      "laterCount": 55,
+      "laterDiff": 0.018181818181818188,
+      "dAge": 0,
+      "dNet": 0.02020455913492028
+    },
+    {
+      "seed": 316777,
+      "id": "tp_a26",
+      "age": 28,
+      "laterCount": 41,
+      "laterDiff": 0.024390243902439046,
+      "dAge": 0,
+      "dNet": 0.04336048658209561
+    },
+    {
+      "seed": 316777,
+      "id": "tp_l24",
+      "age": 34,
+      "laterCount": 25,
+      "laterDiff": 0.040000000000000036,
+      "dAge": 0,
+      "dNet": 0.024798043930083464
+    },
+    {
+      "seed": 324696,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 137,
+      "laterDiff": 0.007299270072992692,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 324696,
+      "id": "tp_a13",
+      "age": 30,
+      "laterCount": 100,
+      "laterDiff": 0.010000000000000009,
+      "dAge": 0,
+      "dNet": 0.01643848814225828
+    },
+    {
+      "seed": 324696,
+      "id": "tp_l23",
+      "age": 44,
+      "laterCount": 70,
+      "laterDiff": 0.014285714285714235,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 324696,
+      "id": "tp_a24",
+      "age": 58,
+      "laterCount": 36,
+      "laterDiff": 0.02777777777777779,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 332615,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 60,
+      "laterDiff": 0.01666666666666672,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 332615,
+      "id": "tp_c17",
+      "age": 19,
+      "laterCount": 46,
+      "laterDiff": 0.021739130434782594,
+      "dAge": 0,
+      "dNet": 0.005215129241627462
+    },
+    {
+      "seed": 332615,
+      "id": "tp_a09",
+      "age": 23,
+      "laterCount": 36,
+      "laterDiff": 0.02777777777777779,
+      "dAge": 0,
+      "dNet": 0.007873085438173244
+    },
+    {
+      "seed": 332615,
+      "id": "tp_c14",
+      "age": 28,
+      "laterCount": 25,
+      "laterDiff": 0.040000000000000036,
+      "dAge": 0,
+      "dNet": 0.028757922721801773
+    },
+    {
+      "seed": 340534,
+      "id": "tp_c01",
+      "age": 10,
+      "laterCount": 103,
+      "laterDiff": 0.009708737864077666,
+      "dAge": 0,
+      "dNet": 0.0019279717300909871
+    },
+    {
+      "seed": 340534,
+      "id": "tp_m44",
+      "age": 22,
+      "laterCount": 82,
+      "laterDiff": 0.012195121951219523,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 340534,
+      "id": "tp_a45",
+      "age": 32,
+      "laterCount": 59,
+      "laterDiff": 0.016949152542372836,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 340534,
+      "id": "tp_c41",
+      "age": 44,
+      "laterCount": 31,
+      "laterDiff": 0.032258064516129004,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 348453,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 128,
+      "laterDiff": 0.0078125,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 348453,
+      "id": "tp_m38",
+      "age": 28,
+      "laterCount": 92,
+      "laterDiff": 0.010869565217391353,
+      "dAge": 0,
+      "dNet": 0.008068988689427611
+    },
+    {
+      "seed": 348453,
+      "id": "tp_a16",
+      "age": 40,
+      "laterCount": 65,
+      "laterDiff": 0.01538461538461533,
+      "dAge": 0,
+      "dNet": 0.02081293374370667
+    },
+    {
+      "seed": 348453,
+      "id": "tp_m10",
+      "age": 52,
+      "laterCount": 38,
+      "laterDiff": 0.02631578947368418,
+      "dAge": 0,
+      "dNet": 0.03333426944723718
+    },
+    {
+      "seed": 356372,
+      "id": "tp_c07",
+      "age": 11,
+      "laterCount": 135,
+      "laterDiff": 0.007407407407407418,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 356372,
+      "id": "tp_l32",
+      "age": 30,
+      "laterCount": 94,
+      "laterDiff": 0.010638297872340385,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 356372,
+      "id": "tp_l43",
+      "age": 42,
+      "laterCount": 64,
+      "laterDiff": 0.015625,
+      "dAge": 0,
+      "dNet": 1.190997407939563
+    },
+    {
+      "seed": 356372,
+      "id": "tp_m32",
+      "age": 54,
+      "laterCount": 38,
+      "laterDiff": 0.02631578947368418,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 364291,
+      "id": "tp_c01",
+      "age": 11,
+      "laterCount": 127,
+      "laterDiff": 0.007874015748031482,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 364291,
+      "id": "tp_l29",
+      "age": 29,
+      "laterCount": 91,
+      "laterDiff": 0.01098901098901095,
+      "dAge": 0,
+      "dNet": 0.00988758162800696
+    },
+    {
+      "seed": 364291,
+      "id": "tp_l36",
+      "age": 41,
+      "laterCount": 61,
+      "laterDiff": 0.016393442622950838,
+      "dAge": 0,
+      "dNet": 0.02889659821752093
+    },
+    {
+      "seed": 364291,
+      "id": "tp_m35",
+      "age": 53,
+      "laterCount": 32,
+      "laterDiff": 0.03125,
+      "dAge": 0,
+      "dNet": 0.04384347592413122
+    },
+    {
+      "seed": 372210,
+      "id": "tp_c03",
+      "age": 16,
+      "laterCount": 93,
+      "laterDiff": 0.010752688172043001,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 372210,
+      "id": "tp_a37",
+      "age": 26,
+      "laterCount": 74,
+      "laterDiff": 0.013513513513513487,
+      "dAge": 0,
+      "dNet": 0.017063388544115977
+    },
+    {
+      "seed": 372210,
+      "id": "tp_a39",
+      "age": 36,
+      "laterCount": 50,
+      "laterDiff": 0.020000000000000018,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 372210,
+      "id": "tp_a10",
+      "age": 46,
+      "laterCount": 28,
+      "laterDiff": 0.0357142857142857,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 380129,
+      "id": "tp_c03",
+      "age": 16,
+      "laterCount": 80,
+      "laterDiff": 0.012499999999999956,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 380129,
+      "id": "tp_a28",
+      "age": 24,
+      "laterCount": 62,
+      "laterDiff": 0.016129032258064502,
+      "dAge": 0,
+      "dNet": 0.0013933693906192596
+    },
+    {
+      "seed": 380129,
+      "id": "tp_m06",
+      "age": 32,
+      "laterCount": 45,
+      "laterDiff": 0.022222222222222254,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 380129,
+      "id": "tp_l39",
+      "age": 40,
+      "laterCount": 28,
+      "laterDiff": 0.0357142857142857,
+      "dAge": 0,
+      "dNet": 0.016043758485386514
+    },
+    {
+      "seed": 388048,
+      "id": "tp_c04",
+      "age": 16,
+      "laterCount": 119,
+      "laterDiff": 0.008403361344537785,
+      "dAge": 0,
+      "dNet": 0.009020066272575919
+    },
+    {
+      "seed": 388048,
+      "id": "tp_m32",
+      "age": 28,
+      "laterCount": 93,
+      "laterDiff": 0.010752688172043001,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 388048,
+      "id": "tp_m22",
+      "age": 40,
+      "laterCount": 64,
+      "laterDiff": 0.015625,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 388048,
+      "id": "tp_l37",
+      "age": 53,
+      "laterCount": 34,
+      "laterDiff": 0.02941176470588236,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 395967,
+      "id": "tp_c03",
+      "age": 16,
+      "laterCount": 109,
+      "laterDiff": 0.00917431192660545,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 395967,
+      "id": "tp_l21",
+      "age": 27,
+      "laterCount": 88,
+      "laterDiff": 0.011363636363636354,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 395967,
+      "id": "tp_c19",
+      "age": 37,
+      "laterCount": 65,
+      "laterDiff": 0.01538461538461533,
+      "dAge": 0,
+      "dNet": 0.0010065576424558413
+    },
+    {
+      "seed": 395967,
+      "id": "tp_m01",
+      "age": 47,
+      "laterCount": 43,
+      "laterDiff": 0.023255813953488413,
+      "dAge": 0,
+      "dNet": 0.023338402807838145
+    },
+    {
+      "seed": 403886,
+      "id": "tp_c03",
+      "age": 17,
+      "laterCount": 110,
+      "laterDiff": 0.009090909090909038,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 403886,
+      "id": "tp_m33",
+      "age": 29,
+      "laterCount": 84,
+      "laterDiff": 0.011904761904761862,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 403886,
+      "id": "tp_a38",
+      "age": 41,
+      "laterCount": 57,
+      "laterDiff": 0.01754385964912286,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 403886,
+      "id": "tp_m01",
+      "age": 54,
+      "laterCount": 27,
+      "laterDiff": 0.03703703703703709,
+      "dAge": 0,
+      "dNet": 3.403174673368776
+    },
+    {
+      "seed": 411805,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 129,
+      "laterDiff": 0.007751937984496138,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 411805,
+      "id": "tp_m18",
+      "age": 29,
+      "laterCount": 88,
+      "laterDiff": 0.011363636363636354,
+      "dAge": 0,
+      "dNet": 0.0010030273967142043
+    },
+    {
+      "seed": 411805,
+      "id": "tp_l24",
+      "age": 41,
+      "laterCount": 58,
+      "laterDiff": 0.017241379310344862,
+      "dAge": 0,
+      "dNet": 0.028028255610461763
+    },
+    {
+      "seed": 411805,
+      "id": "tp_c30",
+      "age": 53,
+      "laterCount": 31,
+      "laterDiff": 0.032258064516129004,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 419724,
+      "id": "tp_c07",
+      "age": 8,
+      "laterCount": 87,
+      "laterDiff": 0.011494252873563204,
+      "dAge": 0,
+      "dNet": 0.042072395747487695
+    },
+    {
+      "seed": 419724,
+      "id": "tp_a48",
+      "age": 22,
+      "laterCount": 62,
+      "laterDiff": 0.016129032258064502,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 419724,
+      "id": "tp_a15",
+      "age": 30,
+      "laterCount": 42,
+      "laterDiff": 0.023809523809523836,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 419724,
+      "id": "tp_c47",
+      "age": 38,
+      "laterCount": 23,
+      "laterDiff": 0.04347826086956519,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 427643,
+      "id": "tp_c02",
+      "age": 11,
+      "laterCount": 108,
+      "laterDiff": 0.0092592592592593,
+      "dAge": 0,
+      "dNet": 0.008801840918530009
+    },
+    {
+      "seed": 427643,
+      "id": "tp_a08",
+      "age": 24,
+      "laterCount": 82,
+      "laterDiff": 0.012195121951219523,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 427643,
+      "id": "tp_c49",
+      "age": 35,
+      "laterCount": 57,
+      "laterDiff": 0.01754385964912286,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 427643,
+      "id": "tp_m41",
+      "age": 45,
+      "laterCount": 30,
+      "laterDiff": 0.033333333333333326,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 435562,
+      "id": "tp_c07",
+      "age": 12,
+      "laterCount": 141,
+      "laterDiff": 0.007092198581560294,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 435562,
+      "id": "tp_m38",
+      "age": 28,
+      "laterCount": 106,
+      "laterDiff": 0.009433962264150941,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 435562,
+      "id": "tp_m14",
+      "age": 43,
+      "laterCount": 74,
+      "laterDiff": 0.013513513513513487,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 435562,
+      "id": "tp_a16",
+      "age": 57,
+      "laterCount": 40,
+      "laterDiff": 0.025000000000000022,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 443481,
+      "id": "tp_c04",
+      "age": 17,
+      "laterCount": 120,
+      "laterDiff": 0.008333333333333304,
+      "dAge": 0,
+      "dNet": 0.25823412076674307
+    },
+    {
+      "seed": 443481,
+      "id": "tp_a26",
+      "age": 29,
+      "laterCount": 95,
+      "laterDiff": 0.010526315789473717,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 443481,
+      "id": "tp_m24",
+      "age": 41,
+      "laterCount": 69,
+      "laterDiff": 0.01449275362318836,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 443481,
+      "id": "tp_m32",
+      "age": 53,
+      "laterCount": 40,
+      "laterDiff": 0.025000000000000022,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 451400,
+      "id": "tp_c07",
+      "age": 10,
+      "laterCount": 43,
+      "laterDiff": 0.4883720930232558,
+      "dAge": 0,
+      "dNet": 0.5111648249979449
+    },
+    {
+      "seed": 451400,
+      "id": "tp_c04",
+      "age": 17,
+      "laterCount": 33,
+      "laterDiff": 0.5757575757575757,
+      "dAge": 0,
+      "dNet": 1.3328612052113344
+    },
+    {
+      "seed": 451400,
+      "id": "tp_a42",
+      "age": 19,
+      "laterCount": 28,
+      "laterDiff": 0.0357142857142857,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 451400,
+      "id": "tp_a08",
+      "age": 21,
+      "laterCount": 23,
+      "laterDiff": 0.04347826086956519,
+      "dAge": 0,
+      "dNet": 0.021640530877261987
+    },
+    {
+      "seed": 459319,
+      "id": "tp_c03",
+      "age": 17,
+      "laterCount": 89,
+      "laterDiff": 0.011235955056179803,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 459319,
+      "id": "tp_m28",
+      "age": 26,
+      "laterCount": 70,
+      "laterDiff": 0.014285714285714235,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 459319,
+      "id": "tp_a38",
+      "age": 34,
+      "laterCount": 53,
+      "laterDiff": 0.018867924528301883,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 459319,
+      "id": "tp_m43",
+      "age": 42,
+      "laterCount": 36,
+      "laterDiff": 0.02777777777777779,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 467238,
+      "id": "tp_c03",
+      "age": 16,
+      "laterCount": 127,
+      "laterDiff": 0.007874015748031482,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 467238,
+      "id": "tp_m05",
+      "age": 30,
+      "laterCount": 97,
+      "laterDiff": 0.010309278350515427,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 467238,
+      "id": "tp_m35",
+      "age": 44,
+      "laterCount": 65,
+      "laterDiff": 0.01538461538461533,
+      "dAge": 0,
+      "dNet": 0
+    },
+    {
+      "seed": 467238,
+      "id": "tp_m38",
+      "age": 58,
+      "laterCount": 34,
+      "laterDiff": 0.02941176470588236,
+      "dAge": 0,
+      "dNet": 0
+    }
+  ],
+  "byOpening": [
+    {
+      "id": "tp_a02",
+      "samples": 1,
+      "medianLaterDiff": 0.027027027027026973
+    },
+    {
+      "id": "tp_a04",
+      "samples": 1,
+      "medianLaterDiff": 0.01098901098901095
+    },
+    {
+      "id": "tp_a08",
+      "samples": 2,
+      "medianLaterDiff": 0.012195121951219523
+    },
+    {
+      "id": "tp_a09",
+      "samples": 1,
+      "medianLaterDiff": 0.02777777777777779
+    },
+    {
+      "id": "tp_a10",
+      "samples": 1,
+      "medianLaterDiff": 0.0357142857142857
+    },
+    {
+      "id": "tp_a13",
+      "samples": 1,
+      "medianLaterDiff": 0.010000000000000009
+    },
+    {
+      "id": "tp_a15",
+      "samples": 3,
+      "medianLaterDiff": 0.016393442622950838
+    },
+    {
+      "id": "tp_a16",
+      "samples": 4,
+      "medianLaterDiff": 0.013513513513513487
+    },
+    {
+      "id": "tp_a20",
+      "samples": 2,
+      "medianLaterDiff": 0.010204081632653073
+    },
+    {
+      "id": "tp_a22",
+      "samples": 2,
+      "medianLaterDiff": 0.02631578947368418
+    },
+    {
+      "id": "tp_a24",
+      "samples": 1,
+      "medianLaterDiff": 0.02777777777777779
+    },
+    {
+      "id": "tp_a25",
+      "samples": 1,
+      "medianLaterDiff": 0.014925373134328401
+    },
+    {
+      "id": "tp_a26",
+      "samples": 2,
+      "medianLaterDiff": 0.010526315789473717
+    },
+    {
+      "id": "tp_a27",
+      "samples": 1,
+      "medianLaterDiff": 0.013333333333333308
+    },
+    {
+      "id": "tp_a28",
+      "samples": 1,
+      "medianLaterDiff": 0.016129032258064502
+    },
+    {
+      "id": "tp_a29",
+      "samples": 1,
+      "medianLaterDiff": 0.625
+    },
+    {
+      "id": "tp_a30",
+      "samples": 2,
+      "medianLaterDiff": 0.014084507042253502
+    },
+    {
+      "id": "tp_a36",
+      "samples": 2,
+      "medianLaterDiff": 0.010526315789473717
+    },
+    {
+      "id": "tp_a37",
+      "samples": 1,
+      "medianLaterDiff": 0.013513513513513487
+    },
+    {
+      "id": "tp_a38",
+      "samples": 4,
+      "medianLaterDiff": 0.018867924528301883
+    },
+    {
+      "id": "tp_a39",
+      "samples": 3,
+      "medianLaterDiff": 0.016949152542372836
+    },
+    {
+      "id": "tp_a42",
+      "samples": 2,
+      "medianLaterDiff": 0.017857142857142905
+    },
+    {
+      "id": "tp_a45",
+      "samples": 3,
+      "medianLaterDiff": 0.016949152542372836
+    },
+    {
+      "id": "tp_a46",
+      "samples": 1,
+      "medianLaterDiff": 0.016949152542372836
+    },
+    {
+      "id": "tp_a48",
+      "samples": 3,
+      "medianLaterDiff": 0.027027027027026973
+    },
+    {
+      "id": "tp_a49",
+      "samples": 2,
+      "medianLaterDiff": 0.012048192771084376
+    },
+    {
+      "id": "tp_c01",
+      "samples": 5,
+      "medianLaterDiff": 0.009708737864077666
+    },
+    {
+      "id": "tp_c02",
+      "samples": 19,
+      "medianLaterDiff": 0.008695652173912993
+    },
+    {
+      "id": "tp_c03",
+      "samples": 9,
+      "medianLaterDiff": 0.010638297872340385
+    },
+    {
+      "id": "tp_c04",
+      "samples": 3,
+      "medianLaterDiff": 0.008403361344537785
+    },
+    {
+      "id": "tp_c05",
+      "samples": 4,
+      "medianLaterDiff": 0.024390243902439046
+    },
+    {
+      "id": "tp_c06",
+      "samples": 1,
+      "medianLaterDiff": 0.007352941176470562
+    },
+    {
+      "id": "tp_c07",
+      "samples": 23,
+      "medianLaterDiff": 0.008196721311475419
+    },
+    {
+      "id": "tp_c10",
+      "samples": 2,
+      "medianLaterDiff": 0.010000000000000009
+    },
+    {
+      "id": "tp_c11",
+      "samples": 3,
+      "medianLaterDiff": 0.02083333333333337
+    },
+    {
+      "id": "tp_c13",
+      "samples": 3,
+      "medianLaterDiff": 0.24242424242424243
+    },
+    {
+      "id": "tp_c14",
+      "samples": 1,
+      "medianLaterDiff": 0.040000000000000036
+    },
+    {
+      "id": "tp_c16",
+      "samples": 1,
+      "medianLaterDiff": 0.02631578947368418
+    },
+    {
+      "id": "tp_c17",
+      "samples": 1,
+      "medianLaterDiff": 0.021739130434782594
+    },
+    {
+      "id": "tp_c19",
+      "samples": 4,
+      "medianLaterDiff": 0.01538461538461533
+    },
+    {
+      "id": "tp_c27",
+      "samples": 3,
+      "medianLaterDiff": 0.02020202020202022
+    },
+    {
+      "id": "tp_c28",
+      "samples": 1,
+      "medianLaterDiff": 0.03703703703703709
+    },
+    {
+      "id": "tp_c30",
+      "samples": 1,
+      "medianLaterDiff": 0.032258064516129004
+    },
+    {
+      "id": "tp_c33",
+      "samples": 1,
+      "medianLaterDiff": 0.016949152542372836
+    },
+    {
+      "id": "tp_c35",
+      "samples": 2,
+      "medianLaterDiff": 0.014285714285714235
+    },
+    {
+      "id": "tp_c41",
+      "samples": 1,
+      "medianLaterDiff": 0.032258064516129004
+    },
+    {
+      "id": "tp_c42",
+      "samples": 1,
+      "medianLaterDiff": 0.014084507042253502
+    },
+    {
+      "id": "tp_c44",
+      "samples": 1,
+      "medianLaterDiff": 0.016949152542372836
+    },
+    {
+      "id": "tp_c47",
+      "samples": 1,
+      "medianLaterDiff": 0.04347826086956519
+    },
+    {
+      "id": "tp_c48",
+      "samples": 3,
+      "medianLaterDiff": 0.01538461538461533
+    },
+    {
+      "id": "tp_c49",
+      "samples": 2,
+      "medianLaterDiff": 0.01754385964912286
+    },
+    {
+      "id": "tp_l01",
+      "samples": 1,
+      "medianLaterDiff": 0.010638297872340385
+    },
+    {
+      "id": "tp_l04",
+      "samples": 1,
+      "medianLaterDiff": 0.021276595744680882
+    },
+    {
+      "id": "tp_l12",
+      "samples": 1,
+      "medianLaterDiff": 0.016393442622950838
+    },
+    {
+      "id": "tp_l13",
+      "samples": 1,
+      "medianLaterDiff": 0.010869565217391353
+    },
+    {
+      "id": "tp_l15",
+      "samples": 1,
+      "medianLaterDiff": 0.017857142857142905
+    },
+    {
+      "id": "tp_l21",
+      "samples": 3,
+      "medianLaterDiff": 0.014925373134328401
+    },
+    {
+      "id": "tp_l22",
+      "samples": 1,
+      "medianLaterDiff": 0.010869565217391353
+    },
+    {
+      "id": "tp_l23",
+      "samples": 2,
+      "medianLaterDiff": 0.014285714285714235
+    },
+    {
+      "id": "tp_l24",
+      "samples": 2,
+      "medianLaterDiff": 0.017241379310344862
+    },
+    {
+      "id": "tp_l25",
+      "samples": 1,
+      "medianLaterDiff": 0.03191489361702127
+    },
+    {
+      "id": "tp_l29",
+      "samples": 2,
+      "medianLaterDiff": 0.01098901098901095
+    },
+    {
+      "id": "tp_l31",
+      "samples": 2,
+      "medianLaterDiff": 0.010000000000000009
+    },
+    {
+      "id": "tp_l32",
+      "samples": 2,
+      "medianLaterDiff": 0.010638297872340385
+    },
+    {
+      "id": "tp_l36",
+      "samples": 3,
+      "medianLaterDiff": 0.016949152542372836
+    },
+    {
+      "id": "tp_l37",
+      "samples": 3,
+      "medianLaterDiff": 0.02941176470588236
+    },
+    {
+      "id": "tp_l38",
+      "samples": 1,
+      "medianLaterDiff": 0.009803921568627416
+    },
+    {
+      "id": "tp_l39",
+      "samples": 1,
+      "medianLaterDiff": 0.0357142857142857
+    },
+    {
+      "id": "tp_l40",
+      "samples": 1,
+      "medianLaterDiff": 0.009803921568627416
+    },
+    {
+      "id": "tp_l43",
+      "samples": 1,
+      "medianLaterDiff": 0.015625
+    },
+    {
+      "id": "tp_l45",
+      "samples": 2,
+      "medianLaterDiff": 0.02564102564102566
+    },
+    {
+      "id": "tp_m01",
+      "samples": 2,
+      "medianLaterDiff": 0.023255813953488413
+    },
+    {
+      "id": "tp_m02",
+      "samples": 1,
+      "medianLaterDiff": 0.02941176470588236
+    },
+    {
+      "id": "tp_m05",
+      "samples": 1,
+      "medianLaterDiff": 0.010309278350515427
+    },
+    {
+      "id": "tp_m06",
+      "samples": 2,
+      "medianLaterDiff": 0.017857142857142905
+    },
+    {
+      "id": "tp_m07",
+      "samples": 1,
+      "medianLaterDiff": 0.00952380952380949
+    },
+    {
+      "id": "tp_m10",
+      "samples": 1,
+      "medianLaterDiff": 0.02631578947368418
+    },
+    {
+      "id": "tp_m11",
+      "samples": 1,
+      "medianLaterDiff": 0.023255813953488413
+    },
+    {
+      "id": "tp_m13",
+      "samples": 1,
+      "medianLaterDiff": 0.014705882352941124
+    },
+    {
+      "id": "tp_m14",
+      "samples": 2,
+      "medianLaterDiff": 0.013513513513513487
+    },
+    {
+      "id": "tp_m15",
+      "samples": 1,
+      "medianLaterDiff": 0.009803921568627416
+    },
+    {
+      "id": "tp_m16",
+      "samples": 1,
+      "medianLaterDiff": 0.015873015873015928
+    },
+    {
+      "id": "tp_m18",
+      "samples": 1,
+      "medianLaterDiff": 0.011363636363636354
+    },
+    {
+      "id": "tp_m20",
+      "samples": 2,
+      "medianLaterDiff": 0.014084507042253502
+    },
+    {
+      "id": "tp_m22",
+      "samples": 2,
+      "medianLaterDiff": 0.010101010101010055
+    },
+    {
+      "id": "tp_m24",
+      "samples": 4,
+      "medianLaterDiff": 0.011494252873563204
+    },
+    {
+      "id": "tp_m25",
+      "samples": 3,
+      "medianLaterDiff": 0.027027027027026973
+    },
+    {
+      "id": "tp_m28",
+      "samples": 2,
+      "medianLaterDiff": 0.014285714285714235
+    },
+    {
+      "id": "tp_m29",
+      "samples": 1,
+      "medianLaterDiff": 0.015151515151515138
+    },
+    {
+      "id": "tp_m30",
+      "samples": 1,
+      "medianLaterDiff": 0.01538461538461533
+    },
+    {
+      "id": "tp_m32",
+      "samples": 5,
+      "medianLaterDiff": 0.02631578947368418
+    },
+    {
+      "id": "tp_m33",
+      "samples": 3,
+      "medianLaterDiff": 0.04166666666666663
+    },
+    {
+      "id": "tp_m35",
+      "samples": 2,
+      "medianLaterDiff": 0.01538461538461533
+    },
+    {
+      "id": "tp_m36",
+      "samples": 1,
+      "medianLaterDiff": 0.017241379310344862
+    },
+    {
+      "id": "tp_m38",
+      "samples": 4,
+      "medianLaterDiff": 0.010869565217391353
+    },
+    {
+      "id": "tp_m39",
+      "samples": 2,
+      "medianLaterDiff": 0.009803921568627416
+    },
+    {
+      "id": "tp_m41",
+      "samples": 1,
+      "medianLaterDiff": 0.033333333333333326
+    },
+    {
+      "id": "tp_m43",
+      "samples": 2,
+      "medianLaterDiff": 0.02777777777777779
+    },
+    {
+      "id": "tp_m44",
+      "samples": 1,
+      "medianLaterDiff": 0.012195121951219523
+    },
+    {
+      "id": "tp_m45",
+      "samples": 2,
+      "medianLaterDiff": 0.009708737864077666
+    },
+    {
+      "id": "tp_m46",
+      "samples": 3,
+      "medianLaterDiff": 0.014705882352941124
+    }
+  ],
+  "openingCoverage": 101,
+  "limitations": "One alternative per sampled opening, at most four openings per life; sparse per-opening coverage does not certify all 200 cards. This report is a quality measurement, not a passing regression test."
+}

@@ -1,3 +1,4 @@
 node_modules/
 doi-nguoi/tests/.head.js
 .superpowers/
+qa/turning-points/*.log
