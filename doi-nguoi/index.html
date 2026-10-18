@@ -21841,17 +21841,16 @@ var Argon = (() => {
     }, c = e.custom ?? "";
     return (e.money !== void 0 && e.money <= -0.1 || /borrow|gamble/.test(c)) && add("tien"), (e.memory !== void 0 && e.memory.weight >= 0.2 || /marry|spouse_leave/.test(c)) && add("tinh"), e.secret && add("mau"), e.close_doors?.includes("clean_record") && add("luat"), e.health !== void 0 && e.health <= -5 && add("than"), /migrate|move_city|return_home/.test(c) && add("dat"), e.flags?.some((f5) => /viral|fame|noi_tieng/.test(f5)) && add("danh"), out;
   }
-  function score(c, a) {
-    return a === "ky" ? c.weird === 0 ? -1 : c.pressure.ky * c.weird : c.pressure[a];
-  }
+  var score = (c, a) => a === "ky" ? c.pressure.ky * c.weird : c.pressure[a];
   function dueAxis(c) {
     if (c.age < CANON_AGES[0] || c.age > CANON_AGES[1] || c.canon_n >= CANON_MAX || c.age - c.last_canon_age < CANON_GAP) return null;
-    let best = null, bestScore = -1 / 0;
+    let best = "tien", bestScore = -1 / 0;
     for (let a of AXES) {
+      if (a === "ky" && c.weird === 0) continue;
       let s = score(c, a);
       s > bestScore && (best = a, bestScore = s);
     }
-    return best === null ? null : bestScore >= CANON_THRESHOLD || c.age >= FORCE_FIRST_AT && c.canon_n === 0 || c.age >= FORCE_SECOND_AT && c.canon_n === 1 ? best : null;
+    return bestScore >= CANON_THRESHOLD || c.age >= FORCE_FIRST_AT && c.canon_n === 0 || c.age >= FORCE_SECOND_AT && c.canon_n === 1 ? best : null;
   }
   return __toCommonJS(engine_exports);
 })();

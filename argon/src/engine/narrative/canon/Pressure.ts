@@ -57,11 +57,8 @@ export function pressureOf(e: Effect): Partial<Record<Axis, number>> {
   return out;
 }
 
-/** Điểm so sánh của một trục: Kỳ nhân hệ số Độ điên; Độ điên 0 thì Kỳ không bao giờ nổ. */
-function score(c: FactContext, a: Axis): number {
-  if (a === "ky") return c.weird === 0 ? -1 : c.pressure.ky * c.weird;
-  return c.pressure[a];
-}
+/** Điểm so sánh của một trục: Kỳ nhân hệ số Độ điên (Độ điên 0 thì dueAxis bỏ hẳn Kỳ, không đi qua đây). */
+const score = (c: FactContext, a: Axis): number => (a === "ky" ? c.pressure.ky * c.weird : c.pressure[a]);
 
 /**
  * Trục nổ năm nay, hoặc null. Điều kiện chung: tuổi trong CANON_AGES, chưa đủ CANON_MAX, cách lần trước ≥ CANON_GAP.
@@ -72,9 +69,8 @@ export function dueAxis(c: FactContext): Axis | null {
   if (c.age < CANON_AGES[0] || c.age > CANON_AGES[1]) return null;
   if (c.canon_n >= CANON_MAX) return null;
   if (c.age - c.last_canon_age < CANON_GAP) return null;
-  let best: Axis | null = null, bestScore = -Infinity;
-  for (const a of AXES) { const s = score(c, a); if (s > bestScore) { best = a; bestScore = s; } }
-  if (best === null) return null;
+  let best: Axis = "tien", bestScore = -Infinity;
+  for (const a of AXES) { if (a === "ky" && c.weird === 0) continue; const s = score(c, a); if (s > bestScore) { best = a; bestScore = s; } }
   if (bestScore >= CANON_THRESHOLD) return best;
   const forced = (c.age >= FORCE_FIRST_AT && c.canon_n === 0) || (c.age >= FORCE_SECOND_AT && c.canon_n === 1);
   return forced ? best : null;
