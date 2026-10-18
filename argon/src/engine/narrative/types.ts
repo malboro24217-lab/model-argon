@@ -297,7 +297,7 @@ export interface Storylet {
   /** Most times one storylet may fire in a life (host default 1 for micro cards). */
   maxPerLife?: number;
   /** Authoring metadata (content packs): which life path and which kit helper produced the card. Not read by the matcher. */
-  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" | "money" | "turning_point" | "turning_echo";
+  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" | "money" | "turning_point" | "turning_echo" | "season";
     /** Thẻ chỉ ra trong các mùa này (canon event). */
     season?: string[] };
   /** Tension this storylet adds to the storyteller when it fires. */
