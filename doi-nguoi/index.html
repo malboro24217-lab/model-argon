@@ -969,6 +969,8 @@ var Argon = (() => {
     AXES: () => AXES,
     AXIS_VN: () => AXIS_VN,
     BANDWIDTH_LOCK_LEVEL: () => BANDWIDTH_LOCK_LEVEL,
+    BEATS: () => BEATS,
+    BEAT_VN: () => BEAT_VN,
     BIG_ACTIONS: () => BIG_ACTIONS,
     BRANCHES: () => BRANCHES,
     BRANCHES2: () => BRANCHES2,
@@ -976,13 +978,17 @@ var Argon = (() => {
     CANON_AGES: () => CANON_AGES,
     CANON_GAP: () => CANON_GAP,
     CANON_MAX: () => CANON_MAX,
+    CANON_SEEDS: () => CANON_SEEDS,
     CANON_THRESHOLD: () => CANON_THRESHOLD,
+    CODEX_PLANTS: () => CODEX_PLANTS,
+    CODEX_SEASON_TAGS: () => CODEX_SEASON_TAGS,
     CRITICAL_STRESS: () => CRITICAL_STRESS,
     DISCHARGE: () => DISCHARGE,
     DOORS: () => DOORS,
     EMPTY_DELTA: () => EMPTY_DELTA,
     FORCE_FIRST_AT: () => FORCE_FIRST_AT,
     FORCE_SECOND_AT: () => FORCE_SECOND_AT,
+    GENERIC_DOORS: () => GENERIC_DOORS,
     GOSSIP_DEFECT_TRUST: () => GOSSIP_DEFECT_TRUST,
     HAIRCUT: () => HAIRCUT,
     LIFESTYLES: () => LIFESTYLES,
@@ -994,6 +1000,7 @@ var Argon = (() => {
     MICRO: () => MICRO,
     MICRO_GATES: () => MICRO_GATES,
     MILESTONES: () => MILESTONES,
+    NORMAL_SEASON_IDS: () => NORMAL_SEASON_IDS,
     PATHS: () => PATHS,
     PATH_GROUPS: () => PATH_GROUPS,
     PATH_LIST: () => PATH_LIST,
@@ -1001,17 +1008,24 @@ var Argon = (() => {
     PLAYER_NODE_ID: () => PLAYER_NODE_ID,
     RELAPSE_AGENCY: () => RELAPSE_AGENCY,
     RELAPSE_TICKS: () => RELAPSE_TICKS,
+    SEASONS: () => SEASONS,
+    SEASON_END_MAX: () => SEASON_END_MAX,
+    SEASON_MIN: () => SEASON_MIN,
+    SEASON_STORYLETS: () => SEASON_STORYLETS,
     STORYLETS: () => STORYLETS,
     TEMPER2_ECHO: () => TEMPER2_ECHO,
     TEMPER_LIFE: () => TEMPER_LIFE,
     TICKS_PER_YEAR: () => TICKS_PER_YEAR,
+    TONE_PRESSURE: () => TONE_PRESSURE,
     TURNING_CATALOG: () => TURNING_CATALOG,
     TURNING_POINTS: () => TURNING_POINTS,
     TURNING_STORYLETS: () => TURNING_STORYLETS,
     VIGNETTES: () => VIGNETTES,
+    WEIRD: () => WEIRD,
     WEIRD_DOOR_AT: () => WEIRD_DOOR_AT,
     addAsset: () => addAsset,
     addCastMember: () => addCastMember,
+    addCustom: () => addCustom,
     addMark: () => addMark,
     addMemory: () => addMemory,
     addNpcToGraph: () => addNpcToGraph,
@@ -1028,16 +1042,19 @@ var Argon = (() => {
     bandwidthRegenDelta: () => bandwidthRegenDelta,
     basePressure: () => basePressure,
     basePrice: () => basePrice,
+    beatGap: () => beatGap,
     beliefAbout: () => beliefAbout,
     bioEnergyDelta: () => bioEnergyDelta,
     buyAsset: () => buyAsset,
     bwCost: () => bwCost,
     byRole: () => byRole,
+    canonView: () => canonView,
     cellPayoff: () => cellPayoff,
     checkBreach: () => checkBreach,
     checkRelapse: () => checkRelapse,
     clamp: () => clamp,
     closeDoor: () => closeDoor,
+    compileSeason: () => compileSeason,
     connectNpcs: () => connectNpcs,
     costlySignalTrustDelta: () => costlySignalTrustDelta,
     countTrue: () => countTrue,
@@ -1064,9 +1081,12 @@ var Argon = (() => {
     effectiveAccuracy: () => effectiveAccuracy,
     eligible: () => eligible,
     expectedCapital: () => expectedCapital,
+    fillSlots: () => fillSlots,
     financialEntropyDelta: () => financialEntropyDelta,
     findAsset: () => findAsset,
     fuseCheck: () => fuseCheck,
+    gagStart: () => gagStart,
+    generateCanon: () => generateCanon,
     getEdge: () => getEdge,
     groupIndex: () => groupIndex,
     hasPolicy: () => hasPolicy,
@@ -1077,8 +1097,10 @@ var Argon = (() => {
     illiquidValue: () => illiquidValue,
     initialCapitals: () => initialCapitals,
     isBandwidthLocked: () => isBandwidthLocked,
+    isDurable: () => isDurable,
     isMoneyAction: () => isMoneyAction,
     isNashCell: () => isNashCell,
+    landingOf: () => landingOf,
     leakSecrets: () => leakSecrets,
     lend: () => lend,
     lifeShock: () => lifeShock,
@@ -1102,10 +1124,14 @@ var Argon = (() => {
     opinionOf: () => opinionOf,
     owedToMe: () => owedToMe,
     phaseFor: () => phaseFor,
+    pickScars: () => pickScars,
     pivotalMarks: () => pivotalMarks,
+    plantFlag: () => plantFlag,
+    playedFlag: () => playedFlag,
     policyTerms: () => policyTerms,
     predictedCoopProb: () => predictedCoopProb,
     pressure: () => pressure,
+    pressureFor: () => pressureFor,
     pressureOf: () => pressureOf,
     priceBounds: () => priceBounds,
     propagate: () => propagate,
@@ -1121,7 +1147,10 @@ var Argon = (() => {
     resolveInteraction: () => resolveInteraction,
     sanitizeAct: () => sanitizeAct,
     sanitizeStoryScene: () => sanitizeStoryScene,
+    scarText: () => scarText,
     scarcityTax: () => scarcityTax,
+    seasonKitFromNames: () => seasonKitFromNames,
+    seasonLength: () => seasonLength,
     seizeForDebt: () => seizeForDebt,
     selectStorylet: () => selectStorylet,
     selectVignette: () => selectVignette,
@@ -1133,6 +1162,7 @@ var Argon = (() => {
     stamp: () => stamp,
     stressCapLoss: () => stressCapLoss,
     strongestMemory: () => strongestMemory,
+    strongestPlant: () => strongestPlant,
     surfaceSignal: () => surfaceSignal,
     survivalThreshold: () => survivalThreshold,
     tick: () => tick,
@@ -2536,8 +2566,580 @@ var Argon = (() => {
     return typeof e == "function" ? e(ctx) : e ?? {};
   }
 
+  // src/engine/narrative/canon/codexPlants.ts
+  var NORMAL_SEASON_IDS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], TONE_PRESSURE = {
+    risk: { tien: 2 },
+    bond: { tinh: 1 },
+    care: { tinh: 1 },
+    show: { danh: 2 },
+    defy: { luat: 2 },
+    truth: { mau: 1 },
+    deal: { tien: 1 },
+    build: { tien: 1 },
+    probe: { ky: 1 },
+    exit: { dat: 1 }
+  };
+  function pressureFor(forkId, tone) {
+    let p = { ...TONE_PRESSURE[tone] ?? {} };
+    return forkId.startsWith("tp_a") && (p.ky = (p.ky ?? 0) + 2), p;
+  }
+  var plant = (kind, key, label) => ({ plant: { kind, key, label } }), debt = (key, label) => plant("debt", key, label), secret = (key, label) => plant("secret", key, label), person = (key, label) => plant("person", key, label), object = (key, label) => plant("object", key, label), promise = (key, label) => plant("promise", key, label), animal = (key, label) => plant("animal", key, label), place = (key, label) => plant("place", key, label), skill = (key, label) => plant("skill", key, label), CODEX_PLANTS = {
+    /* ---- cinema */
+    tp_c01_0: object("suat_hoc_xa_nha", "su\u1EA5t h\u1ECDc xa nh\xE0 c\xF4 gi\xE1o mang t\u1EDBi"),
+    tp_c02_2: object("chiec_cap_tren_mai_ton", "chi\u1EBFc c\u1EB7p b\u1ECB n\xE9m l\xEAn m\xE1i t\xF4n"),
+    tp_c03_0: debt("giay_no_trong_ao_bo", "t\u1EDD gi\u1EA5y n\u1EE3 trong \xE1o b\u1ED1"),
+    tp_c03_1: debt("giay_no_trong_ao_bo", "t\u1EDD gi\u1EA5y n\u1EE3 trong \xE1o b\u1ED1"),
+    tp_c03_2: debt("giay_no_trong_ao_bo", "t\u1EDD gi\u1EA5y n\u1EE3 trong \xE1o b\u1ED1"),
+    tp_c04_0: person("tp_c04_mentor", "ng\u01B0\u1EDDi ch\xFA c\xF3 ch\u1ED7 \u1EDF th\xE0nh ph\u1ED1"),
+    tp_c04_1: person("tp_c04_mentor", "ng\u01B0\u1EDDi ch\xFA c\xF3 ch\u1ED7 \u1EDF th\xE0nh ph\u1ED1"),
+    tp_c05_0: object("chiec_xe_duy_nhat_con_no_may", "chi\u1EBFc xe duy nh\u1EA5t c\xF2n n\u1ED5 m\xE1y"),
+    tp_c05_2: object("chiec_xe_duy_nhat_con_no_may", "chi\u1EBFc xe duy nh\u1EA5t c\xF2n n\u1ED5 m\xE1y"),
+    tp_c07_0: place("hai_can_bep_cua_bo_me", "hai c\u0103n b\u1EBFp c\u1EE7a b\u1ED1 v\xE0 m\u1EB9"),
+    tp_c07_1: place("hai_can_bep_cua_bo_me", "hai c\u0103n b\u1EBFp c\u1EE7a b\u1ED1 v\xE0 m\u1EB9"),
+    tp_c08_0: debt("khoan_vay_hoc_phi", "kho\u1EA3n vay \u0111\u1EC3 \u0111i h\u1ECDc"),
+    tp_c08_2: debt("no_vua_hoc_vua_tra", "m\xF3n n\u1EE3 v\u1EEBa h\u1ECDc v\u1EEBa tr\u1EA3 cho ch\u1EE7 n\u1EE3"),
+    tp_c09_0: object("hai_ve_xe_dia_chi_sai", "hai v\xE9 xe v\xE0 \u0111\u1ECBa ch\u1EC9 vi\u1EBFt sai m\u1ED9t ch\u1EEF"),
+    tp_c09_1: promise("hen_ngay_doan_tu", "l\u1EDDi h\u1EB9n ng\xE0y \u0111o\xE0n t\u1EE5"),
+    tp_c10_0: debt("hoc_phi_nguoi_do_dau_tra", "h\u1ECDc ph\xED ng\u01B0\u1EDDi \u0111\u1EE1 \u0111\u1EA7u \u0111\xE3 tr\u1EA3"),
+    tp_c11_1: place("kho_hang_o_cho_cu", "kho h\xE0ng \u1EDF ch\u1ED7 \u1EDF c\u0169"),
+    tp_c12_0: promise("to_giay_loi_hua_luc_kho", "t\u1EDD gi\u1EA5y l\u1EDDi h\u1EE9a vi\u1EBFt l\xFAc kh\xF3 kh\u0103n"),
+    tp_c12_1: debt("no_tinh_viec_moi", "m\xF3n n\u1EE3 t\xECnh khi nh\u1EADn vi\u1EC7c m\u1EDBi"),
+    tp_c13_0: object("ban_nhan_loi_tren_bien_ban", "b\u1EA3n nh\u1EADn l\u1ED7i tr\xEAn bi\xEAn b\u1EA3n"),
+    tp_c13_1: object("ban_sao_chung_cu_camera", "b\u1EA3n sao ch\u1EE9ng c\u1EE9 t\u1EEB camera h\xE0nh lang"),
+    tp_c14_0: object("hop_dong_bi_gach_dong_giay_to", "h\u1EE3p \u0111\u1ED3ng b\u1ECB g\u1EA1ch d\xF2ng gi\u1EEF gi\u1EA5y t\u1EDD"),
+    tp_c15_1: debt("tien_dat_co_cuoi", "ti\u1EC1n gia \u0111\xECnh \u0111\xE3 \u0111\u1EB7t c\u1ED7 c\u01B0\u1EDBi"),
+    tp_c16_0: object("phong_bi_cua_nguoi_vua_mat", "phong b\xEC c\u1EE7a ng\u01B0\u1EDDi v\u1EEBa m\u1EA5t"),
+    tp_c16_2: object("phong_bi_cua_nguoi_vua_mat", "phong b\xEC c\u1EE7a ng\u01B0\u1EDDi v\u1EEBa m\u1EA5t"),
+    tp_c17_0: place("mat_bang_thue_cung_ban_than", "m\u1EB7t b\u1EB1ng b\u1EA1n th\xE2n thu\xEA, thi\u1EBFu n\u1EEDa v\u1ED1n"),
+    tp_c18_0: place("bai_dat_canh_duong_sat", "b\xE3i \u0111\u1EA5t c\u1EA1nh \u0111\u01B0\u1EDDng s\u1EAFt"),
+    tp_c18_1: place("phan_dat_chua_ban_canh_duong", "ph\u1EA7n \u0111\u1EA5t ch\u01B0a b\xE1n c\u1EA1nh \u0111\u01B0\u1EDDng"),
+    tp_c19_0: person("dua_tre_gui_nuoi_ho", "\u0111\u1EE9a tr\u1EBB \u0111\u01B0\u1EE3c g\u1EEDi nu\xF4i h\u1ED9"),
+    tp_c20_0: object("phong_bi_khong_ghi_nguoi_gui", "phong b\xEC kh\xF4ng ghi ng\u01B0\u1EDDi g\u1EEDi"),
+    tp_c20_1: object("ban_ghi_ve_phong_bi", "b\u1EA3n ghi v\u1EC1 phong b\xEC trong ng\u0103n k\xE9o"),
+    tp_c21_1: secret("tin_nhan_luc_hai_gio_sang", "tin nh\u1EAFn th\xE2n m\u1EADt l\xFAc hai gi\u1EDD s\xE1ng"),
+    tp_c21_2: promise("chuyen_di_hai_nguoi_da_dat", "chuy\u1EBFn \u0111i hai ng\u01B0\u1EDDi \u0111\xE3 \u0111\u1EB7t"),
+    tp_c22_1: object("ho_so_bao_hiem_trong_ket", "h\u1ED3 s\u01A1 b\u1EA3o hi\u1EC3m trong k\xE9t"),
+    tp_c22_2: place("xuong_thue_chung_cua_doi_thu", "x\u01B0\u1EDFng thu\xEA chung c\u1EE7a \u0111\u1ED1i th\u1EE7"),
+    tp_c23_0: person("ho_cuoi_ngo_bi_thieu_ten", "h\u1ED9 cu\u1ED1i ng\xF5 b\u1ECB thi\u1EBFu t\xEAn"),
+    tp_c23_1: object("danh_sach_den_bu_thieu_mot_ho", "danh s\xE1ch \u0111\u1EC1n b\xF9 thi\u1EBFu m\u1ED9t h\u1ED9"),
+    tp_c23_2: place("cho_o_mua_chung_voi_xom", "ch\u1ED7 \u1EDF mua chung v\u1EDBi x\xF3m"),
+    tp_c24_0: person("nguoi_di_xa_ve", "ng\u01B0\u1EDDi \u0111i xa v\u1EC1 \u0111\xFAng h\xF4m \u0111\xF3"),
+    tp_c25_0: person("tp_c25_sibling", "em tr\u1EDF v\u1EC1 v\u1EDBi chi\u1EBFc vali"),
+    tp_c25_2: secret("chuyen_em_chua_muon_ke", "chuy\u1EC7n em ch\u01B0a mu\u1ED1n k\u1EC3"),
+    tp_c27_0: object("ve_chuyen_di_da_hoan", "v\xE9 chuy\u1EBFn \u0111i b\u1EA1n t\u1EEBng ho\xE3n"),
+    tp_c28_0: person("tre_trong_buc_anh", "\u0111\u1EE9a tr\u1EBB trong t\u1EA5m \u1EA3nh thi\u1EBFu ng\xE0y ch\u1EE5p"),
+    tp_c28_2: object("la_thu_khong_ghi_nguoi_gui", "l\xE1 th\u01B0 kh\xF4ng ghi ng\u01B0\u1EDDi g\u1EEDi"),
+    tp_c29_1: skill("nghe_cong_ty_can", "ngh\u1EC1 c\xF4ng ty c\u1EA7n b\u1EA1n h\u1ECDc l\u1EA1i"),
+    tp_c30_1: person("tp_c30_creditor", "ch\u1EE7 n\u1EE3 c\u0169 \u0111\u1EE9ng ngo\xE0i c\u1EEDa xin vi\u1EC7c"),
+    tp_c30_2: debt("no_cu_voi_chu_no_cu", "chuy\u1EC7n n\u1EE3 c\u0169 v\u1EDBi ch\u1EE7 n\u1EE3 c\u0169"),
+    tp_c32_0: object("ho_so_to_vu_sai_pham", "h\u1ED3 s\u01A1 t\u1ED1 v\u1EE5 sai ph\u1EA1m c\xF3 t\xEAn b\u1EA1n"),
+    tp_c32_1: object("ho_so_to_vu_sai_pham", "h\u1ED3 s\u01A1 t\u1ED1 v\u1EE5 sai ph\u1EA1m c\xF3 t\xEAn b\u1EA1n"),
+    tp_c33_0: person("nguoi_noi_cung_cha", "ng\u01B0\u1EDDi n\xF3i c\xF9ng cha v\u1EDBi b\u1EA1n"),
+    tp_c33_1: person("nguoi_noi_cung_cha", "ng\u01B0\u1EDDi n\xF3i c\xF9ng cha v\u1EDBi b\u1EA1n"),
+    tp_c33_2: object("chiec_ghe_trong_anh_cua_cha", "chi\u1EBFc gh\u1EBF trong t\u1EA5m \u1EA3nh b\u1EA1n v\u1EABn gi\u1EEF"),
+    tp_c34_0: debt("khoan_tien_dieu_tri_cua_ban", "kho\u1EA3n ti\u1EC1n \u0111i\u1EC1u tr\u1ECB c\u1EE7a b\u1EA1n th\xE2n"),
+    tp_c34_1: debt("khoan_tien_dieu_tri_cua_ban", "kho\u1EA3n ti\u1EC1n \u0111i\u1EC1u tr\u1ECB c\u1EE7a b\u1EA1n th\xE2n"),
+    tp_c35_0: object("ban_ghi_ve_ke_tung_hai_ban", "b\u1EA3n ghi v\u1EC1 k\u1EBB t\u1EEBng h\u1EA1i b\u1EA1n"),
+    tp_c35_1: person("doi_thu_trong_ban_ghi", "\u0111\u1ED1i th\u1EE7 trong b\u1EA3n ghi"),
+    tp_c38_1: object("dung_cu_da_sua_rieng_cho_ban", "d\u1EE5ng c\u1EE5 \u0111\xE3 \u0111\u01B0\u1EE3c s\u1EEDa ri\xEAng cho b\u1EA1n"),
+    tp_c38_2: object("dung_cu_da_sua_rieng_cho_ban", "d\u1EE5ng c\u1EE5 \u0111\xE3 \u0111\u01B0\u1EE3c s\u1EEDa ri\xEAng cho b\u1EA1n"),
+    tp_c39_0: object("ba_ban_di_chuc_viet_tay", "ba b\u1EA3n di ch\xFAc vi\u1EBFt tay"),
+    tp_c39_2: object("ba_ban_di_chuc_viet_tay", "ba b\u1EA3n di ch\xFAc vi\u1EBFt tay"),
+    tp_c39_1: object("quy_chung_tu_do_de_lai", "qu\u1EF9 chung gi\u1EEF l\u1EA1i t\u1EEB \u0111\u1ED3 \u0111\u1EA1c \u0111\u1EC3 l\u1EA1i"),
+    tp_c40_1: object("la_thu_cho_con_mo_sau", "l\xE1 th\u01B0 cho con m\u1EDF sau"),
+    tp_c41_0: place("phong_tro_cu", "c\u0103n ph\xF2ng tr\u1ECD c\u0169"),
+    tp_c42_0: person("tp_c42_mentor", "ng\u01B0\u1EDDi h\u1ECDc vi\u1EC7c gi\u1ECFi h\u01A1n th\u1EA7y"),
+    tp_c42_2: skill("ky_thuat_bo_do_ba_lan", "k\u1EF9 thu\u1EADt b\u1EA1n \u0111\xE3 b\u1ECF d\u1EDF ba l\u1EA7n"),
+    tp_c43_0: person("nguoi_o_nho_muoi_dem", "ng\u01B0\u1EDDi \u1EDF nh\u1EDD m\u01B0\u1EDDi \u0111\xEAm"),
+    tp_c45_0: place("hang_rao_lech_mot_gang", "h\xE0ng r\xE0o l\u1EC7ch m\u1ED9t gang"),
+    tp_c45_1: place("loi_di_chung_giua_hai_nha", "l\u1ED1i \u0111i chung gi\u1EEFa hai nh\xE0"),
+    tp_c45_2: place("vuon_chung_tren_ranh_gioi", "v\u01B0\u1EDDn chung tr\xEAn ranh gi\u1EDBi"),
+    tp_c47_1: object("cong_thuc_tren_khan_an", "c\xF4ng th\u1EE9c vi\u1EBFt tr\xEAn kh\u0103n \u0103n"),
+    tp_c48_0: person("tp_c48_neighbor", "ng\u01B0\u1EDDi \u0111\u1EC1 c\u1EED b\u1EA1n l\xE0m t\u1ED5 tr\u01B0\u1EDFng"),
+    tp_c49_0: person("nguoi_lam_that_su", "ng\u01B0\u1EDDi th\u1EADt s\u1EF1 l\xE0m vi\u1EC7c \u0111\u01B0\u1EE3c b\xE1o khen"),
+    tp_c50_0: person("nguoi_bi_cat_khoi_anh", "ng\u01B0\u1EDDi b\u1ECB c\u1EAFt kh\u1ECFi \u1EA3nh gia \u0111\xECnh"),
+    tp_c50_2: object("chiec_ghe_trong_trong_anh", "chi\u1EBFc gh\u1EBF tr\u1ED1ng trong \u1EA3nh gia \u0111\xECnh"),
+    /* ---- absurd */
+    tp_a01_0: object("so_do_bi_de_an_mat_goc", "s\u1ED5 \u0111\u1ECF b\u1ECB d\xEA \u0103n m\u1EA5t m\u1ED9t g\xF3c"),
+    tp_a01_1: animal("con_de_cua_hang_xom", "con d\xEA c\u1EE7a h\xE0ng x\xF3m"),
+    tp_a02_1: animal("con_vit_deo_chuong", "con v\u1ECBt \u0111\u1EA7u \u0111\xE0n \u0111eo chu\xF4ng"),
+    tp_a02_2: animal("con_vit_deo_chuong", "con v\u1ECBt \u0111\u1EA7u \u0111\xE0n \u0111eo chu\xF4ng"),
+    tp_a03_0: object("the_can_cuoc_ghi_gia_muoi_tuoi", "th\u1EBB c\u0103n c\u01B0\u1EDBc ghi gi\xE0 th\xEAm m\u01B0\u1EDDi tu\u1ED5i"),
+    tp_a04_1: place("nha_don_giao_nham_quan_tai", "nh\xE0 \u0111\xF2n giao nh\u1EA7m quan t\xE0i"),
+    tp_a07_2: object("nuoc_mam_trung_thuong", "s\u1ED1 n\u01B0\u1EDBc m\u1EAFm tr\xFAng th\u01B0\u1EDFng m\u1ED9t n\u0103m"),
+    tp_a08_0: object("lo_hai_tram_bon_cau", "l\xF4 hai tr\u0103m chi\u1EBFc b\u1ED3n c\u1EA7u"),
+    tp_a08_2: object("lo_hai_tram_bon_cau", "l\xF4 hai tr\u0103m chi\u1EBFc b\u1ED3n c\u1EA7u"),
+    tp_a09_2: animal("con_bo_giai_thuong", "con b\xF2 gi\u1EA3i th\u01B0\u1EDFng"),
+    tp_a11_0: animal("con_vet_biet_mat_khau", "con v\u1EB9t bi\u1EBFt m\u1EADt kh\u1EA9u c\u1EEDa"),
+    tp_a11_1: animal("con_vet_biet_mat_khau", "con v\u1EB9t bi\u1EBFt m\u1EADt kh\u1EA9u c\u1EEDa"),
+    tp_a12_0: object("cay_chuoi_duoc_bau", "c\xE2y chu\u1ED1i \u0111\u01B0\u1EE3c b\u1EA7u \u0111\u1EA1i di\u1EC7n"),
+    tp_a12_1: object("cay_chuoi_duoc_bau", "c\xE2y chu\u1ED1i \u0111\u01B0\u1EE3c b\u1EA7u \u0111\u1EA1i di\u1EC7n"),
+    tp_a13_0: place("san_van_dong_phai_cham", "s\xE2n v\u1EADn \u0111\u1ED9ng ph\u1EA3i ch\u0103m m\u1ED9t th\xE1ng"),
+    tp_a14_2: object("don_xin_nghi_cua_may", "\u0111\u01A1n xin ngh\u1EC9 k\xFD b\u1EB1ng v\xE2n tay d\u1EA7u"),
+    tp_a15_0: object("thung_ao_cua_doi_tang_le", "th\xF9ng \xE1o kh\u0103n c\u1EE7a \u0111\u1ED9i tang l\u1EC5"),
+    tp_a16_0: animal("con_meo_ngu_giua_bien_ban", "con m\xE8o ng\u1EE7 gi\u1EEFa ch\u1ED3ng bi\xEAn b\u1EA3n"),
+    tp_a16_1: animal("con_meo_ngu_giua_bien_ban", "con m\xE8o ng\u1EE7 gi\u1EEFa ch\u1ED3ng bi\xEAn b\u1EA3n"),
+    tp_a16_2: object("bien_ban_hop_khu_pho", "ch\u1ED3ng bi\xEAn b\u1EA3n h\u1ECDp khu ph\u1ED1"),
+    tp_a17_0: object("ban_do_cua_ong", "b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i"),
+    tp_a17_1: object("ban_do_cua_ong", "b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i"),
+    tp_a17_2: object("ban_do_cua_ong", "b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i"),
+    tp_a18_0: person("nguoi_cung_ten_hang_dau", "ng\u01B0\u1EDDi c\xF9ng t\xEAn ng\u1ED3i h\xE0ng \u0111\u1EA7u"),
+    tp_a19_2: object("kien_hang_nhan_ho", "ki\u1EC7n h\xE0ng nh\u1EADn h\u1ED9"),
+    tp_a20_1: object("chiec_cup_nguoi_an_cay", "chi\u1EBFc c\xFAp ng\u01B0\u1EDDi \u0103n cay"),
+    tp_a21_0: debt("tien_thue_nha_con_thieu", "kho\u1EA3n ti\u1EC1n thu\xEA nh\xE0 c\xF2n thi\u1EBFu c\u1EA3 x\xF3m \u0111\xE3 nghe"),
+    tp_a22_0: person("doi_thu_toi_an_banh", "\u0111\u1ED1i th\u1EE7 t\u1EDBi \u0103n chi\u1EBFc b\xE1nh mang t\xEAn m\xECnh"),
+    tp_a24_1: object("chiec_ngai_san_khau", "chi\u1EBFc ngai s\xE2n kh\u1EA5u chi\u1EBFm ph\xF2ng kh\xE1ch"),
+    tp_a25_0: animal("con_cho_lam_nhan_chung", "con ch\xF3 b\u1ECB g\u1ECDi l\xE0 nh\xE2n ch\u1EE9ng"),
+    tp_a27_0: object("nap_am_cu_lam_mau_do", "chi\u1EBFc n\u1EAFp \u1EA5m c\u0169 l\xE0m m\u1EABu \u0111o"),
+    tp_a28_0: person("nguoi_mat_tich_trung_ten", "ng\u01B0\u1EDDi m\u1EA5t t\xEDch tr\xF9ng t\xEAn v\xE0 \xE1o"),
+    tp_a29_0: object("bo_do_dien_bi_nham_dong_phuc", "b\u1ED9 \u0111\u1ED3 di\u1EC5n b\u1ECB nh\u1EA7m l\xE0 \u0111\u1ED3ng ph\u1EE5c"),
+    tp_a31_0: object("tam_bien_di_tich_gia", "t\u1EA5m bi\u1EC3n di t\xEDch gi\u1EA3 tr\u01B0\u1EDBc nh\xE0"),
+    tp_a32_0: animal("con_rua_thang_cuoc_thi", "con r\xF9a th\u1EAFng cu\u1ED9c thi t\u1ED1c \u0111\u1ED9"),
+    tp_a33_1: place("bep_nha_thanh_lop_hoc", "b\u1EBFp nh\xE0 th\xE0nh l\u1EDBp h\u1ECDc b\u1EA5t \u0111\u1EAFc d\u0129"),
+    tp_a34_2: promise("quy_tiet_kiem_cua_hoi_giai_mong", "qu\u1EF9 ti\u1EBFt ki\u1EC7m c\u1EE7a h\u1ED9i gi\u1EA3i m\u1ED9ng"),
+    tp_a35_1: object("bo_hoa_goc_tren_xe_muon", "b\u1ED9 hoa g\u1ED1c tr\xEAn chi\u1EBFc xe m\u01B0\u1EE3n"),
+    tp_a36_0: object("tuong_sap_giong_ban", "t\u01B0\u1EE3ng s\xE1p mang g\u01B0\u01A1ng m\u1EB7t b\u1EA1n"),
+    tp_a37_0: object("tho_tinh_gui_nham_so_nha", "th\u01A1 t\xECnh c\u1EE7a hai ng\u01B0\u1EDDi l\u1EA1 g\u1EEDi nh\u1EA7m s\u1ED1 nh\xE0"),
+    tp_a37_1: object("tho_tinh_gui_nham_so_nha", "th\u01A1 t\xECnh c\u1EE7a hai ng\u01B0\u1EDDi l\u1EA1 g\u1EEDi nh\u1EA7m s\u1ED1 nh\xE0"),
+    tp_a38_0: object("muoi_dien_thoai_vot_tu_gieng", "m\u01B0\u1EDDi chi\u1EBFc \u0111i\u1EC7n tho\u1EA1i v\u1EDBt t\u1EEB gi\u1EBFng c\u1EA1n"),
+    tp_a38_1: object("muoi_dien_thoai_vot_tu_gieng", "m\u01B0\u1EDDi chi\u1EBFc \u0111i\u1EC7n tho\u1EA1i v\u1EDBt t\u1EEB gi\u1EBFng c\u1EA1n"),
+    tp_a38_2: object("muoi_dien_thoai_vot_tu_gieng", "m\u01B0\u1EDDi chi\u1EBFc \u0111i\u1EC7n tho\u1EA1i v\u1EDBt t\u1EEB gi\u1EBFng c\u1EA1n"),
+    tp_a39_0: object("ban_hop_dong_thanh_loi_bai_hat", "b\u1EA3n h\u1EE3p \u0111\u1ED3ng b\u1ECB \u0111\u1ED5i th\xE0nh l\u1EDDi b\xE0i h\xE1t"),
+    tp_a40_0: object("tam_guong_quang_cao", "t\u1EA5m g\u01B0\u01A1ng qu\u1EA3ng c\xE1o ch\xF3i v\xE0o ph\xF2ng"),
+    tp_a41_2: place("tiem_lap_cua_phia_trong", "gian ti\u1EC7m b\u1ECB l\u1EAFp c\u1EEDa ph\xEDa trong"),
+    tp_a42_0: object("to_lich_in_hai_thang_bay", "t\u1EDD l\u1ECBch in hai th\xE1ng b\u1EA3y"),
+    tp_a43_0: object("mu_bao_hiem_biet_hat", "chi\u1EBFc m\u0169 b\u1EA3o hi\u1EC3m bi\u1EBFt h\xE1t"),
+    tp_a45_0: object("la_thu_cu_co_tem_dat", "l\xE1 th\u01B0 c\u0169 d\xE1n con tem \u0111\u1EAFt gi\xE1"),
+    tp_a45_1: person("nguoi_viet_la_thu_cu", "ng\u01B0\u1EDDi \u0111\xE3 vi\u1EBFt l\xE1 th\u01B0 c\u0169"),
+    tp_a46_0: object("tram_ao_mua_in_anh_ban", "m\u1ED9t tr\u0103m chi\u1EBFc \xE1o m\u01B0a in \u1EA3nh th\u1EBB c\u1EE7a b\u1EA1n"),
+    tp_a46_1: object("tram_ao_mua_in_anh_ban", "m\u1ED9t tr\u0103m chi\u1EBFc \xE1o m\u01B0a in \u1EA3nh th\u1EBB c\u1EE7a b\u1EA1n"),
+    tp_a47_0: person("nguoi_giao_hang_cho_tho", "ng\u01B0\u1EDDi giao h\xE0ng \u0111\u1EE9ng \u0111\u1EE3i b\u1EA1n gieo v\u1EA7n"),
+    tp_a48_1: object("buc_chan_dung_them_ria", "b\u1EE9c ch\xE2n dung b\u1ECB th\xEAm ria"),
+    tp_a50_0: object("bo_chia_khoa_khong_mo_cua", "b\xF3 ch\xECa kh\xF3a kh\xF4ng m\u1EDF c\u1EEDa n\xE0o"),
+    /* ---- money */
+    tp_m01_0: object("ve_du_thuong_ten_mo", "v\xE9 d\u1EF1 th\u01B0\u1EDFng c\xF3 t\xEAn vi\u1EBFt m\u1EDD \u1EDF m\u1EB7t sau"),
+    tp_m01_1: object("ve_du_thuong_ten_mo", "v\xE9 d\u1EF1 th\u01B0\u1EDFng c\xF3 t\xEAn vi\u1EBFt m\u1EDD \u1EDF m\u1EB7t sau"),
+    tp_m02_0: debt("khoan_chuyen_nham_vao_tai_khoan", "kho\u1EA3n ti\u1EC1n l\u1EA1 chuy\u1EC3n nh\u1EA7m v\xE0o t\xE0i kho\u1EA3n"),
+    tp_m02_1: debt("khoan_chuyen_nham_vao_tai_khoan", "kho\u1EA3n ti\u1EC1n l\u1EA1 chuy\u1EC3n nh\u1EA7m v\xE0o t\xE0i kho\u1EA3n"),
+    tp_m02_2: debt("tien_thue_nha_den_han", "ti\u1EC1n thu\xEA nh\xE0 t\u1EDBi h\u1EA1n chi\u1EC1u nay"),
+    tp_m03_1: place("khu_vuon_cua_nguoi_chu", "khu v\u01B0\u1EDDn ng\u01B0\u1EDDi ch\xFA \u0111\u1EC3 l\u1EA1i"),
+    tp_m03_2: place("khu_vuon_cua_nguoi_chu", "khu v\u01B0\u1EDDn ng\u01B0\u1EDDi ch\xFA \u0111\u1EC3 l\u1EA1i"),
+    tp_m04_0: place("dat_co_vat_lieu_quy", "m\u1EA3nh \u0111\u1EA5t c\xF3 v\u1EADt li\u1EC7u qu\xFD"),
+    tp_m04_1: place("dat_co_vat_lieu_quy", "m\u1EA3nh \u0111\u1EA5t c\xF3 v\u1EADt li\u1EC7u qu\xFD"),
+    tp_m04_2: place("dat_co_vat_lieu_quy", "m\u1EA3nh \u0111\u1EA5t c\xF3 v\u1EADt li\u1EC7u qu\xFD"),
+    tp_m05_0: person("hang_xom_thua_kien", "ng\u01B0\u1EDDi h\xE0ng x\xF3m \u0111\xE3 thua ki\u1EC7n"),
+    tp_m05_1: person("hang_xom_thua_kien", "ng\u01B0\u1EDDi h\xE0ng x\xF3m \u0111\xE3 thua ki\u1EC7n"),
+    tp_m06_0: debt("coc_hai_lan_dan_vat_nuoi", "hai ng\u01B0\u1EDDi c\xF9ng \u0111\xE3 c\u1ECDc \u0111\xE0n v\u1EADt nu\xF4i"),
+    tp_m06_1: debt("coc_hai_lan_dan_vat_nuoi", "hai ng\u01B0\u1EDDi c\xF9ng \u0111\xE3 c\u1ECDc \u0111\xE0n v\u1EADt nu\xF4i"),
+    tp_m07_0: object("buc_tranh_che_vet_nut", "b\u1EE9c tranh che v\u1EBFt n\u1EE9t \u1EDF g\xE1c x\xE9p"),
+    tp_m07_1: object("buc_tranh_che_vet_nut", "b\u1EE9c tranh che v\u1EBFt n\u1EE9t \u1EDF g\xE1c x\xE9p"),
+    tp_m07_2: object("buc_tranh_che_vet_nut", "b\u1EE9c tranh che v\u1EBFt n\u1EE9t \u1EDF g\xE1c x\xE9p"),
+    tp_m08_0: object("bang_gia_den_bu_tung_dot", "b\u1EA3ng \u0111\u1EC1n b\xF9 tr\u1EA3 t\u1EEBng \u0111\u1EE3t"),
+    tp_m08_1: promise("quy_mua_dat_chung", "qu\u1EF9 mua \u0111\u1EA5t chung v\u1EDBi v\xE0i h\u1ED9"),
+    tp_m09_0: debt("vong_hui_da_ngung_tra", "v\xF2ng h\u1EE5i \u0111\xE3 ng\u1EEBng tr\u1EA3 do ng\u01B0\u1EDDi trong h\u1ECD gi\u1EEF"),
+    tp_m09_1: debt("vong_hui_da_ngung_tra", "v\xF2ng h\u1EE5i \u0111\xE3 ng\u1EEBng tr\u1EA3 do ng\u01B0\u1EDDi trong h\u1ECD gi\u1EEF"),
+    tp_m09_2: debt("vong_hui_da_ngung_tra", "v\xF2ng h\u1EE5i \u0111\xE3 ng\u1EEBng tr\u1EA3 do ng\u01B0\u1EDDi trong h\u1ECD gi\u1EEF"),
+    tp_m10_0: person("nguoi_giu_quy_chung_bien_mat", "ng\u01B0\u1EDDi gi\u1EEF qu\u1EF9 chung bi\u1EBFn m\u1EA5t"),
+    tp_m10_2: person("nguoi_giu_quy_chung_bien_mat", "ng\u01B0\u1EDDi gi\u1EEF qu\u1EF9 chung bi\u1EBFn m\u1EA5t"),
+    tp_m11_0: object("ho_so_tien_gui_o_ngan_hang", "h\u1ED3 s\u01A1 kho\u1EA3n ti\u1EC1n g\u1EEDi \u1EDF ng\xE2n h\xE0ng \u0111\xF3ng c\u1EEDa"),
+    tp_m12_0: object("anh_binh_chua_chay", "b\u1EE9c \u1EA3nh chi\u1EBFc b\xECnh ch\u1EEFa ch\xE1y"),
+    tp_m12_1: object("anh_binh_chua_chay", "b\u1EE9c \u1EA3nh chi\u1EBFc b\xECnh ch\u1EEFa ch\xE1y"),
+    tp_m13_1: debt("khoan_vay_kho_hieu_cua_con", "kho\u1EA3n vay kh\xF3 hi\u1EC3u c\u1EE7a con"),
+    tp_m13_2: debt("khoan_vay_kho_hieu_cua_con", "kho\u1EA3n vay kh\xF3 hi\u1EC3u c\u1EE7a con"),
+    tp_m14_0: debt("tien_me_gop_cho_nhom_la", "ti\u1EC1n m\u1EB9 g\xF3p cho nh\xF3m h\u1EE9a ch\u0103m tu\u1ED5i gi\xE0"),
+    tp_m14_1: debt("tien_me_gop_cho_nhom_la", "ti\u1EC1n m\u1EB9 g\xF3p cho nh\xF3m h\u1EE9a ch\u0103m tu\u1ED5i gi\xE0"),
+    tp_m14_2: debt("tien_me_gop_cho_nhom_la", "ti\u1EC1n m\u1EB9 g\xF3p cho nh\xF3m h\u1EE9a ch\u0103m tu\u1ED5i gi\xE0"),
+    tp_m15_0: debt("khoan_dau_tu_giam_manh", "kho\u1EA3n \u0111\u1EA7u t\u01B0 gi\u1EA3m m\u1EA1nh c\u1EE7a b\u1EA1n \u0111\u1EDDi"),
+    tp_m15_1: debt("khoan_dau_tu_giam_manh", "kho\u1EA3n \u0111\u1EA7u t\u01B0 gi\u1EA3m m\u1EA1nh c\u1EE7a b\u1EA1n \u0111\u1EDDi"),
+    tp_m15_2: debt("khoan_dau_tu_giam_manh", "kho\u1EA3n \u0111\u1EA7u t\u01B0 gi\u1EA3m m\u1EA1nh c\u1EE7a b\u1EA1n \u0111\u1EDDi"),
+    tp_m16_1: debt("khoan_thue_tu_so_cu", "kho\u1EA3n thu\u1EBF t\u1EEB s\u1ED5 c\u0169"),
+    tp_m16_2: debt("khoan_thue_tu_so_cu", "kho\u1EA3n thu\u1EBF t\u1EEB s\u1ED5 c\u0169"),
+    tp_m17_2: object("so_dat_truoc_hang_tet", "s\u1ED5 \u0111\u1EB7t tr\u01B0\u1EDBc h\xE0ng T\u1EBFt c\u1EE7a c\u1EA3 h\u1ECD"),
+    tp_m18_0: object("giay_uy_quyen_ban_tiem", "gi\u1EA5y \u1EE7y quy\u1EC1n b\xE1n ti\u1EC7m"),
+    tp_m20_0: object("san_pham_tu_che_cua_ban", "th\u1EE9 b\u1EA1n t\u1EF1 ch\u1EBF m\xE0 ng\u01B0\u1EDDi ta mu\u1ED1n mua"),
+    tp_m21_0: debt("phan_gop_vu_lon_cung_doi_thu", "ph\u1EA7n g\xF3p v\xE0o v\u1EE5 l\u1EDBn c\xF9ng \u0111\u1ED1i th\u1EE7"),
+    tp_m21_1: debt("phan_gop_vu_lon_cung_doi_thu", "ph\u1EA7n g\xF3p v\xE0o v\u1EE5 l\u1EDBn c\xF9ng \u0111\u1ED1i th\u1EE7"),
+    tp_m22_0: object("ban_do_kho_bau_cua_ong", "t\u1EDD b\u1EA3n \u0111\u1ED3 kho ch\xF4n c\u1EE7a \xF4ng"),
+    tp_m23_0: object("giay_dat_con_ten_nguoi_xua", "gi\u1EA5y \u0111\u1EA5t c\xF2n t\xEAn ng\u01B0\u1EDDi x\u01B0a"),
+    tp_m23_1: object("giay_dat_con_ten_nguoi_xua", "gi\u1EA5y \u0111\u1EA5t c\xF2n t\xEAn ng\u01B0\u1EDDi x\u01B0a"),
+    tp_m23_2: place("phan_dat_cua_ban", "ph\u1EA7n \u0111\u1EA5t c\u1EE7a b\u1EA1n \u0111ang c\xF3 ng\u01B0\u1EDDi mu\u1ED1n mua"),
+    tp_m24_0: object("mot_tram_thung_gia_vi", "m\u1ED9t tr\u0103m th\xF9ng gia v\u1ECB tr\u1EA3 c\xF4ng"),
+    tp_m25_1: object("ve_dat_nham_thanh_pho", "t\u1EA5m v\xE9 \u0111\u1EB7t nh\u1EA7m th\xE0nh ph\u1ED1"),
+    tp_m25_2: object("ve_dat_nham_thanh_pho", "t\u1EA5m v\xE9 \u0111\u1EB7t nh\u1EA7m th\xE0nh ph\u1ED1"),
+    tp_m26_0: debt("khoan_tien_dien_tra_thua", "kho\u1EA3n ti\u1EC1n \u0111i\u1EC7n tr\u1EA3 th\u1EEBa nhi\u1EC1u n\u0103m"),
+    tp_m26_1: debt("khoan_tien_dien_tra_thua", "kho\u1EA3n ti\u1EC1n \u0111i\u1EC7n tr\u1EA3 th\u1EEBa nhi\u1EC1u n\u0103m"),
+    tp_m26_2: debt("khoan_tien_dien_tra_thua", "kho\u1EA3n ti\u1EC1n \u0111i\u1EC7n tr\u1EA3 th\u1EEBa nhi\u1EC1u n\u0103m"),
+    tp_m27_0: object("lo_thiet_bi_ve_sinh_gui_kho", "l\xF4 thi\u1EBFt b\u1ECB v\u1EC7 sinh g\u1EEDi trong kho nh\xE0"),
+    tp_m28_0: object("the_han_muc_cap_sai", "th\u1EBB c\xF3 h\u1EA1n m\u1EE9c c\u1EA5p sai"),
+    tp_m29_0: object("nhan_hang_mang_ten_ban", "nh\xE3n h\xE0ng mang \u0111\xFAng t\xEAn b\u1EA1n"),
+    tp_m30_0: animal("con_bo_hoan_phan_gop", "con b\xF2 tr\u1EA1i ho\xE0n ph\u1EA7n g\xF3p"),
+    tp_m30_2: animal("con_bo_hoan_phan_gop", "con b\xF2 tr\u1EA1i ho\xE0n ph\u1EA7n g\xF3p"),
+    tp_m31_0: debt("no_nho_thoi_o_tro", "m\xF3n n\u1EE3 nh\u1ECF t\u1EEB th\u1EDDi \u1EDF tr\u1ECD"),
+    tp_m31_1: debt("no_nho_thoi_o_tro", "m\xF3n n\u1EE3 nh\u1ECF t\u1EEB th\u1EDDi \u1EDF tr\u1ECD"),
+    tp_m31_2: debt("no_nho_thoi_o_tro", "m\xF3n n\u1EE3 nh\u1ECF t\u1EEB th\u1EDDi \u1EDF tr\u1ECD"),
+    tp_m32_0: object("vat_vang_trong_heo_dat", "v\u1EADt b\u1EB1ng v\xE0ng \xF4ng g\u1EEDi trong heo \u0111\u1EA5t"),
+    tp_m32_1: object("vat_vang_trong_heo_dat", "v\u1EADt b\u1EB1ng v\xE0ng \xF4ng g\u1EEDi trong heo \u0111\u1EA5t"),
+    tp_m32_2: object("vat_vang_trong_heo_dat", "v\u1EADt b\u1EB1ng v\xE0ng \xF4ng g\u1EEDi trong heo \u0111\u1EA5t"),
+    tp_m33_0: debt("khoan_cho_em_vay_cuoi", "kho\u1EA3n cho em vay c\u01B0\u1EDBi l\u1EA7n th\u1EE9 ba"),
+    tp_m34_0: place("nha_va_san_cua_bo", "nh\xE0 v\xE0 s\xE2n b\u1ED1 mu\u1ED1n chia"),
+    tp_m35_0: debt("khoan_gui_ve_ben_kia_gia_dinh", "kho\u1EA3n g\u1EEDi h\u1EB1ng th\xE1ng v\u1EC1 b\xEAn kia gia \u0111\xECnh"),
+    tp_m35_1: debt("khoan_gui_ve_ben_kia_gia_dinh", "kho\u1EA3n g\u1EEDi h\u1EB1ng th\xE1ng v\u1EC1 b\xEAn kia gia \u0111\xECnh"),
+    tp_m35_2: debt("khoan_gui_ve_ben_kia_gia_dinh", "kho\u1EA3n g\u1EEDi h\u1EB1ng th\xE1ng v\u1EC1 b\xEAn kia gia \u0111\xECnh"),
+    tp_m36_1: object("thu_nhap_hoc_cua_con", "th\u01B0 nh\u1EADp h\u1ECDc c\u1EE7a con"),
+    tp_m37_0: debt("thoa_thuan_tra_on_an_nhan", "th\u1ECFa thu\u1EADn chia ph\u1EA7n tr\u0103m cho \xE2n nh\xE2n"),
+    tp_m37_1: debt("thoa_thuan_tra_on_an_nhan", "th\u1ECFa thu\u1EADn chia ph\u1EA7n tr\u0103m cho \xE2n nh\xE2n"),
+    tp_m37_2: debt("thoa_thuan_tra_on_an_nhan", "th\u1ECFa thu\u1EADn chia ph\u1EA7n tr\u0103m cho \xE2n nh\xE2n"),
+    tp_m38_0: debt("khoan_bao_lanh_cho_hang_xom", "kho\u1EA3n vay b\u1EA1n \u0111\u01B0\u1EE3c nh\u1EDD b\u1EA3o l\xE3nh"),
+    tp_m39_0: object("quy_rieng_cua_ban", "s\u1ED1 d\u01B0 qu\u1EF9 ri\xEAng c\u1EE7a b\u1EA1n"),
+    tp_m39_1: object("quy_rieng_cua_ban", "s\u1ED1 d\u01B0 qu\u1EF9 ri\xEAng c\u1EE7a b\u1EA1n"),
+    tp_m39_2: object("quy_rieng_cua_ban", "s\u1ED1 d\u01B0 qu\u1EF9 ri\xEAng c\u1EE7a b\u1EA1n"),
+    tp_m40_0: debt("khoan_ung_truoc_cho_ban_cu", "kho\u1EA3n ti\u1EC1n \u1EE9ng tr\u01B0\u1EDBc cho ng\u01B0\u1EDDi b\u1EA1n c\u0169"),
+    tp_m40_1: debt("khoan_ung_truoc_cho_ban_cu", "kho\u1EA3n ti\u1EC1n \u1EE9ng tr\u01B0\u1EDBc cho ng\u01B0\u1EDDi b\u1EA1n c\u0169"),
+    tp_m40_2: debt("khoan_ung_truoc_cho_ban_cu", "kho\u1EA3n ti\u1EC1n \u1EE9ng tr\u01B0\u1EDBc cho ng\u01B0\u1EDDi b\u1EA1n c\u0169"),
+    tp_m42_1: debt("khoan_phi_khong_bien_lai", "kho\u1EA3n ph\xED ngo\xE0i b\u1EA3ng ph\xED ng\u01B0\u1EDDi ta g\u1EE3i \xFD"),
+    tp_m42_2: debt("khoan_phi_khong_bien_lai", "kho\u1EA3n ph\xED ngo\xE0i b\u1EA3ng ph\xED ng\u01B0\u1EDDi ta g\u1EE3i \xFD"),
+    tp_m43_0: object("chuyen_hang_qua_bien_gioi", "chuy\u1EBFn h\xE0ng qua bi\xEAn gi\u1EDBi c\u1EE7a anh r\u1EC3"),
+    tp_m43_2: object("chung_tu_chuyen_hang", "ch\u1EE9ng t\u1EEB chuy\u1EBFn h\xE0ng b\u1EA1n gi\u1EEF l\u1EA1i"),
+    tp_m44_0: debt("lo_hang_phai_mua_de_len_cap", "l\xF4 h\xE0ng ph\u1EA3i mua \u0111\u1EC3 l\xEAn c\u1EA5p b\xE1n h\xE0ng"),
+    tp_m44_1: debt("lo_hang_phai_mua_de_len_cap", "l\xF4 h\xE0ng ph\u1EA3i mua \u0111\u1EC3 l\xEAn c\u1EA5p b\xE1n h\xE0ng"),
+    tp_m45_0: object("ban_do_quy_hoach_khong_nguon", "b\u1EA3n \u0111\u1ED3 quy ho\u1EA1ch kh\xF4ng ngu\u1ED3n kh\xF4ng ng\xE0y"),
+    tp_m45_1: object("ban_do_quy_hoach_khong_nguon", "b\u1EA3n \u0111\u1ED3 quy ho\u1EA1ch kh\xF4ng ngu\u1ED3n kh\xF4ng ng\xE0y"),
+    tp_m46_0: object("mon_du_phong_len_gia_roi_giam", "m\xF3n d\u1EF1 ph\xF2ng l\xEAn gi\xE1 r\u1ED3i gi\u1EA3m"),
+    tp_m47_1: person("tp_m47_neighbor", "ng\u01B0\u1EDDi mu\u1ED1n mua c\u1EA3 d\xE3y"),
+    tp_m47_2: person("tp_m47_neighbor", "ng\u01B0\u1EDDi mu\u1ED1n mua c\u1EA3 d\xE3y"),
+    tp_m48_0: person("nguoi_tung_giup_duoc_de_phan", "ng\u01B0\u1EDDi t\u1EEBng gi\xFAp b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u1EC3 l\u1EA1i m\u1ED9t ph\u1EA7n"),
+    tp_m48_1: person("nguoi_tung_giup_duoc_de_phan", "ng\u01B0\u1EDDi t\u1EEBng gi\xFAp b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u1EC3 l\u1EA1i m\u1ED9t ph\u1EA7n"),
+    tp_m48_2: person("nguoi_tung_giup_duoc_de_phan", "ng\u01B0\u1EDDi t\u1EEBng gi\xFAp b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u1EC3 l\u1EA1i m\u1ED9t ph\u1EA7n"),
+    tp_m49_0: debt("khoan_con_giu_lai", "kho\u1EA3n ti\u1EC1n con gi\u1EEF l\u1EA1i l\u1EBD ra chuy\u1EC3n cho b\u1EA1n"),
+    tp_m49_1: debt("khoan_con_giu_lai", "kho\u1EA3n ti\u1EC1n con gi\u1EEF l\u1EA1i l\u1EBD ra chuy\u1EC3n cho b\u1EA1n"),
+    tp_m49_2: debt("khoan_con_giu_lai", "kho\u1EA3n ti\u1EC1n con gi\u1EEF l\u1EA1i l\u1EBD ra chuy\u1EC3n cho b\u1EA1n"),
+    tp_m50_0: debt("khoan_no_cu_chi_con_loi_ke", "kho\u1EA3n n\u1EE3 c\u0169 ch\u1EC9 c\xF2n l\u1EDDi k\u1EC3"),
+    tp_m50_1: debt("khoan_no_cu_chi_con_loi_ke", "kho\u1EA3n n\u1EE3 c\u0169 ch\u1EC9 c\xF2n l\u1EDDi k\u1EC3"),
+    tp_m50_2: debt("khoan_no_cu_chi_con_loi_ke", "kho\u1EA3n n\u1EE3 c\u0169 ch\u1EC9 c\xF2n l\u1EDDi k\u1EC3"),
+    /* ---- love */
+    tp_l01_0: person("nguoi_nhan_loi_chuc_ngu_ngon", "ng\u01B0\u1EDDi nh\u1EADn l\u1EDDi ch\xFAc ng\u1EE7 ngon nh\u1EA7m s\u1ED1"),
+    tp_l01_1: person("nguoi_nhan_loi_chuc_ngu_ngon", "ng\u01B0\u1EDDi nh\u1EADn l\u1EDDi ch\xFAc ng\u1EE7 ngon nh\u1EA7m s\u1ED1"),
+    tp_l01_2: person("nguoi_nhan_loi_chuc_ngu_ngon", "ng\u01B0\u1EDDi nh\u1EADn l\u1EDDi ch\xFAc ng\u1EE7 ngon nh\u1EA7m s\u1ED1"),
+    tp_l02_0: person("nguoi_cung_bi_goi_nham", "ng\u01B0\u1EDDi c\xF9ng b\u1ECB g\u1ECDi nh\u1EA7m tr\xEAn s\xE2n kh\u1EA5u"),
+    tp_l03_0: person("nguoi_xem_mat_nham_nha", "ng\u01B0\u1EDDi b\u1EA1n g\u1EB7p nh\u1EA7m nh\xE0 xem m\u1EAFt"),
+    tp_l04_0: person("nguoi_qua_mang_o_sat_vach", "ng\u01B0\u1EDDi tr\xF2 chuy\u1EC7n qua m\u1EA1ng \u1EDF s\xE1t v\xE1ch"),
+    tp_l04_1: person("nguoi_qua_mang_o_sat_vach", "ng\u01B0\u1EDDi tr\xF2 chuy\u1EC7n qua m\u1EA1ng \u1EDF s\xE1t v\xE1ch"),
+    tp_l04_2: person("nguoi_qua_mang_o_sat_vach", "ng\u01B0\u1EDDi tr\xF2 chuy\u1EC7n qua m\u1EA1ng \u1EDF s\xE1t v\xE1ch"),
+    tp_l05_0: person("nguoi_ban_tham_thich_giu_dep", "ng\u01B0\u1EDDi b\u1EA1n th\u1EA7m th\xEDch \u0111ang gi\u1EEF \u0111\xF4i d\xE9p"),
+    tp_l08_0: person("bo_cua_nguoi_ban_dinh_quen", "ng\u01B0\u1EDDi b\u1ED1 \u0111\xE3 tr\xF2 chuy\u1EC7n v\u1EDBi b\u1EA1n su\u1ED1t ba th\xE1ng"),
+    tp_l08_1: person("bo_cua_nguoi_ban_dinh_quen", "ng\u01B0\u1EDDi b\u1ED1 \u0111\xE3 tr\xF2 chuy\u1EC7n v\u1EDBi b\u1EA1n su\u1ED1t ba th\xE1ng"),
+    tp_l08_2: person("bo_cua_nguoi_ban_dinh_quen", "ng\u01B0\u1EDDi b\u1ED1 \u0111\xE3 tr\xF2 chuy\u1EC7n v\u1EDBi b\u1EA1n su\u1ED1t ba th\xE1ng"),
+    tp_l09_0: animal("hai_con_cho_hai_nha", "hai con ch\xF3 c\u1EE7a hai nh\xE0"),
+    tp_l09_1: animal("hai_con_cho_hai_nha", "hai con ch\xF3 c\u1EE7a hai nh\xE0"),
+    tp_l09_2: animal("hai_con_cho_hai_nha", "hai con ch\xF3 c\u1EE7a hai nh\xE0"),
+    tp_l11_0: object("la_thu_tinh_toi_nham_nguoi", "l\xE1 th\u01B0 t\xECnh t\u1EDBi nh\u1EA7m ch\u1ECB c\u1EE7a ng\u01B0\u1EDDi \u1EA5y"),
+    tp_l11_1: object("la_thu_tinh_toi_nham_nguoi", "l\xE1 th\u01B0 t\xECnh t\u1EDBi nh\u1EA7m ch\u1ECB c\u1EE7a ng\u01B0\u1EDDi \u1EA5y"),
+    tp_l11_2: object("la_thu_tinh_toi_nham_nguoi", "l\xE1 th\u01B0 t\xECnh t\u1EDBi nh\u1EA7m ch\u1ECB c\u1EE7a ng\u01B0\u1EDDi \u1EA5y"),
+    tp_l12_0: object("bai_hat_chia_tay_nham_loi", "b\xE0i h\xE1t chia tay t\u1EADp nh\u1EA7m l\u1EDDi"),
+    tp_l12_1: object("bai_hat_chia_tay_nham_loi", "b\xE0i h\xE1t chia tay t\u1EADp nh\u1EA7m l\u1EDDi"),
+    tp_l12_2: object("bai_hat_chia_tay_nham_loi", "b\xE0i h\xE1t chia tay t\u1EADp nh\u1EA7m l\u1EDDi"),
+    tp_l13_0: person("nguoi_dong_vai_nguoi_yeu", "ng\u01B0\u1EDDi \u0111\u01B0\u1EE3c thu\xEA \u0111\xF3ng vai ng\u01B0\u1EDDi y\xEAu"),
+    tp_l13_1: person("nguoi_dong_vai_nguoi_yeu", "ng\u01B0\u1EDDi \u0111\u01B0\u1EE3c thu\xEA \u0111\xF3ng vai ng\u01B0\u1EDDi y\xEAu"),
+    tp_l13_2: person("nguoi_dong_vai_nguoi_yeu", "ng\u01B0\u1EDDi \u0111\u01B0\u1EE3c thu\xEA \u0111\xF3ng vai ng\u01B0\u1EDDi y\xEAu"),
+    tp_l14_0: object("thiep_hoa_giu_ba_mua", "nh\u1EEFng t\u1EA5m thi\u1EC7p hoa \u0111\xE3 gi\u1EEF ba m\xF9a"),
+    tp_l16_0: promise("loi_khoe_chay_tram_cay", "l\u1EDDi khoe ch\u1EA1y m\u1ED9t tr\u0103m c\xE2y s\u1ED1"),
+    tp_l16_1: promise("loi_khoe_chay_tram_cay", "l\u1EDDi khoe ch\u1EA1y m\u1ED9t tr\u0103m c\xE2y s\u1ED1"),
+    tp_l16_2: promise("loi_khoe_chay_tram_cay", "l\u1EDDi khoe ch\u1EA1y m\u1ED9t tr\u0103m c\xE2y s\u1ED1"),
+    tp_l17_0: person("anh_ho_cua_nguoi_ay", "ng\u01B0\u1EDDi anh h\u1ECD b\u1EA1n l\u1EE1 ch\u1EA5t v\u1EA5n"),
+    tp_l18_0: object("ban_tap_to_tinh_qua_loa", "b\u1EA3n t\u1EADp t\u1ECF t\xECnh ph\xE1t qua loa khu"),
+    tp_l18_1: object("ban_tap_to_tinh_qua_loa", "b\u1EA3n t\u1EADp t\u1ECF t\xECnh ph\xE1t qua loa khu"),
+    tp_l18_2: object("ban_tap_to_tinh_qua_loa", "b\u1EA3n t\u1EADp t\u1ECF t\xECnh ph\xE1t qua loa khu"),
+    tp_l19_0: object("anh_vo_kich_hoi_nho", "\u1EA3nh v\u1EDF k\u1ECBch h\u1ED3i nh\u1ECF"),
+    tp_l20_0: object("cuon_so_tan_tinh_nam_cu", "cu\u1ED1n s\u1ED5 t\xE1n t\u1EC9nh th\u1EDDi ch\u01B0a c\xF3 \u0111i\u1EC7n tho\u1EA1i"),
+    tp_l20_1: object("cuon_so_tan_tinh_nam_cu", "cu\u1ED1n s\u1ED5 t\xE1n t\u1EC9nh th\u1EDDi ch\u01B0a c\xF3 \u0111i\u1EC7n tho\u1EA1i"),
+    tp_l22_0: debt("no_cu_cua_gia_dinh_ban", "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh b\u1EA1n v\u1EDBi nh\xE0 ng\u01B0\u1EDDi \u1EA5y"),
+    tp_l22_1: debt("no_cu_cua_gia_dinh_ban", "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh b\u1EA1n v\u1EDBi nh\xE0 ng\u01B0\u1EDDi \u1EA5y"),
+    tp_l22_2: debt("no_cu_cua_gia_dinh_ban", "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh b\u1EA1n v\u1EDBi nh\xE0 ng\u01B0\u1EDDi \u1EA5y"),
+    tp_l23_0: person("nguoi_cu_nay_la_ho_hang", "ng\u01B0\u1EDDi t\u1EEBng h\u1EB9n h\xF2 nay l\xE0 h\u1ECD h\xE0ng"),
+    tp_l23_1: person("nguoi_cu_nay_la_ho_hang", "ng\u01B0\u1EDDi t\u1EEBng h\u1EB9n h\xF2 nay l\xE0 h\u1ECD h\xE0ng"),
+    tp_l23_2: person("nguoi_cu_nay_la_ho_hang", "ng\u01B0\u1EDDi t\u1EEBng h\u1EB9n h\xF2 nay l\xE0 h\u1ECD h\xE0ng"),
+    tp_l24_0: object("cay_xoai_giong_den_bu", "c\xE2y xo\xE0i gi\u1ED1ng \u0111\u1EC1n b\xF9"),
+    tp_l25_0: promise("chuyen_di_chung_da_dat", "chuy\u1EBFn \u0111i chung \u0111\xE3 \u0111\u1EB7t tr\u01B0\u1EDBc"),
+    tp_l25_1: promise("chuyen_di_chung_da_dat", "chuy\u1EBFn \u0111i chung \u0111\xE3 \u0111\u1EB7t tr\u01B0\u1EDBc"),
+    tp_l25_2: promise("chuyen_di_chung_da_dat", "chuy\u1EBFn \u0111i chung \u0111\xE3 \u0111\u1EB7t tr\u01B0\u1EDBc"),
+    tp_l27_0: object("xe_va_phong_chup_anh_muon", "chi\u1EBFc xe v\xE0 c\u0103n ph\xF2ng m\u01B0\u1EE3n \u0111\u1EC3 ch\u1EE5p \u1EA3nh"),
+    tp_l27_1: object("xe_va_phong_chup_anh_muon", "chi\u1EBFc xe v\xE0 c\u0103n ph\xF2ng m\u01B0\u1EE3n \u0111\u1EC3 ch\u1EE5p \u1EA3nh"),
+    tp_l27_2: object("xe_va_phong_chup_anh_muon", "chi\u1EBFc xe v\xE0 c\u0103n ph\xF2ng m\u01B0\u1EE3n \u0111\u1EC3 ch\u1EE5p \u1EA3nh"),
+    tp_l28_1: skill("nghe_tung_khoe", "ngh\u1EC1 t\u1EEBng khoe l\xE0 ngh\u1EC1 m\u01A1 \u01B0\u1EDBc"),
+    tp_l29_0: object("anh_cu_tinh_dau_hai_nha", "\u1EA3nh c\u0169 t\xECnh \u0111\u1EA7u c\u1EE7a hai ng\u01B0\u1EDDi l\u1EDBn"),
+    tp_l29_1: object("anh_cu_tinh_dau_hai_nha", "\u1EA3nh c\u0169 t\xECnh \u0111\u1EA7u c\u1EE7a hai ng\u01B0\u1EDDi l\u1EDBn"),
+    tp_l29_2: object("anh_cu_tinh_dau_hai_nha", "\u1EA3nh c\u0169 t\xECnh \u0111\u1EA7u c\u1EE7a hai ng\u01B0\u1EDDi l\u1EDBn"),
+    tp_l30_0: person("me_cua_nguoi_ay", "m\u1EB9 c\u1EE7a ng\u01B0\u1EDDi \u1EA5y, ng\u01B0\u1EDDi g\xF3p l\u1EDDi nh\u1EAFn"),
+    tp_l30_1: person("me_cua_nguoi_ay", "m\u1EB9 c\u1EE7a ng\u01B0\u1EDDi \u1EA5y, ng\u01B0\u1EDDi g\xF3p l\u1EDDi nh\u1EAFn"),
+    tp_l30_2: person("me_cua_nguoi_ay", "m\u1EB9 c\u1EE7a ng\u01B0\u1EDDi \u1EA5y, ng\u01B0\u1EDDi g\xF3p l\u1EDDi nh\u1EAFn"),
+    tp_l31_0: object("anh_cuoi_in_lan_ca_nhom", "\u1EA3nh c\u01B0\u1EDBi in l\u1EABn c\u1EA3 nh\xF3m"),
+    tp_l32_0: object("chiec_nhan_trong_noi_lau", "chi\u1EBFc nh\u1EABn r\u01A1i trong n\u1ED3i l\u1EA9u"),
+    tp_l32_1: object("chiec_nhan_trong_noi_lau", "chi\u1EBFc nh\u1EABn r\u01A1i trong n\u1ED3i l\u1EA9u"),
+    tp_l32_2: promise("loi_hua_thay_man_trao_nhan", "l\u1EDDi h\u1EE9a thay cho m\xE0n trao nh\u1EABn"),
+    tp_l33_0: object("tam_anh_vui_hai_chu_re", "t\u1EA5m \u1EA3nh vui c\xF3 hai ch\xFA r\u1EC3"),
+    tp_l34_0: object("ten_chon_cho_con", "t\xEAn \u0111\xE3 ch\u1ECDn cho con v\xE0 t\xEAn b\xEAn n\u1ED9i d\xF9ng"),
+    tp_l34_1: object("ten_chon_cho_con", "t\xEAn \u0111\xE3 ch\u1ECDn cho con v\xE0 t\xEAn b\xEAn n\u1ED9i d\xF9ng"),
+    tp_l34_2: object("ten_chon_cho_con", "t\xEAn \u0111\xE3 ch\u1ECDn cho con v\xE0 t\xEAn b\xEAn n\u1ED9i d\xF9ng"),
+    tp_l35_0: object("hai_phong_bi_quy_den", "hai phong b\xEC qu\u1EF9 \u0111en ghi \u0111\u1EEBng \u0111\u1EE5ng"),
+    tp_l35_1: object("hai_phong_bi_quy_den", "hai phong b\xEC qu\u1EF9 \u0111en ghi \u0111\u1EEBng \u0111\u1EE5ng"),
+    tp_l35_2: object("hai_phong_bi_quy_den", "hai phong b\xEC qu\u1EF9 \u0111en ghi \u0111\u1EEBng \u0111\u1EE5ng"),
+    tp_l38_0: object("anh_lop_cu", "t\u1EA5m \u1EA3nh l\u1EDBp c\u0169"),
+    tp_l38_1: object("anh_lop_cu", "t\u1EA5m \u1EA3nh l\u1EDBp c\u0169"),
+    tp_l40_0: animal("con_meo_ghe_moi_chieu", "con m\xE8o c\u1EA3 hai l\xE9n cho \u0103n m\u1ED7i chi\u1EC1u"),
+    tp_l40_1: animal("con_meo_ghe_moi_chieu", "con m\xE8o c\u1EA3 hai l\xE9n cho \u0103n m\u1ED7i chi\u1EC1u"),
+    tp_l40_2: animal("con_meo_ghe_moi_chieu", "con m\xE8o c\u1EA3 hai l\xE9n cho \u0103n m\u1ED7i chi\u1EC1u"),
+    tp_l41_0: person("nguoi_yeu_tre_cua_me", "ng\u01B0\u1EDDi y\xEAu tr\u1EBB h\u01A1n c\u1EE7a m\u1EB9"),
+    tp_l42_0: debt("mon_muon_thoi_di_hoc", "m\xF3n m\u01B0\u1EE3n th\u1EDDi \u0111i h\u1ECDc ghi trong s\u1ED5"),
+    tp_l42_1: object("cuon_so_cua_nguoi_xua", "cu\u1ED1n s\u1ED5 ghi m\xF3n b\u1EA1n m\u01B0\u1EE3n th\u1EDDi \u0111i h\u1ECDc"),
+    tp_l43_0: person("co_giao_cu_cua_ban", "c\xF4 gi\xE1o c\u0169 nay l\xE0 ng\u01B0\u1EDDi b\u1EA1n m\u1EDBi c\u1EE7a b\u1ED1"),
+    tp_l43_1: person("co_giao_cu_cua_ban", "c\xF4 gi\xE1o c\u0169 nay l\xE0 ng\u01B0\u1EDDi b\u1EA1n m\u1EDBi c\u1EE7a b\u1ED1"),
+    tp_l43_2: person("co_giao_cu_cua_ban", "c\xF4 gi\xE1o c\u0169 nay l\xE0 ng\u01B0\u1EDDi b\u1EA1n m\u1EDBi c\u1EE7a b\u1ED1"),
+    tp_l45_0: object("thu_tinh_trong_tu", "th\u01B0 t\xECnh trong t\u1EE7 mang n\xE9t ch\u1EEF c\u1EE7a b\u1EA1n"),
+    tp_l45_1: object("thu_tinh_trong_tu", "th\u01B0 t\xECnh trong t\u1EE7 mang n\xE9t ch\u1EEF c\u1EE7a b\u1EA1n"),
+    tp_l46_0: person("nguoi_ban_xoi", "ng\u01B0\u1EDDi b\xE1n x\xF4i hay g\u1EB7p m\u1ED7i s\xE1ng"),
+    tp_l46_1: person("nguoi_ban_xoi", "ng\u01B0\u1EDDi b\xE1n x\xF4i hay g\u1EB7p m\u1ED7i s\xE1ng"),
+    tp_l46_2: person("nguoi_ban_xoi", "ng\u01B0\u1EDDi b\xE1n x\xF4i hay g\u1EB7p m\u1ED7i s\xE1ng"),
+    tp_l47_0: object("ho_so_hen_ho_anh_tre_hon", "h\u1ED3 s\u01A1 h\u1EB9n h\xF2 v\u1EDBi \u1EA3nh tr\u1EBB h\u01A1n hai m\u01B0\u01A1i tu\u1ED5i"),
+    tp_l49_0: person("nguoi_moi_trong_nhom_sinh_hoat", "ng\u01B0\u1EDDi m\u1EDBi trong nh\xF3m sinh ho\u1EA1t"),
+    tp_l49_1: person("nguoi_moi_trong_nhom_sinh_hoat", "ng\u01B0\u1EDDi m\u1EDBi trong nh\xF3m sinh ho\u1EA1t"),
+    tp_l50_0: promise("hai_la_thu_hen_cung_ngay", "hai l\xE1 th\u01B0 h\u1EB9n g\u1EB7p c\xF9ng m\u1ED9t ng\xE0y"),
+    tp_l50_1: promise("hai_la_thu_hen_cung_ngay", "hai l\xE1 th\u01B0 h\u1EB9n g\u1EB7p c\xF9ng m\u1ED9t ng\xE0y"),
+    tp_l50_2: promise("hai_la_thu_hen_cung_ngay", "hai l\xE1 th\u01B0 h\u1EB9n g\u1EB7p c\xF9ng m\u1ED9t ng\xE0y"),
+    /* người của thẻ ({person} theo `gates`) làm vật gài cho route chưa có đồ/nợ cụ thể; compileFork gắn npc lúc build */
+    tp_c01_2: person("tp_c01_mentor", "c\xF4 gi\xE1o t\u1EEBng mang su\u1EA5t h\u1ECDc t\u1EDBi nh\xE0 b\u1EA1n"),
+    tp_c02_0: person("tp_c02_friend", "ng\u01B0\u1EDDi b\u1EA1n b\u1ECB ch\u1EB7n sau nh\xE0 xe h\xF4m \u1EA5y"),
+    tp_c02_1: person("tp_c02_friend", "ng\u01B0\u1EDDi b\u1EA1n b\u1ECB ch\u1EB7n sau nh\xE0 xe h\xF4m \u1EA5y"),
+    tp_c04_2: person("tp_c04_mentor", "ng\u01B0\u1EDDi ch\xFA t\u1EEBng \u0111\u01B0a b\u1EA1n t\u1EA5m v\xE9 l\xEAn ph\u1ED1"),
+    tp_c05_1: person("tp_c05_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m gi\u1EEF ch\xECa kh\xF3a chi\u1EBFc xe \u0111\xEAm l\u0169"),
+    tp_c06_0: person("tp_c06_mentor", "ng\u01B0\u1EDDi th\u1EA7y t\u1EEBng ch\u1ECDn b\xE0i c\u1EE7a b\u1EA1n \u0111i thi"),
+    tp_c06_1: person("tp_c06_mentor", "ng\u01B0\u1EDDi th\u1EA7y t\u1EEBng ch\u1ECDn b\xE0i c\u1EE7a b\u1EA1n \u0111i thi"),
+    tp_c06_2: person("tp_c06_mentor", "ng\u01B0\u1EDDi th\u1EA7y t\u1EEBng ch\u1ECDn b\xE0i c\u1EE7a b\u1EA1n \u0111i thi"),
+    tp_c07_2: person("tp_c07_mother", "ng\u01B0\u1EDDi m\u1EB9 t\u1EEBng h\u1ECFi b\u1EA1n mu\u1ED1n \u1EDF b\xEAn n\xE0o"),
+    tp_c09_2: person("tp_c09_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n \u0111i chuy\u1EBFn xe \u1EA5y"),
+    tp_c10_1: person("tp_c10_mentor", "ng\u01B0\u1EDDi \u0111\u1EE1 \u0111\u1EA7u t\u1EEBng tr\u1EA3 h\u1ECDc ph\xED cho b\u1EA1n"),
+    tp_c11_0: person("tp_c11_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng b\xE1o tin s\u01A1 t\xE1n"),
+    tp_c11_2: person("tp_c11_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng b\xE1o tin s\u01A1 t\xE1n"),
+    tp_c12_2: person("tp_c12_mentor", "ng\u01B0\u1EDDi t\u1EEBng gi\u1EEF t\u1EDD gi\u1EA5y l\u1EDDi h\u1EE9a c\u1EE7a b\u1EA1n"),
+    tp_c13_2: person("tp_c13_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng \u0111\u01B0a b\u1EA1n b\u1EA3n nh\u1EADn l\u1ED7i"),
+    tp_c14_2: person("tp_c14_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\u1EDBi thi\u1EC7u h\u1EE3p \u0111\u1ED3ng xa nh\xE0"),
+    tp_c15_0: person("tp_c15_sibling", "ng\u01B0\u1EDDi anh ch\u1ECB em t\u1EEBng mang danh s\xE1ch kh\xE1ch c\u01B0\u1EDBi"),
+    tp_c15_2: person("tp_c15_sibling", "ng\u01B0\u1EDDi anh ch\u1ECB em t\u1EEBng mang danh s\xE1ch kh\xE1ch c\u01B0\u1EDBi"),
+    tp_c17_2: person("tp_c17_friend", "ng\u01B0\u1EDDi b\u1EA1n th\xE2n t\u1EEBng thu\xEA m\u1EB7t b\u1EB1ng c\xF9ng b\u1EA1n"),
+    tp_c18_2: person("tp_c18_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng n\xF3i b\xE3i \u0111\u1EA5t s\u1EAFp c\xF3 gi\xE1"),
+    tp_c19_1: person("tp_c19_sibling", "ng\u01B0\u1EDDi nh\xE0 t\u1EEBng g\u1EEDi \u0111\u1EE9a tr\u1EBB cho b\u1EA1n nu\xF4i h\u1ED9"),
+    tp_c19_2: person("tp_c19_sibling", "ng\u01B0\u1EDDi nh\xE0 t\u1EEBng g\u1EEDi \u0111\u1EE9a tr\u1EBB cho b\u1EA1n nu\xF4i h\u1ED9"),
+    tp_c20_2: person("tp_c20_official", "ng\u01B0\u1EDDi t\u1EEBng m\u1EDDi b\u1EA1n ng\u1ED3i v\xE0o chi\u1EBFc gh\u1EBF m\u1EDBi"),
+    tp_c21_0: person("tp_c21_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi c\xF3 tin nh\u1EAFn l\xFAc hai gi\u1EDD s\xE1ng"),
+    tp_c24_1: person("tp_c24_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng \u0111\u01B0a thi\u1EC7p b\xEAn ngo\u1EA1i"),
+    tp_c24_2: person("tp_c24_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng \u0111\u01B0a thi\u1EC7p b\xEAn ngo\u1EA1i"),
+    tp_c26_0: person("tp_c26_official", "ng\u01B0\u1EDDi t\u1EEBng h\u1ECFi b\u1EA1n c\xF3 ra tranh \u0111\u1EA1i di\u1EC7n"),
+    tp_c26_1: person("tp_c26_official", "ng\u01B0\u1EDDi t\u1EEBng h\u1ECFi b\u1EA1n c\xF3 ra tranh \u0111\u1EA1i di\u1EC7n"),
+    tp_c26_2: person("tp_c26_official", "ng\u01B0\u1EDDi t\u1EEBng h\u1ECFi b\u1EA1n c\xF3 ra tranh \u0111\u1EA1i di\u1EC7n"),
+    tp_c27_1: person("tp_c27_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng c\u1EA7m v\xE9 chuy\u1EBFn \u0111i b\u1EA1n ho\xE3n"),
+    tp_c27_2: person("tp_c27_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng c\u1EA7m v\xE9 chuy\u1EBFn \u0111i b\u1EA1n ho\xE3n"),
+    tp_c28_1: person("tp_c28_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng chuy\u1EC3n l\xE1 th\u01B0 kh\xF4ng t\xEAn"),
+    tp_c29_0: person("tp_c29_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng cho b\u1EA1n xem danh s\xE1ch c\u1EAFt gi\u1EA3m"),
+    tp_c29_2: person("tp_c29_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng cho b\u1EA1n xem danh s\xE1ch c\u1EAFt gi\u1EA3m"),
+    tp_c31_2: person("tp_c31_child", "ng\u01B0\u1EDDi con t\u1EEBng \u0111\u1EB7t \xE1o c\xF4ng nh\xE2n l\xEAn b\xE0n"),
+    tp_c32_2: person("tp_c32_official", "ng\u01B0\u1EDDi t\u1EEBng g\u1EEDi b\u1EA1n h\u1ED3 s\u01A1 t\u1ED1 sai ph\u1EA1m"),
+    tp_c34_2: person("tp_c34_friend", "ng\u01B0\u1EDDi b\u1EA1n th\xE2n t\u1EEBng n\u1EB1m \u1EDF h\xE0nh lang b\u1EC7nh vi\u1EC7n"),
+    tp_c35_2: person("tp_c35_rival", "ng\u01B0\u1EDDi \u0111\u1ED1i \u0111\u1ECBch t\u1EEBng g\u1EEDi b\u1EA1n b\u1EA3n ghi"),
+    tp_c36_0: person("tp_c36_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng mu\u1ED1n chuy\u1EC3n t\u1EDBi n\u01A1i kh\xE1c"),
+    tp_c36_1: person("tp_c36_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng mu\u1ED1n chuy\u1EC3n t\u1EDBi n\u01A1i kh\xE1c"),
+    tp_c36_2: person("tp_c36_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng mu\u1ED1n chuy\u1EC3n t\u1EDBi n\u01A1i kh\xE1c"),
+    tp_c37_1: person("tp_c37_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng mu\u1ED1n mua c\xF4ng vi\u1EC7c c\u1EE7a b\u1EA1n"),
+    tp_c37_2: person("tp_c37_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng mu\u1ED1n mua c\xF4ng vi\u1EC7c c\u1EE7a b\u1EA1n"),
+    tp_c40_0: person("tp_c40_child", "ng\u01B0\u1EDDi con t\u1EEBng b\u1EADt m\xE1y ghi \xE2m nghe b\u1EA1n k\u1EC3"),
+    tp_c40_2: person("tp_c40_child", "ng\u01B0\u1EDDi con t\u1EEBng b\u1EADt m\xE1y ghi \xE2m nghe b\u1EA1n k\u1EC3"),
+    tp_c41_2: person("tp_c41_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng t\xECm th\u1EA5y ch\xECa kh\xF3a ph\xF2ng tr\u1ECD c\u0169"),
+    tp_c42_1: person("tp_c42_mentor", "ng\u01B0\u1EDDi h\u1ECDc vi\u1EC7c t\u1EEBng s\u1EEDa \u0111\u01B0\u1EE3c th\u1EE9 b\u1EA1n b\u1ECF d\u1EDF"),
+    tp_c43_2: person("tp_c43_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng g\u1EEDi ng\u01B0\u1EDDi \u1EDF nh\u1EDD m\u01B0\u1EDDi \u0111\xEAm"),
+    tp_c44_0: person("tp_c44_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng r\u1EE7 l\u1EADp h\u1ED9i hai chi\u1EBFc gh\u1EBF"),
+    tp_c44_1: person("tp_c44_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng r\u1EE7 l\u1EADp h\u1ED9i hai chi\u1EBFc gh\u1EBF"),
+    tp_c44_2: person("tp_c44_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng r\u1EE7 l\u1EADp h\u1ED9i hai chi\u1EBFc gh\u1EBF"),
+    tp_c46_0: person("tp_c46_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng m\u1EDDi b\u1EA1n \u0111i l\xE0m ch\u1EE9ng mu\u1ED9n"),
+    tp_c46_1: person("tp_c46_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng m\u1EDDi b\u1EA1n \u0111i l\xE0m ch\u1EE9ng mu\u1ED9n"),
+    tp_c46_2: person("tp_c46_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng m\u1EDDi b\u1EA1n \u0111i l\xE0m ch\u1EE9ng mu\u1ED9n"),
+    tp_c47_2: person("tp_c47_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng t\xECm th\u1EA5y c\xF4ng th\u1EE9c tr\xEAn kh\u0103n \u0103n"),
+    tp_c48_1: person("tp_c48_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng ghi t\xEAn b\u1EA1n v\xE0o b\u1EA7u ch\u1ECDn"),
+    tp_c48_2: person("tp_c48_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng ghi t\xEAn b\u1EA1n v\xE0o b\u1EA7u ch\u1ECDn"),
+    tp_c49_1: person("tp_c49_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u01B0a t\u1EDD b\xE1o khen sai vi\u1EC7c"),
+    tp_c49_2: person("tp_c49_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u01B0a t\u1EDD b\xE1o khen sai vi\u1EC7c"),
+    tp_c50_1: person("tp_c50_sibling", "ng\u01B0\u1EDDi anh ch\u1ECB em t\u1EEBng t\xECm th\u1EA5y \u1EA3nh b\u1ECB c\u1EAFt"),
+    tp_a01_2: person("tp_a01_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m c\xF3 con d\xEA \u0103n s\u1ED5 \u0111\u1ECF c\u1EE7a b\u1EA1n"),
+    tp_a03_1: person("tp_a03_official", "ng\u01B0\u1EDDi c\xE1n b\u1ED9 t\u1EEBng \u0111\u01B0a th\u1EBB c\u0103n c\u01B0\u1EDBc ghi sai tu\u1ED5i"),
+    tp_a03_2: person("tp_a03_official", "ng\u01B0\u1EDDi c\xE1n b\u1ED9 t\u1EEBng \u0111\u01B0a th\u1EBB c\u0103n c\u01B0\u1EDBc ghi sai tu\u1ED5i"),
+    tp_a04_0: person("tp_a04_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng ph\xE1t hi\u1EC7n quan t\xE0i giao nh\u1EA7m"),
+    tp_a04_2: person("tp_a04_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng ph\xE1t hi\u1EC7n quan t\xE0i giao nh\u1EA7m"),
+    tp_a05_1: person("tp_a05_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng quay clip b\u1EA1n r\u01A1i xu\u1ED1ng ao"),
+    tp_a05_2: person("tp_a05_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng quay clip b\u1EA1n r\u01A1i xu\u1ED1ng ao"),
+    tp_a06_1: person("tp_a06_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng c\u1EA7m micro khi ban nh\u1EA1c g\u1ECDi nh\u1EA7m"),
+    tp_a06_2: person("tp_a06_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng c\u1EA7m micro khi ban nh\u1EA1c g\u1ECDi nh\u1EA7m"),
+    tp_a07_1: person("tp_a07_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng b\xE1o b\u1EA1n tr\xFAng n\u01B0\u1EDBc m\u1EAFm"),
+    tp_a09_1: person("tp_a09_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng c\u1EA7m gi\u1EA5y ch\u1EE9ng nh\u1EADn con b\xF2"),
+    tp_a10_0: person("tp_a10_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng g\u1EEDi b\u1EA1n t\u1EDBi h\u1ECDp di s\u1EA3n nh\u1EA7m"),
+    tp_a10_1: person("tp_a10_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng g\u1EEDi b\u1EA1n t\u1EDBi h\u1ECDp di s\u1EA3n nh\u1EA7m"),
+    tp_a10_2: person("tp_a10_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng g\u1EEDi b\u1EA1n t\u1EDBi h\u1ECDp di s\u1EA3n nh\u1EA7m"),
+    tp_a12_2: person("tp_a12_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng ghi c\xE2y chu\u1ED1i l\xEAn phi\u1EBFu"),
+    tp_a13_1: person("tp_a13_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng b\xE1o gi\u1EA3i th\u01B0\u1EDFng l\xE0 ch\u0103m s\xE2n"),
+    tp_a13_2: person("tp_a13_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng b\xE1o gi\u1EA3i th\u01B0\u1EDFng l\xE0 ch\u0103m s\xE2n"),
+    tp_a14_1: person("tp_a14_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng \u0111\u1ECDc \u0111\u01A1n xin ngh\u1EC9 c\u1EE7a c\xE1i m\xE1y"),
+    tp_a15_1: person("tp_a15_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng m\u1EDF th\xF9ng \xE1o c\u1EE7a \u0111\u1ED9i tang l\u1EC5"),
+    tp_a15_2: person("tp_a15_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng m\u1EDF th\xF9ng \xE1o c\u1EE7a \u0111\u1ED9i tang l\u1EC5"),
+    tp_a18_1: person("tp_a18_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u01B0a gi\u1EA5y m\u1EDDi hai ng\u01B0\u1EDDi c\xF9ng t\xEAn"),
+    tp_a18_2: person("tp_a18_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u01B0a gi\u1EA5y m\u1EDDi hai ng\u01B0\u1EDDi c\xF9ng t\xEAn"),
+    tp_a19_1: person("tp_a19_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng nh\u1EDD b\u1EA1n nh\u1EADn m\u1ED9t ki\u1EC7n h\xE0ng"),
+    tp_a20_2: person("tp_a20_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u0103ng k\xFD t\xEAn b\u1EA1n thi \u0103n cay"),
+    tp_a21_1: person("tp_a21_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng th\u1EED loa b\u1EB1ng th\u01B0 c\u1EE7a b\u1EA1n"),
+    tp_a21_2: person("tp_a21_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng th\u1EED loa b\u1EB1ng th\u01B0 c\u1EE7a b\u1EA1n"),
+    tp_a22_1: person("tp_a22_rival", "ng\u01B0\u1EDDi giao chi\u1EBFc b\xE1nh ghi t\xEAn \u0111\u1ED1i th\u1EE7"),
+    tp_a22_2: person("tp_a22_rival", "ng\u01B0\u1EDDi giao chi\u1EBFc b\xE1nh ghi t\xEAn \u0111\u1ED1i th\u1EE7"),
+    tp_a23_0: person("tp_a23_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng b\u1EA7u b\u1EA1n l\xE0m ch\u1EE7 t\u1ECBch h\u1ED9i ng\u1EE7 tr\u01B0a"),
+    tp_a23_1: person("tp_a23_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng b\u1EA7u b\u1EA1n l\xE0m ch\u1EE7 t\u1ECBch h\u1ED9i ng\u1EE7 tr\u01B0a"),
+    tp_a24_2: person("tp_a24_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng nh\u1EDD nh\u1EADn chi\u1EBFc ngai s\xE2n kh\u1EA5u"),
+    tp_a25_2: person("tp_a25_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m n\xF3i con ch\xF3 l\xE0 nh\xE2n ch\u1EE9ng"),
+    tp_a26_1: person("tp_a26_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\u1EDBi thi\u1EC7u b\u1EA1n l\xE0 ca s\u0129"),
+    tp_a26_2: person("tp_a26_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\u1EDBi thi\u1EC7u b\u1EA1n l\xE0 ca s\u0129"),
+    tp_a27_2: person("tp_a27_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng \u0111\u1EB7t m\u1ED9t ngh\xECn c\xE1i n\u1EAFp"),
+    tp_a28_1: person("tp_a28_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m nghe b\u1EA3n tin b\u1EA1n m\u1EA5t t\xEDch"),
+    tp_a28_2: person("tp_a28_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m nghe b\u1EA3n tin b\u1EA1n m\u1EA5t t\xEDch"),
+    tp_a29_1: person("tp_a29_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u01B0\u1EDFng \u0111\u1ED3 di\u1EC5n c\u1EE7a b\u1EA1n l\xE0 \u0111\u1ED3ng ph\u1EE5c"),
+    tp_a29_2: person("tp_a29_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u01B0\u1EDFng \u0111\u1ED3 di\u1EC5n c\u1EE7a b\u1EA1n l\xE0 \u0111\u1ED3ng ph\u1EE5c"),
+    tp_a30_0: person("tp_a30_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\u01A1 b\u1EA3ng \u0111\u1EA5u gi\xE1 nh\u1EA7m"),
+    tp_a30_1: person("tp_a30_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\u01A1 b\u1EA3ng \u0111\u1EA5u gi\xE1 nh\u1EA7m"),
+    tp_a30_2: person("tp_a30_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng gi\u01A1 b\u1EA3ng \u0111\u1EA5u gi\xE1 nh\u1EA7m"),
+    tp_a31_2: person("tp_a31_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m ch\u1EC9 t\u1EA5m bi\u1EC3n di t\xEDch gi\u1EA3"),
+    tp_a32_1: person("tp_a32_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng g\u1EEDi \u1EA3nh con r\xF9a \u0111i thi"),
+    tp_a32_2: person("tp_a32_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng g\u1EEDi \u1EA3nh con r\xF9a \u0111i thi"),
+    tp_a33_2: person("tp_a33_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u0103ng nh\u1EA7m l\u1ECBch h\u1ECDc n\u1EA5u \u0103n"),
+    tp_a34_0: person("tp_a34_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m c\xF9ng m\u01A1 m\u1ED9t con s\u1ED1 v\u1EDBi x\xF3m"),
+    tp_a34_1: person("tp_a34_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m c\xF9ng m\u01A1 m\u1ED9t con s\u1ED1 v\u1EDBi x\xF3m"),
+    tp_a35_2: person("tp_a35_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng m\u01B0\u1EE3n xe r\u1ED3i qu\xEAn th\xE1o hoa"),
+    tp_a36_2: person("tp_a36_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng d\u1EABn b\u1EA1n t\u1EDBi gian t\u01B0\u1EE3ng s\xE1p"),
+    tp_a37_2: person("tp_a37_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng \u0111\u1ECDc nh\u1EA7m s\u1ED1 nh\xE0 th\u01B0 t\xECnh"),
+    tp_a39_2: person("tp_a39_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng g\u1EEDi h\u1EE3p \u0111\u1ED3ng th\xE0nh b\xE0i h\xE1t"),
+    tp_a40_1: person("tp_a40_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m treo t\u1EA5m g\u01B0\u01A1ng qu\u1EA3ng c\xE1o ch\xF3i"),
+    tp_a40_2: person("tp_a40_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m treo t\u1EA5m g\u01B0\u01A1ng qu\u1EA3ng c\xE1o ch\xF3i"),
+    tp_a41_1: person("tp_a41_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng c\u1EAFt b\u0103ng khai tr\u01B0\u01A1ng thi\u1EBFu c\u1EEDa"),
+    tp_a42_1: person("tp_a42_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng g\u1EEDi t\u1EDD l\u1ECBch hai th\xE1ng b\u1EA3y"),
+    tp_a42_2: person("tp_a42_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng g\u1EEDi t\u1EDD l\u1ECBch hai th\xE1ng b\u1EA3y"),
+    tp_a43_1: person("tp_a43_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng s\u1EEDa tai nghe g\u1EAFn nh\u1EA7m v\xE0o m\u0169"),
+    tp_a43_2: person("tp_a43_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng s\u1EEDa tai nghe g\u1EAFn nh\u1EA7m v\xE0o m\u0169"),
+    tp_a44_0: person("tp_a44_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng giao b\u1EA1n micro cu\u1ED9c thi im l\u1EB7ng"),
+    tp_a44_1: person("tp_a44_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng giao b\u1EA1n micro cu\u1ED9c thi im l\u1EB7ng"),
+    tp_a44_2: person("tp_a44_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng giao b\u1EA1n micro cu\u1ED9c thi im l\u1EB7ng"),
+    tp_a45_2: person("tp_a45_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111em th\u01B0 c\u0169 \u0111i h\u1ECFi ng\u01B0\u1EDDi s\u01B0u t\u1EA7m"),
+    tp_a46_2: person("tp_a46_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng \u0111\u1EB7t m\u1ED9t tr\u0103m chi\u1EBFc \xE1o m\u01B0a"),
+    tp_a47_1: person("tp_a47_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m \u0111\xF9a v\u1EC1 m\u1EADt kh\u1EA9u b\u1EB1ng th\u01A1"),
+    tp_a47_2: person("tp_a47_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m \u0111\xF9a v\u1EC1 m\u1EADt kh\u1EA9u b\u1EB1ng th\u01A1"),
+    tp_a48_2: person("tp_a48_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng v\u1EBD b\u1EE9c ch\xE2n dung c\u1EE7a b\u1EA1n"),
+    tp_a49_0: person("tp_a49_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n t\u1EDBi h\u1ED9i ngh\u1ECB to\xE0n ng\u01B0\u1EDDi b\xE1n v\xE9"),
+    tp_a49_1: person("tp_a49_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n t\u1EDBi h\u1ED9i ngh\u1ECB to\xE0n ng\u01B0\u1EDDi b\xE1n v\xE9"),
+    tp_a49_2: person("tp_a49_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n t\u1EDBi h\u1ED9i ngh\u1ECB to\xE0n ng\u01B0\u1EDDi b\xE1n v\xE9"),
+    tp_a50_1: person("tp_a50_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng t\u1EB7ng b\u1EA1n b\xF3 ch\xECa kh\xF3a"),
+    tp_a50_2: person("tp_a50_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng t\u1EB7ng b\u1EA1n b\xF3 ch\xECa kh\xF3a"),
+    tp_m01_2: person("tp_m01_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng t\xECm th\u1EA5y v\xE9 d\u1EF1 th\u01B0\u1EDFng trong v\xED"),
+    tp_m05_2: person("tp_m05_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng b\xE1o kho\u1EA3n b\u1ED3i th\u01B0\u1EDDng mu\u1ED9n"),
+    tp_m08_2: person("tp_m08_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng \u0111\u01B0a b\u1EA3ng gi\xE1 \u0111\u1EC1n b\xF9"),
+    tp_m11_1: person("tp_m11_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng x\u1EBFp h\xE0ng c\xF9ng b\u1EA1n tr\u01B0\u1EDBc ng\xE2n h\xE0ng"),
+    tp_m11_2: person("tp_m11_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng x\u1EBFp h\xE0ng c\xF9ng b\u1EA1n tr\u01B0\u1EDBc ng\xE2n h\xE0ng"),
+    tp_m12_2: person("tp_m12_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng mang y\xEAu c\u1EA7u b\u1ED5 sung h\u1ED3 s\u01A1"),
+    tp_m16_0: person("tp_m16_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng b\xE1o h\u1ED3 s\u01A1 thu\u1EBF c\u1EA7n \u0111\u1ED1i chi\u1EBFu"),
+    tp_m17_1: person("tp_m17_sibling", "ng\u01B0\u1EDDi anh ch\u1ECB em t\u1EEBng gom ti\u1EC1n h\xE0ng T\u1EBFt"),
+    tp_m18_2: person("tp_m18_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng gi\u1EDBi thi\u1EC7u ti\u1EC7m b\xE1n g\u1EA5p"),
+    tp_m19_0: person("tp_m19_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng r\u1EE7 b\u1EA1n g\xF3p \u0111\u1EA5u gi\xE1"),
+    tp_m19_1: person("tp_m19_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng r\u1EE7 b\u1EA1n g\xF3p \u0111\u1EA5u gi\xE1"),
+    tp_m20_2: person("tp_m20_partner", "ng\u01B0\u1EDDi c\u1ED9ng s\u1EF1 t\u1EEBng ng\u1ECF \xFD mua th\u1EE9 b\u1EA1n t\u1EF1 ch\u1EBF"),
+    tp_m22_1: person("tp_m22_sibling", "ng\u01B0\u1EDDi anh ch\u1ECB em t\u1EEBng t\xECm th\u1EA5y b\u1EA3n \u0111\u1ED3 c\u1EE7a \xF4ng"),
+    tp_m22_2: person("tp_m22_sibling", "ng\u01B0\u1EDDi anh ch\u1ECB em t\u1EEBng t\xECm th\u1EA5y b\u1EA3n \u0111\u1ED3 c\u1EE7a \xF4ng"),
+    tp_m24_2: person("tp_m24_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng mu\u1ED1n tr\u1EA3 c\xF4ng b\u1EB1ng gia v\u1ECB"),
+    tp_m27_1: person("tp_m27_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng xin thu\xEA kho nh\xE0 b\u1EA1n"),
+    tp_m28_1: person("tp_m28_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng ch\u1EC9 m\xE0n h\xECnh th\u1EBB h\u1EA1n m\u1EE9c sai"),
+    tp_m29_1: person("tp_m29_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng c\u1EA7m s\u1EA3n ph\u1EA9m mang t\xEAn b\u1EA1n"),
+    tp_m33_1: person("tp_m33_sibling", "ng\u01B0\u1EDDi em t\u1EEBng ba l\u1EA7n h\u1ECFi vay ti\u1EC1n c\u01B0\u1EDBi"),
+    tp_m34_1: person("tp_m34_father", "ng\u01B0\u1EDDi b\u1ED1 t\u1EEBng mu\u1ED1n chia nh\xE0 khi c\xF2n s\u1ED1ng"),
+    tp_m36_2: person("tp_m36_child", "ng\u01B0\u1EDDi con t\u1EEBng nh\u1EADn th\u01B0 nh\u1EADp h\u1ECDc"),
+    tp_m38_1: person("tp_m38_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng nh\u1EDD b\u1EA1n \u0111\u1EE9ng t\xEAn vay"),
+    tp_m38_2: person("tp_m38_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng nh\u1EDD b\u1EA1n \u0111\u1EE9ng t\xEAn vay"),
+    tp_m41_0: person("tp_m41_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng r\u1EE7 b\u1EA1n l\xE0m ngo\xE0i b\u1EB1ng \u0111\u1ED3 chung"),
+    tp_m41_2: person("tp_m41_boss", "ng\u01B0\u1EDDi s\u1EBFp t\u1EEBng r\u1EE7 b\u1EA1n l\xE0m ngo\xE0i b\u1EB1ng \u0111\u1ED3 chung"),
+    tp_m42_0: person("tp_m42_official", "ng\u01B0\u1EDDi c\xE1n b\u1ED9 t\u1EEBng g\u1EE3i \xFD kho\u1EA3n ph\xED ngo\xE0i b\u1EA3ng"),
+    tp_m44_2: person("tp_m44_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng khoe \u0111\u01B0\u1EE3c l\xEAn c\u1EA5p b\xE1n h\xE0ng"),
+    tp_m45_2: person("tp_m45_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng n\xF3i gi\xE1 \u0111\u1EA5t ch\u1EC9 cho ng\u01B0\u1EDDi th\xE2n"),
+    tp_m46_1: person("tp_m46_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng h\u1ECFi b\u1EA1n xoay kho\u1EA3n chi \u0111\u1ED9t xu\u1EA5t"),
+    tp_m46_2: person("tp_m46_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng h\u1ECFi b\u1EA1n xoay kho\u1EA3n chi \u0111\u1ED9t xu\u1EA5t"),
+    tp_m47_0: person("tp_m47_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m mu\u1ED1n mua c\u1EA3 d\xE3y v\xE0 tr\u1EA3 c\xF4ng b\u1EA1n"),
+    tp_l02_1: person("tp_l02_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng d\u1EABn b\u1EA1n t\u1EDBi ti\u1EC7c b\u1ECB g\u1ECDi nh\u1EA7m"),
+    tp_l02_2: person("tp_l02_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng d\u1EABn b\u1EA1n t\u1EDBi ti\u1EC7c b\u1ECB g\u1ECDi nh\u1EA7m"),
+    tp_l03_1: person("tp_l03_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng g\u1EEDi \u0111\u1ECBa ch\u1EC9 thi\u1EBFu m\u1ED9t s\u1ED1"),
+    tp_l03_2: person("tp_l03_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng g\u1EEDi \u0111\u1ECBa ch\u1EC9 thi\u1EBFu m\u1ED9t s\u1ED1"),
+    tp_l05_1: person("tp_l05_friend", "ng\u01B0\u1EDDi t\u1EEBng \u0111\u01B0a kh\u0103n khi b\u1EA1n ng\xE3 xu\u1ED1ng ao"),
+    tp_l05_2: person("tp_l05_friend", "ng\u01B0\u1EDDi t\u1EEBng \u0111\u01B0a kh\u0103n khi b\u1EA1n ng\xE3 xu\u1ED1ng ao"),
+    tp_l06_0: person("tp_l06_mother", "ng\u01B0\u1EDDi m\u1EB9 t\u1EEBng \u0111\u0103ng k\xFD h\u1EB9n h\xF2 gi\xFAp b\u1EA1n"),
+    tp_l06_2: person("tp_l06_mother", "ng\u01B0\u1EDDi m\u1EB9 t\u1EEBng \u0111\u0103ng k\xFD h\u1EB9n h\xF2 gi\xFAp b\u1EA1n"),
+    tp_l07_0: person("tp_l07_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng k\u1EC3 l\u1EDDi xem vui v\u1EC1 b\u1ED1n c\xE1i t\xEAn"),
+    tp_l07_1: person("tp_l07_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng k\u1EC3 l\u1EDDi xem vui v\u1EC1 b\u1ED1n c\xE1i t\xEAn"),
+    tp_l07_2: person("tp_l07_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng k\u1EC3 l\u1EDDi xem vui v\u1EC1 b\u1ED1n c\xE1i t\xEAn"),
+    tp_l10_0: person("tp_l10_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u01B0a micro \u1EDF b\u1EEFa ti\u1EC7c nh\u1EA7m b\xE0n"),
+    tp_l10_1: person("tp_l10_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u01B0a micro \u1EDF b\u1EEFa ti\u1EC7c nh\u1EA7m b\xE0n"),
+    tp_l10_2: person("tp_l10_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u01B0a micro \u1EDF b\u1EEFa ti\u1EC7c nh\u1EA7m b\xE0n"),
+    tp_l14_1: person("tp_l14_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng gi\u1EEF nh\u1EEFng t\u1EA5m thi\u1EC7p hoa nh\u1EA7m nh\xE0"),
+    tp_l14_2: person("tp_l14_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng gi\u1EEF nh\u1EEFng t\u1EA5m thi\u1EC7p hoa nh\u1EA7m nh\xE0"),
+    tp_l15_0: person("tp_l15_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n n\u1EA5u tr\u01B0\u1EDBc ng\u01B0\u1EDDi b\u1EA1n th\xEDch"),
+    tp_l15_1: person("tp_l15_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n n\u1EA5u tr\u01B0\u1EDBc ng\u01B0\u1EDDi b\u1EA1n th\xEDch"),
+    tp_l17_1: person("tp_l17_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\xEDnh ch\xEDnh chuy\u1EC7n anh h\u1ECD"),
+    tp_l17_2: person("tp_l17_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\xEDnh ch\xEDnh chuy\u1EC7n anh h\u1ECD"),
+    tp_l19_2: person("tp_l19_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng t\xECm \u1EA3nh v\u1EDF k\u1ECBch h\u1ED3i nh\u1ECF"),
+    tp_l21_0: person("tp_l21_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi c\xF3 nh\xF3m anh ch\u1ECB em \u0111\xF4ng ng\u01B0\u1EDDi"),
+    tp_l21_1: person("tp_l21_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi c\xF3 nh\xF3m anh ch\u1ECB em \u0111\xF4ng ng\u01B0\u1EDDi"),
+    tp_l21_2: person("tp_l21_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi c\xF3 nh\xF3m anh ch\u1ECB em \u0111\xF4ng ng\u01B0\u1EDDi"),
+    tp_l24_1: person("tp_l24_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi nh\u1EADn ra b\u1EA1n t\u1EEBng tr\xE8o c\xE2y xo\xE0i"),
+    tp_l24_2: person("tp_l24_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi nh\u1EADn ra b\u1EA1n t\u1EEBng tr\xE8o c\xE2y xo\xE0i"),
+    tp_l26_0: person("tp_l26_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n t\u1EDBi l\u1EDBp yoga nh\u1EB9"),
+    tp_l26_2: person("tp_l26_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng r\u1EE7 b\u1EA1n t\u1EDBi l\u1EDBp yoga nh\u1EB9"),
+    tp_l28_0: person("tp_l28_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng th\xFA nh\u1EADn ngh\u1EC1 khoe kh\xF4ng c\xF3 th\u1EADt"),
+    tp_l31_1: person("tp_l31_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng d\u1EABn b\u1EA1n qua nh\u1EA7m c\u1EEDa ti\u1EC7c"),
+    tp_l31_2: person("tp_l31_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng d\u1EABn b\u1EA1n qua nh\u1EA7m c\u1EEDa ti\u1EC7c"),
+    tp_l33_1: person("tp_l33_friend", "ng\u01B0\u1EDDi b\u1EA1n th\xE2n m\u1EB7c \xE1o gi\u1ED1ng ch\xFA r\u1EC3 c\u1EE7a b\u1EA1n"),
+    tp_l33_2: person("tp_l33_friend", "ng\u01B0\u1EDDi b\u1EA1n th\xE2n m\u1EB7c \xE1o gi\u1ED1ng ch\xFA r\u1EC3 c\u1EE7a b\u1EA1n"),
+    tp_l36_0: person("tp_l36_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi c\xF9ng b\u1EA1n trong tour h\u01B0u tr\xED"),
+    tp_l36_2: person("tp_l36_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi c\xF9ng b\u1EA1n trong tour h\u01B0u tr\xED"),
+    tp_l37_0: person("tp_l37_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng nh\u1EAFc ng\xE0y sinh tr\xF9ng chung k\u1EBFt"),
+    tp_l37_1: person("tp_l37_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng nh\u1EAFc ng\xE0y sinh tr\xF9ng chung k\u1EBFt"),
+    tp_l37_2: person("tp_l37_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng nh\u1EAFc ng\xE0y sinh tr\xF9ng chung k\u1EBFt"),
+    tp_l38_2: person("tp_l38_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng gi\u1EADt c\u1EB7p c\u1EE7a b\u1EA1n thu\u1EDF nh\u1ECF"),
+    tp_l39_1: person("tp_l39_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng \u0111\u1EB7t chuy\u1EBFn \u0111i v\u1EDBi h\xE0ng x\xF3m"),
+    tp_l39_2: person("tp_l39_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng \u0111\u1EB7t chuy\u1EBFn \u0111i v\u1EDBi h\xE0ng x\xF3m"),
+    tp_l41_1: person("tp_l41_mother", "ng\u01B0\u1EDDi m\u1EB9 t\u1EEBng \u0111\u01B0a ng\u01B0\u1EDDi y\xEAu tr\u1EBB v\u1EC1 \u0103n c\u01A1m"),
+    tp_l41_2: person("tp_l41_mother", "ng\u01B0\u1EDDi m\u1EB9 t\u1EEBng \u0111\u01B0a ng\u01B0\u1EDDi y\xEAu tr\u1EBB v\u1EC1 \u0103n c\u01A1m"),
+    tp_l42_2: person("tp_l42_friend", "ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng k\u1EC3 ng\u01B0\u1EDDi x\u01B0a mu\u1ED1n g\u1EB7p b\u1EA1n"),
+    tp_l44_0: person("tp_l44_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng mang \u0111\u1ECBa ch\u1EC9 l\xE0m quen"),
+    tp_l44_1: person("tp_l44_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng mang \u0111\u1ECBa ch\u1EC9 l\xE0m quen"),
+    tp_l44_2: person("tp_l44_neighbor", "ng\u01B0\u1EDDi h\xE0ng x\xF3m t\u1EEBng mang \u0111\u1ECBa ch\u1EC9 l\xE0m quen"),
+    tp_l45_2: person("tp_l45_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng t\xECm th\u1EA5y th\u01B0 t\xECnh trong t\u1EE7"),
+    tp_l47_1: person("tp_l47_child", "ng\u01B0\u1EDDi ch\xE1u t\u1EEBng l\u1EADp h\u1ED3 s\u01A1 h\u1EB9n h\xF2 cho b\u1EA1n"),
+    tp_l47_2: person("tp_l47_child", "ng\u01B0\u1EDDi ch\xE1u t\u1EEBng l\u1EADp h\u1ED3 s\u01A1 h\u1EB9n h\xF2 cho b\u1EA1n"),
+    tp_l48_0: person("tp_l48_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng kh\xF4ng ch\u1ECBu n\u1ED5i m\xF3n b\u1EA1n g\u1ECDi"),
+    tp_l48_1: person("tp_l48_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng kh\xF4ng ch\u1ECBu n\u1ED5i m\xF3n b\u1EA1n g\u1ECDi"),
+    tp_l48_2: person("tp_l48_spouse", "ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi t\u1EEBng kh\xF4ng ch\u1ECBu n\u1ED5i m\xF3n b\u1EA1n g\u1ECDi"),
+    tp_l49_2: person("tp_l49_child", "ng\u01B0\u1EDDi con t\u1EEBng lo b\u1EA1n h\u1EB9n h\xF2 \u1EDF tu\u1ED5i gi\xE0")
+  }, SEASON_FORKS = {
+    tron_chay: ["tp_c03", "tp_c09", "tp_c13", "tp_c20", "tp_c30", "tp_c32", "tp_c35", "tp_m02", "tp_m06", "tp_m09", "tp_m10", "tp_m11", "tp_m13", "tp_m14", "tp_m16", "tp_m18", "tp_m19", "tp_m28", "tp_m31", "tp_m38", "tp_m41", "tp_m42", "tp_m43", "tp_m44", "tp_m45", "tp_m50", "tp_l22"],
+    vu_an_gia_toc: ["tp_c07", "tp_c15", "tp_c16", "tp_c19", "tp_c21", "tp_c24", "tp_c25", "tp_c28", "tp_c31", "tp_c33", "tp_c39", "tp_c40", "tp_c50", "tp_m03", "tp_m07", "tp_m09", "tp_m32", "tp_m34", "tp_m35", "tp_m39", "tp_m48", "tp_m49", "tp_l13", "tp_l21", "tp_l22", "tp_l23", "tp_l24", "tp_l29", "tp_l31", "tp_l33", "tp_l34", "tp_l35", "tp_l38", "tp_l41", "tp_l43", "tp_l45", "tp_l48", "tp_l49"],
+    ngoi_sao: ["tp_c06", "tp_c10", "tp_c26", "tp_c49", "tp_a01", "tp_a03", "tp_a05", "tp_a06", "tp_a09", "tp_a11", "tp_a12", "tp_a13", "tp_a16", "tp_a18", "tp_a20", "tp_a21", "tp_a26", "tp_a28", "tp_a29", "tp_a30", "tp_a31", "tp_a32", "tp_a34", "tp_a36", "tp_a37", "tp_a44", "tp_a46", "tp_a48", "tp_l02", "tp_l10", "tp_l18"],
+    lam_lai: ["tp_c05", "tp_c08", "tp_c22", "tp_c23", "tp_c29", "tp_c37", "tp_m01", "tp_m04", "tp_m05", "tp_m08", "tp_m12", "tp_m15", "tp_m17", "tp_m20", "tp_m21", "tp_m22", "tp_m23", "tp_m24", "tp_m26", "tp_m27", "tp_m29", "tp_m30", "tp_m33", "tp_m36", "tp_m40", "tp_m46", "tp_m47", "tp_a02", "tp_a07", "tp_a08", "tp_a14", "tp_a19", "tp_a24", "tp_a27", "tp_a35", "tp_a41", "tp_a42"],
+    xu_nguoi: ["tp_c04", "tp_c09", "tp_c11", "tp_c14", "tp_c36", "tp_m25", "tp_l19", "tp_l36"]
+  }, CODEX_SEASON_TAGS = (() => {
+    let out = {};
+    for (let [season, forks] of Object.entries(SEASON_FORKS)) for (let f5 of forks) (out[f5] ??= []).push(season);
+    return out;
+  })();
+
   // src/engine/narrative/turning/kit.ts
   var B = (label, hook, after, keep, pivot, tone, endings, extra = {}) => ({ label, hook, after, keep, pivot, tone, endings, extra }), E = (id, title, text, gates, routes) => ({ id: "tp_" + id, title, text, gates, routes }), ROLES = { friend: "childhood_friend", neighbor: "neighbor", rival: "rival", mentor: "mentor", boss: "first_boss", official: "official", spouse: "spouse", sibling: "sibling", child: "child", mother: "mother", father: "father", partner: "partner", creditor: "creditor" };
+  function actorRole(d) {
+    return d.gates.split(",").find((g) => ROLES[g]);
+  }
   function actor(d, c) {
     for (let g of d.gates.split(",")) if (ROLES[g]) return c.cast[ROLES[g]];
   }
@@ -2579,19 +3181,25 @@ var Argon = (() => {
       once: !0,
       maxPerLife: 1,
       tension: 4,
-      meta: { kind: d.gates.split(",").includes("money") ? "money" : "turning_point" },
+      meta: { kind: d.gates.split(",").includes("money") ? "money" : "turning_point", ...CODEX_SEASON_TAGS[d.id] ? { season: CODEX_SEASON_TAGS[d.id] } : {} },
       prerequisites: (c) => !c.flags.has(seen) && (c.counters.tp_seen ?? 0) < 50 && (c.counters.tp_open ?? 0) < 3 && c.age - (c.counters.tp_last_at ?? -9) >= 2 && slice(c, d.id, 0.55) && fits(d, c),
       specificity: () => 5,
       build: (c, N) => {
-        let npc = actor(d, c), person = npc ? N(npc) : "ng\u01B0\u1EDDi quen", choices = d.routes.map((b, i) => {
+        let npc = actor(d, c), person2 = npc ? N(npc) : "ng\u01B0\u1EDDi quen", choices = d.routes.map((b, i) => {
           let e = merge(merge(flavour(b.tone, c, npc), b.extra), linkedEffect(d.id, i, "open", c));
           e.memory && (e.memory = { ...e.memory, note: d.title.toLowerCase() + ": " + b.label.toLowerCase() });
-          let flags = [seen, branchFlag(i), ...npc ? [d.id + "_who:" + npc] : []];
-          return C(b.label, merge(e, { flags, counters: { tp_seen: 1, tp_open: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), [due]: c.age + delay }, later: { years: delay, storylet: d.id + "_echo_" + i }, log: b.label + ". " + b.hook + "." }), b.hook);
+          let flags = [seen, branchFlag(i), ...npc ? [d.id + "_who:" + npc] : []], cx = CODEX_PLANTS[d.id + "_" + i], open = {
+            flags,
+            counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...cx?.plant ? { [d.id + "_at"]: c.age } : { tp_open: 1, [due]: c.age + delay } },
+            pressure: cx?.pressure ?? pressureFor(d.id, b.tone),
+            ...cx?.plant ? { plant: npc && cx.plant.kind === "person" && cx.plant.key === d.id + "_" + actorRole(d) ? { ...cx.plant, npc } : cx.plant } : { later: { years: delay, storylet: d.id + "_echo_" + i } },
+            log: b.label + ". " + b.hook + "."
+          };
+          return C(b.label, merge(e, open), b.hook);
         });
-        return T(d.title, d.text.replaceAll("{person}", person), choices, 1, npc ? { npc } : {});
+        return T(d.title, d.text.replaceAll("{person}", person2), choices, 1, npc ? { npc } : {});
       }
-    }, echoes = d.routes.map((b, i) => ({
+    }, echoes = d.routes.flatMap((b, i) => CODEX_PLANTS[d.id + "_" + i]?.plant ? [] : [{
       id: d.id + "_echo_" + i,
       category: "arc",
       urgency: 82,
@@ -2616,7 +3224,7 @@ var Argon = (() => {
           alive ? { npc: bound } : {}
         );
       }
-    }));
+    }]);
     return [root, ...echoes];
   }
 
@@ -3639,8 +4247,11 @@ var Argon = (() => {
   // src/engine/narrative/turning/index.ts
   var TURNING_CATALOG = [...CINEMA, ...ABSURD, ...MONEY_FORKS, ...LOVE], TURNING_STORYLETS = TURNING_CATALOG.flatMap(compileFork), openingIds = new Set(TURNING_CATALOG.map((d) => d.id)), TURNING_POINTS = TURNING_STORYLETS.filter((s) => openingIds.has(s.id));
   function turningLegacy(c) {
-    return TURNING_CATALOG.filter((d) => c.flags.has(d.id + "_seen")).sort((a, b) => (c.counters[b.id + "_due"] ?? 0) - (c.counters[a.id + "_due"] ?? 0)).slice(0, 3).map((d) => {
-      let i = d.routes.findIndex((_, j) => c.flags.has(d.id + "_route_" + j)), b = d.routes[i], end = c.flags.has(d.id + "_continued_" + i) ? b.keep : c.flags.has(d.id + "_changed_" + i) ? b.pivot : "c\xE2u chuy\u1EC7n c\xF2n dang d\u1EDF khi \u0111\u1EDDi b\u1EA1n kh\xE9p l\u1EA1i";
+    let when = (d) => c.counters[d.id + "_due"] ?? c.counters[d.id + "_at"] ?? 0;
+    return TURNING_CATALOG.filter((d) => c.flags.has(d.id + "_seen")).sort((a, b) => when(b) - when(a)).slice(0, 3).map((d) => {
+      let i = d.routes.findIndex((_, j) => c.flags.has(d.id + "_route_" + j)), b = d.routes[i];
+      if (CODEX_PLANTS[d.id + "_" + i]?.plant) return d.title + ": " + b.label.charAt(0).toLowerCase() + b.label.slice(1) + ".";
+      let end = c.flags.has(d.id + "_continued_" + i) ? b.keep : c.flags.has(d.id + "_changed_" + i) ? b.pivot : "c\xE2u chuy\u1EC7n c\xF2n dang d\u1EDF khi \u0111\u1EDDi b\u1EA1n kh\xE9p l\u1EA1i";
       return d.title + ": " + end.charAt(0).toLowerCase() + end.slice(1) + ".";
     });
   }
@@ -4572,8 +5183,8 @@ var Argon = (() => {
     }))
   ], MAJOR_CAPS = { creditor_knock: 2, enemy_obstruct: 2, blackmail: 2, reckless: 2, agency_year: 2, parent_sick: 2, child_tuition: 2, mistake: 2 };
   for (let st of STORYLETS) {
-    let cap3 = MAJOR_CAPS[st.id];
-    cap3 !== void 0 && (st.maxPerLife = cap3);
+    let cap4 = MAJOR_CAPS[st.id];
+    cap4 !== void 0 && (st.maxPerLife = cap4);
   }
 
   // src/engine/narrative/micro.ts
@@ -10383,10 +10994,10 @@ var Argon = (() => {
       C("T\u1EEB ch\u1ED1i, t\u1EF1 gi\u1EEF h\u1ED9 chi\u1EBFu c\u1EE7a m\xECnh", { counters: step(c, LX), agency: 0.02, gamble: { p: 0.5, win: { flags: ["kept_passport"], log: "Ng\u01B0\u1EDDi kia nh\xFAn vai, tr\u1EA3 l\u1EA1i. Hai ng\u01B0\u1EDDi kh\xE1c l\xE0m theo b\u1EA1n." }, lose: { flags: ["kept_passport", "marked_trouble"], income_mult: 0.9, log: "B\u1EA1n gi\u1EEF \u0111\u01B0\u1EE3c h\u1ED9 chi\u1EBFu, nh\u01B0ng b\u1ECB x\u1EBFp to\xE0n ca \u0111\xEAm, \xEDt gi\u1EDD t\u0103ng ca." } } }, "Gi\u1EEF quy\u1EC1n c\u1EE7a m\xECnh, c\xF3 th\u1EC3 b\u1ECB tr\xF9", { tier: "sovereign" })
     ], 0), adult3),
     beat(LX, 2, 3, (c) => {
-      let debt = c.counters.xk_debt ?? 0;
+      let debt2 = c.counters.xk_debt ?? 0;
       return T(
         "\u0110\u01A1n h\xE0ng m\xF9a cao \u0111i\u1EC3m",
-        `N\u0103m th\u1EE9 hai. ${debt >= 3 ? "Kho\u1EA3n n\u1EE3 \u0111i \u0111\u01B0\u1EDDng m\u1EDBi tr\u1EA3 \u0111\u01B0\u1EE3c m\u1ED9t n\u1EEDa." : debt > 0 ? "Kho\u1EA3n n\u1EE3 \u0111i \u0111\u01B0\u1EDDng ch\u1EC9 c\xF2n m\u1ED9t \xEDt." : "B\u1EA1n kh\xF4ng n\u1EE3 ai, ch\u1EC9 c\xF3 c\u1EA3 nh\xE0 ch\u1EDD ti\u1EC1n."} X\u01B0\u1EDFng nh\u1EADn \u0111\u01A1n h\xE0ng l\u1EDBn: ai nh\u1EADn ca m\u01B0\u1EDDi hai ti\u1EBFng c\u1EA3 tu\u1EA7n \u0111\u01B0\u1EE3c tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i. T\u1ED5 tr\u01B0\u1EDFng ng\u01B0\u1EDDi b\u1EA3n x\u1EE9 c\u0169ng \u0111ang c\u1EA7n m\u1ED9t ng\u01B0\u1EDDi bi\u1EBFt ti\u1EBFng \u0111\u1EC3 phi\xEAn d\u1ECBch cho c\u1EA3 t\u1ED5.`,
+        `N\u0103m th\u1EE9 hai. ${debt2 >= 3 ? "Kho\u1EA3n n\u1EE3 \u0111i \u0111\u01B0\u1EDDng m\u1EDBi tr\u1EA3 \u0111\u01B0\u1EE3c m\u1ED9t n\u1EEDa." : debt2 > 0 ? "Kho\u1EA3n n\u1EE3 \u0111i \u0111\u01B0\u1EDDng ch\u1EC9 c\xF2n m\u1ED9t \xEDt." : "B\u1EA1n kh\xF4ng n\u1EE3 ai, ch\u1EC9 c\xF3 c\u1EA3 nh\xE0 ch\u1EDD ti\u1EC1n."} X\u01B0\u1EDFng nh\u1EADn \u0111\u01A1n h\xE0ng l\u1EDBn: ai nh\u1EADn ca m\u01B0\u1EDDi hai ti\u1EBFng c\u1EA3 tu\u1EA7n \u0111\u01B0\u1EE3c tr\u1EA3 g\u1EA5p r\u01B0\u1EE1i. T\u1ED5 tr\u01B0\u1EDFng ng\u01B0\u1EDDi b\u1EA3n x\u1EE9 c\u0169ng \u0111ang c\u1EA7n m\u1ED9t ng\u01B0\u1EDDi bi\u1EBFt ti\u1EBFng \u0111\u1EC3 phi\xEAn d\u1ECBch cho c\u1EA3 t\u1ED5.`,
         [
           C("Nh\u1EADn ca d\xE0i, g\u1EEDi h\u1EBFt v\u1EC1 nh\xE0", { counters: step(c, LX, { xk_sent: 2, xk_debt: -2 }), money: 0.5, health: -8, bw: -4 }, "Tr\u1EA3 n\u1EE3 nhanh, c\u1EA1n s\u1EE9c"),
           C("H\u1ECDc ti\u1EBFng ban \u0111\xEAm, xin l\xE0m phi\xEAn d\u1ECBch t\u1ED5", { counters: step(c, LX, { xk_lang: 2 }), know: 6, income_mult: 1.2, money: 0.1, flags: ["speaks_local"] }, "Ch\u1EADm ti\u1EC1n l\xFAc \u0111\u1EA7u, l\xEAn \u0111\u01B0\u1EE3c m\u1ED9t b\u1EADc", { longterm: !0 }),
@@ -14465,8 +15076,8 @@ var Argon = (() => {
       ], 0);
     }),
     door(FK, "fkm_d_festival", [12, 50], () => !0, (c) => {
-      let { place } = folk(c);
-      return T("L\u1EC5 h\u1ED9i thi\u1EBFu ng\u01B0\u1EDDi h\xE1t", `Ng\u01B0\u1EDDi h\xE1t ch\xEDnh \u1EDF ${place} v\u1EEBa m\u1EA5t, hai th\xE1ng tr\u01B0\u1EDBc m\xF9a l\u1EC5. C\xE1c c\u1EE5 nh\u1EDB h\u1ED3i nh\u1ECF b\u1EA1n hay \u0111\u1EE9ng sau h\xE1t theo, \u0111\u1EBFn t\u1EADn nh\xE0 nh\u1EDD b\u1EA1n \u0111\u1EE9ng ra. H\xE1t l\u1EC5 kh\xF4ng c\xF3 ti\u1EC1n, ch\u1EC9 c\xF3 b\u1EEFa c\u01A1m v\xE0 s\u1EF1 n\u1EC3 tr\u1ECDng c\u1EE7a c\u1EA3 l\xE0ng.`, [
+      let { place: place2 } = folk(c);
+      return T("L\u1EC5 h\u1ED9i thi\u1EBFu ng\u01B0\u1EDDi h\xE1t", `Ng\u01B0\u1EDDi h\xE1t ch\xEDnh \u1EDF ${place2} v\u1EEBa m\u1EA5t, hai th\xE1ng tr\u01B0\u1EDBc m\xF9a l\u1EC5. C\xE1c c\u1EE5 nh\u1EDB h\u1ED3i nh\u1ECF b\u1EA1n hay \u0111\u1EE9ng sau h\xE1t theo, \u0111\u1EBFn t\u1EADn nh\xE0 nh\u1EDD b\u1EA1n \u0111\u1EE9ng ra. H\xE1t l\u1EC5 kh\xF4ng c\xF3 ti\u1EC1n, ch\u1EC9 c\xF3 b\u1EEFa c\u01A1m v\xE0 s\u1EF1 n\u1EC3 tr\u1ECDng c\u1EE7a c\u1EA3 l\xE0ng.`, [
         C("Nh\u1EADn l\u1EDDi, h\xE1t tr\u1ECDn m\xF9a l\u1EC5", { ...become(FK), counters: { doors_seen: 1 }, rel: 4, money: km(c, -0.08) }, "\u0110\u01B0\u1EE3c l\xE0ng n\u1EC3, b\u1EDBt th\u1EDDi gian l\xE0m \u0103n"),
         C("H\xE1t n\u0103m nay th\xF4i, sang n\u0103m t\xECm ng\u01B0\u1EDDi kh\xE1c", { counters: { doors_seen: 1 }, rel: 2, happy: 2 }, "Gi\u1EEF \u0111\u1EDDi m\xECnh, l\xE0ng v\u1EABn thi\u1EBFu ng\u01B0\u1EDDi"),
         C("T\u1EEB ch\u1ED1i, n\xF3i m\xECnh ch\u01B0a \u0111\u1EE7 s\u1EE9c", { counters: { doors_seen: 1 }, rel: -2 })
@@ -14482,8 +15093,8 @@ var Argon = (() => {
     }),
     /* ---------- mạch truyện ---------- */
     beat(FK, 1, 1, (c) => {
-      let { place } = folk(c);
-      return T("L\u1EA7n \u0111\u1EA7u h\xE1t ch\xEDnh", `L\u1EA7n \u0111\u1EA7u b\u1EA1n h\xE1t ch\xEDnh \u1EDF ${place}. Gi\u1EEFa b\xE0i, b\u1EA1n th\u1EA5y \u0111\xE1m tr\u1EBB ng\u1ED3i ng\u01A1 ng\xE1c: ch\xFAng kh\xF4ng hi\u1EC3u m\u1ED9t ch\u1EEF n\xE0o trong l\u1EDDi c\u1ED5. C\xE1c c\u1EE5 ng\u1ED3i h\xE0ng \u0111\u1EA7u, m\u1EAFt nh\u1EAFm, nghe t\u1EEBng nh\u1ECBp.`, [
+      let { place: place2 } = folk(c);
+      return T("L\u1EA7n \u0111\u1EA7u h\xE1t ch\xEDnh", `L\u1EA7n \u0111\u1EA7u b\u1EA1n h\xE1t ch\xEDnh \u1EDF ${place2}. Gi\u1EEFa b\xE0i, b\u1EA1n th\u1EA5y \u0111\xE1m tr\u1EBB ng\u1ED3i ng\u01A1 ng\xE1c: ch\xFAng kh\xF4ng hi\u1EC3u m\u1ED9t ch\u1EEF n\xE0o trong l\u1EDDi c\u1ED5. C\xE1c c\u1EE5 ng\u1ED3i h\xE0ng \u0111\u1EA7u, m\u1EAFt nh\u1EAFm, nghe t\u1EEBng nh\u1ECBp.`, [
         C("H\xE1t \u0111\xFAng t\u1EEBng ch\u1EEF nh\u01B0 ng\u01B0\u1EDDi x\u01B0a", { counters: step(c, FK, { fk_purity: 1 }), flags: ["fk_purist"], rel: 2 }, "\u0110\u01B0\u1EE3c c\xE1c c\u1EE5 tin, m\u1EA5t kh\xE1n gi\u1EA3 tr\u1EBB"),
         C("D\u1EEBng l\u1EA1i gi\u1EA3ng ngh\u0129a t\u1EEBng c\xE2u r\u1ED3i h\xE1t ti\u1EBFp", { counters: step(c, FK, { fk_students: 1 }), flags: ["fk_explainer"], gamble: { p: 0.6, win: { happy: 4, log: "Tan bu\u1ED5i, ba \u0111\u1EE9a tr\u1EBB \u1EDF l\u1EA1i h\u1ECFi b\u1EA1n ngh\u0129a c\u1EE7a m\u1ED9t c\xE2u c\u1ED5." }, lose: { rel: -2, log: "C\xE1c c\u1EE5 cau m\xE0y: h\xE1t l\u1EC5 \u0111\xE2u ph\u1EA3i gi\u1EDD h\u1ECDc." } } }, "M\u1EDF l\u1ED1i cho ng\u01B0\u1EDDi tr\u1EBB, ph\u1EADt l\xF2ng ng\u01B0\u1EDDi gi\xE0"),
         C("Th\xEAm nh\u1ECBp tr\u1ED1ng nhanh cho d\u1EC5 nghe", { counters: step(c, FK, { fk_purity: -1, fk_fame: 1 }), flags: ["fk_fusion"], gamble: { p: 0.5, win: { happy: 3, log: "\u0110\xE1m thanh ni\xEAn v\u1ED7 tay theo nh\u1ECBp \u0111\u1EBFn h\u1EBFt b\xE0i." }, lose: { rel: -3, log: "M\u1ED9t c\u1EE5 \u0111\u1EE9ng d\u1EADy b\u1ECF v\u1EC1 gi\u1EEFa b\xE0i." } } }, "D\u1EC5 nghe h\u01A1n, c\xF3 ng\u01B0\u1EDDi cho l\xE0 ph\xE1 l\u1EC1")
@@ -21151,7 +21762,7 @@ var Argon = (() => {
     )),
     /* ---------- 12. cơn sốt đầu cơ thời kinh tế lên ---------- */
     money("mi_boom_fever", [20, 75], 8, 0.4, (c) => c.econ_phase === "boom", (c) => {
-      let land = c.owns.has("land");
+      let land2 = c.owns.has("land");
       return T(
         "C\u01A1n s\u1ED1t l\xE0m gi\xE0u nhanh",
         vary("mi_bf", c.age, [
@@ -21161,7 +21772,7 @@ var Argon = (() => {
         [
           C("D\u1ED3n ti\u1EC1n theo c\u01A1n s\u1ED1t", { counters: { gamble: 1 }, gamble: { p: 0.35, win: { money: 0.5, log: "B\u1EA1n b\xE1n ra \u0111\xFAng l\xFAc. Ba th\xE1ng sau gi\xE1 r\u01A1i m\u1ED9t n\u1EEDa." }, lose: { money: -0.6, happy: -5, flags: ["mi_bubble_burned"], log: "B\u1EA1n mua g\u1EA7n \u0111\u1EC9nh. C\u01A1n s\u1ED1t t\u1EAFt, kh\xF4ng ai mua l\u1EA1i v\u1EDBi gi\xE1 \u1EA5y." } } }, "C\xF3 th\u1EC3 l\u1EDDi nhanh, th\u01B0\u1EDDng mua \u0111\xFAng \u0111\u1EC9nh"),
           C("Mua v\xE0i t\u1EA5m v\xE9 s\u1ED1 cho vui", { money: -0.01, counters: { gamble: 1 }, gamble: { p: 0.02, win: { money: 1.5, log: "M\u1ED9t t\u1EA5m tr\xFAng. B\u1EA1n \u0111\u1ECDc \u0111i \u0111\u1ECDc l\u1EA1i d\xE3y s\u1ED1 ba l\u1EA7n." }, lose: { log: "Kh\xF4ng t\u1EA5m n\xE0o tr\xFAng. Ti\u1EC1n v\xE9 b\u1EB1ng m\u1ED9t b\u1EEFa \u0103n." } } }, "M\u1EA5t \xEDt, mua \u0111\u01B0\u1EE3c m\u1ED9t tu\u1EA7n m\u01A1 m\u1ED9ng"),
-          land ? C("B\xE1n m\u1EA3nh \u0111\u1EA5t \u0111ang c\xF3 l\xFAc gi\xE1 \u0111ang cao", { sell: { kind: "land" }, flags: ["mi_sold_at_peak"] }, "Ch\u1ED1t l\u1EDDi b\xE2y gi\u1EDD, c\xF3 th\u1EC3 b\xE1n h\u1EDB n\u1EBFu c\xF2n l\xEAn", { tier: "awakened" }) : C("\u0110\u1EE9ng ngo\xE0i, g\u1EEDi ph\u1EA7n d\u01B0 v\xE0o ti\u1EBFt ki\u1EC7m", { deposit: 0.15, flags: ["mi_sat_out_boom"] }, "L\xE3i ch\u1EADm, ng\u1EE7 ngon khi c\u01A1n s\u1ED1t t\u1EAFt", { tier: "awakened" }),
+          land2 ? C("B\xE1n m\u1EA3nh \u0111\u1EA5t \u0111ang c\xF3 l\xFAc gi\xE1 \u0111ang cao", { sell: { kind: "land" }, flags: ["mi_sold_at_peak"] }, "Ch\u1ED1t l\u1EDDi b\xE2y gi\u1EDD, c\xF3 th\u1EC3 b\xE1n h\u1EDB n\u1EBFu c\xF2n l\xEAn", { tier: "awakened" }) : C("\u0110\u1EE9ng ngo\xE0i, g\u1EEDi ph\u1EA7n d\u01B0 v\xE0o ti\u1EBFt ki\u1EC7m", { deposit: 0.15, flags: ["mi_sat_out_boom"] }, "L\xE3i ch\u1EADm, ng\u1EE7 ngon khi c\u01A1n s\u1ED1t t\u1EAFt", { tier: "awakened" }),
           C("Kh\xF4ng l\xE0m g\xEC", {}, "Kh\xF4ng l\u1EDDi, kh\xF4ng l\u1ED7")
         ],
         3
@@ -21308,8 +21919,8 @@ var Argon = (() => {
     }),
     /* ---------- 13. ki-ốt / cửa hàng nhỏ ---------- */
     money("ma_kiosk", [22, 60], 10, 0.5, (c) => !c.owns.has("shop") && !c.broke, (c) => {
-      let sh = c.price_years.shop, place = vn15(c) ? "ki-\u1ED1t ch\xEDn m\xE9t vu\xF4ng \u1EDF c\u1ED5ng ch\u1EE3" : "c\u1EEDa h\xE0ng m\u01B0\u1EDDi hai m\xE9t vu\xF4ng \u1EDF g\xF3c ph\u1ED1";
-      return T(vn15(c) ? "Ki-\u1ED1t c\u1ED5ng ch\u1EE3 sang nh\u01B0\u1EE3ng" : "C\u1EEDa h\xE0ng g\xF3c ph\u1ED1 rao b\xE1n", `M\u1ED9t ${place} \u0111ang \u0111\u01B0\u1EE3c rao b\xE1n. Ng\u01B0\u1EDDi b\xE1n l\xE0m hai m\u01B0\u01A1i n\u0103m, gi\u1EDD v\u1EC1 qu\xEA. M\u1ED7i s\xE1ng c\xF3 h\xE0ng tr\u0103m ng\u01B0\u1EDDi \u0111i qua tr\u01B0\u1EDBc c\u1EEDa.`, [
+      let sh = c.price_years.shop, place2 = vn15(c) ? "ki-\u1ED1t ch\xEDn m\xE9t vu\xF4ng \u1EDF c\u1ED5ng ch\u1EE3" : "c\u1EEDa h\xE0ng m\u01B0\u1EDDi hai m\xE9t vu\xF4ng \u1EDF g\xF3c ph\u1ED1";
+      return T(vn15(c) ? "Ki-\u1ED1t c\u1ED5ng ch\u1EE3 sang nh\u01B0\u1EE3ng" : "C\u1EEDa h\xE0ng g\xF3c ph\u1ED1 rao b\xE1n", `M\u1ED9t ${place2} \u0111ang \u0111\u01B0\u1EE3c rao b\xE1n. Ng\u01B0\u1EDDi b\xE1n l\xE0m hai m\u01B0\u01A1i n\u0103m, gi\u1EDD v\u1EC1 qu\xEA. M\u1ED7i s\xE1ng c\xF3 h\xE0ng tr\u0103m ng\u01B0\u1EDDi \u0111i qua tr\u01B0\u1EDBc c\u1EEDa.`, [
         C("Mua b\u1EB1ng ti\u1EC1n d\xE0nh d\u1EE5m", { buy: { kind: "shop", name: vn15(c) ? "ki-\u1ED1t \u1EDF ch\u1EE3" : "c\u1EEDa h\xE0ng g\xF3c ph\u1ED1", price: amt(sh * 0.4, 0.2, 6) }, flags: ["own_business"] }, "C\xF3 ch\u1ED7 bu\xF4n b\xE1n ho\u1EB7c cho thu\xEA, ti\u1EC1n kh\xF3 r\xFAt ra"),
         C("Vay ng\xE2n h\xE0ng \u0111\u1EC3 mua", { buy: { kind: "shop", name: vn15(c) ? "ki-\u1ED1t \u1EDF ch\u1EE3" : "c\u1EEDa h\xE0ng g\xF3c ph\u1ED1", price: amt(sh * 0.5, 0.3, 8), borrow: !0 }, flags: ["own_business"], bw: -3 }, "Gi\u1EEF ti\u1EC1n m\u1EB7t, g\xF3p n\u1EE3 d\xF9 b\xE1n \u0111\u01B0\u1EE3c hay kh\xF4ng"),
         C("Thu\xEA l\u1EA1i thay v\xEC mua", { money: -0.05, flags: ["rented_shop"] }, "\xCDt v\u1ED1n, ch\u1EE7 nh\xE0 c\xF3 th\u1EC3 l\u1EA5y l\u1EA1i b\u1EA5t c\u1EE9 l\xFAc n\xE0o"),
@@ -21852,6 +22463,460 @@ var Argon = (() => {
     }
     return bestScore >= CANON_THRESHOLD || c.age >= FORCE_FIRST_AT && c.canon_n === 0 || c.age >= FORCE_SECOND_AT && c.canon_n === 1 ? best : null;
   }
+
+  // src/engine/narrative/canon/Plants.ts
+  function strongestPlant(plants, kinds) {
+    let best;
+    for (let p of plants)
+      kinds.includes(p.kind) && (!best || p.weight > best.weight || p.weight === best.weight && p.age < best.age) && (best = p);
+    return best;
+  }
+  function plantFlag(p) {
+    return `plant:${p.kind}:${p.key}`;
+  }
+
+  // src/engine/narrative/canon/Scars.ts
+  function pickScars(c, plants, promises, names) {
+    let out = {}, alive = new Set(Object.values(c.cast).filter((v) => !!v));
+    if (c.nemesis && alive.has(c.nemesis)) out.nguoi = { npc: c.nemesis, label: names(c.nemesis) };
+    else {
+      let best, bestAbs = 0;
+      for (let id of Object.keys(c.opinion).sort()) {
+        if (!alive.has(id)) continue;
+        let a = Math.abs(c.opinion[id] ?? 0);
+        a > bestAbs && (best = id, bestAbs = a);
+      }
+      best && (out.nguoi = { npc: best, label: names(best) });
+    }
+    let obj2 = strongestPlant(plants, ["object", "skill", "animal"]);
+    if (obj2) out.do = { key: obj2.key, label: obj2.label };
+    else {
+      let asset = Object.entries(c.asset_names).find(([, v]) => !!v);
+      asset ? out.do = { key: asset[0], label: asset[1] } : c.job && (out.do = { key: "job", label: c.job });
+    }
+    let owe = strongestPlant(plants, ["debt", "promise"]);
+    return owe ? out.no = { key: owe.key, label: owe.label } : promises[0] ? out.no = { key: `promise:${promises[0].to}`, label: promises[0].what } : c.debt > 0 && (out.no = { key: "bank", label: "m\xF3n n\u1EE3 ng\xE2n h\xE0ng" }), out;
+  }
+  function scarText(s, k, names, alive) {
+    return k === "nguoi" ? s.nguoi ? alive(s.nguoi.npc) ? names(s.nguoi.npc) : "m\u1ED9t ng\u01B0\u1EDDi c\u0169" : "" : s[k]?.label ?? "";
+  }
+
+  // src/engine/narrative/canon/Season.ts
+  var BEATS = ["mo_man", "khoi_dong", "cu_lat", "day", "chung_ket"], BEAT_VN = { mo_man: "M\u1EDF m\xE0n", khoi_dong: "Bi\u1EBFn c\u1ED1 kh\u1EDFi \u0111\u1ED9ng", cu_lat: "C\xFA l\u1EADt", day: "\u0110\xE1y", chung_ket: "Chung k\u1EBFt" }, SEASON_END_MAX = 85, SEASON_MIN = 5;
+  function seasonLength(def, age, rngNext) {
+    let [lo, hi] = def.years, r = Math.min(Math.max(rngNext, 0), 0.999999), len = Math.min(hi, lo + Math.floor(r * (hi - lo + 1)), SEASON_END_MAX - age);
+    return Math.max(SEASON_MIN, len);
+  }
+  var beatGap = (len) => Math.max(1, Math.round(len / 5)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child"]);
+  function isDurable(e) {
+    return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
+  }
+  function addCustom(e, part) {
+    let parts = e.custom ? e.custom.split("|") : [];
+    return parts.includes(part) ? e : { ...e, custom: [...parts, part].join("|") };
+  }
+  function landingOf(e) {
+    let p = (e.custom ?? "").split("|").find((x) => x.startsWith("season_end:"));
+    return p ? p.slice(11) : null;
+  }
+  var unknown = (v, id) => !v || v === id || v === "ai \u0111\xF3";
+  function seasonKitFromNames(def, names, gagFrom) {
+    let labels = new Map((def.reset.cast ?? []).map((m) => [m.key, m.label])), g = gagFrom, get = (id) => {
+      let v = names(id);
+      return unknown(v, id) ? "" : v;
+    };
+    return {
+      N: names,
+      scar: (k) => get(`scar:${k}`),
+      npc: (key) => get(`npc:${key}`) || labels.get(key) || "m\u1ED9t ng\u01B0\u1EDDi m\u1EDBi quen",
+      noi: get("place") || "n\u01A1i n\xE0y",
+      gag: () => def.gag.lines[g++ % def.gag.lines.length] ?? ""
+    };
+  }
+  function gagCalls(card2, c) {
+    let n11 = 0, probe = { N: () => "", scar: () => "", npc: () => "", noi: "", gag: () => (n11++, "") };
+    try {
+      if (card2.when && !card2.when(c)) return 0;
+      card2.build(c, probe);
+    } catch {
+      return 0;
+    }
+    return n11;
+  }
+  function gagStart(def, bi, ci, c) {
+    let n11 = 0;
+    return def.beats.forEach((beat2, b) => beat2.forEach((card2, i) => {
+      (b < bi || b === bi && b < 4 && i < ci) && (n11 += gagCalls(card2, c));
+    })), n11;
+  }
+  function compileSeason(def) {
+    let out = [];
+    return def.beats.forEach((beat2, bi) => beat2.forEach((card2, ci) => {
+      out.push({
+        id: `ss_${def.id}_${bi}_${ci}`,
+        category: "arc",
+        urgency: 85,
+        cooldownYears: 99,
+        once: !0,
+        maxPerLife: 1,
+        tension: 6 + bi,
+        prerequisites: (c) => c.season === def.id && c.season_beat === bi && (c.counters.season_next ?? 0) <= c.age && (!card2.when || card2.when(c)),
+        specificity: () => 9,
+        build: (c, names) => card2.build(c, seasonKitFromNames(def, names, gagStart(def, bi, ci, c))),
+        meta: { kind: "season", season: [def.id] }
+      });
+    })), out;
+  }
+
+  // src/engine/narrative/canon/kit.ts
+  var txt = (t, c, k) => typeof t == "string" ? t : t(c, k);
+  function card(id, title, text, choices, when) {
+    let build = (c, k) => T(txt(title, c, k), text(c, k), typeof choices == "function" ? choices(c, k) : choices);
+    return when ? { id, build, when } : { id, build };
+  }
+  var cap3 = (s) => s.charAt(0).toUpperCase() + s.slice(1), land = (id, line, effects) => ({ id, line, effects: addCustom(effects, `season_end:${id}`) }), ending = (l, label, hint, extra = {}) => C(label, l.effects, hint, extra);
+
+  // src/engine/narrative/canon/seasons/_fixture.ts
+  var L_QUAN = land("quan_co_ten", "Qu\xE1n nh\u1ECF \u0111\u1EA7u h\u1EBBm th\xE0nh qu\xE1n c\xF3 t\xEAn, c\xF3 gi\u1EA5y ph\xE9p, c\xF3 kh\xE1ch quen.", { custom: "become:restaurateur", happy: 5 }), L_BAN = land("ban_quan", "B\u1EA1n b\xE1n l\u1EA1i qu\xE1n, tr\u1EA3 s\u1EA1ch n\u1EE3 v\xE0 c\xF2n d\u01B0 m\u1ED9t kho\u1EA3n.", { money: 1.2, happy: -3 }), L_DI = land("len_pho", "B\u1EA1n tr\u1EA3 ch\xECa kh\xF3a cho b\xE0 ch\u1EE7 nh\xE0 v\xE0 l\xEAn chuy\u1EBFn xe s\u1EDBm.", { custom: "move_city", money: -0.2 }), FIXTURE_SEASON = {
+    id: "fixture",
+    vn: "M\xF9a m\u1EABu: Qu\xE1n \u0111\u1EA7u h\u1EBBm",
+    color: "#b8742a",
+    years: [8, 12],
+    rules: { income: 0.8, flags: ["w_fixture"] },
+    reset: { cash: 1, cast: [{ key: "ba_chu_nha", role: "neighbor", label: "b\xE0 ch\u1EE7 nh\xE0" }, { key: "quan_doi_dien", role: "rival", label: "ch\u1EE7 qu\xE1n \u0111\u1ED1i di\u1EC7n" }] },
+    gag: { key: "tam_bien", lines: [
+      "T\u1EA5m bi\u1EC3n qu\xE1n v\u1EEBa treo \u0111\xE3 r\u01A1i xu\u1ED1ng, tr\xFAng ngay ch\u1EADu \u1EDBt.",
+      "Gi\xF3 th\u1ED5i nh\u1EB9 th\xF4i m\xE0 t\u1EA5m bi\u1EC3n c\u0169ng r\u01A1i, kh\xE1ch quen v\u1ED7 tay.",
+      "T\u1EA5m bi\u1EC3n r\u01A1i \u0111\xFAng l\xFAc c\xF3 ng\u01B0\u1EDDi h\u1ECFi t\xEAn qu\xE1n.",
+      "B\u1EA1n \u0111\xF3ng th\xEAm hai c\xE2y \u0111inh. T\u1EA5m bi\u1EC3n v\u1EABn r\u01A1i, nh\u01B0 c\xF3 h\u1EB9n."
+    ] },
+    landings: [L_QUAN, L_BAN, L_DI],
+    beats: [
+      /* mo_man */
+      [
+        card(
+          "fx_mo_thue",
+          "C\u0103n b\u1EBFp m\u1EB7t h\u1EBBm",
+          (c, k) => `B\u1EA1n thu\xEA l\u1EA1i m\u1ED9t c\u0103n b\u1EBFp nh\u1ECF m\u1EB7t h\u1EBBm \u1EDF ${k.noi}, \u0111\u1EE7 k\xEA b\u1ED1n c\xE1i b\xE0n th\u1EA5p. ${cap3(k.npc("ba_chu_nha"))} \u0111\u1EBFm ti\u1EC1n c\u1ECDc hai l\u1EA7n r\u1ED3i m\u1EDBi \u0111\u01B0a ch\xECa kh\xF3a. ${k.gag()}`,
+          [
+            C("Treo bi\u1EC3n, m\u1EDF qu\xE1n ngay", { flags: ["fx_mo_som"], happy: 3 }, "C\xF3 kh\xE1ch s\u1EDBm, ch\u01B0a k\u1ECBp quen vi\u1EC7c"),
+            C("S\u1EEDa b\u1EBFp m\u1ED9t th\xE1ng r\u1ED3i m\u1EDBi m\u1EDF", { money: -0.1, counters: { fx_chuan_bi: 1 } }, "T\u1ED1n th\xEAm ti\u1EC1n, qu\xE1n g\u1ECDn h\u01A1n")
+          ]
+        ),
+        card(
+          "fx_mo_mon",
+          "M\xF3n \u0111\u1EA7u ti\xEAn",
+          () => "Qu\xE1n c\u1EA7n m\u1ED9t m\xF3n \u0111\u1EC3 ng\u01B0\u1EDDi ta nh\u1EDB. B\u1EA1n th\u1EED ba n\u1ED3i n\u01B0\u1EDBc trong m\u1ED9t \u0111\xEAm, n\u1ED3i th\u1EE9 ba v\u1EEBa mi\u1EC7ng nh\u1EA5t.",
+          [
+            C("Gi\u1EEF c\xF4ng th\u1EE9c c\u1EE7a nh\xE0", { flags: ["fx_mon_nha"], happy: 2 }, "Quen v\u1ECB, \xEDt ng\u01B0\u1EDDi l\u1EA1 t\xF2 m\xF2"),
+            C("H\u1ECDc m\xF3n \u0111ang \u0111\u01B0\u1EE3c chu\u1ED9ng", { flags: ["fx_mon_moi"], know: 2 }, "D\u1EC5 h\xFAt kh\xE1ch, d\u1EC5 b\u1ECB b\u1EAFt ch\u01B0\u1EDBc")
+          ]
+        ),
+        card(
+          "fx_mo_doi_dien",
+          "Qu\xE1n b\xEAn kia h\u1EBBm",
+          (c, k) => `B\xEAn kia h\u1EBBm, ${k.npc("quan_doi_dien")} c\u0169ng b\xE1n n\u01B0\u1EDBc, \u0111\xE3 b\xE1n m\u01B0\u1EDDi n\u0103m. S\xE1ng \u0111\u1EA7u ti\xEAn ng\u01B0\u1EDDi \u0111\xF3 sang u\u1ED1ng th\u1EED m\u1ED9t ly, tr\u1EA3 \u0111\u1EE7 ti\u1EC1n, kh\xF4ng n\xF3i g\xEC.`,
+          [
+            C("Sang ch\xE0o v\xE0 bi\u1EBFu m\u1ED9t h\u1ED9p b\xE1nh", { flags: ["fx_chao_hang_xom"], rel: 2 }, "Th\xEAm m\u1ED9t ng\u01B0\u1EDDi quen, b\u1EDBt m\u1ED9t b\xED m\u1EADt"),
+            C("H\u1EA1 gi\xE1 th\u1EA5p h\u01A1n m\u1ED9t n\u1EEDa", { flags: ["fx_ha_gia"], money: -0.05 }, "K\xE9o kh\xE1ch nhanh, g\xE2y th\xF9 c\u0169ng nhanh")
+          ]
+        )
+      ],
+      /* khoi_dong */
+      [
+        card(
+          "fx_kd_tho_xay",
+          "Ba m\u01B0\u01A1i th\u1EE3 x\xE2y",
+          (c, k) => `M\u1ED9t c\xF4ng tr\xECnh m\u1ECDc l\xEAn cu\u1ED1i h\u1EBBm, ba m\u01B0\u01A1i th\u1EE3 x\xE2y c\u1EA7n ch\u1ED7 u\u1ED1ng n\u01B0\u1EDBc m\u1ED7i tr\u01B0a. H\u1ECD h\u1ECFi c\xF3 b\xE1n ch\u1ECBu \u0111\u1EBFn cu\u1ED1i th\xE1ng \u0111\u01B0\u1EE3c kh\xF4ng. ${k.gag()}`,
+          [
+            C("Cho ghi s\u1ED5 \u0111\u1EBFn cu\u1ED1i th\xE1ng", { flags: ["fx_so_no"], counters: { fx_khach: 2 } }, "\u0110\xF4ng kh\xE1ch, nh\u01B0ng ti\u1EC1n n\u1EB1m trong s\u1ED5"),
+            C("Ch\u1EC9 b\xE1n ti\u1EC1n m\u1EB7t", { money: 0.05, counters: { fx_khach: 1 } }, "Ch\u1EAFc ti\u1EC1n, m\u1EA5t n\u1EEDa s\u1ED1 kh\xE1ch")
+          ]
+        ),
+        card(
+          "fx_kd_giay_dan",
+          "T\u1EDD gi\u1EA5y d\xE1n c\u1EEDa",
+          (c, k) => `S\xE1ng th\u1EE9 hai c\xF3 t\u1EDD gi\u1EA5y d\xE1n \u1EDF c\u1EEDa: qu\xE1n ph\u1EA3i b\u1ED5 sung gi\u1EA5y ph\xE9p trong ba m\u01B0\u01A1i ng\xE0y. ${cap3(k.npc("ba_chu_nha"))} n\xF3i h\u1EE3p \u0111\u1ED3ng thu\xEA kh\xF4ng c\xF3 \u0111i\u1EC1u kho\u1EA3n n\xE0y.`,
+          [
+            C("Ch\u1EA1y gi\u1EA5y t\u1EDD cho \u0111\xFAng", { money: -0.1, flags: ["fx_giay_phep"] }, "T\u1ED1n ti\u1EC1n v\xE0 m\u1ED9t th\xE1ng \u0111i l\u1EA1i"),
+            C("D\u1EDDi b\xE0n v\xE0o trong, b\xE1n nh\u1ECF l\u1EA1i", { counters: { fx_khach: -1 }, happy: -2 }, "\u0110\u1EE1 phi\u1EC1n, b\u1EDBt kh\xE1ch")
+          ]
+        ),
+        card(
+          "fx_kd_anh_mang",
+          "\u1EA2nh ly n\u01B0\u1EDBc tr\xEAn m\u1EA1ng",
+          () => "Ai \u0111\xF3 ch\u1EE5p ly n\u01B0\u1EDBc c\u1EE7a qu\xE1n \u0111\u0103ng l\xEAn m\u1EA1ng, k\xE8m d\xF2ng ch\u1EEF 'r\u1EBB m\xE0 ngon'. H\xF4m sau c\xF3 m\u01B0\u1EDDi hai ng\u01B0\u1EDDi l\u1EA1 \u0111\u1EE9ng ch\u1EDD tr\u01B0\u1EDBc khi b\u1EA1n k\u1ECBp k\xE9o c\u1EEDa.",
+          [
+            C("M\u1EDF s\u1EDBm h\u01A1n hai ti\u1EBFng", { health: -2, counters: { fx_khach: 2 }, flags: ["fx_noi"] }, "Ki\u1EBFm th\xEAm, ng\u1EE7 \xEDt \u0111i"),
+            C("Gi\u1EEF gi\u1EDD c\u0169, ai ch\u1EDD th\xEC ch\u1EDD", { flags: ["fx_giu_nhip"], happy: 2 }, "Gi\u1EEF s\u1EE9c, c\xF3 ng\u01B0\u1EDDi b\u1ECF \u0111i")
+          ]
+        )
+      ],
+      /* cu_lat */
+      [
+        card(
+          "fx_cl_nguoi_cu",
+          "Ng\u01B0\u1EDDi c\u0169 gh\xE9 qu\xE1n",
+          (c, k) => `Tr\u01B0a nay, ${k.scar("nguoi") || "m\u1ED9t ng\u01B0\u1EDDi quen c\u0169"} b\u01B0\u1EDBc v\xE0o qu\xE1n v\xE0 g\u1ECDi \u0111\xFAng m\xF3n b\u1EA1n hay u\u1ED1ng h\u1ED3i tr\u01B0\u1EDBc. Ng\u01B0\u1EDDi \u0111\xF3 n\xF3i nh\u1ECF: qu\xE1n \u0111\u1ED1i di\u1EC7n \u0111ang t\xEDnh mua l\u1EA1i c\u1EA3 d\xE3y nh\xE0 n\xE0y.`,
+          [
+            C("H\u1ECFi th\xEAm cho r\xF5", { flags: ["fx_biet_tin"], know: 2 }, "Bi\u1EBFt tr\u01B0\u1EDBc, m\u1EA5t m\u1ED9t bu\u1ED5i b\xE1n"),
+            C("K\u1EC7, lo b\xE1n cho h\u1EBFt ng\xE0y", { happy: 1, counters: { fx_khach: 1 } }, "Y\xEAn \u1ED5n h\xF4m nay, m\xF9 chuy\u1EC7n ng\xE0y mai")
+          ]
+        ),
+        card(
+          "fx_cl_mon_do",
+          "M\xF3n \u0111\u1ED3 \u1EDF g\xF3c qu\u1EA7y",
+          (c, k) => `B\u1EA1n mang ${k.scar("do") || "m\u1ED9t m\xF3n \u0111\u1ED3 c\u0169 t\u1EEB \u0111\u1EDDi tr\u01B0\u1EDBc"} t\u1EDBi qu\xE1n, \u0111\u1EB7t \u1EDF g\xF3c qu\u1EA7y cho \u0111\u1EE1 tr\u1ED1ng. M\u1ED9t kh\xE1ch l\u1EA1 ng\u1EAFm r\u1EA5t l\xE2u r\u1ED3i tr\u1EA3 gi\xE1 g\u1EA5p n\u0103m l\u1EA7n ti\u1EC1n b\u1EA1n t\u1EEBng b\u1ECF ra.`,
+          [
+            C("B\xE1n, l\u1EA5y ti\u1EC1n s\u1EEDa qu\xE1n", { money: 0.3, flags: ["fx_ban_do"] }, "C\xF3 ti\u1EC1n, m\u1EA5t m\u1ED9t th\u1EE9 c\u1EE7a \u0111\u1EDDi c\u0169"),
+            C("Gi\u1EEF l\u1EA1i", { happy: 3, flags: ["fx_giu_do"] }, "Gi\u1EEF \u0111\u01B0\u1EE3c k\u1EF7 ni\u1EC7m, qu\xE1n v\u1EABn d\u1ED9t")
+          ]
+        ),
+        card(
+          "fx_cl_phong_bi",
+          "Phong b\xEC tr\xEAn b\xE0n",
+          (c, k) => `${cap3(k.npc("quan_doi_dien"))} sang h\u1EB3n b\xEAn n\xE0y, \u0111\u1EB7t m\u1ED9t phong b\xEC l\xEAn b\xE0n: \u0111\u1EE7 \u0111\u1EC3 b\u1EA1n l\u1EA5y l\u1EA1i ti\u1EC1n c\u1ECDc v\xE0 s\u1ED1ng th\xEAm n\u1EEDa n\u0103m. ${k.gag()}`,
+          [
+            C("Nh\u1EADn phong b\xEC, xin ngh\u0129 th\xEAm", { flags: ["fx_nhan_phong_bi"], money: 0.2 }, "C\xF3 ti\u1EC1n ngay, n\u1EE3 m\u1ED9t c\xE2u tr\u1EA3 l\u1EDDi"),
+            C("\u0110\u1EA9y phong b\xEC l\u1EA1i", { flags: ["fx_tu_choi"], counters: { fx_gan: 1 } }, "Gi\u1EEF qu\xE1n, th\xEAm m\u1ED9t \u0111\u1ED1i th\u1EE7")
+          ]
+        )
+      ],
+      /* day */
+      [
+        card(
+          "fx_day_ngap",
+          "M\xF9a m\u01B0a ng\u1EADp h\u1EBBm",
+          () => "M\u01B0a ba ng\xE0y, n\u01B0\u1EDBc trong h\u1EBBm l\xEAn qu\xE1 m\u1EAFt c\xE1. B\u1EBFp \u01B0\u1EDBt, hai c\xE1i n\u1ED3i tr\xF4i m\u1EA5t, b\u1ED1n ng\xE0y kh\xF4ng b\xE1n \u0111\u01B0\u1EE3c ly n\xE0o.",
+          [
+            C("Vay ti\u1EC1n s\u1EEDa b\u1EBFp", { custom: "borrow:0.3", flags: ["fx_vay"] }, "M\u1EDF l\u1EA1i nhanh, g\xE1nh th\xEAm n\u1EE3"),
+            C("\u0110\xF3ng c\u1EEDa m\u1ED9t th\xE1ng", { money: -0.1, happy: -4 }, "Kh\xF4ng n\u1EE3 th\xEAm, kh\xE1ch quen t\u1EA3n \u0111i")
+          ]
+        ),
+        card(
+          "fx_day_so",
+          "S\u1ED5 cu\u1ED1i th\xE1ng",
+          (c, k) => `${c.flags.has("fx_so_no") ? "Cu\u1ED1i th\xE1ng, cu\u1ED1n s\u1ED5 ghi ch\u1ECBu d\xE0y g\u1EA7n k\xEDn, \u0111\u1ED9i th\u1EE3 \u0111\xE3 chuy\u1EC3n sang c\xF4ng tr\xECnh kh\xE1c." : "Cu\u1ED1i th\xE1ng, ti\u1EC1n v\xE0o kh\xF4ng b\u1EB1ng ti\u1EC1n ra, ng\u0103n k\xE9o ch\u1EC9 c\xF2n ti\u1EC1n l\u1EBB."} ${k.gag()}`,
+          [
+            C("\u0110i t\xECm t\u1EEBng ng\u01B0\u1EDDi \u0111\xF2i", { health: -2, money: 0.1, flags: ["fx_doi_no"] }, "L\u1EA5y l\u1EA1i m\u1ED9t ph\u1EA7n, m\u1EC7t c\u1EA3 tu\u1EA7n"),
+            C("X\xE9 s\u1ED5, coi nh\u01B0 h\u1ECDc ph\xED", { happy: -2, flags: ["fx_xe_so"] }, "Nh\u1EB9 \u0111\u1EA7u, m\u1EA5t tr\u1EAFng")
+          ]
+        ),
+        card(
+          "fx_day_dem",
+          "Ba gi\u1EDD s\xE1ng",
+          () => "B\u1EA1n ng\u1ED3i t\xEDnh s\u1ED5 \u0111\u1EBFn ba gi\u1EDD s\xE1ng. N\u1EBFu th\xE1ng sau v\u1EABn nh\u01B0 th\xE1ng n\xE0y, qu\xE1n ch\u1EC9 tr\u1EE5 th\xEAm \u0111\u01B0\u1EE3c ch\xEDn tu\u1EA7n.",
+          [
+            C("G\u1ECDi \u0111i\u1EC7n nh\u1EDD ng\u01B0\u1EDDi nh\xE0", { rel: 2, flags: ["fx_nho_nha"] }, "C\xF3 ng\u01B0\u1EDDi \u0111\u1EE1, m\u1EA5t ch\xFAt th\u1EC3 di\u1EC7n"),
+            C("T\u1EF1 xoay, kh\xF4ng n\xF3i v\u1EDBi ai", { happy: -3, counters: { fx_gan: 1 } }, "Gi\u1EEF th\u1EC3 di\u1EC7n, g\xE1nh m\u1ED9t m\xECnh")
+          ]
+        )
+      ],
+      /* chung_ket */
+      [
+        card(
+          "fx_ket_chon",
+          "\u0110\xE8n h\u1EBBm s\xE1ng l\u1EA7n cu\u1ED1i",
+          (c, k) => `S\xE1ng nay, ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"} l\u1EA1i \u0111\u01B0\u1EE3c nh\u1EAFc t\u1EDBi, k\xE8m m\u1ED9t t\u1EDD gi\u1EA5y h\u1EB9n ng\xE0y tr\u1EA3. ${cap3(k.npc("quan_doi_dien"))} v\u1EABn ch\u1EDD c\xE2u tr\u1EA3 l\u1EDDi. \u0110\xE3 \u0111\u1EBFn l\xFAc quy\u1EBFt qu\xE1n n\xE0y s\u1EBD th\xE0nh g\xEC.`,
+          [
+            ending(L_QUAN, "\u0110\u0103ng k\xFD t\xEAn qu\xE1n, l\xE0m cho ra h\u1ED3n", "Th\xE0nh ngh\u1EC1, nh\u01B0ng bu\u1ED9c ch\xE2n \u1EDF \u0111\xE2y"),
+            ending(L_BAN, "B\xE1n l\u1EA1i qu\xE1n, tr\u1EA3 n\u1EE3", "C\xF3 ti\u1EC1n, m\u1EA5t ch\u1ED7 \u0111\u1EE9ng")
+          ]
+        ),
+        card(
+          "fx_ket_xe_som",
+          "Chuy\u1EBFn xe s\u1EDBm",
+          (c, k) => `M\u1ED9t ng\u01B0\u1EDDi b\xE0 con \u1EDF th\xE0nh ph\u1ED1 kh\xE1c nh\u1EAFn: c\xF3 vi\u1EC7c cho b\u1EA1n l\xE0m, c\xF3 ph\xF2ng \u0111\u1EC3 \u1EDF, v\xE9 xe s\xE1ng mai. C\xF2n ${k.scar("no") || "m\xF3n n\u1EE3 \u1EDF qu\xE1n"} th\xEC v\u1EABn ch\u01B0a tr\u1EA3 xong.`,
+          [
+            ending(L_DI, "L\xEAn xe, \u0111i th\xE0nh ph\u1ED1 kh\xE1c", "L\xE0m l\u1EA1i t\u1EEB \u0111\u1EA7u, b\u1ECF qu\xE1n l\u1EA1i sau l\u01B0ng"),
+            ending(L_QUAN, "\u1EDE l\u1EA1i, gi\u1EEF qu\xE1n", "B\xE1m tr\u1EE5, ch\u1ECBu th\xEAm v\xE0i n\u0103m v\u1EA5t v\u1EA3")
+          ],
+          (c) => c.age < 60
+        )
+      ]
+    ]
+  };
+
+  // src/engine/narrative/canon/Canon.ts
+  var USED_PENALTY = 100, ON_AXIS_BONUS = 50, NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], NEEDS_INDEPENDENT = /* @__PURE__ */ new Set(["tron_chay", "xu_nguoi"]), playedFlag = (seasonId) => "season_played_" + seasonId, played = (c, season) => c.flags.has(playedFlag(season)), whoName = (s, N, dflt) => s.who ? N(s.who) : dflt, GENERIC_DOORS = [
+    {
+      kind: "doi_dau",
+      season: "vu_an_gia_toc",
+      hint: "Kh\xF4ng l\xF9i n\u1EEFa, chuy\u1EC7n s\u1EBD ra t\u1EDBi n\u01A1i t\u1EDBi ch\u1ED1n",
+      label: (s, c, N) => s.who ? `\u0110\u1ED1i m\u1EB7t th\u1EB3ng v\u1EDBi ${N(s.who)}` : "\u0110\u1EE9ng l\u1EA1i v\xE0 \u0111\u1ED1i m\u1EB7t"
+    },
+    {
+      kind: "bo_chay",
+      season: "tron_chay",
+      hint: "Tho\xE1t \u0111\u01B0\u1EE3c h\xF4m nay, mang theo m\u1ECDi th\u1EE9 ch\u01B0a xong",
+      label: (s) => `B\u1ECF ${s.noi || "n\u01A1i n\xE0y"} m\xE0 \u0111i trong \u0111\xEAm`,
+      when: (c) => c.independent
+    },
+    {
+      kind: "thoa_hiep",
+      season: "lam_lai",
+      hint: "Gi\u1EEF \u0111\u01B0\u1EE3c h\xF2a kh\xED, m\u1EA5t ph\u1EA7n l\u1EDBn nh\u1EEFng g\xEC \u0111\xE3 g\xE2y d\u1EF1ng",
+      label: () => "Xu\u1ED1ng n\u01B0\u1EDBc, t\xECm c\xE1ch d\xE0n x\u1EBFp"
+    },
+    {
+      kind: "lat_ban",
+      season: "ngoi_sao",
+      hint: "T\u1EEB mai, c\u1EA3 thi\xEAn h\u1EA1 s\u1EBD nh\xECn v\xE0o b\u1EA1n",
+      label: () => "L\u1EADt b\xE0n, k\u1EC3 h\u1EBFt cho m\u1ECDi ng\u01B0\u1EDDi c\xF9ng bi\u1EBFt"
+    },
+    {
+      kind: "nhan_toi",
+      season: "lam_lai",
+      hint: "Nh\u1EB9 l\xF2ng, nh\u01B0ng ph\u1EA3i b\u1EAFt \u0111\u1EA7u l\u1EA1i t\u1EEB \u0111\u1EA7u",
+      label: () => "Nh\u1EADn h\u1EBFt ph\u1EA7n l\u1ED7i v\u1EC1 m\xECnh"
+    },
+    {
+      kind: "tra_dua",
+      season: "vu_an_gia_toc",
+      hint: "H\u1EA3 gi\u1EADn m\u1ED9t l\xFAc, d\xE2y d\u01B0a nhi\u1EC1u n\u0103m",
+      label: (s, c, N) => `Tr\u1EA3 \u0111\u0169a ${whoName(s, N, "cho b\u1EB1ng \u0111\u01B0\u1EE3c")}`
+    },
+    {
+      kind: "buong",
+      season: "xu_nguoi",
+      hint: "B\u1EAFt \u0111\u1EA7u \u1EDF m\u1ED9t n\u01A1i kh\xF4ng ai bi\u1EBFt m\xECnh",
+      label: () => "Bu\xF4ng h\u1EBFt, \u0111i th\u1EADt xa",
+      when: (c) => c.independent
+    },
+    {
+      kind: "danh_cuoc",
+      season: "ngoi_sao",
+      hint: "Th\u1EAFng th\xEC \u0111\u1ED5i \u0111\u1EDDi, thua c\u0169ng \u0111\u1ED5i \u0111\u1EDDi",
+      label: () => "\u0110\xE1nh c\u01B0\u1EE3c t\u1EA5t c\u1EA3 v\xE0o m\u1ED9t l\u1EA7n"
+    }
+  ];
+  function genericSeason(d, c) {
+    for (let s of [d.season, ...NORMAL_SEASONS]) if (!played(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
+    return null;
+  }
+  function shuffle(arr, rng) {
+    let a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      let j = rng.int(i + 1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  var aliveSet = (c) => new Set(Object.values(c.cast).filter((v) => !!v));
+  function fillSlots(seed, c, plants, N) {
+    let s = { noi: N ? N("place") : "", fromPlayer: 0 }, alive = aliveSet(c), usedPlant;
+    if (seed.who) {
+      let w = seed.who, p = w.plants ? strongestPlant(plants.filter((x) => !!x.npc && alive.has(x.npc)), w.plants) : void 0;
+      if (p && p.npc)
+        s.who = p.npc, s.fromPlayer++, usedPlant = p;
+      else if (c.nemesis && alive.has(c.nemesis)) s.who = c.nemesis;
+      else if (w.roles?.length) {
+        let ids = /* @__PURE__ */ new Set();
+        for (let r of w.roles) {
+          let id = c.cast[r];
+          id && ids.add(id);
+        }
+        for (let [id, rs] of Object.entries(c.roles)) rs.some((r) => w.roles.includes(r)) && ids.add(id);
+        let best, bestAbs = -1;
+        for (let id of [...ids].sort()) {
+          if (!alive.has(id)) continue;
+          let a = Math.abs(c.opinion[id] ?? 0);
+          a > bestAbs && (best = id, bestAbs = a);
+        }
+        best && (s.who = best);
+      }
+      if (w.required && !s.who) return null;
+    }
+    if (seed.what) {
+      let w = seed.what, p = w.plants ? strongestPlant(plants.filter((x) => x !== usedPlant), w.plants) : void 0;
+      if (p)
+        s.what = p, s.fromPlayer++;
+      else for (let k of w.owns ?? []) {
+        let label = c.asset_names[k];
+        if (label) {
+          s.what = { kind: "asset", key: k, label };
+          break;
+        }
+      }
+      if (w.required && !s.what) return null;
+    }
+    return s;
+  }
+  var KY_SLOTS = {
+    id: "_ky",
+    axes: ["ky"],
+    title: () => "",
+    text: () => "",
+    doors: [],
+    who: { roles: ["mother", "father", "sibling", "childhood_friend", "bully", "neighbor", "first_boss", "official", "partner", "creditor", "mentor", "rival", "spouse", "child"], plants: ["person"], required: !1 },
+    what: { plants: ["object", "animal", "skill", "debt", "promise", "secret", "place"], owns: [...ASSET_KINDS], required: !1 }
+  }, HINT_MAX = 70, clampHint = (h2) => h2.length <= HINT_MAX ? h2 : h2.slice(0, HINT_MAX - 1).trimEnd() + "\u2026", weirdDoor = (b, s, c, N) => ({ kind: "ky", label: b.door(s, c, N), hint: clampHint(b.hint ?? `${b.kind === "sf" ? "Vi\u1EC5n t\u01B0\u1EDFng" : "Phi l\xFD"}: ${b.season.vn}`), season: b.season.id, weird: b.id }), seedDoor = (d, season, s, c, N) => {
+    let out = { kind: d.kind, label: d.label(s, c, N), hint: d.hint, season };
+    return d.effects && (out.effects = d.effects(c, s)), out;
+  };
+  function fillGeneric(doors, n11, s, c, N, rng) {
+    let kinds = new Set(doors.map((d) => d.kind)), cands = [];
+    for (let d of shuffle(GENERIC_DOORS, rng)) {
+      if (kinds.has(d.kind) || d.when && !d.when(c, s)) continue;
+      let season = genericSeason(d, c);
+      season && cands.push({ d, season });
+    }
+    for (; doors.length < n11; ) {
+      let open = cands.filter((x) => !kinds.has(x.d.kind));
+      if (!open.length) break;
+      let seasons = new Set(doors.map((d2) => d2.season)), { d, season } = open.find((x) => !seasons.has(x.season)) ?? open[0];
+      doors.push(seedDoor(d, season, s, c, N)), kinds.add(d.kind);
+    }
+  }
+  function generateCanon(c, axis, plants, rng, N, seeds, weird) {
+    let weirdOk = (s) => weird.filter((b) => !played(c, b.season.id) && b.when(c, s));
+    if (axis === "ky") {
+      if (c.weird === 0) return null;
+      let slots2 = fillSlots(KY_SLOTS, c, plants, N), ok = weirdOk(slots2);
+      if (!ok.length) return null;
+      let trig = rng.pick(ok), doors2 = [trig, ...shuffle(ok.filter((b) => b !== trig), rng).slice(0, 2)].map((b) => weirdDoor(b, slots2, c, N));
+      if (doors2.length < 3 && fillGeneric(doors2, 3, slots2, c, N, rng), doors2.length < 3) return null;
+      let { title, text } = trig.trigger(slots2, c, N);
+      return { id: `canon_${trig.id}_${c.age}`, seed: trig.id, axis, age: c.age, slots: slots2, title, text, doors: doors2 };
+    }
+    let feasible = [];
+    for (let seed2 of seeds) {
+      if (seed2.ages && (c.age < seed2.ages[0] || c.age > seed2.ages[1])) continue;
+      let slots2 = fillSlots(seed2, c, plants, N);
+      slots2 && feasible.push({ seed: seed2, slots: slots2 });
+    }
+    let pool = feasible;
+    if (!pool.length) return null;
+    let score2 = (f5) => 3 * f5.slots.fromPlayer + f5.seed.axes.reduce((t, a) => t + (c.pressure[a] ?? 0), 0) + (f5.seed.axes.includes(axis) ? ON_AXIS_BONUS : 0) - (c.flags.has(`canon_${f5.seed.id}`) ? USED_PENALTY : 0), top = Math.max(...pool.map(score2)), best = pool.filter((f5) => score2(f5) === top), { seed, slots } = best.length === 1 ? best[0] : rng.pick(best), doors = [], kinds = /* @__PURE__ */ new Set();
+    for (let d of shuffle(seed.doors.filter((d2) => !played(c, d2.season) && (!d2.when || d2.when(c, slots))), rng)) {
+      if (doors.length >= 3) break;
+      kinds.has(d.kind) || (doors.push(seedDoor(d, d.season, slots, c, N)), kinds.add(d.kind));
+    }
+    if (doors.length < 3 && fillGeneric(doors, 3, slots, c, N, rng), c.weird > 0 && c.pressure.ky * c.weird >= WEIRD_DOOR_AT) {
+      let ok = weirdOk(slots), pref = ok.filter((b) => b.axes.includes(axis)), pick = pref.length ? pref : ok;
+      pick.length && doors.splice(2, doors.length, weirdDoor(rng.pick(pick), slots, c, N));
+    }
+    return doors.length < 3 ? null : {
+      id: `canon_${seed.id}_${c.age}`,
+      seed: seed.id,
+      axis,
+      age: c.age,
+      slots,
+      title: seed.title(slots, c, N),
+      text: seed.text(slots, c, N),
+      doors
+    };
+  }
+  function canonView(ev) {
+    let choices = ev.doors.map((d) => {
+      let flags = [`canon_${ev.seed}`, `canon_door_${d.kind}`, ...d.weird ? [`weird_${d.weird}`] : []], custom = `canon:${ev.axis}|season:${d.season}`, x = d.effects, effects = x ? { ...x, custom: x.custom ? `${custom}|${x.custom}` : custom, flags: [...flags, ...x.flags ?? []] } : { custom, flags };
+      return { label: d.label, hint: d.hint, effects };
+    });
+    return { title: ev.title, text: ev.text, choices, def: 0, ...ev.slots.who ? { npc: ev.slots.who } : {} };
+  }
+
+  // src/engine/narrative/canon/index.ts
+  var SEASONS = [FIXTURE_SEASON], CANON_SEEDS = [], WEIRD = [], SEASON_STORYLETS = [...SEASONS, ...WEIRD.map((b) => b.season)].flatMap(compileSeason);
   return __toCommonJS(engine_exports);
 })();
 

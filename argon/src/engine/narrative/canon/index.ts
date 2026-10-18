@@ -18,3 +18,4 @@ export const CANON_SEEDS: CanonSeedT[] = [];
 export const WEIRD: WeirdBranchT[] = [];
 /** Mọi thẻ mùa (mùa thường và mùa của nhánh kỳ dị), host nối vào kho major (Task 7). */
 export const SEASON_STORYLETS = [...SEASONS, ...WEIRD.map((b) => b.season)].flatMap(compileSeasonFn);
+export { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TONE_PRESSURE, pressureFor, type CodexMap } from "./codexPlants.ts";
