@@ -40,6 +40,10 @@ Spec: `argon/docs/superpowers/specs/2026-10-18-tien-bac-design.md`. Người ch�
 - Việc để sau: tỉ lệ có nhà ở tuổi 40 còn rất thấp (2–4%) vì phần lớn đời trong game âm tiền từ trước khi có tính năng này; cần cân lại kinh tế chung.
 
 ## Tình trạng (18/10/2026)
+### Kho 200 bước ngoặt (bản tích hợp cục bộ)
+
+Thêm 200 cảnh mở đầu chia đều điện ảnh/sitcom, hài vô lý, tiền và tình yêu; 600 cảnh hậu quả theo lựa chọn, mỗi cảnh có hai quyết định. Đã ghép đợt 1 của Claude. **Giữ draft:** mỗi nhánh hiện chỉ có một thẻ tiếp nối, phép đo 232 lần đổi lựa chọn có trung vị 1,5625% thẻ tương lai khác đi; chưa đạt chuẩn chiều sâu/70% trong `argon/docs/fate/AUTHORING.md`. 17/17 kiểm tra headless qua không chứng minh đạt chuẩn kể chuyện. Danh mục: `argon/docs/content/2026-10-18-200-buoc-ngoat.md`. Chi tiết tích hợp và giới hạn: `argon/docs/ledger/2026-10-18-200-turning-points.md`. Chạy toàn bộ kiểm tra headless và lưu log: `python tools/verify-turning-points.py`. Đo mức khác biệt: `node tools/measure-turning-divergence.js doi-nguoi/tests/.head.js 60 4`. Xuất lại danh mục: `node --experimental-strip-types tools/export-turning-catalog.mjs`. Bản này chưa được đăng lên Artifact.
+
 - Lỗi 0, kẹt 0. Trung vị 110 quyết định mỗi đời. Lặp 4,96 lần mỗi đời. 2.315 tình huống, 96 con đường đời.
 - Việc để sau:
   - Không cưới được người đã có trong đời mình bằng ô gõ.
@@ -58,3 +62,4 @@ Spec: `argon/docs/superpowers/specs/2026-10-18-tien-bac-design.md`. Người ch�
   - "bay lên mặt trăng"
   - "rủ chủ nợ góp vốn vào quán" (lúc đang có cảnh "Chủ nợ đập cửa")
   - "học lại đại học năm 40 tuổi"
+

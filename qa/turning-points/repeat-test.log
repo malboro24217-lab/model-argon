@@ -1,0 +1,9 @@
+{
+  repeatsPerLife: 2.22,
+  sameTitleWithin5y: 0.29,
+  cryScenesPerLife: 0.49,
+  cryMax: 2,
+  decisions_p50: 137
+}
+top repeats: Lời mời làm việc mới:0.19 Tin nhắn cuối tháng:0.11 Cuốn sổ góp tiền:0.05 Một khoản tiền không ngờ:0.05 Thợ báo phải làm lại cả mái:0.05 Kavya ốm nặng:0.04 Cơn sốt làm giàu nhanh:0.04 Amani ốm nặng:0.03 Rượu:0.03 Nadia ốm nặng:0.03 Sunita ốm nặng:0.03 Grace ốm nặng:0.03
+PASS repeat-test

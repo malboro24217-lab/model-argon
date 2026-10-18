@@ -1,0 +1,2 @@
+{ lives: 20, forked_ok: 16, no_fork: 4, fork_after_12: 5, ms: 62324 }
+PASS fork-test

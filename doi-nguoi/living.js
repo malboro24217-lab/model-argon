@@ -200,9 +200,17 @@ function livingYear(L) {
   foreshadow(L);
   if (promiseDueScene(L)) return true;
   // 4. Hẹn trước (dây cháy chậm có chủ đích)
-  const due = lw.queue.filter(q => q.at <= L.age); lw.queue = lw.queue.filter(q => q.at > L.age);
   const ctx = factContext(L);
-  for (const q of due) { if (q.custom) { customEffect(L, q.custom); continue; } const st = pools().major.find(x => x.id === q.storylet); if (st && st.prerequisites(ctx)) { fire(L, st, ctx); return true; } }
+  // Consume only the appointment being handled. Other due scenes survive a busy year.
+  for (let qi = 0; qi < lw.queue.length;) {
+    const q = lw.queue[qi];
+    if (q.at > L.age) { qi++; continue; }
+    if (q.custom) { lw.queue.splice(qi, 1); customEffect(L, q.custom); continue; }
+    const st = pools().major.find(x => x.id === q.storylet) || pools().micro.find(x => x.id === q.storylet);
+    if (!st || lw.history.some(h => h.id === st.id) && st.once) { lw.queue.splice(qi, 1); continue; }
+    if (!st.prerequisites(factContext(L))) { qi++; continue; }
+    lw.queue.splice(qi, 1); fire(L, st, factContext(L)); return true;
+  }
   // 5. Storyteller quyết định nhịp
   const d = Argon.decide(lw.st, ctx, srng);
   const hist = lw.history;
@@ -247,7 +255,9 @@ function eulogyVN(L) {
   const own = (L.actLog || []).filter(a => a.kind === "proactive").map(a => ({ a, m: L.lw.cz.marks.find(m => m.key === a.key) })).filter(x => x.m)
     .sort((x, y) => (y.m.consequences.length + y.m.doors_closed.length) - (x.m.consequences.length + x.m.doors_closed.length) || x.a.age - y.a.age).slice(0, 3).sort((x, y) => x.a.age - y.a.age);
   const p4 = own.length ? `Những điều bạn tự quyết, không ai bày cho: ${own.map(x => `${x.a.text} (năm ${x.a.age} tuổi)`).join(", ")}.` : "";
-  return [p1, p2, p3 + (p4 ? " " + p4 : "")].map(x => x.replace(/\s+/g, " ").trim());
+  const forks = Argon.turningLegacy ? Argon.turningLegacy(factContext(L)) : [];
+  const p5 = forks.length ? "Những ngã rẽ còn được nhớ: " + forks.join(" ") : "";
+  return [p1, p2, p3 + (p4 ? " " + p4 : "") + (p5 ? " " + p5 : "")].map(x => x.replace(/\s+/g, " ").trim());
 }
 
 /* ---- Chuyện nhỏ: 1–3 mỗi năm ---- */
@@ -286,3 +296,4 @@ function habitYear(L) {
   if (gb >= 2) { c.gamble = gb + 0.15; L.savings -= 0.01 * gb * yi; }
   if (L.focus === "health" && sm > 0 && L.r() < 0.15) { c.smoke = Math.max(0, sm - 2); }
 }
+

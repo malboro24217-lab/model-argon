@@ -1,0 +1,3 @@
+{ lives: 189, singer_b1: 145, singer_b2: 121 }
+{ careerScenes: 11, withSinger: 11 }
+PASS path-test

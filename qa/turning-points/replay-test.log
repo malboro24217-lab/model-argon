@@ -1,0 +1,22 @@
+{
+  lives: 200,
+  perkLives: 50,
+  renderDiff: 0,
+  replayDiff: 0,
+  fogScenes: 279,
+  ddDone: 89,
+  ops: 626,
+  acts: 347,
+  ai: 278,
+  lifeWithFog: 103,
+  lifeWithMoneyAct: 184,
+  secs: 175
+}
+PASS replay
+{
+  counterfactualsChecked: 56,
+  removeActChecked: 54,
+  cfBad: 0,
+  laterStoryletsKept: '0.94'
+}
+PASS counterfactual

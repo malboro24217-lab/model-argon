@@ -267,7 +267,7 @@ export interface Storylet {
   /** Most times one storylet may fire in a life (host default 1 for micro cards). */
   maxPerLife?: number;
   /** Authoring metadata (content packs): which life path and which kit helper produced the card. Not read by the matcher. */
-  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" | "money" };
+  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" | "money" | "turning_point" | "turning_echo" };
   /** Tension this storylet adds to the storyteller when it fires. */
   tension: number;
   /** Builds the scene. May read the context and roles to write names in. */
@@ -287,3 +287,4 @@ export interface VignetteRule {
   lines: string[];
   tone?: "good" | "bad" | "";
 }
+

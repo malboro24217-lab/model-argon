@@ -1,0 +1,19 @@
+{
+  "lives": 200,
+  "errs": 0,
+  "stuck": 0,
+  "repeats": 0,
+  "replayDiff": 0,
+  "openingMedian": 26,
+  "echoMedian": 25,
+  "distinctOpeningsObserved": 181,
+  "packs": {
+    "c": 1415,
+    "a": 1189,
+    "m": 1155,
+    "l": 926
+  },
+  "maxDelayBeyondDue": 5,
+  "unfinishedAtDeath": 106
+}
+PASS turning-sim

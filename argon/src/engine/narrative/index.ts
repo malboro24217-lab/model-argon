@@ -1,4 +1,5 @@
 export type * from "./types.ts";
+export { TURNING_POINTS, TURNING_STORYLETS, TURNING_CATALOG, turningLegacy } from './turning/index.ts';
 export { STORYLETS } from "./storylets.ts";
 export { MICRO } from "./micro.ts";
 export { BRANCHES, MICRO_GATES } from "./branches.ts";
@@ -12,3 +13,4 @@ export { createMemory, addMemory, memoriesOf, strongestMemory, opinionOf, decayM
 export { createCast, addCastMember, ageCast, dependentCosts, byRole, type CastNames, type CastEvent } from "./Cast.ts";
 export { DOORS, prov, createCausality, addMark, stamp, closeDoor, markById, resolveCauses, attachConsequence, pivotalMarks, doorOpen, type Mark, type DoorId, type Consequence, type CausalityState } from "./Causality.ts";
 export { sanitizeAct, sanitizeStoryScene, moneyActionEffect, isMoneyAction, bwCost, dueStories, ALLOWED_FLAGS, BIG_ACTIONS, MAX_STORY_STAGES, MAX_STORIES_PER_YEAR, type ActResult, type ActEffects, type ActPerson, type ActStats, type BigAction, type BigActionKind, type ActOutcome, type Story, type StoryScene, type StoryChoice } from "./Agency.ts";
+

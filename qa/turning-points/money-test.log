@@ -1,0 +1,30 @@
+{
+  errs: 0,
+  stuck: 0,
+  nan: 0,
+  neg: 0,
+  bankruptLives: 249,
+  moneyCardsPerLife: '21.22',
+  twoMoneyInYear: 0,
+  ownHouseAt40: { poor: '1% of 145', mid: '4% of 230', rich: '9% of 74' },
+  assetsAtDeathYears: { p50: '0.0', p90: '5.3' },
+  loans: { lent: 234, repaid: 217, lost: 12 },
+  buyRefused: 143,
+  topBuys: [
+    [ 'chiếc ô tô cũ', 132 ],
+    [ 'chiếc xe máy cũ', 69 ],
+    [ 'thêm một thứ. Nó làm bạn vui đúng một tuần.', 63 ],
+    [ 'mảnh đất mua chung với anh chị em', 49 ],
+    [ 'chiếc ô tô thay thế', 46 ],
+    [ 'phần vốn có hợp đồng', 38 ],
+    [ 'nhẫn vàng', 14 ],
+    [ 'căn nhà nhỏ ở thị trấn', 14 ],
+    [ 'chiếc xe máy thay thế', 14 ],
+    [ 'cửa hàng góc phố', 12 ],
+    [ 'mảnh đất góc ven đô', 12 ],
+    [ 'chiếc ô tô mới', 11 ]
+  ]
+}
+churn loses money true 137933
+replay ok true
+PASS money-test
