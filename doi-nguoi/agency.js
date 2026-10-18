@@ -72,7 +72,7 @@ CHỈ TRẢ VỀ JSON đúng khuôn:
 function isFreeScene(p) { return !!p && (p.ai || p.story || p.choices.some(c => c._fx)); }
 function actPacket(L, text) {
   const pk = statePacket(L);
-  pk.nguoi_than = [...L.lw.cast.values()].filter(m => m.alive).map(m => ({ id: m.id, ten: m.name, vai: LW.ROLE_VN[m.role] || m.role, tuoi: L.age + m.age_offset, tin: +(Argon.opinionOf(L.ar.state, L.lw.mem, m.id)).toFixed(2) })).slice(0, 14);
+  pk.nguoi_than = [...L.lw.cast.values()].filter(m => m.alive).map(m => ({ id: m.id, ten: m.name, vai: roleVN(m), tuoi: L.age + m.age_offset, tin: +(Argon.opinionOf(L.ar.state, L.lw.mem, m.id)).toFixed(2) })).slice(0, 14);
   pk.chuyen_dang_do = (L.stories || []).filter(s => !s.closed).map(s => ({ ten: s.title, tom_tat: s.summary, chang: s.stage }));
   const ty = L.actsThisYear && L.actsThisYear.age === L.age ? L.actsThisYear : { texts: [] };
   pk.nam_nay_da_lam = ty.texts.slice(-8);

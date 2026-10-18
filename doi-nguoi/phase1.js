@@ -188,7 +188,7 @@ function rememberedBy(L) {
     const m = L.lw.cast.get(id); if (!m || m.absent) continue;
     for (const t of arr) {
       const score = Math.abs(t.weight) * (m.alive ? 1 : 0.6) * (t.note ? 1 : 0.7);
-      if (!best || score > best.score) best = { id, name: m.name, role: m.role, alive: m.alive, note: t.note || LW.TAG_VN[t.tag] || "", sign: Math.sign(t.weight), weight: t.weight, age: t.age, score };
+      if (!best || score > best.score) best = { id, name: m.name, role: m.role, label: m.label, alive: m.alive, note: t.note || LW.TAG_VN[t.tag] || "", sign: Math.sign(t.weight), weight: t.weight, age: t.age, score };
     }
   }
   if (!best || Math.abs(best.weight) < 0.12) return null;
@@ -197,7 +197,7 @@ function rememberedBy(L) {
 }
 function rememberedLine(r) {
   if (!r) return "";
-  const who = `${r.name} (${(LW.ROLE_VN[r.role] || r.role)})`;
+  const who = `${r.name} (${roleVN(r)})`;
   return r.sign > 0 ? `${who}, vì ${r.note}.` : `${who}, vẫn chưa quên ${r.note}.`;
 }
 
@@ -400,7 +400,7 @@ function funeralOf(L) {
     const op = Argon.opinionOf(s, L.lw.mem, m.id);
     const sign = op >= 0 ? 1 : -1, t = Argon.strongestMemory(L.lw.mem, m.id, sign);
     const note = t ? (t.note || LW.TAG_VN[t.tag] || "").replace(/\s*\(năm bạn \d+ tuổi\)\s*$/, "") : "";
-    rows.push({ id: m.id, name: m.name, years: L.age + m.age_offset, role: LW.ROLE_VN[m.role] || m.role, family: ["mother", "father", "sibling", "spouse", "child"].includes(m.role), op, note, age: t ? t.age : null });
+    rows.push({ id: m.id, name: m.name, years: L.age + m.age_offset, role: roleVN(m), family: ["mother", "father", "sibling", "spouse", "child"].includes(m.role), op, note, age: t ? t.age : null });
   }
   const came = rows.filter(r => r.op >= 0.3).sort((a, b) => b.op - a.op).slice(0, 5);
   const away = rows.filter(r => r.op <= -0.3).sort((a, b) => a.op - b.op).slice(0, 3);

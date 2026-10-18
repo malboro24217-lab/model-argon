@@ -183,6 +183,29 @@ function takeCareer(P) { if (P.pending && P.pending.id === 'career') { const p =
   assert(want.length >= 2, 'beat 0 has ≥ 2 cards'); assert.deepStrictEqual(got, want, 'declaration order: ' + got.join(','));
   assert.strictEqual(P.lw.counters.season_beat, 1, 'beat advances when the beat runs out'); assert(P.lw.counters.season_next > P.age, 'next beat waits beatGap'); }
 
+// 14. R1: vai nội bộ (season, ex_spouse, spouse…) không lộ ra chữ người chơi đọc (đám tang, người nhớ, gói AI, bảng dàn nhân vật).
+{ const RAW = /\\b(mother|father|sibling|childhood_friend|bully|neighbor|first_boss|official|partner|creditor|mentor|rival|spouse|child|season|ex_spouse|undefined)\\b/;   // \\\\b: đang ở trong template literal
+  let checked = 0, seasonRows = 0;
+  for (let i = 0; i < 12; i++) { const P = lives[i]; const sms = [...P.lw.cast.values()].filter(m => m.role === 'season');
+    for (const m of sms) assert.strictEqual(roleVN(m), m.label, 'season npc shows its label');
+    const live = sms.find(m => m.alive && !m.absent);
+    if (live) Argon.addMemory(P.lw.mem, live.id, 'HELPED_IN_CRISIS', P.age, 0.9, 'bạn giúp lúc khó');
+    const f = funeralOf(P), rows = f.came.concat(f.away); seasonRows += rows.filter(r => sms.some(m => m.id === r.id)).length;
+    const text = rows.map(r => funeralLine(r, true)).join(' ') + ' ' + rememberedLine(rememberedBy(P)) + ' ' + JSON.stringify(actPacket(P, 'x').nguoi_than || []).replace(/"(id|ten|vai|tuoi|tin)":/g, '').replace(/"cast_[a-z_0-9]+"/g, '');
+    assert(!RAW.test(text), 'raw role id leaked: ' + (text.match(RAW) || [])[0] + ' in ' + text.slice(0, 300)); checked++; }
+  assert(checked > 0 && seasonRows > 0, 'a season npc appears at a funeral (' + seasonRows + ')'); }
+
+// 15. Người cũ (spouse_leave) mất sau khi bạn đã tái hôn: không góa, không −15, nhãn "người cũ".
+{ const P = grow(9101, 27, P => !P.married && P.income > 0);
+  customEffect(P, 'marry'); const ex = castRole(P, 'spouse'); assert(ex && P.married, 'first marriage');
+  customEffect(P, 'spouse_leave'); assert.strictEqual(ex.role, 'ex_spouse'); assert(!ex.roles.includes('spouse') && !P.married, 'divorced');
+  customEffect(P, 'marry'); const sp2 = castRole(P, 'spouse'); assert(sp2 && sp2 !== ex && P.married, 'remarried');
+  const happy = [], orig = addSt; addSt = function (L, k, v) { if (L === P && k === 'happy') happy.push(v); return orig(L, k, v); };
+  ex.health = -1e9; try { stepYear(P); } finally { addSt = orig; }
+  assert(P.alive && !ex.alive, 'ex died'); assert(sp2.alive, 'new spouse alive');
+  assert(P.married && !P.widowed, 'still married, not widowed'); assert(!happy.includes(-15), 'no spouse-death penalty: ' + happy.join(','));
+  assert(P.log.some(e => e.text.includes(ex.name + ' (người cũ) qua đời')), 'ex labelled người cũ'); }
+
 // 7. Tua lại: history và tiền khớp trên 30 đời.
 let mism = 0;
 for (let i = 0; i < 30; i++) { const P = lives[i]; G.life = P; const R = replayLife(P.seed, P.choices, null, P.actLog || []);

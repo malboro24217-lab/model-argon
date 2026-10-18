@@ -7,7 +7,7 @@ let _moneyIds = null;
 function MONEY_IDS() { if (!_moneyIds) _moneyIds = new Set((Argon.PATH_STORYLETS || []).filter(s => s.meta && s.meta.kind === "money").map(s => s.id)); return _moneyIds; }
 function yearBudget(L) { const a = L.age; if (a < 6) return 0; if (a < 13) return 1; if (a < 18) return 2; if (a < 65) return 2 + (L.ar && L.ar.rngStory.next() < 0.35 ? 1 : 0); return 1; }
 const LW = {
-  ROLE_VN: { mother: "mẹ", father: "cha", sibling: "anh/chị/em", childhood_friend: "bạn thân từ nhỏ", bully: "kẻ bắt nạt ngày xưa", neighbor: "hàng xóm", first_boss: "sếp đầu tiên", official: "cán bộ", partner: "đối tác", creditor: "chủ nợ", mentor: "người thầy", rival: "đối thủ", spouse: "bạn đời", child: "con" },
+  ROLE_VN: { mother: "mẹ", father: "cha", sibling: "anh/chị/em", childhood_friend: "bạn thân từ nhỏ", bully: "kẻ bắt nạt ngày xưa", neighbor: "hàng xóm", first_boss: "sếp đầu tiên", official: "cán bộ", partner: "đối tác", creditor: "chủ nợ", mentor: "người thầy", rival: "đối thủ", spouse: "bạn đời", child: "con", ex_spouse: "người cũ", season: "người quen" },
   TAG_VN: { HELPED_IN_CRISIS: "đã giúp lúc khó", WIN_WIN_DEAL: "làm ăn sòng phẳng", KEPT_PROMISE: "giữ lời", STOOD_UP_FOR_ME: "đứng về phía họ", BETRAYED_PARTNERSHIP: "phản bội khi hùn vốn", REFUSED_HELP: "từ chối giúp", CHEATED_ME: "lừa họ", HUMILIATED_ME: "làm họ bẽ mặt", TOOK_MY_LAND: "lấy đất", BULLIED_ME: "bắt nạt", GOSSIP_HEARD_BAD: "nghe tiếng xấu", GOSSIP_HEARD_GOOD: "nghe tiếng tốt" },
   SECRET_VN: { CHEATED_EXAM: "chép bài thi", PAID_BRIBE: "đưa hối lộ", DEFRAUDED_FRIEND: "lừa bạn", STOLE_SHARED_PROFIT: "giấu tiền chung", FORGED_PAPERS: "làm giấy tờ giả", ABANDONED_PARENT: "bỏ mặc cha mẹ" }
 };
@@ -120,9 +120,16 @@ function becomePath(L, id) {
   log(L, `Bạn bước vào con đường ${d.vn}.`, "big");
   return true;
 }
+/** Người từng là bạn đời: bỏ vai spouse (cả vai chính, để người cũ mất không làm bạn góa), thêm vai rival (trừ khi quiet). */
+function leaveSpouse(m, quiet) {
+  m.roles = m.roles.filter(r => r !== "spouse"); if (!quiet && !m.roles.includes("rival")) m.roles.push("rival");
+  if (m.role === "spouse") m.role = "ex_spouse";
+}
+/** Nhãn vai cho người chơi đọc: không bao giờ lộ id nội bộ (season, ex_spouse…). */
+function roleVN(m) { return (m && ((m.role === "season" && m.label) || LW.ROLE_VN[m.role] || m.label)) || "người quen"; }   // người của mùa: nhãn riêng ("bà chủ vựa phế liệu")
 /** Cưới một người đã có trong dàn nhân vật (R20): thêm vai spouse cho chính người đó, không tạo NPC mới. */
 function marryMember(L, m) {
-  for (const o of L.lw.cast.values()) if (o !== m && o.roles.includes("spouse")) { o.roles = o.roles.filter(r => r !== "spouse"); }
+  for (const o of L.lw.cast.values()) if (o !== m && (o.roles.includes("spouse") || o.role === "spouse")) leaveSpouse(o, true);
   // Vai chính thành spouse: ageCast báo cái chết theo m.role, nên người này mất thì bạn góa như mọi bạn đời khác.
   m.role = "spouse"; m.roles = m.roles.filter(r => r !== "season"); if (!m.roles.includes("spouse")) m.roles.push("spouse");
   L.married = true; L.spouse = m.name; L.flags.marriedAt = L.age; L.lw.counters.married_years = 0;
@@ -160,7 +167,7 @@ function customEffect(L, c, npcId) {
     case "migrate_now": { L.flags.migAsked = true; const dest = pickWeighted(L.r, COUNTRIES.filter(d => d.g > L.c.g * 1.5 && d.g > 15000), d => d.b + (d.g > 40000 ? 1 : 0)); if (dest) resolveCore(L, { id: "migrate", data: dest.id }, 0, L.r, L.c); else log(L, "Không tìm được nơi nào nhận bạn.", "bad"); break; }
     case "scholar": L.school.target = 12; addSt(L, "know", 5); break;
     case "return_home": L.lw.sflags.delete("path_migrant"); if (L.migrated) { L.migrated = false; L.c = L.birthC; } L.income *= 0.55; log(L, `Bạn về lại ${L.birthC.n}.`, "big"); break;
-    case "spouse_leave": { const sp = castRole(L, "spouse"); if (sp) { sp.roles = sp.roles.filter(r => r !== "spouse"); sp.roles.push("rival"); } L.married = false; log(L, "Hai người chia tay.", "bad big"); break; }
+    case "spouse_leave": { const sp = castRole(L, "spouse"); if (sp) leaveSpouse(sp); L.married = false; log(L, "Hai người chia tay.", "bad big"); break; }
     case "apologize": for (const m of L.lw.cast.values()) { if (!m.alive) continue; const op = Argon.opinionOf(s, L.lw.mem, m.id); if (op < -0.2 && L.r() < 0.5) { Argon.addMemory(L.lw.mem, m.id, "STOOD_UP_FOR_ME", L.age, 0.35, `bạn đến xin lỗi năm ${L.age} tuổi`); log(L, `${m.name} nghe bạn xin lỗi.`, "good"); } } break;
     case "explode_hook": { const h = Argon.hooks(s, L.lw.mem)[0]; if (h) { h.secret.exploded = true; for (const id of h.secret.holders) if (s.npcs.has(id)) Argon.propagate(s.graph, id, -0.5 * h.secret.severity, s.tick); L.lw.sflags.add("scandal_pending"); L.lw.counters.scandal_age = h.secret.age; } break; }
     case "confess_hook": for (const h of Argon.hooks(s, L.lw.mem)) { h.secret.exploded = true; Argon.propagate(s.graph, h.holder, -0.15 * h.secret.severity, s.tick); } break;
@@ -210,7 +217,7 @@ function livingYear(L) {
   seasonYearly(L);   // luật năm của mùa: mỗi năm một lần, kể cả năm bận
   // 1. Dàn nhân vật già đi
   for (const ev of Argon.ageCast(lw.cast, L.age, rng, L.c.g < 8000)) {
-    const r = LW.ROLE_VN[ev.role] || (lw.cast.get(ev.id) || {}).label || "người quen";
+    const r = roleVN(lw.cast.get(ev.id) || { role: ev.role });
     if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
       if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
     else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
