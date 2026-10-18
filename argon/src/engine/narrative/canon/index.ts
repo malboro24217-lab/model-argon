@@ -1,0 +1,1 @@
+export { AXES, AXIS_VN, CANON_THRESHOLD, CANON_GAP, CANON_MAX, CANON_AGES, FORCE_FIRST_AT, FORCE_SECOND_AT, DISCHARGE, WEIRD_DOOR_AT, basePressure, pressureOf, dueAxis } from "./Pressure.ts";

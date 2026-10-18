@@ -12,6 +12,15 @@ import type { Archetype } from "../types/AgentArchetype.ts";
 import type { DoorId } from "./Causality.ts";
 import type { AssetKind, Lifestyle, PolicyKind, SupportLevel } from "../economy/Holdings.ts";
 
+/* ------------------------------------------------------------------ Canon event: trục áp lực và mầm */
+
+/** 8 trục áp lực: Tiền, Tình, Máu mủ, Danh, Luật, Thân xác, Đất, Kỳ (độ kỳ dị). */
+export type Axis = "tien" | "tinh" | "mau" | "danh" | "luat" | "than" | "dat" | "ky";
+/** Loại mầm: thứ đời gieo ra để một mùa sau này mọc lên. */
+export type PlantKind = "debt" | "secret" | "person" | "object" | "promise" | "animal" | "place" | "skill";
+/** Một mầm đã gieo: `age` là tuổi lúc gieo, `weight` là độ nặng khi được chọn. */
+export interface Plant { kind: PlantKind; key: string; label: string; npc?: string; age: number; weight: number }
+
 /* ------------------------------------------------------------------ Cast */
 
 export type CastRole =
@@ -131,6 +140,10 @@ export interface Effect {
   /** Mức chi cho bố mẹ hoặc con: nhân lên khoản người phụ thuộc. */
   support?: { who: "parents" | "kids"; level: SupportLevel };
   log?: string;
+  /** Đẩy áp lực lên các trục (canon event). Khai báo thì thắng phần engine tự suy ra (xem canon/Pressure.ts). */
+  pressure?: Partial<Record<Axis, number>>;
+  /** Gieo một mầm cho mùa sau. */
+  plant?: { kind: PlantKind; key: string; label: string; npc?: string };
 }
 
 /* ------------------------------------------------------------------ Facts */
@@ -226,6 +239,23 @@ export interface FactContext {
   support: { parents: SupportLevel; kids: SupportLevel };
   /** Giá điển hình của mỗi loại tài sản ở nơi đang sống, tính bằng số năm thu nhập của người chơi. */
   price_years: Record<"house" | "land" | "vehicle" | "shop", number>;
+  /* ---- Canon event / Mùa ---- */
+  /** Áp lực tích lũy trên 8 trục. */
+  pressure: Record<Axis, number>;
+  /** Mầm đã gieo và chưa dùng. */
+  plants: Plant[];
+  /** Id mùa đang chạy, hoặc null. */
+  season: string | null;
+  /** Đã qua mấy nhịp trong mùa hiện tại. */
+  season_beat: number;
+  /** Số canon event đã nổ trong đời này. */
+  canon_n: number;
+  /** Tuổi lúc canon event gần nhất nổ (-99 nếu chưa có). */
+  last_canon_age: number;
+  /** Độ điên: 0 Đời thật, 1 Phim, 2 Điên. */
+  weird: 0 | 1 | 2;
+  /** Id người đối đầu của mùa hiện tại, nếu có. */
+  nemesis?: string;
 }
 
 /* ------------------------------------------------------------------ Storylets */
@@ -267,7 +297,9 @@ export interface Storylet {
   /** Most times one storylet may fire in a life (host default 1 for micro cards). */
   maxPerLife?: number;
   /** Authoring metadata (content packs): which life path and which kit helper produced the card. Not read by the matcher. */
-  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" | "money" | "turning_point" | "turning_echo" };
+  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" | "money" | "turning_point" | "turning_echo";
+    /** Thẻ chỉ ra trong các mùa này (canon event). */
+    season?: string[] };
   /** Tension this storylet adds to the storyteller when it fires. */
   tension: number;
   /** Builds the scene. May read the context and roles to write names in. */

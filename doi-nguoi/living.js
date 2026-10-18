@@ -62,7 +62,9 @@ function factContext(L) {
     tier: g.tier, agency: g.agency, reputation: rep, allies: Object.values(opinion).filter(v => v >= 0.5).length, enemies: Object.values(opinion).filter(v => v <= -0.35).length,
     econ_phase: s.economic_phase, ill: !!L.ill, migrated: L.migrated, flags: L.lw.sflags, counters: L.lw.counters, cast: castMap, opinion, roles, hooks: hooksMap, last_move, doors: L.lw.cz.doors,
     years_since_major: L.age - L.lw.st.last_major_age, tension: L.lw.st.tension, crises_survived: s.perception.crises_survived, traits: L.traits || { coop: 0, fair: 0, risk: 0, bold: 0 },
-    ...moneyFacts(L)
+    ...moneyFacts(L),
+    /* Canon event / Mùa: giá trị trung tính cho tới khi Task 7 nối thật. */
+    pressure: { tien: 0, tinh: 0, mau: 0, danh: 0, luat: 0, than: 0, dat: 0, ky: 0 }, plants: [], season: null, season_beat: 0, canon_n: 0, last_canon_age: -99, weird: 1, nemesis: undefined
   };
 }
 

@@ -28,6 +28,7 @@ export function randomCtx(r: ReturnType<typeof createRng>, focusPaths: string[] 
     tier, agency: r.next(), reputation: r.next() * 100, allies: Math.floor(r.next() * 4), enemies: Math.floor(r.next() * 4), econ_phase: r.pick(["boom", "stagnation", "crisis"] as const), ill: r.chance(0.1), migrated: r.chance(0.1),
     flags, counters: { ...pathCounters, shop_round: Math.floor(r.next() * 5), married_years: Math.floor(r.next() * 10), smoke: Math.floor(r.next() * 10), drink: Math.floor(r.next() * 10), gamble: Math.floor(r.next() * 8), exercise: Math.floor(r.next() * 8), read: Math.floor(r.next() * 8), save: Math.floor(r.next() * 8), honest: Math.floor(r.next() * 14 - 7), kind: Math.floor(r.next() * 8) }, cast, opinion, roles: rolesMap, hooks, last_move: {}, doors: new Set(), years_since_major: Math.floor(r.next() * 8), tension: r.next() * 100, crises_survived: Math.floor(r.next() * 4),
     ...moneyFacts(r, income, age, cast),
+    pressure: { tien: 0, tinh: 0, mau: 0, danh: 0, luat: 0, than: 0, dat: 0, ky: 0 }, plants: [], season: null, season_beat: 0, canon_n: 0, last_canon_age: -99, weird: 1,
     traits: { coop: Math.floor(r.next() * 7 - 3), fair: Math.floor(r.next() * 7 - 3), risk: Math.floor(r.next() * 7 - 3), bold: Math.floor(r.next() * 7 - 3) },
   };
 }
