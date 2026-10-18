@@ -11,6 +11,8 @@ export interface Fork { id: string; title: string; text: string; gates: string; 
 export const B = (label: string, hook: string, after: string, keep: string, pivot: string, tone: Tone, endings: [Tone,Tone], extra: Effect = {}): Route => ({ label, hook, after, keep, pivot, tone, endings, extra });
 export const E = (id: string, title: string, text: string, gates: string, routes: [Route, Route, Route]): Fork => ({ id: 'tp_' + id, title, text, gates, routes });
 const ROLES: Record<string, CastRole> = { friend:'childhood_friend', neighbor:'neighbor', rival:'rival', mentor:'mentor', boss:'first_boss', official:'official', spouse:'spouse', sibling:'sibling', child:'child', mother:'mother', father:'father', partner:'partner', creditor:'creditor' };
+/** Vai của {person} trong thẻ: cổng vai đầu tiên trong `gates`. */
+export function actorRole(d: Fork): string | undefined { return d.gates.split(',').find(g => ROLES[g]); }
 function actor(d: Fork, c: FactContext): string | undefined {
   for (const g of d.gates.split(',')) if (ROLES[g]) return c.cast[ROLES[g]!];
   return undefined;
@@ -82,10 +84,11 @@ export function compileFork(d: Fork): Storylet[] {
         // Persist the original person's identity: a later spouse/partner must not inherit their part.
         const flags = [seen, branchFlag(i), ...(npc ? [d.id + '_who:' + npc] : [])];
         // Canon event: áp lực theo tông (hoặc khai báo riêng) và vật gài. Route có vật gài không hẹn cảnh 1 bước nữa
-        // (không `later`, không mở `tp_open`/`due`): vật gài sẽ được trả bằng canon event hoặc mùa.
+        // (không `later`, không mở `tp_open`/`due`; ghi tuổi đã chọn vào `<id>_at` cho lời tổng kết): vật gài sẽ được trả bằng canon event hoặc mùa.
+        // Vật gài là chính {person} của thẻ (khóa `<fork>_<vai>`) thì gắn npc của người đó lúc build.
         const cx = CODEX_PLANTS[d.id + '_' + i];
-        const open: Effect = { flags, counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...(cx?.plant ? {} : { tp_open: 1, [due]: c.age + delay }) },
-          pressure: cx?.pressure ?? pressureFor(d.id, b.tone), ...(cx?.plant ? { plant: cx.plant } : { later: { years: delay, storylet: d.id + '_echo_' + i } }), log: b.label + '. ' + b.hook + '.' };
+        const open: Effect = { flags, counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...(cx?.plant ? { [d.id + '_at']: c.age } : { tp_open: 1, [due]: c.age + delay }) },
+          pressure: cx?.pressure ?? pressureFor(d.id, b.tone), ...(cx?.plant ? { plant: npc && cx.plant.kind === 'person' && cx.plant.key === d.id + '_' + actorRole(d) ? { ...cx.plant, npc } : cx.plant } : { later: { years: delay, storylet: d.id + '_echo_' + i } }), log: b.label + '. ' + b.hook + '.' };
         return C(b.label, merge(e, open), b.hook);
       });
       return T(d.title, d.text.replaceAll('{person}',person), choices, 1, npc ? { npc } : {});

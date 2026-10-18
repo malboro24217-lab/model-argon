@@ -7,7 +7,7 @@ assert(MONEY_IDS().has('tp_m01'),'new financial openings participate in the exis
 const ALL = Argon.PATH_STORYLETS;
 const ids = new Set(ALL.map(s => s.id));
 assert.strictEqual(ids.size, ALL.length, 'no duplicate ids in integrated pool');
-let branches = 0, closures = 0, plants = 0;
+let branches = 0, closures = 0, plants = 0, personBound = 0;
 for (const root of Argon.TURNING_POINTS) {
   const P = createLife(4242, {auto:false}); livingInit(P);
   P.age = 30; P.income = 12000; P.savings = 50000; P.job = 'thợ';
@@ -25,7 +25,19 @@ for (const root of Argon.TURNING_POINTS) {
   });
   assert.strictEqual(new Set(targets.filter(Boolean)).size, 3 - plantedAt.filter(Boolean).length, root.id + ' unplanted branches have separate consequences');
   for (let i=0;i<3;i++) for (let ending=0;ending<2;ending++) {
-    if (plantedAt[i]) continue;
+    if (plantedAt[i]) {
+      // Lời tổng kết cuối đời: route có vật gài không bao giờ bị kể là "dang dở", dù không có cảnh hậu quả.
+      if (ending === 0) {
+        const L = createLife(4242, {auto:false}); livingInit(L); L.age=30; L.income=12000; L.savings=50000; L.job='thợ';
+        const sc = sceneFromStorylet(L, root, factContext(L));
+        L.curMark = markChoice(L, sc, i);
+        applyEffect(L, sc.choices[i]._fx, sc.npc && sc.npc.id);
+        const legacy = Argon.turningLegacy(factContext(L));
+        assert(legacy.some(t => t.startsWith(Argon.TURNING_CATALOG.find(d => d.id === root.id).title + ': ')) && !legacy.some(t => t.includes('dang dở khi đời bạn khép lại')), root.id + ' route ' + i + ' has a resolved line in the life account');
+        if (sc.choices[i]._fx.plant.npc) personBound++;
+      }
+      continue;
+    }
     const L = createLife(4242, {auto:false}); livingInit(L); L.age=30; L.income=12000; L.savings=50000; L.job='thợ';
     const sc = sceneFromStorylet(L, root, factContext(L));
     L.curMark = markChoice(L, sc, i);
@@ -75,6 +87,7 @@ for (const root of Argon.TURNING_POINTS) {
  assert.strictEqual(v.npc,'FRIEND','wedding helper is the friend, not the spouse');
  assert(v.text.includes('FRIEND')&&!v.text.includes('SPOUSE mặc'),'no spouse standing next to themself');
 }
+assert(personBound > 100, 'person plants carry the original actor npc when the fork has one');
 assert.strictEqual(plants + branches, 600, 'every route is either planted or has a delayed echo');
 console.log('turning points:', Argon.TURNING_POINTS.length, 'delayed branches:', branches, 'planted routes:', plants, 'closure paths:',closures);
 `);

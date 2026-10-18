@@ -1,7 +1,8 @@
 /** Kiểm thử lớp canon event / Mùa (narrative/canon). Chạy: node --experimental-strip-types src/canon-test.ts */
-import { createRng, AXES, basePressure, pressureOf, dueAxis, CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TURNING_STORYLETS, type FactContext, type Axis } from "./engine/index.ts";
+import { createRng, AXES, basePressure, pressureOf, dueAxis, CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, type FactContext, type Axis } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
+import { actorRole } from "./engine/narrative/turning/kit.ts";
 
 let fails = 0;
 const ok = (cond: boolean, msg: string) => { if (!cond) { fails++; console.log("FAIL " + msg); } };
@@ -57,13 +58,16 @@ ok(dueAxis(ctx({ age: 35, canon_n: 0, weird: 2, pressure: P({ ky: 3 }) })) === "
   ok(eq(NORMAL_SEASON_IDS, ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"]), "5 id mùa thường");
   ok(tagged.every((k) => TURNING_CATALOG.some((d) => d.id === k)), "mọi khóa tag là fork thật");
 
-  const c0 = ctx({});
+  const ROLE_CAST: Record<string, string> = { friend: "childhood_friend", neighbor: "neighbor", rival: "rival", mentor: "mentor", boss: "first_boss", official: "official", spouse: "spouse", sibling: "sibling", child: "child", mother: "mother", father: "father", partner: "partner", creditor: "creditor" };
+  const c0 = ctx({ cast: Object.fromEntries(Object.values(ROLE_CAST).map((r) => [r, "NPC_" + r])) });
   const ids = new Set(TURNING_STORYLETS.map((s) => s.id));
-  let linkLost = 0, withLater = 0, planted2 = 0, echoesLeft = 0, pressureBad = 0, plantBad = 0, tagBad = 0;
+  const KEEP_ECHO = new Set(["tp_c01_1"]); // host test turning-points-test dùng cảnh tp_c01_echo_1
+  let npcBad = 0, personPlants = 0, objectPlants = 0, legacyBad = 0, unplantedUnlinked = 0, linkLost = 0, withLater = 0, planted2 = 0, echoesLeft = 0, pressureBad = 0, plantBad = 0, tagBad = 0;
   for (const d of TURNING_CATALOG) {
     const root = TURNING_STORYLETS.find((s) => s.id === d.id)!;
     ok(eq(root.meta?.season, CODEX_SEASON_TAGS[d.id]), `meta.season của ${d.id}`);
     const view = root.build(c0, (x) => x);
+    const view2 = root.build({ ...c0, cast: {} }, (x) => x); // không có người nào trong đời: không gắn npc
     d.routes.forEach((b, i) => {
       const key = d.id + "_" + i, fx = view.choices[i]!.effects, cx = CODEX_PLANTS[key];
       const want: Partial<Record<Axis, number>> = { ...TONE[b.tone] };
@@ -72,7 +76,17 @@ ok(dueAxis(ctx({ age: 35, canon_n: 0, weird: 2, pressure: P({ ky: 3 }) })) === "
       const echo = ids.has(d.id + "_echo_" + i);
       if (cx?.plant) {
         planted2++;
-        if (!eq(fx.plant, cx.plant)) plantBad++;
+        const { npc: gotNpc, ...gotPlant } = fx.plant ?? { kind: "" };
+        if (!eq(gotPlant, cx.plant)) plantBad++;
+        /* người của thẻ ({person}) mang npc của chính họ; vật gài khác không bao giờ bị gắn npc nhầm */
+        const role = actorRole(d), roleKey = cx.plant.kind === "person" && cx.plant.key === d.id + "_" + role;
+        const castFull = view2.choices[i]!.effects.plant?.npc;
+        if (roleKey ? gotNpc !== (c0.cast as Record<string, string>)[ROLE_CAST[role!]!] || castFull !== undefined : gotNpc !== undefined || castFull !== undefined) npcBad++;
+        if (cx.plant.kind === "person") personPlants++; else objectPlants++;
+        /* lời tổng kết cuối đời: route có vật gài không bao giờ "dang dở" và tính theo tuổi đã chọn */
+        const lc = ctx({ flags: new Set([d.id + "_seen", d.id + "_route_" + i]), counters: { [d.id + "_at"]: 30 } });
+        const legacy = turningLegacy(lc);
+        if (legacy.length !== 1 || legacy[0]!.includes("câu chuyện còn dang dở khi đời bạn khép lại") || !legacy[0]!.startsWith(d.title + ": ")) legacyBad++;
         if (fx.later) withLater++;
         if (echo) echoesLeft++;
         if (fx.counters?.tp_open) withLater++;
@@ -80,6 +94,9 @@ ok(dueAxis(ctx({ age: 35, canon_n: 0, weird: 2, pressure: P({ ky: 3 }) })) === "
         for (const st of ["keep", "pivot"] as const) if (Object.keys(linkedEffect(d.id, i, st, c0)).length) linkLost++;
       } else {
         if (fx.plant) plantBad++;
+        /* route không gài phải là route giữ echo vì mang liên kết keep/pivot (hoặc nằm trong danh sách giữ echo cho test host) */
+        const linked = ["keep", "pivot"].some((st) => Object.keys(linkedEffect(d.id, i, st as "keep" | "pivot", c0)).length);
+        if (!linked && !KEEP_ECHO.has(key)) unplantedUnlinked++;
         if (!fx.later || fx.later.storylet !== d.id + "_echo_" + i || !echo) withLater++;
       }
     });
@@ -87,6 +104,10 @@ ok(dueAxis(ctx({ age: 35, canon_n: 0, weird: 2, pressure: P({ ky: 3 }) })) === "
   }
   ok(planted2 === planted.length, "mọi plant đi vào effect của bước open");
   ok(withLater === 0, `route có plant không còn later/tp_open; route không plant giữ later + echo (lệch ${withLater})`);
+  ok(npcBad === 0, `npc chỉ gắn cho vật gài là {person} của thẻ khi thẻ có người (lệch ${npcBad})`);
+  ok(legacyBad === 0, `lời tổng kết route có vật gài không "dang dở" (lệch ${legacyBad})`);
+  ok(unplantedUnlinked === 0, `mọi route không gài đều mang liên kết keep/pivot hoặc nằm trong danh sách giữ echo (lệch ${unplantedUnlinked})`);
+  ok(personPlants >= 200 && objectPlants >= 250, `đếm vật gài: ${objectPlants} không phải người, ${personPlants} người`);
   ok(linkLost === 0, `route có plant không mang liên kết keep/pivot bị mất cùng echo (có ${linkLost})`);
   ok(echoesLeft === 0, "route có plant không còn storylet _echo_");
   ok(ids.size === 200 + (600 - planted.length), `số storylet = 200 gốc + ${600 - planted.length} echo còn lại (có ${ids.size})`);
