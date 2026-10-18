@@ -1,11 +1,11 @@
 /** Kiểm thử lớp canon event / Mùa (narrative/canon). Chạy: node --experimental-strip-types src/canon-test.ts */
 import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
-import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch } from "./engine/index.ts";
+import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
 import { SEASONS_NORMAL } from "./engine/narrative/canon/seasons/index.ts";
-import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy } from "./engine/index.ts";
+import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, CANON_SEEDS } from "./engine/index.ts";
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
-import { actorRole } from "./engine/narrative/turning/kit.ts";
+import { actorRole, ELEVATED_SEEDS } from "./engine/narrative/turning/kit.ts";
 
 let fails = 0;
 const ok = (cond: boolean, msg: string) => { if (!cond) { fails++; console.log("FAIL " + msg); } };
@@ -334,6 +334,159 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
   ok(plantBad === 0 && tagBad === 0, "plant/tag khớp bảng");
   /* các route test cũ dựa vào echo vẫn phải còn echo */
   for (const id of ["tp_c01_1", "tp_c43_1", "tp_c38_0", "tp_l06_1", "tp_l36_1", "tp_c41_1", "tp_c37_0", "tp_c31_0"]) ok(!CODEX_PLANTS[id]?.plant, `${id} còn echo (có liên kết keep/pivot)`);
+}
+
+/* ---- Task 6b: 8 mầm đợt A ---- */
+{
+  const NORMAL = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"];
+  const NEEDS_INDEP = new Set(["tron_chay", "xu_nguoi"]);
+  ok(eq(CANON_SEEDS.map((s) => s.id), ["no_cu", "troi_cho", "phan_boi", "noi_tieng", "di_chuc", "nam_cuoi", "ve_xa", "nuoc_len"]), "mầm: đúng 8 id");
+  for (const a of AXES) if (a !== "ky") ok(CANON_SEEDS.some((s) => s.axes.includes(a)), `mầm: trục ${a} có ≥ 1 mầm`);
+  ok(!CANON_SEEDS.some((s) => s.axes.includes("ky")), "mầm: trục ky không có mầm");
+  /* R16: thẻ Codex gốc ở lại làm thẻ gài; mầm nâng cấp là phần trả */
+  const ELEVATED: Record<string, string> = { di_chuc: "tp_c39", nam_cuoi: "tp_c27", ve_xa: "tp_c14", nuoc_len: "tp_c05" };
+  for (const id of Object.values(ELEVATED)) ok(TURNING_CATALOG.some((d) => d.id === id), `mầm: ${id} vẫn ở lại trong TURNING_CATALOG (thẻ gài)`);
+  for (const sd of CANON_SEEDS) {
+    ok(!!sd.ages && sd.axes.length >= 1 && sd.axes.length <= 2, `${sd.id}: có tuổi, 1–2 trục`);
+    ok(sd.doors.length >= 4, `${sd.id}: ≥ 4 cửa`);
+    ok(new Set(sd.doors.map((d) => d.kind)).size >= 3, `${sd.id}: ≥ 3 kiểu cửa`);
+    const ss = new Set(sd.doors.map((d) => d.season));
+    ok(ss.size >= 2 && [...ss].every((x) => NORMAL.includes(x)), `${sd.id}: ≥ 2 mùa, chỉ mùa thường`);
+    for (const d of sd.doors) {
+      ok(d.hint.length > 0 && d.hint.length <= 70, `${sd.id}/${d.kind}: hint ≤ 70`);
+      if (NEEDS_INDEP.has(d.season)) ok(!!d.when, `${sd.id}/${d.kind}: cửa ${d.season} phải có when (independent)`);
+    }
+  }
+
+  /* fuzz: chữ sạch, đọc chỗ trống, người phụ thuộc không có cửa tron_chay/xu_nguoi */
+  const BROKEN = /[{}]|undefined|NaN|null|\[object|\s[.,!?;:]|\s{2}|""|^\s|\s$/;
+  const LOWER = /^\p{Ll}|(?<!\.)\.\s+\p{Ll}/u;
+  const seenBad = new Set<string>();
+  const txt = (t: string, where: string, max: number) => {
+    const bad = !t || t.length > max || BROKEN.test(t) || LOWER.test(t);
+    const key = where.replace(/#\d+/, "");
+    if (bad && !seenBad.has(key)) { seenBad.add(key); ok(false, `${where}: chữ hỏng hoặc quá ${max} ký tự «${t}»`); }
+  };
+  const NAMES: Record<string, string> = { cast_creditor: "ông Tư Sẹo", cast_sibling: "Thảo", cast_spouse: "Minh", cast_father: "ông Bảy", cast_mother: "bà Năm", n_cu: "Sáu Lành" };
+  const names = (place: string) => (id: string) => (id === "place" ? place : NAMES[id] ?? "Hòa");
+  const LABEL: Record<string, string> = { debt: "tờ giấy nợ trong áo bố", promise: "lời hứa lo cho em", object: "chiếc đồng hồ của ông ngoại", animal: "con vẹt biết mật khẩu",
+    place: "bếp ăn ở chỗ tạm cư", skill: "nghề sửa đồng hồ", secret: "chuyện thi hộ năm lớp chín", person: "người bạn cũ" };
+  const LONG = "chiếc hộp gỗ sơn mài ông ngoại để lại trên gác xép năm ấy";
+  const r = createRng(60606);
+  const inAge = (lo: number, hi: number): FactContext => { for (;;) { const c = randomCtx(r); if (c.age >= lo && c.age <= hi) return c; } };
+  const check = (ev: NonNullable<ReturnType<typeof generateCanon>>, c: FactContext, N: (id: string) => string, where: string) => {
+    txt(ev.title, `${where} title`, 60); txt(ev.text, `${where} text`, 600);
+    ev.doors.forEach((d) => { txt(d.label, `${where} cửa ${d.kind}`, 60); txt(d.hint, `${where} hint ${d.kind}`, 70); });
+    ok(new Set(ev.doors.map((d) => d.kind)).size === ev.doors.length, `${where}: cửa khác kiểu`);
+    if (!c.independent) ok(ev.doors.every((d) => !NEEDS_INDEP.has(d.season)), `${where}: người chưa tự lập không có cửa tron_chay/xu_nguoi`);
+    const all = ev.title + " " + ev.text;
+    if (ev.slots.who) ok(all.toLowerCase().includes(N(ev.slots.who).toLowerCase()), `${where}: chữ đọc chỗ who «${ev.text}»`);
+    const w = ev.slots.what;
+    if (w && (w.kind !== "asset" || c.age >= 16)) ok(all.toLowerCase().includes(w.label.toLowerCase()), `${where}: chữ đọc chỗ what (${w.kind}) «${ev.text}»`);
+    for (const ch of canonView(ev).choices) if (ch.effects.memory) ok(ch.effects.memory.npc === ev.slots.who, `${where}: memory gắn người ở chỗ who`);
+  };
+
+  for (const sd of CANON_SEEDS) {
+    const [lo, hi] = sd.ages!;
+    /* test kế hoạch: mỗi trục của mầm, 50 randomCtx đúng tuổi, pressure trục = 12 → biến cố 3 cửa ≥ 60% */
+    for (const ax of sd.axes) {
+      let good = 0;
+      for (let i = 0; i < 50; i++) {
+        const c = inAge(lo, hi); c.pressure = P({ [ax]: 12 });
+        const card = ELEVATED[sd.id];
+        if (card && i % 3 === 0) { c.flags = new Set([...c.flags, card + "_seen"]); if (i % 2 === 0) c.flags.add(`${card}_route_${i % 4 === 0 ? 0 : 2}`); }
+        const N = names(i % 5 === 0 ? "" : "Phố Mới");
+        const ev = generateCanon(c, ax, [], createRng(i + 1), N, [sd], []);
+        if (ev && ev.seed === sd.id && ev.doors.length === 3) good++;
+        if (ev) check(ev, c, N, `${sd.id}/${ax}#${i}`);
+      }
+      ok(good >= 30, `${sd.id}/${ax}: ${good}/50 ra biến cố 3 cửa (cần ≥ 60%)`);
+    }
+    /* vật gài của người chơi điền chỗ trống, và chữ đọc được nó (kể cả nhãn dài) */
+    for (const kind of sd.what?.plants ?? []) for (const label of [LABEL[kind]!, LONG]) for (let i = 0; i < 6; i++) {
+      const c = inAge(lo, hi); c.pressure = P({ [sd.axes[0]!]: 12 });
+      c.cast = { ...c.cast, creditor: "n_cu" }; c.roles = { ...c.roles, n_cu: ["creditor"] };
+      const plants: Plant[] = [{ kind, key: "vat", label, age: Math.max(0, c.age - 7), weight: 3 }];
+      if (sd.who?.plants) plants.push({ kind: sd.who.plants[0]!, key: "nguoi", label: LABEL[sd.who.plants[0]!]!, npc: "n_cu", age: Math.max(0, c.age - 9), weight: 2 });
+      const N = names("Phố Mới");
+      const ev = generateCanon(c, sd.axes[0]!, plants, createRng(100 + i), N, [sd], []);
+      ok(!!ev && ev.slots.fromPlayer >= 1 && ev.slots.what?.label === label, `${sd.id}: vật gài ${kind} điền chỗ what`);
+      if (ev) { check(ev, c, N, `${sd.id}/gài ${kind}#${i}`); if (sd.who?.plants) ok(ev.slots.who === "n_cu", `${sd.id}: người gài điền chỗ who`); }
+    }
+  }
+  /* tất định: chỗ trống rỗng hết (không who/what), noi rỗng hoặc có, tự lập hay không, tuổi biên của mầm,
+     có/không con, đã gặp thẻ gốc hay chưa → mọi tiêu đề, chữ, nhãn và hint của cửa khả thi đều sạch */
+  for (const sd of CANON_SEEDS) {
+    const card = ELEVATED[sd.id];
+    for (const slots of [{ noi: "", fromPlayer: 0 }, { noi: "Phố Mới", fromPlayer: 0 }] as Slots[])
+      for (const independent of [true, false]) for (const age of sd.ages!) for (const kids_alive of [0, 2])
+        for (const flags of [new Set<string>(), ...(card ? [new Set([card + "_seen", card + "_route_0"])] : [])]) {
+          const c = ctx({ age, independent, kids_alive, flags });
+          const N = names(slots.noi);
+          const where = `${sd.id} rỗng (noi «${slots.noi}», indep ${independent}, ${age} tuổi, con ${kids_alive}, cờ ${[...flags].join("+") || "-"})`;
+          txt(sd.title(slots, c, N), `${where} title`, 60);
+          txt(sd.text(slots, c, N), `${where} text`, 700);
+          for (const d of sd.doors) {
+            if (d.when && !d.when(c, slots)) continue;
+            txt(d.label(slots, c, N), `${where} cửa ${d.kind}`, 60);
+            txt(d.hint, `${where} hint ${d.kind}`, 70);
+            if (d.effects) ok(!d.effects(c, slots).memory, `${where} cửa ${d.kind}: không who thì không memory`);
+          }
+        }
+  }
+  /* phan_boi, bản trẻ con với vật gài bí mật: cửa theo chuyện bí mật bị kể ra, không theo chuyện giấu đồ */
+  {
+    const sd = CANON_SEEDS.find((x) => x.id === "phan_boi")!, c = ctx({ age: 12, independent: false }), N = names("Phố Mới");
+    const secret: Slots = { who: "cast_sibling", what: { kind: "secret", key: "k", label: LABEL.secret!, age: 9, weight: 2 }, noi: "Phố Mới", fromPlayer: 1 };
+    const obj: Slots = { ...secret, what: { kind: "object", key: "k", label: LABEL.object!, age: 9, weight: 2 } };
+    const lab = (s: Slots, k: string) => sd.doors.find((d) => d.kind === k)!.label(s, c, N);
+    ok(sd.text(secret, c, N).includes("cả lớp") && !lab(secret, "doi_dau").includes("chỗ giấu") && !lab(secret, "nhan_toi").includes("Nhận lỗi thay"), "phan_boi trẻ con + bí mật: cửa khớp chuyện bí mật");
+    ok(lab(obj, "doi_dau").includes("chỗ giấu") && lab(obj, "nhan_toi").includes("Nhận lỗi thay"), "phan_boi trẻ con + đồ vật: cửa theo chuyện giấu đồ");
+  }
+  /* mầm nâng cấp: tiêu đề khác thẻ gốc; đã gặp thẻ gốc thì chữ gọi lại, mỗi route một kiểu */
+  for (const [sid, card] of Object.entries(ELEVATED)) {
+    const sd = CANON_SEEDS.find((x) => x.id === sid)!, codex = TURNING_CATALOG.find((d) => d.id === card)!;
+    const [lo, hi] = sd.ages!;
+    for (let i = 0; i < 12; i++) {
+      const c = inAge(lo, hi), N = names("Phố Mới");
+      const slots = fillSlots(sd, c, [], N)!;
+      const variants = [new Set<string>(), new Set([card + "_seen"]), ...[0, 1, 2].map((k) => new Set([card + "_seen", `${card}_route_${k}`]))];
+      const texts = variants.map((f) => { const cc = { ...c, flags: new Set([...c.flags, ...f]) }; return { title: sd.title(slots, cc, N), text: sd.text(slots, cc, N) }; });
+      ok(texts.every((t) => t.title !== codex.title), `${sid}: tiêu đề khác thẻ gốc «${codex.title}»`);
+      ok(new Set(texts.map((t) => t.text)).size === 5, `${sid}: chưa gặp / đã gặp / 3 route cho 5 đoạn chữ khác nhau`);
+      texts.forEach((t, k) => { txt(t.title, `${sid} gọi lại ${k} title`, 60); txt(t.text, `${sid} gọi lại ${k} text`, 700); });
+      ok(!texts[0]!.text.includes("Lần trước") && !texts[0]!.text.includes("Mấy năm trước") && !texts[0]!.text.includes("Lần nước lên trước"), `${sid}: chưa gặp thẻ gốc thì không gọi lại`);
+    }
+  }
+  /* thẻ gốc không ra nữa khi mầm nâng cấp của nó đã nổ (canon_<mầm>); cờ khác không đổi gì */
+  for (const [sid, card] of Object.entries(ELEVATED)) {
+    const root = TURNING_STORYLETS.find((x) => x.id === card)!;
+    let open = 0, sameOther = 0, n = 0;
+    for (let i = 0; i < 4000 && open < 20; i++) {
+      const c = randomCtx(r);
+      const base0 = root.prerequisites(c);
+      const other = Object.values(ELEVATED).find((x) => x !== card)!;
+      const otherSeed = Object.keys(ELEVATED).find((k) => ELEVATED[k] === other)!;
+      n++; if (root.prerequisites({ ...c, flags: new Set([...c.flags, "canon_" + otherSeed]) }) === base0) sameOther++;
+      if (!base0) continue;
+      open++;
+      ok(!root.prerequisites({ ...c, flags: new Set([...c.flags, "canon_" + sid]) }), `${card}: không ra khi canon_${sid} đã có`);
+    }
+    ok(open >= 5, `${card}: tìm được ctx mở thẻ gốc (có ${open})`);
+    ok(sameOther === n, `${card}: cờ canon của mầm khác không đổi prerequisites`);
+  }
+  ok(eq(ELEVATED_SEEDS, Object.fromEntries(Object.entries(ELEVATED).map(([k, v]) => [v, k]))), "ELEVATED_SEEDS khớp 4 mầm nâng cấp");
+  /* cả kho: mọi trục thường, tuổi 8–72 → luôn dựng được biến cố */
+  for (const ax of AXES) {
+    if (ax === "ky") continue;
+    let good = 0;
+    for (let i = 0; i < 50; i++) {
+      const c = inAge(8, 72); c.pressure = P({ [ax]: 12 });
+      const ev = generateCanon(c, ax, [], createRng(500 + i), names("Phố Mới"), CANON_SEEDS, []);
+      if (ev && ev.doors.length === 3) good++;
+    }
+    ok(good >= 30, `kho mầm, trục ${ax}: ${good}/50 ra biến cố 3 cửa`);
+  }
 }
 
 if (fails) { console.log(`${fails} FAIL`); process.exit(1); }

@@ -12,9 +12,9 @@ export const SEASONS: SeasonDefT[] = [...SEASONS_NORMAL];
 /* ---- Task 5: generator canon event ---- */
 export { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag } from "./Canon.ts";
 export type { DoorKind, Slots, SeedDoor, CanonSeed, WeirdBranch, ResolvedDoor, CanonEvent } from "./Canon.ts";
-import type { CanonSeed as CanonSeedT, WeirdBranch as WeirdBranchT } from "./Canon.ts";
-/** Mầm canon event đã đăng ký (Task 6b điền). */
-export const CANON_SEEDS: CanonSeedT[] = [];
+import type { WeirdBranch as WeirdBranchT } from "./Canon.ts";
+/** Mầm canon event đã đăng ký (Task 6b: 8 mầm đợt A). */
+export { CANON_SEEDS } from "./seeds.ts";
 /** Nhánh kỳ dị đã đăng ký (các đợt kỳ dị điền). */
 export const WEIRD: WeirdBranchT[] = [];
 /** Mọi thẻ mùa (mùa thường và mùa của nhánh kỳ dị), host nối vào kho major (Task 7). */
