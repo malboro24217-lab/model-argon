@@ -1,7 +1,7 @@
 /** Kiểm thử lớp canon event / Mùa (narrative/canon). Chạy: node --experimental-strip-types src/canon-test.ts */
 import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
-import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch } from "./engine/index.ts";
+import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
 import { FIXTURE_SEASON } from "./engine/narrative/canon/seasons/_fixture.ts";
 import { CANON_SEEDS, TURNING_CATALOG, TURNING_STORYLETS } from "./engine/index.ts";
 import { ELEVATED_SEEDS } from "./engine/narrative/turning/kit.ts";
@@ -335,6 +335,35 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
       ok(!!ev && ev.slots.fromPlayer >= 1 && ev.slots.what?.label === label, `${sd.id}: vật gài ${kind} điền chỗ what`);
       if (ev) { check(ev, c, N, `${sd.id}/gài ${kind}#${i}`); if (sd.who?.plants) ok(ev.slots.who === "n_cu", `${sd.id}: người gài điền chỗ who`); }
     }
+  }
+  /* tất định: chỗ trống rỗng hết (không who/what), noi rỗng hoặc có, tự lập hay không, tuổi biên của mầm,
+     có/không con, đã gặp thẻ gốc hay chưa → mọi tiêu đề, chữ, nhãn và hint của cửa khả thi đều sạch */
+  for (const sd of CANON_SEEDS) {
+    const card = ELEVATED[sd.id];
+    for (const slots of [{ noi: "", fromPlayer: 0 }, { noi: "Phố Mới", fromPlayer: 0 }] as Slots[])
+      for (const independent of [true, false]) for (const age of sd.ages!) for (const kids_alive of [0, 2])
+        for (const flags of [new Set<string>(), ...(card ? [new Set([card + "_seen", card + "_route_0"])] : [])]) {
+          const c = ctx({ age, independent, kids_alive, flags });
+          const N = names(slots.noi);
+          const where = `${sd.id} rỗng (noi «${slots.noi}», indep ${independent}, ${age} tuổi, con ${kids_alive}, cờ ${[...flags].join("+") || "-"})`;
+          txt(sd.title(slots, c, N), `${where} title`, 60);
+          txt(sd.text(slots, c, N), `${where} text`, 700);
+          for (const d of sd.doors) {
+            if (d.when && !d.when(c, slots)) continue;
+            txt(d.label(slots, c, N), `${where} cửa ${d.kind}`, 60);
+            txt(d.hint, `${where} hint ${d.kind}`, 70);
+            if (d.effects) ok(!d.effects(c, slots).memory, `${where} cửa ${d.kind}: không who thì không memory`);
+          }
+        }
+  }
+  /* phan_boi, bản trẻ con với vật gài bí mật: cửa theo chuyện bí mật bị kể ra, không theo chuyện giấu đồ */
+  {
+    const sd = CANON_SEEDS.find((x) => x.id === "phan_boi")!, c = ctx({ age: 12, independent: false }), N = names("Phố Mới");
+    const secret: Slots = { who: "cast_sibling", what: { kind: "secret", key: "k", label: LABEL.secret!, age: 9, weight: 2 }, noi: "Phố Mới", fromPlayer: 1 };
+    const obj: Slots = { ...secret, what: { kind: "object", key: "k", label: LABEL.object!, age: 9, weight: 2 } };
+    const lab = (s: Slots, k: string) => sd.doors.find((d) => d.kind === k)!.label(s, c, N);
+    ok(sd.text(secret, c, N).includes("cả lớp") && !lab(secret, "doi_dau").includes("chỗ giấu") && !lab(secret, "nhan_toi").includes("Nhận lỗi thay"), "phan_boi trẻ con + bí mật: cửa khớp chuyện bí mật");
+    ok(lab(obj, "doi_dau").includes("chỗ giấu") && lab(obj, "nhan_toi").includes("Nhận lỗi thay"), "phan_boi trẻ con + đồ vật: cửa theo chuyện giấu đồ");
   }
   /* mầm nâng cấp: tiêu đề khác thẻ gốc; đã gặp thẻ gốc thì chữ gọi lại, mỗi route một kiểu */
   for (const [sid, card] of Object.entries(ELEVATED)) {
