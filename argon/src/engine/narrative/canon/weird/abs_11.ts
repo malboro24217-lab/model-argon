@@ -196,7 +196,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Để ông ấy khép sổ", { flags: ["x12_khep_so"], pressure: { luat: 1 } }, "Nhẹ nợ hôm nay, mang thêm một bí mật")]),
         ],
         [
-          card("x12_kd_tai_khoan", "Tài khoản của người quá cố", (c, k) => `Ngân hàng khóa tài khoản của bạn${c.home_owner ? ", căn nhà đứng tên bạn chuyển sang chờ thừa kế" : c.independent ? ", chủ nhà đòi lại phòng" : ", tên bạn bị gạch khỏi sổ hộ khẩu của gia đình"}${c.has_job ? ", chỗ làm gửi thư chia buồn kèm quyết định thôi việc" : ", mọi đơn xin việc bị trả về vì người nộp đã mất"}. ${k.gag()} Trên giấy tờ, bạn không còn được làm gì, kể cả mắc nợ.`,
+          card("x12_kd_tai_khoan", "Tài khoản của người quá cố", (c, k) => `Ngân hàng khóa tài khoản của bạn${c.home_owner ? ", căn nhà đứng tên bạn chuyển sang chờ thừa kế" : c.independent ? ", chủ nhà đòi lại phòng" : ", tên bạn bị gạch khỏi hồ sơ cư trú của gia đình"}${c.has_job ? ", chỗ làm gửi thư chia buồn kèm quyết định thôi việc" : ", mọi đơn xin việc bị trả về vì người nộp đã mất"}. ${k.gag()} Trên giấy tờ, bạn không còn được làm gì, kể cả mắc nợ.`,
             [C("Nhận làm việc vặt trả công ngày", { money: 0.1, health: -2, flags: ["x12_viec_vat"] }, "Sống tạm được, không ai bảo hiểm cho bạn"),
              C("Dọn về ở nhờ người thân", { rel: 3, happy: -2, flags: ["x12_o_nho"] }, "Có mái nhà, mất chút tự trọng")]),
           card("x12_kd_tu_do", "Tự do của người đã khuất", (c) => `Một tuần sau, bạn nhận ra không ai gọi điện đòi tiền, không ai mời họp, ${c.married ? "không ai nhắc ngày kỷ niệm cưới" : "không ai hỏi bao giờ lấy vợ lấy chồng"}. Bạn ngủ một mạch đến trưa lần đầu sau mười năm. "Chết sướng thế này thì sống làm gì," bạn nghĩ, rồi giật mình vì đã nghĩ thế.`,
@@ -273,7 +273,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Thuê luật sư đọc hợp đồng", { money: -0.15, flags: ["x13_luat_su"], know: 3 }, "Tốn tiền, biết rõ mình đang bán gì")]),
         ],
         [
-          card("x13_ket", "Ngày kiểm kê cuối cùng", (c, k) => `Mùa tham quan cuối cùng sắp khép lại${n(c, "x13_khach") >= 3 ? ", với số khách cao nhất từ trước tới nay" : ""}. ${f(c, "x13_su_that") ? `Bảng thuyết minh về ${museumItem(c)} giờ kể đúng chuyện thật, và khách đứng đó lâu nhất.` : `Bảng thuyết minh về ${museumItem(c)} vẫn kể phiên bản đẹp, chỉ bạn biết nó sai ở đâu.`} ${k.gag()} Tiền vé tích góp đủ trả ${noOr(c, k)}, nhưng không mua lại được một buổi sáng đánh răng mà không ai nhìn.${f(c, "x13_luat_su") ? " Nhờ luật sư, bạn biết điều khoản trọn đời gỡ được bằng một khoản bồi thường." : ""}`,
+          card("x13_ket", "Ngày kiểm kê cuối cùng", (c, k) => `Mùa tham quan cuối cùng sắp khép lại${n(c, "x13_khach") >= 3 ? ", với số khách cao nhất từ trước tới nay" : ""}. ${f(c, "x13_su_that") ? `Bảng thuyết minh về ${museumItem(c)} giờ kể đúng chuyện thật, và khách đứng đó lâu nhất.` : `Bảng thuyết minh về ${museumItem(c)} vẫn kể phiên bản đẹp, chỉ bạn biết nó sai ở đâu.`} ${k.gag()} Tiền vé tích góp đủ ${k.scar("no") || c.debt > 0 ? "trả" : "đền đáp"} ${noOr(c, k)}, nhưng không mua lại được một buổi sáng đánh răng mà không ai nhìn.${f(c, "x13_luat_su") ? " Nhờ luật sư, bạn biết điều khoản trọn đời gỡ được bằng một khoản bồi thường." : ""}`,
             [ending(X13_VE, "Ký tiếp, sống bằng tiền vé", "Thu nhập cao, đời sống trong tủ kính"),
              ending(X13_BAN_DUT, "Bán đứt bộ sưu tập, dọn lên thành phố", "Có tiền, mất nơi ở cũ"),
              ending(X13_DONG_CUA, "Bồi thường, đóng cửa bảo tàng", "Mất một năm thu nhập, lấy lại cái ghế")]),

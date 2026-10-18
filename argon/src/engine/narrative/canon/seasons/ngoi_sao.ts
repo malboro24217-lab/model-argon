@@ -7,7 +7,7 @@ import { C, cap, card, ending, finale, land, noOr } from "../kit.ts";
 
 const L_MC = land("dan_chuong_trinh", "Bạn nhận dẫn một chương trình buổi tối. Cây chổi năm ấy được treo trên tường trường quay, như một tấm bằng.", { custom: "become:tv_host", happy: 5 });
 const L_HAI = land("dien_hai", "Bạn đứng trên sân khấu hài, kể chuyện về cây chổi bằng giọng của người đã chán nó, và khán giả cười to hơn bao giờ hết.", { custom: "become:comedian", happy: 6 });
-const L_RUT = land("rut_lui", "Bạn rút lui khi còn được nhớ tới, khép xong chuyện cũ, và còn một khoản đủ để mua sự yên tĩnh trong nhiều năm.", { money: 2.5, custom: "repay:1", happy: 4 });
+const L_RUT = land("rut_lui", "Bạn rút lui khi còn được nhớ tới, khép xong chuyện cũ, và còn một khoản đủ để mua sự yên tĩnh trong nhiều năm.", { money: 1.5, custom: "repay:1", happy: 4 });
 const L_QUY = land("quy_cay_choi", "Bạn đem gần hết số tiền kiếm được lập một quỹ học bổng mang tên cây chổi, và cuối cùng được người ta nhớ tới vì một chuyện khác.", { money: -1, happy: 8 });
 const L_CUOI = land("cuoi_nguoi_khong_chup", "Bạn cưới người duy nhất chưa từng xin chụp ảnh với mình.", { custom: "marry", happy: 8 });
 

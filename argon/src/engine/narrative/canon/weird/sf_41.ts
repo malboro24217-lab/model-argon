@@ -681,9 +681,9 @@ const s50: WeirdBranch = weird("S50", "sf", ["luat", "tien", "ky"],
         card("s50_mo_lay_so", "Khiếu nại việc mình không tồn tại", (c, k) => `Bạn tới văn phòng hành chính ở ${k.noi} để khiếu nại việc mình không tồn tại. ${k.gag()}`,
           [C("Ngồi chờ cho tới lượt", { flags: ["s50_khieu_nai"], health: -1 }, "Kiên nhẫn, chưa biết chờ tới bao giờ"),
            C("Về nhà ăn mừng: không còn nợ ai", { happy: 4, flags: ["s50_an_mung"] }, "Vui hôm nay, mai thì chưa biết")]),
-        card("s50_mo_cong_ty", (c) => (c.has_job ? "Chỗ làm không có tên bạn" : "Sổ hộ khẩu không có tên bạn"), (c) => (c.has_job
+        card("s50_mo_cong_ty", (c) => (c.has_job ? "Chỗ làm không có tên bạn" : "Hồ sơ cư trú không có tên bạn"), (c) => (c.has_job
           ? "Ở chỗ làm, phòng nhân sự không tìm ra hợp đồng của bạn. Người trả lương gãi đầu: muốn trả cũng không biết trả cho ai, mà không trả thì cũng không biết nợ ai."
-          : "Ở phường, sổ hộ khẩu không còn dòng nào mang tên bạn. Người ở quầy gãi đầu: muốn ghi lại cũng không biết ghi cho ai, mà không ghi thì cũng không biết bạn ở đâu."),
+          : "Ở văn phòng hộ tịch, hồ sơ cư trú không còn dòng nào mang tên bạn. Người ở quầy gãi đầu: muốn ghi lại cũng không biết ghi cho ai, mà không ghi thì cũng không biết bạn ở đâu."),
           (c) => (c.has_job
             ? [C("Làm tiếp, nhận tiền mặt", { money: 0.1, flags: ["s50_tien_mat"] }, "Có tiền ăn, không có gì chứng minh mình làm"),
                C("Nghỉ ở nhà chờ hệ thống sửa", { money: -0.2, flags: ["s50_nghi_viec"] }, "Giữ thể diện, ví mỏng nhanh")]

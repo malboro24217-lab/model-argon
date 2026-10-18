@@ -36,7 +36,7 @@ const L31_HLV = land("hlv_doi_lang", "Bạn treo giày và nhận dẫn dắt đ
 const L31_TRAI = land("trai_lon_huyen_thoai", "Ba con lợn ngày ấy sinh sôi thành một trại bốn mươi con. Bạn giải nghệ và làm chủ chính giá chuyển nhượng của mình.", { money: 2, happy: 3 });
 const L31_LEN_PHO = land("len_pho_da_bong", "Bạn theo một đội phong trào lên phố, đá giải công nhân buổi tối, ban ngày tìm việc như mọi người.", { custom: "move_city", money: -0.2 });
 /** Đã bán lợn giữa mùa (x31_ban_lon): trại lợn phải gây lại từ đầu. */
-const L31_TRAI_MOI = land("trai_lon_gay_lai", "Bạn giải nghệ, gây lại đàn từ đôi lợn giống mua bằng tiền thưởng, và cuối cùng có một trại bốn mươi con.", { money: 2, happy: 3 });
+const L31_TRAI_MOI = land("trai_lon_gay_lai", "Bạn giải nghệ, gây lại đàn từ đôi lợn giống mua bằng tiền thưởng, và cuối cùng có một trại bốn mươi con.", { money: 1.8, happy: 3 });
 
 const X31 = weird("X31", "abs", ["than", "danh"],
   (c) => c.age >= 18 && c.age <= 45 &&
@@ -108,7 +108,7 @@ const X31 = weird("X31", "abs", ["than", "danh"],
 /* ================================================================== X32 Cuộc đua chiều cao */
 
 const L32_CAO = land("nha_cao_nhat_xa", "Nhà bạn thành nhà cao nhất xã. Sân thượng cho thuê chụp ảnh cưới, mỗi tháng thu vừa đủ trả lãi.", { income_mult: 1.2, custom: "borrow:1", happy: 5 });
-const L32_PHA_SAN = land("pha_san_vi_mot_xangti", "Bạn bán căn nhà cho chính ông hàng xóm. Trả nợ xong, bạn còn một chiếc xe máy và một cây thước dây.", { sell: { kind: "house" }, money: -1, custom: "repay:1", happy: -6 });
+const L32_PHA_SAN = land("pha_san_vi_mot_xangti", "Bạn bán căn nhà cho chính ông hàng xóm. Thanh toán xong mọi khoản, bạn còn một chiếc xe máy và một cây thước dây.", { sell: { kind: "house" }, money: -1, custom: "repay:1", happy: -6 });
 const L32_CAFE = land("cafe_hai_san_thuong", "Hai nhà bắc một cây cầu nối hai sân thượng và mở chung một quán cà phê trên cao.", { custom: "become:restaurateur", rel: 5 }); // gần nhất: chủ quán cà phê sân thượng
 
 const X32 = weird("X32", "abs", ["dat", "tien"],
@@ -171,7 +171,7 @@ const X32 = weird("X32", "abs", ["dat", "tien"],
         card("x32_ket", "Nóc nhà cao nhất xã", (c, k) => `${((x: string) => (k.scar("no") || c.debt > 0 ? `${cap(noOr(c, k))} cộng với ${x}` : cap(x)))(n(c, "x32_tang") > 0 ? `tiền xây thêm ${n(c, "x32_tang")} tầng` : "tiền thuê thợ trát tường và đo đạc")} giờ đã thành một con số bạn không dám đọc to.${f(c, "x32_cot") ? " Cột thu lôi trên mái vẫn hơn cột ăng-ten nhà bên nửa mét, dù không ai tính nó là một tầng." : ""} ${f(c, "x32_cuu_ong") || f(c, "x32_moi_len") ? "Ông hàng xóm chống nạng sang, đặt cây thước dây lên bàn nhà bạn như đặt một lá cờ trắng." : "Bên kia, ông hàng xóm lại đang trộn vữa."} ${k.gag()} Đã đến lúc kết thúc cuộc đua.`,
           (c) => pick(
             ending(L32_CAO, "Hoàn thiện tầng cao nhất, cho thuê sân thượng", "Thắng cuộc đua, trả góp đến già"),
-            ending(L32_PHA_SAN, "Bán nhà cho ông hàng xóm, trả nợ", "Thua một xăng-ti-mét, thoát cả núi nợ"),
+            ending(L32_PHA_SAN, c.debt > 0 ? "Bán nhà cho ông hàng xóm, trả nợ" : "Bán nhà cho ông hàng xóm, dọn đi", c.debt > 0 ? "Thua một xăng-ti-mét, thoát cả núi nợ" : "Thua một xăng-ti-mét, nhẹ cả người"),
             pathOpen("restaurateur", c.age) ? ending(L32_CAFE, "Bắc cầu nối hai sân thượng, mở quán chung", "Hết thù, thành chung vốn") : undefined)),
       ],
     ],

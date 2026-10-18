@@ -650,7 +650,7 @@ const X10 = weird("X10", "abs", ["tien", "danh"],
            C("Dạy hết bí quyết rồi cho cậu ấy đi", { flags: ["x10_cho_di"], happy: 2 }, "Mất người, món của bạn đi xa hơn")]),
       ],
       [
-        card("x10_ket", "Chảo cuối mùa", (c, k) => `${n(c, "x10_tieng") >= 3 ? "Tên món cháy giờ đã nằm trong sách hướng dẫn du lịch của tỉnh." : "Món cháy vẫn bán, khách vẫn quen, phố vẫn khét."} ${cap(noOr(c, k, "món nợ sửa quán"))} vẫn còn trên sổ. Bạn đứng trước bếp, chảo trên tay, chờ lửa bùng lần cuối của mùa. ${k.gag()}`,
+        card("x10_ket", "Chảo cuối mùa", (c, k) => `${n(c, "x10_tieng") >= 3 ? "Tên món cháy giờ đã nằm trong sách hướng dẫn du lịch của tỉnh." : "Món cháy vẫn bán, khách vẫn quen, phố vẫn khét."} ${cap(noOr(c, k, "món nợ sửa quán", "lời hứa sửa quán cho tử tế"))} vẫn còn trên sổ. Bạn đứng trước bếp, chảo trên tay, chờ lửa bùng lần cuối của mùa. ${k.gag()}`,
           (c) => {
             const ban = ending(L10_BAN, "Bán công thức cho chuỗi quán", "Có một khoản lớn, món ăn thành của người khác");
             const truyen = ending(L10_TRUYEN, "Trao chảo cho cậu phụ bếp", "Nhận một khoản vừa, nghề đi tiếp bằng tay người khác");

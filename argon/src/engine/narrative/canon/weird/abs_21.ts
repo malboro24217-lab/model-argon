@@ -123,6 +123,8 @@ const cu22 = (c: FactContext): string => (c.sex === "F" ? "bà" : "ông");
 const huu22 = (c: FactContext): boolean => c.flags.has("x22_nhan_huu") || c.flags.has("x22_hai_mat");
 
 const L22_HUU = land("x22_huu_som", "Bạn chính thức về hưu, sớm hơn bạn bè cùng lứa mấy chục năm. Lương hưu ít nhưng đều, cộng một khoản truy lĩnh mấy năm bị giữ lại.", { custom: "retire", money: 1.5, happy: 5 });
+/** Đã nhận sổ hưu từ nhịp đầu (x22_nhan_huu, đã retire một lần): chung kết không retire lần nữa (host retire không lũy đẳng). */
+const L22_O_HUU = land("x22_o_huu", "Bạn giữ hẳn tuổi trên giấy, sống tiếp đời hưu trí đã bắt đầu từ hôm nhận sổ, cộng một khoản truy lĩnh mấy năm bị giữ lại.", { money: 1.5, happy: 5 });
 const L22_MANG = land("x22_danh_mang", "Kênh của cụ già trẻ nhất cả nước có hàng triệu người theo dõi. Bạn sống bằng nghề làm cụ trên mạng.", { custom: "become:influencer", money: 1 });
 // gần nhất: "Danh" khi đã quá tuổi làm người có ảnh hưởng trên mạng
 const L22_SACH = land("x22_hoi_ky", "Cuốn hồi ký Tôi Già Trước Ba Mươi Năm bán chạy, nhà xuất bản đặt bạn viết tiếp cuốn thứ hai.", { custom: "become:writer", money: 1 });
@@ -146,11 +148,11 @@ const X22 = weird("X22", "abs", ["luat", "ky", "danh"],
       "Ngân hàng gửi thiệp chúc sống lâu. Trong thiệp kẹp một tờ quảng cáo dịch vụ hậu sự trả góp.",
       "Hội người cao tuổi tặng bạn cây gậy thứ ba. Bạn dùng hai cây kia để phơi quần áo.",
     ] },
-    landings: [L22_HUU, L22_MANG, L22_SACH, L22_TRA],
+    landings: [L22_HUU, L22_O_HUU, L22_MANG, L22_SACH, L22_TRA],
     beats: [
       [
         card("x22_mo_so_huu", "Sổ hưu đến trước sổ lương", (c, k) => `Phòng nhân sự gửi bạn một bó hoa và quyết định nghỉ hưu, vì "luật là luật". Cùng ngày, bưu tá mang tới sổ lương hưu đầu tiên. ${k.gag()}`,
-          [C("Nhận sổ hưu, về nhà nghỉ", { money: 0.2, custom: "job_lose", counters: { x22_cu: 1 }, flags: ["x22_nhan_huu"] }, "Có lương hưu, mất chỗ làm"),
+          [C("Nhận sổ hưu, về nhà nghỉ", { money: 0.2, custom: "retire", counters: { x22_cu: 1 }, flags: ["x22_nhan_huu"] }, "Có lương hưu, thôi đi làm"),
            C("Đi khiếu nại, giữ việc", { money: -0.1, flags: ["x22_khieu_nai"], counters: { x22_tre: 1 } }, "Giữ việc, chuyện giấy tờ kéo dài"),
            C("Nhận hưu mà vẫn lén đi làm", { money: 0.3, flags: ["x22_hai_mat"], secret: { tag: "FORGED_PAPERS", severity: 0.25, fuse_years: [3, 8], note: "lĩnh lương hưu theo giấy tờ ghi sai tuổi mà vẫn đi làm" } }, "Hai nguồn tiền, một quả bom chờ nổ")]),
         card("x22_mo_hoi", "Hội người cao tuổi gõ cửa", (c, k) => `${cap(k.npc("chu_hoi"))}, chín mươi hai tuổi, đến tận nhà mời bạn vào hội vì "hội đang thiếu người trẻ". Hội có ba mươi thành viên, một sân bóng chuyền hơi và một quỹ hiếu hỷ dày hơn quỹ của nhiều công ty.`,
@@ -184,7 +186,8 @@ const X22 = weird("X22", "abs", ["luat", "ky", "danh"],
       [
         card("x22_ket", (c) => (c.country === "VN" ? "Lễ mừng thọ của người chưa già" : "Tiệc sinh nhật của người chưa già"), (c, k) => `Hội người cao tuổi tổ chức ${c.country === "VN" ? "mừng thọ" : "tiệc sinh nhật"} cho bạn, bánh kem cắm ${c.age + 30} cây nến. ${cap(k.npc("can_bo"))} mang tới hai tờ giấy: một tờ xác nhận tuổi trên giấy, một tờ trả lại tuổi thật. Còn ${noOr(c, k)} thì không phân biệt tuổi nào, vẫn đòi đúng hạn. ${cnt(c, "x22_cu") >= cnt(c, "x22_tre") ? "Bạn đã quen làm cụ." : "Bạn vẫn thấy mình chưa già."} ${k.gag()}`,
           (c) => {
-            const out: Choice[] = [ending(L22_HUU, "Nhận tuổi trên giấy, về hưu hẳn", "Lương hưu đều đặn, đời chậm lại sớm")];
+            const out: Choice[] = [c.flags.has("x22_nhan_huu") ? ending(L22_O_HUU, "Nhận tuổi trên giấy, ở hẳn đời hưu", "Lương hưu đều đặn, thêm khoản truy lĩnh")
+              : ending(L22_HUU, "Nhận tuổi trên giấy, về hưu hẳn", "Lương hưu đều đặn, đời chậm lại sớm")];
             if (pathOpen("influencer", c.age)) out.push(ending(L22_MANG, "Làm cụ già nổi tiếng trên mạng", "Nổi tiếng, phải già trước ống kính"));
             else if (pathOpen("writer", c.age)) out.push(ending(L22_SACH, "Viết hồi ký người già trước tuổi", huu22(c) ? "Có danh, có sách, hết tiền hưu" : "Có danh, có sách, thôi chờ suất hưu"));
             out.push(ending(L22_TRA, "Ký tờ trả lại tuổi thật", huu22(c) ? "Trẻ lại, trả mọi khoản theo tuổi trên giấy" : "Trẻ lại, trả phí sửa hồ sơ bao năm"));

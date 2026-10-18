@@ -519,10 +519,12 @@ ok(land("x", "Dòng.", { money: 2 }).effects.custom === "season_end:x" && land("
  */
 type FactTag = "debt+" | "debt-" | "job+" | "job-" | "spouse+" | "spouse-" | "kids+" | "home+" | "home-";
 /** legit: sự thật mà một lựa chọn trong mùa có thể đã tạo ra, làm câu khẳng định thành đúng (vd. vay → nợ; trả nợ → từng có nợ). */
-interface FactRule { id: string; variants: string[]; legit: FactTag[]; re: RegExp; scarFull?: boolean }
+/** ownLegit: sự thật mà chính lựa chọn mang chữ được phép nói (mặc định = legit). Với nợ: trả nợ (repay) không cho nhãn nói "trả nợ"
+ * với người không nợ, nhưng một cờ chỉ lựa chọn trả nợ đặt (chỉ mở khi đang nợ) thì vẫn kéo theo "từng có nợ". */
+interface FactRule { id: string; variants: string[]; legit: FactTag[]; ownLegit?: FactTag[]; re: RegExp; scarFull?: boolean }
 const FACT_RULES: FactRule[] = [
   // Khẳng định đang có nợ (khi không nợ, không vật gài nợ, vết nợ rỗng). Bỏ nghĩa bóng: "như một chủ nợ", "trả nợ giờ".
-  { id: "nợ", variants: ["no_debt"], legit: ["debt+", "debt-"],
+  { id: "nợ", variants: ["no_debt"], legit: ["debt+", "debt-"], ownLegit: ["debt+"],
     re: /món nợ|khoản nợ|giấy nợ|tờ nợ|(?<!như (một )?)chủ nợ|đòi nợ|trả nợ(?! giờ)|nợ cũ|nợ nần|gánh nợ|ôm nợ|sạch nợ|hết nợ|khoản vay|món vay|nợ ngân hàng|tiền nợ/i },
   // Khẳng định không nợ (khi đang nợ).
   { id: "không nợ", variants: ["debt"], legit: ["debt-"], re: /không nợ ai|chẳng nợ ai|chưa nợ ai|không còn nợ|không một đồng nợ/i, scarFull: true },
@@ -553,15 +555,19 @@ const FACT_RULES: FactRule[] = [
   { id: "không con", variants: ["kids"], legit: [],
     re: /(chưa|không) có con(?![\p{L}])(?! (số|tem|này|nào|vật|gì|đường|phố|chữ|mèo|chó|gà|vịt|thú))|hiếm muộn|không con cái/iu, scarFull: true },
 ];
-/** Tiền đề do chính mùa / mầm dựng ra: luật được miễn ở cả mùa (kèm lý do). */
-const PREMISE: Record<string, { rules: string[]; why: string }> = {
+/**
+ * Tiền đề do chính mùa / mầm dựng ra: luật được miễn (kèm lý do). `variants`: chỉ miễn ở các biến thể này (vd. lam_lai
+ * chỉ miễn "thuê nhà" cho người có nhà riêng: người sống nhờ không vào được mùa). `cards`: chỉ miễn ở các thẻ này (tiền đề
+ * dựng ở mở màn, thẻ khác vẫn bị dò).
+ */
+const PREMISE: Record<string, { rules: string[]; variants?: string[]; cards?: string[]; why: string }> = {
   tron_chay: { rules: ["nợ", "thuê nhà"], why: "mùa trốn nợ: dàn mới có gã đòi nợ (vai creditor), bạn bỏ đi và thuê một căn gác" },
-  lam_lai: { rules: ["thuê nhà"], why: "mùa bắt đầu trong một phòng trọ thuê, tiền về không" },
+  lam_lai: { rules: ["thuê nhà"], variants: ["home"], why: "mùa bắt đầu trong một phòng trọ thuê, tiền về không (cả người có nhà riêng); người sống nhờ không vào được mùa (NEEDS_INDEPENDENT)" },
   xu_nguoi: { rules: ["thuê nhà"], why: "mùa sang nước khác: bạn thuê căn phòng dưới mái của bà chủ nhà" },
-  w_S07: { rules: ["việc"], why: "nhánh ký hợp đồng lên trạm sao Hỏa: dàn mới có chỉ huy trạm (first_boss), ca trực là việc của mùa" },
-  w_S33: { rules: ["việc"], why: "nhánh nhận việc làm người thật cho máy: dàn mới có chị giám sát (first_boss) và người đồng nghiệp, chỗ làm là của mùa" },
+  w_S07: { rules: ["việc"], cards: ["s07_day_quen_giong"], why: "nhánh ký hợp đồng lên trạm sao Hỏa: dàn mới có chỉ huy trạm (first_boss), ca trực là việc của mùa" },
+  w_S33: { rules: ["việc"], cards: ["s33_mo_phong", "s33_mo_dong_nghiep", "s33_kd_mang", "s33_cl_ban_sao", "s33_day_dong_nghiep"], why: "nhánh nhận việc làm người thật cho máy: dàn mới có chị giám sát (first_boss) và người đồng nghiệp, chỗ làm là của mùa" },
   w_S50: { rules: ["không nợ"], why: "nhánh hệ thống xóa bạn khỏi mọi hồ sơ, xóa luôn sổ nợ: \"không còn nợ ai\" là tiền đề của mùa (chung kết repay hay lấy lại nợ)" },
-  w_X07: { rules: ["việc"], why: "nhánh bán bản quyền khuôn mặt cho hãng mì: hợp đồng với hãng là việc của mùa (dàn mới first_boss: chị đại diện của hãng)" },
+  w_X07: { rules: ["việc"], cards: ["x07_day_bua_com"], why: "nhánh bán bản quyền khuôn mặt cho hãng mì: hợp đồng với hãng là việc của mùa (dàn mới first_boss: chị đại diện của hãng)" },
   w_X22: { rules: ["hưu"], why: "nhánh giấy tờ cộng thêm ba mươi tuổi: sổ hưu, lương hưu theo tuổi trên giấy là tiền đề của mùa" },
   w_X37: { rules: ["nợ"], why: "nhánh thừa kế món nợ một triệu chiếc bánh của bà cô: giấy nợ trả bằng bánh là tiền đề của mùa (dàn mới có ông trưởng ban đòi bánh, vai creditor)" },
   w_X40: { rules: ["nợ"], why: "nhánh người của một ngày: người kia vay tiền dưới tên bạn là tiền đề của mùa (dàn mới có bà chủ tiệm cầm đồ, vai creditor)" },
@@ -636,8 +642,10 @@ function probeFacts(): { hits: Map<string, string>; repay: Map<string, string>; 
   const scan = (where: string, owner: string, cardId: string, variant: string, strs: [string, Set<FactTag>][], full: boolean) => {
     for (const rule of FACT_RULES) {
       if (!rule.variants.includes(variant) || (full && !rule.scarFull)) continue;
-      if (PREMISE[owner]?.rules.includes(rule.id) || NOT_ASSERT[cardId]?.rules.includes(rule.id)) continue;
-      for (const [s, own] of strs) if (!rule.legit.some((t) => own.has(t)) && rule.re.test(s)) { const key = `${where} [${rule.id} @ ${variant}]`; if (!hits.has(key)) hits.set(key, snippet(s, rule.re)); break; }
+      const pr = PREMISE[owner];
+      if (pr && pr.rules.includes(rule.id) && (!pr.variants || pr.variants.includes(variant)) && (!pr.cards || pr.cards.includes(cardId))) continue;
+      if (NOT_ASSERT[cardId]?.rules.includes(rule.id)) continue;
+      for (const [s, own] of strs) if (!(rule.ownLegit ?? rule.legit).some((t) => own.has(t)) && rule.re.test(s)) { const key = `${where} [${rule.id} @ ${variant}]`; if (!hits.has(key)) hits.set(key, snippet(s, rule.re)); break; }
     }
   };
   const NONE = new Set<FactTag>();
@@ -646,7 +654,7 @@ function probeFacts(): { hits: Map<string, string>; repay: Map<string, string>; 
   const weirdPool = Array.from({ length: 400 }, (_, i) => { const c = weirdCtx(rng); return { c, s: fillSlots(KY_FUZZ, c, c.plants, fakeN(i % 2 === 0))! }; });
   const gateOf = new Map<string, (c: FactContext) => boolean>();
   for (const b of WEIRD) gateOf.set(b.season.id, (c) => { try { return b.when(c, fillSlots(KY_FUZZ, c, c.plants, fakeN(false))!); } catch { return false; } });
-  const NEEDS_INDEP = new Set(["tron_chay", "xu_nguoi"]);
+  const NEEDS_INDEP = new Set(["tron_chay", "xu_nguoi", "lam_lai"]);
 
   for (const def of ALL_SEASONS) {
     const gate = gateOf.get(def.id) ?? ((c: FactContext) => c.age >= 8 && (!NEEDS_INDEP.has(def.id) || c.independent));

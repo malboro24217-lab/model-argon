@@ -204,8 +204,11 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     const kid = base({ age: 14, independent: false, weird: 0 });
     for (let i = 1; i <= 20; i++) {
       const ev = gen(kid, "tien", [debt], i, [{ ...SEED, id: "rong", doors: [] }]);
-      ok(!!ev && ev.doors.length === 3 && ev.doors.every((d) => d.season !== "tron_chay" && d.season !== "xu_nguoi"), `GENERIC_DOORS: chưa tự lập thì không có tron_chay/xu_nguoi (rng ${i})`);
-      ok(new Set(ev?.doors.map((d) => d.season)).size === 3, `GENERIC_DOORS: cửa bù ưu tiên mùa khác nhau (rng ${i})`);
+      ok(!!ev && ev.doors.length === 3 && ev.doors.every((d) => d.season !== "tron_chay" && d.season !== "xu_nguoi" && d.season !== "lam_lai"), `GENERIC_DOORS: chưa tự lập thì không có tron_chay/xu_nguoi/lam_lai (rng ${i})`);
+      // Người sống nhờ chỉ còn 2 mùa thường (vu_an_gia_toc, ngoi_sao): cửa bù trải đủ cả hai.
+      ok(new Set(ev?.doors.map((d) => d.season)).size === 2, `GENERIC_DOORS: chưa tự lập, cửa bù trải đủ 2 mùa còn mở (rng ${i})`);
+      const adult = gen(base({ age: 30, independent: true, weird: 0 }), "tien", [debt], i, [{ ...SEED, id: "rong", doors: [] }]);
+      ok(new Set(adult?.doors.map((d) => d.season)).size === 3, `GENERIC_DOORS: cửa bù ưu tiên mùa khác nhau (rng ${i})`);
     }
   }
 

@@ -619,7 +619,7 @@ const X47 = weird("X47", "abs", ["ky", "tinh", "danh"],
 
 const L48_THANG = land("x48_thang", "Quán bên kia trả mặt bằng. Bạn mua lại bộ bàn ghế, giữ nguyên giá cũ, và khách đông gấp đôi.",
   { income_mult: 1.4, happy: 3 });
-const L48_PHA_SAN = land("x48_pha_san", "Cuộc chiến một đồng xu nuốt hết vốn của bạn. Bạn đóng quán, trả nợ dần, và từ đó không ăn món ấy nữa.",
+const L48_PHA_SAN = land("x48_pha_san", "Cuộc chiến một đồng xu nuốt hết vốn của bạn. Bạn đóng quán, thanh toán dần từng khoản, và từ đó không ăn món ấy nữa.",
   { money: -2, custom: "repay:1", happy: -4 });
 const L48_TAI_HOP = land("x48_tai_hop", "Hai người tháo một tấm bảng giá, gộp hai quán làm một, và làm đám cưới ngay giữa con đường từng chia đôi họ.",
   { custom: "marry", happy: 8 });
