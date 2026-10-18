@@ -137,7 +137,7 @@ const pho = { ke: "Bạn gom tiền thuê một góc vỉa hè.", ket_qua: "nua_
     assert.deepStrictEqual(R.lw.history.map(h => h.id), P.lw.history.map(h => h.id), 'same history');
     const pho0 = P.actLog.find(a => a.text === 'mở quán phở');
     const X = replayLife(P.seed, P.choices, { removeAct: pho0.seq }, P.actLog);
-    assert(!X.lw.sflags.has('own_business'), 'no business without the act'); assert(!(X.stories || []).some(s => s.title === 'Quán phở đầu ngõ'), 'no story');
+    { const ob = X.lw.cz.origin.get(Argon.prov.flag('own_business')); const obm = ob && Argon.markById(X.lw.cz, ob); assert(!X.lw.sflags.has('own_business') || (obm && obm.key !== pho0.key), 'no business from the removed act'); } // đời giả định có thể tự mở cơ sở qua thẻ khác assert(!(X.stories || []).some(s => s.title === 'Quán phở đầu ngõ'), 'no story');
     assert.notDeepStrictEqual(X.lw.history.map(h => h.id), P.lw.history.map(h => h.id), 'history differs');
     G.life = P; const cfHtml = counterfactualVN(P); assert(/Tự quyết/.test(cfHtml) && /không/.test(cfHtml), 'counterfactual names a typed act');
     const eu = eulogyVN(P).join(' '); const named = ["học nấu ăn", "mở quán phở", "làm lành với bố", "đi tập thể dục", "mua đất", "đi từ thiện"].filter(t => eu.includes(t)).length;

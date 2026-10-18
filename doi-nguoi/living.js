@@ -81,7 +81,7 @@ function applyEffect(L, e, npcId) {
   if (e.money) L.savings += yearly * e.money;
   if (e.income_mult && L.income > 0) L.income *= e.income_mult;
   if (e.trust) { const npc = ctxNpc(e.trust.npc); if (npc) Argon.propagate(s.graph, npc.id, e.trust.delta, s.tick); }
-  if (e.memory) { const npc = ctxNpc(e.memory.npc); if (npc) { Argon.addMemory(L.lw.mem, npc.id, e.memory.tag, L.age, e.memory.weight, e.memory.note ? `${e.memory.note} (năm bạn ${L.age} tuổi)` : "", e.memory.decayPerYear); stampP(L, Argon.prov.memory(npc.id, e.memory.tag)); if (L.curMark && Math.abs(e.memory.weight) >= 0.25) L.lw.cz.origin.set(Argon.prov.opinion(npc.id), L.curMark.id); } }
+  if (e.memory) { const npc = ctxNpc(e.memory.npc); if (npc) { Argon.addMemory(L.lw.mem, npc.id, e.memory.tag, L.age, e.memory.weight, e.memory.note ? (/năm (bạn )?\d+ tuổi/.test(e.memory.note) ? e.memory.note : `${e.memory.note} (năm bạn ${L.age} tuổi)`) : "", e.memory.decayPerYear); stampP(L, Argon.prov.memory(npc.id, e.memory.tag)); if (L.curMark && Math.abs(e.memory.weight) >= 0.25) L.lw.cz.origin.set(Argon.prov.opinion(npc.id), L.curMark.id); } }
   if (e.secret) { Argon.addSecret(L.lw.mem, e.secret.tag, L.age, e.secret.severity, e.secret.fuse_years, L.ar.rng, e.secret.note || "", (e.secret.known_by || []).filter(id => s.npcs.has(id))); stampP(L, Argon.prov.secret(e.secret.tag)); closeDoorNow(L, "clean_record"); }
   if (e.close_doors) for (const d of e.close_doors) { if (L.perks && L.perks.includes("door") && !L.doorPerkUsed) { L.doorPerkUsed = true; log(L, `Ký ức tiền kiếp giữ cánh cửa ${CH.DOOR_VN(d).vi.toLowerCase()} không đóng.`, "good"); } else closeDoorNow(L, d); }
   if (e.promise) addPromise(L, e.promise);
@@ -187,6 +187,7 @@ function livingYear(L) {
   // 2. Người phụ thuộc: tiền chảy ra
   const deps = Argon.dependentCosts(lw.cast, L.age, L.c.g > 30000); const yearly = Math.max(300, householdIncome(L));
   let depTotal = 0; for (const d of deps) depTotal += d.frac * supportMult(L, d.role) * yearly;
+  lw.depYear = { age: L.age, amt: depTotal };
   if (depTotal > 0) { L.savings -= depTotal; if (L.age - lw.depLogged >= 3) { lw.depLogged = L.age; log(L, `Năm nay ${fmtPPP(depTotal)} đi cho ${deps.map(d => `${d.name} (${d.why})`).join(", ")}.`); } }
   // 3. Ký ức mờ dần, bí mật rò rỉ, ngòi nổ
   Argon.decayMemories(lw.mem);

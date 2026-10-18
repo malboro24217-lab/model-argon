@@ -1,161 +1,450 @@
 <title>Một Lần Chào Đời</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500&family=Be+Vietnam+Pro:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
 <style>
-/* Layout: sổ hộ tịch — giấy khai sinh ở đầu, bàn làm việc 3 cột (chỉ số · nhật ký · những người cùng giây) */
+/* "Sổ đời": giấy hồ sơ xanh xám là những gì số phận cho; mực xanh là những gì BẠN viết; dấu đỏ là những gì không quay lại được.
+   Thứ nổi bật duy nhất: thước đời (1 ô = 1 năm) dưới thanh tuổi. Spec: ux/proposal.md */
 :root{
-  --paper:#ECEFF3; --sheet:#F8F9FB; --ink:#1A2230; --muted:#5A6577; --line:#CBD2DC;
-  --accent:#2D5A88; --seal:#B9802F; --good:#3E8A5B; --bad:#B0463E;
-  --low:#B0463E; --high:#3E8A5B;
-  --f-display:"Alegreya",Georgia,"Times New Roman",serif;
-  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-data:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --paper:#E3E8E1; --sheet:#F6F8F3; --inset:#ECF0E9; --print:#24302B; --muted:#56655D; --rule:#BAC6BC; --rule-soft:#D3DBD3;
+  --pen:#2343B0; --pen-ink:#F6F8F3; --seal:#B8282B; --good:#2C7548; --ochre:#7E560C;
+  --shadow:0 1px 0 rgba(36,48,43,.06),0 8px 24px -12px rgba(36,48,43,.28);
+  --f-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-story:"Literata",Georgia,"Times New Roman",serif;
+  --gut:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#0F141B; --sheet:#161D27; --ink:#E3E8EF; --muted:#8C97A8; --line:#283343;
-  --accent:#86ADD8; --seal:#DDA75A; --good:#6DBB87; --bad:#E07A70; --low:#C2574D; --high:#4F9E6C; color-scheme:dark}}
+  --paper:#0F1512; --sheet:#18201C; --inset:#1F2924; --print:#DCE5DE; --muted:#97A79E; --rule:#36463D; --rule-soft:#29352F;
+  --pen:#9CB0FF; --pen-ink:#0F1512; --seal:#FF7D72; --good:#72C994; --ochre:#E2B65E;
+  --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.8); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --paper:#0F141B; --sheet:#161D27; --ink:#E3E8EF; --muted:#8C97A8; --line:#283343;
-  --accent:#86ADD8; --seal:#DDA75A; --good:#6DBB87; --bad:#E07A70; --low:#C2574D; --high:#4F9E6C; color-scheme:dark}
+  --paper:#0F1512; --sheet:#18201C; --inset:#1F2924; --print:#DCE5DE; --muted:#97A79E; --rule:#36463D; --rule-soft:#29352F;
+  --pen:#9CB0FF; --pen-ink:#0F1512; --seal:#FF7D72; --good:#72C994; --ochre:#E2B65E;
+  --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.8); color-scheme:dark}
+
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 html,body{min-height:100%}
-body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
-.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-h1,h2,h3{font-family:var(--f-display);font-weight:700;text-wrap:balance;margin:0;line-height:1.15}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.mono{font-family:var(--f-data);font-variant-numeric:tabular-nums}
-.label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+body{margin:0;background:var(--paper);color:var(--print);font-family:var(--f-ui);font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums;
+  padding:0 var(--gut-r) 56px var(--gut)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--paper)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:default}
+:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
+h1,h2,h3,h4,p{margin:0}
+[hidden]{display:none!important}
+.wrap{max-width:1240px;margin:0 auto}
+.mono{font-variant-numeric:tabular-nums lining-nums;color:var(--muted)}
 .muted{color:var(--muted)}
-.btn{border:1px solid var(--line);background:var(--sheet);border-radius:6px;padding:8px 14px;font-weight:500}
-.btn:hover{border-color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--sheet);font-weight:600;padding:12px 22px;font-size:16px}
-.btn.primary:hover{filter:brightness(1.08)}
-.btn.on{border-color:var(--accent);color:var(--accent);background:color-mix(in oklab,var(--accent) 10%,var(--sheet))}
-.seg{display:flex;flex-wrap:wrap;gap:6px}
-.seg .btn{padding:6px 10px;font-size:13px}
+.k{font-size:12.5px;font-weight:600;color:var(--muted)}
+.label{display:block;font-size:14.5px;font-weight:700;color:var(--print);padding-bottom:7px;border-bottom:1.5px solid var(--print)}
+.note{font-size:13px;color:var(--muted);line-height:1.45}
+.note.seal{color:var(--seal)}
+.btn{border:1px solid var(--rule);background:var(--sheet);border-radius:4px;padding:8px 13px;font-weight:500;font-size:14px;min-height:40px}
+.btn:hover:not(:disabled){border-color:var(--print)}
+.btn:disabled{opacity:.55}
+.btn.pen,.btn.primary{background:var(--pen);border-color:var(--pen);color:var(--pen-ink);font-weight:600}
+.btn.primary{padding:12px 22px;font-size:16px}
+.btn.on{border-color:var(--pen);color:var(--pen);background:color-mix(in oklab,var(--pen) 10%,var(--sheet))}
+.seg{display:flex;border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--sheet)}
+.seg button{border:0;background:none;padding:0 10px;min-height:38px;min-width:40px;font-size:13.5px;font-weight:500;color:var(--muted);border-left:1px solid var(--rule-soft)}
+.seg button:first-child{border-left:0}
+.seg button.on{background:var(--print);color:var(--paper);font-weight:600}
+.seg button:disabled{opacity:.55}
 
-/* Mở đầu */
-.intro{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:start;padding-top:12px}
-.intro h1{font-size:clamp(40px,7vw,76px);letter-spacing:-.01em}
-.intro h1 em{font-style:italic;color:var(--seal);font-weight:500}
-.intro p.lede{font-size:18px;max-width:34em;margin:14px 0 0}
-.counter{display:flex;gap:28px;margin-top:22px;flex-wrap:wrap}
-.counter div{display:flex;flex-direction:column}
-.counter b{font-family:var(--f-data);font-size:28px;font-weight:500}
-.panel{background:var(--sheet);border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
-.field{display:flex;flex-direction:column;gap:8px}.field[hidden]{display:none}
-.past{display:flex;flex-direction:column;gap:6px;font-size:13px}
-.past .row{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);padding-top:6px}
+/* ===== Mở đầu ===== */
+.intro{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:48px;align-items:start;padding-top:max(36px,env(safe-area-inset-top,0px))}
+.intro h1{font-family:var(--f-story);font-weight:600;font-size:clamp(34px,5.4vw,58px);line-height:1.05;letter-spacing:-.01em}
+.intro .lede{font-size:18px;max-width:34em;margin-top:14px}
+.counter{display:flex;gap:36px;margin-top:28px;flex-wrap:wrap;align-items:flex-end}
+.counter div{display:flex;flex-direction:column;gap:2px}
+.counter b{font-family:var(--f-story);font-weight:600;font-size:clamp(56px,9vw,104px);line-height:.95;color:var(--pen);letter-spacing:-.02em}
+.counter div+div b{font-size:clamp(30px,4.5vw,48px);color:var(--muted)}
+.counter span{font-size:14px;color:var(--muted)}
+.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.field{display:flex;flex-direction:column;gap:8px}
+.past{display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.past .row{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed var(--rule);padding-top:6px}
+.foot{font-size:12.5px;color:var(--muted);max-width:70em;margin-top:32px}
 
-/* Giấy khai sinh */
-.cert{background:var(--sheet);border:1px solid var(--line);border-radius:4px;max-width:620px;margin:20px auto;padding:30px 30px 26px;position:relative;
-  box-shadow:0 0 0 6px var(--sheet),0 0 0 7px var(--line)}
-.cert h2{font-size:30px;text-align:center}
-.cert .sub{text-align:center;margin-top:4px}
-.cert dl{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:24px 0 20px}
-.cert dt{color:var(--muted);font-size:13px}
-.cert dd{margin:0;font-weight:500;border-bottom:1px dotted var(--line);padding-bottom:2px}
-.stamp{position:absolute;right:22px;top:20px;width:86px;height:86px;border:2px solid var(--seal);border-radius:50%;color:var(--seal);
-  display:grid;place-items:center;text-align:center;font-family:var(--f-data);font-size:10px;line-height:1.3;transform:rotate(-12deg);opacity:.85}
-.cert .actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+/* ===== Giấy khai sinh ===== */
+.cert{background:var(--sheet);border:1px solid var(--rule);border-radius:3px;max-width:620px;margin:max(28px,env(safe-area-inset-top,0px)) auto 20px;padding:28px 30px 26px;position:relative;
+  box-shadow:0 0 0 6px var(--sheet),0 0 0 7px var(--rule),var(--shadow)}
+.cert .doc{font-size:13px;font-weight:600;color:var(--muted)}
+.cert h2{font-family:var(--f-story);font-weight:600;font-size:34px;line-height:1.1;margin-top:4px;color:var(--pen)}
+.cert .sub{margin-top:4px;color:var(--muted);font-size:14px}
+.cert dl{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:22px 0 22px}
+.cert dt{color:var(--muted);font-size:13.5px;padding-top:2px}
+.cert dd{margin:0;font-family:var(--f-story);font-size:16.5px;color:var(--pen);border-bottom:1px dotted var(--rule);padding-bottom:3px}
+.stamp{position:absolute;right:22px;bottom:84px;width:92px;height:92px;border:2px solid var(--seal);border-radius:50%;color:var(--seal);
+  display:grid;place-items:center;text-align:center;font-size:10.5px;font-weight:700;line-height:1.35;transform:rotate(-12deg);opacity:.8;pointer-events:none}
+.cert .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.cert .actions .q{border:0;background:none;color:var(--muted);padding:10px 8px;min-height:44px}
 
-/* Bàn chơi */
-.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding-block:10px;border-bottom:1px solid var(--line)}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
-.age{font-family:var(--f-display);font-size:40px;font-weight:700;line-height:1}
-.age small{font-size:16px;font-weight:500;color:var(--muted);margin-left:4px}
-.who{display:flex;flex-direction:column;min-width:0}
-.who b{font-size:16px}
-.spacer{flex:1}
-.board{display:grid;grid-template-columns:280px minmax(0,1fr) 300px;gap:18px;align-items:start}
-.stat{display:grid;grid-template-columns:76px 1fr 30px;gap:8px;align-items:center;font-size:13px}
-.bar{height:8px;background:color-mix(in oklab,var(--line) 70%,transparent);border-radius:4px;overflow:hidden}
-.bar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
-.money{display:flex;flex-direction:column;gap:4px;font-size:13px;border-top:1px solid var(--line);padding-top:12px}
-.money .big{font-family:var(--f-data);font-size:18px}
-.decision{border:1px solid var(--seal);background:color-mix(in oklab,var(--seal) 9%,var(--sheet));border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:12px}
-.decision h3{font-size:22px}
-.decision .choices{display:flex;gap:10px;flex-wrap:wrap}
-.decision .choices .btn{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:10px 14px;flex:1 1 180px}
-.decision .choices .btn small{color:var(--muted);font-size:12px;font-weight:400}
-.log{display:flex;flex-direction:column;max-height:560px;overflow-y:auto;min-width:0}
-.log .e{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
-.log .e:first-child{border-top:0}
-.log .e .a{font-family:var(--f-data);color:var(--muted);font-size:12px;padding-top:2px}
-.log .e.good .t::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:7px;vertical-align:2px}
-.log .e.bad .t::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--bad);margin-right:7px;vertical-align:2px}
-.log .e.big .t{font-weight:600}
-.peer{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-top:1px solid var(--line);font-size:13px}
-.peer:first-of-type{border-top:0}
-.peer .n{font-weight:600;font-size:14px}
-.peer.dead .n{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
-.map{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
-.map i{aspect-ratio:1;border-radius:2px;background:color-mix(in oklab,var(--line) 55%,transparent);max-width:100%}
-.map i.now{outline:2px solid var(--accent);outline-offset:1px}
-.map i.end{background:var(--ink)}
-.map i.le{box-shadow:inset 0 0 0 1px var(--seal)}
-.legend{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+/* ===== Đầu trang chơi ===== */
+.topbar{position:sticky;top:0;z-index:20;background:var(--paper);display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:4px 20px;align-items:center;
+  padding:max(14px,env(safe-area-inset-top,0px)) 0 12px}
+.age{font-family:var(--f-story);font-weight:600;font-size:64px;line-height:.9;letter-spacing:-.02em;display:flex;align-items:baseline;gap:6px}
+.age small{font-family:var(--f-ui);font-size:15px;font-weight:500;color:var(--muted);letter-spacing:0}
+.who{min-width:0;display:flex;flex-direction:column}
+.who b{font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{color:var(--muted);font-size:13.5px}
+.who .epi{color:var(--ochre);font-style:italic}
+.who .epi:empty{display:none}
+.clock{display:flex;align-items:center;gap:10px}
+#pause{display:flex;align-items:center;gap:8px;min-width:118px;justify-content:center}
+#pause svg{width:12px;height:12px;fill:currentColor}
+.morewrap{position:relative}
+.menu{display:flex;gap:2px;align-items:center}
+.menu .q{border:0;background:none;padding:8px 10px;font-size:13.5px;color:var(--muted);border-radius:4px;min-height:40px;white-space:nowrap}
+.menu .q:hover:not(:disabled){color:var(--print);background:var(--inset)}
+.menu .q.on{color:var(--pen)}
+.menu .q:disabled{opacity:.6}
+#moreBtn{display:none}
 
-.mx{overflow-x:auto}.mx table{border-collapse:collapse;font-size:13px;font-family:var(--f-data)}
-.mx th,.mx td{border:1px solid var(--line);padding:6px 10px;text-align:center}.mx th{font-family:var(--f-body);font-weight:500;color:var(--muted);font-size:12px}
-.codex{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:8px;padding:14px;background:color-mix(in oklab,var(--accent) 5%,var(--sheet))}
-.codex .c{display:flex;flex-direction:column;gap:2px;font-size:13px;border-top:1px dashed var(--line);padding-top:8px}.codex .c b{font-family:var(--f-display);font-size:16px}
-.style{border-left:3px solid var(--seal);padding-left:14px}
-.choices .btn.locked{opacity:.45;cursor:not-allowed;border-style:dashed}
-.choices .btn.hiddenc{opacity:.35;border-style:dotted;cursor:default;filter:blur(1.5px)}
-.gate{font-size:13px;border-left:3px solid var(--bad);padding:6px 10px;background:color-mix(in oklab,var(--bad) 8%,var(--sheet));border-radius:4px}
-.gate.soft{border-color:var(--muted);background:color-mix(in oklab,var(--muted) 8%,var(--sheet))}
-.tempt{font-size:13px;border-left:3px solid var(--seal);padding:6px 10px;background:color-mix(in oklab,var(--seal) 8%,var(--sheet));border-radius:4px}
-.signal{font-size:13px;border-left:3px solid var(--accent);padding:6px 10px;background:color-mix(in oklab,var(--accent) 8%,var(--sheet));border-radius:4px}
+/* ===== Thước đời: 1 ô = 1 năm, đậm mực = năm vui ===== */
+.ruler{padding:4px 0 18px;border-bottom:1px solid var(--rule)}
+.ruler-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px}
+.ruler-head .k b{color:var(--print)}
+.ruler-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.ruler-legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:22px;height:10px;border-radius:1px;background:linear-gradient(90deg,var(--rule),var(--pen))}
+.sw.le{width:10px;background:transparent;box-shadow:inset 0 0 0 1.5px var(--seal)}
+.cells{display:grid;grid-template-columns:repeat(var(--cols-desk,90),minmax(0,1fr));gap:2px;position:relative}
+.cells i{height:18px;background:var(--rule-soft);border-radius:1px;position:relative;min-width:0}
+.cells i.y{background:color-mix(in oklab,var(--rule),var(--pen) var(--h))}
+.cells i.end{background:var(--print)}
+.cells i.now{outline:2px solid var(--pen);outline-offset:1px;z-index:1;animation:ink 1.2s ease-out}
+.cells i.le{box-shadow:inset 0 0 0 1.5px var(--seal)}
+.cells i.le:not(.y):not(.end){background:transparent}
+.cells i.dec::after{content:"";position:absolute;left:-2px;top:-5px;width:1px;height:4px;background:var(--muted)}
+@keyframes ink{from{background:var(--rule-soft)}}
+.ticks{display:grid;grid-template-columns:repeat(var(--n,90),minmax(0,1fr));column-gap:2px;font-size:11.5px;color:var(--muted);margin-top:5px;overflow:hidden;white-space:nowrap}
+
+/* ===== Bàn chơi ===== */
+.board{display:grid;grid-template-columns:250px minmax(0,1fr) 330px;gap:36px;align-items:start;padding-top:22px}
+.col{display:flex;flex-direction:column;gap:26px;min-width:0}
+.sec{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sec>h2{font-family:var(--f-ui);font-size:14.5px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:7px;border-bottom:1.5px solid var(--print)}
+.sec>h2 .k{font-weight:500}
+
+/* chỉ số */
+.stat{display:grid;grid-template-columns:76px minmax(0,1fr) 30px;gap:10px;align-items:center;font-size:14px;position:relative}
+.stat .v{text-align:right;font-weight:600}
+.bar{height:6px;background:var(--rule-soft);border-radius:3px;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--print);border-radius:3px;transition:width .4s}
+.stat.low .bar i{background:var(--seal)} .stat.low .v{color:var(--seal)}
+.delta{position:absolute;right:-30px;top:2px;font-size:11.5px;font-weight:600;animation:rise 1.4s ease-out forwards;pointer-events:none}
+.delta.up{color:var(--good)} .delta.dn{color:var(--seal)}
+@keyframes rise{0%{opacity:0;transform:translateY(6px)}20%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+.bw .bar{height:10px;border-radius:2px}
+.bw .bar i{background:var(--ochre);border-radius:2px}
+.bw.low .bar i{background:var(--seal)}
+.bw .bar b{position:absolute;left:30%;top:-4px;bottom:-4px;width:2px;background:var(--seal)}
+.tier{display:grid;grid-template-columns:repeat(3,1fr);font-size:12.5px;border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.tier span{padding:5px 0;text-align:center;color:var(--muted);border-left:1px solid var(--rule-soft)}
+.tier span:first-child{border-left:0}
+.tier span.on{background:var(--print);color:var(--paper);font-weight:600}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:2px;border:1px solid currentColor}
+.badge.bad{color:var(--seal)}.badge.acc{color:var(--pen)}.badge.seal{color:var(--ochre)}
+
+/* trọng tâm */
+#foci{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:4px;background:var(--sheet)}
+#foci button{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border:0;border-top:1px solid var(--rule-soft);background:none;padding:9px 12px;text-align:left;min-height:42px}
+#foci button:first-child{border-top:0}
+#foci button span{font-size:12.5px;color:var(--muted)}
+#foci button.on{background:color-mix(in oklab,var(--pen) 12%,var(--sheet));box-shadow:inset 3px 0 0 var(--pen);font-weight:600}
+#foci button.on span{color:var(--pen)}
+#foci button:disabled{opacity:.6}
+
+/* ===== Phiếu quyết định ===== */
+#dec{display:flex;flex-direction:column}
+#dec:empty{display:none!important}
+.decision{background:var(--sheet);box-shadow:var(--shadow);border-radius:3px;border-top:3px solid var(--print);padding:20px 22px 22px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.decision.micro{box-shadow:none;border:1px solid var(--rule);border-top-width:1px}
+.dhead{display:flex;justify-content:space-between;gap:4px 12px;align-items:baseline;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.dhead b{color:var(--print);font-weight:700;font-size:13.5px}
+.decision h3{font-family:var(--f-story);font-size:27px;font-weight:600;line-height:1.2;text-wrap:balance}
+.decision.micro h3{font-size:21px}
+.decision .txt{font-family:var(--f-story);font-size:17px;line-height:1.65;max-width:62ch}
+.readmore{display:none}
+.cause{font-size:14px;border-left:2px solid var(--pen);padding:2px 0 2px 12px;color:var(--muted)}
+.gate{font-size:13.5px;color:var(--seal);border-left:2px solid var(--seal);padding:2px 0 2px 12px}
+.tempt,.signal{font-size:13.5px;background:var(--inset);border-radius:3px;padding:8px 12px}
+.tempt{border-left:3px solid var(--ochre)}.signal{border-left:3px solid var(--pen)}
+.choices{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+.ch{display:grid;grid-template-columns:34px minmax(0,1fr);gap:0 14px;align-items:start;text-align:left;border:0;border-bottom:1px solid var(--rule);background:none;padding:13px 4px 13px 0;min-height:56px;width:100%}
+.ch .key{width:28px;height:28px;border:1.5px solid var(--print);border-radius:3px;display:grid;place-items:center;font-weight:700;font-size:14px;margin-top:1px}
+.ch b{font-size:16px;font-weight:600;display:block}
+.ch .h{font-size:13.5px;color:var(--muted);display:block;margin-top:2px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{font-size:12px;font-weight:600;padding:1px 7px;border-radius:2px;border:1px solid currentColor}
+.tag.lt{color:var(--pen)}
+.tag.door{color:var(--seal);transform:rotate(-1.2deg)}
+.tag.money{color:var(--ochre)}
+.ch:not([disabled]):hover{background:color-mix(in oklab,var(--pen) 7%,transparent)}
+.ch:not([disabled]):hover .key{background:var(--pen);border-color:var(--pen);color:var(--pen-ink)}
+.ch:focus-visible{outline-offset:-2px}
+.ch.locked{cursor:not-allowed}
+.ch.locked b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--seal);text-decoration-thickness:1.5px}
+.ch.locked .key{border-style:dashed;border-color:var(--seal);color:var(--seal)}
+.ch .key svg{width:13px;height:13px;fill:currentColor}
+.ch .why{font-size:13px;color:var(--seal);display:block;margin-top:4px}
+.ch.hiddenc .key{border-style:dotted;border-color:var(--muted);color:var(--muted)}
+.ch.hiddenc .blank{display:block;height:1.4em;border-bottom:1.5px dotted var(--rule);max-width:280px}
+.ch.hiddenc .h{font-style:italic}
+.decision .single{display:flex;gap:10px;flex-wrap:wrap}
+.timer{display:flex;flex-direction:column;gap:6px}
+.timer .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 12px;font-size:13px;color:var(--seal);font-weight:500}
+.timer .track{height:4px;background:var(--rule-soft);border-radius:2px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--seal);transition:width .25s linear}
+.mx{overflow-x:auto}
+.mx table{border-collapse:collapse;font-size:13.5px}
+.mx th,.mx td{border:1px solid var(--rule);padding:6px 10px;text-align:center}
+.mx th{font-weight:500;color:var(--muted);font-size:12.5px}
 .mx td.fog{color:var(--muted);font-style:italic}
-.badge{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-weight:600}
-.badge.bad{border-color:var(--bad);color:var(--bad)}.badge.acc{border-color:var(--accent);color:var(--accent)}.badge.seal{border-color:var(--seal);color:var(--seal)}
-.tiers{display:flex;height:10px;border-radius:5px;overflow:hidden;background:color-mix(in oklab,var(--line) 60%,transparent)}
-.tiers i{display:block;background:var(--muted)}.tiers i.aw{background:var(--accent)}.tiers i.sv{background:var(--seal)}
-body.tunnel .board>aside:last-child,body.tunnel .stat:not(.money-stat),body.tunnel #foci,body.tunnel .map,body.tunnel #peers{opacity:.25;filter:blur(1px);transition:opacity .6s,filter .6s}
-body.tunnel .money{opacity:1;filter:none;outline:2px solid var(--bad);outline-offset:6px;border-radius:4px}
-body.tunnel .decision{box-shadow:inset 0 0 0 2px var(--bad)}
-.timer{height:6px;background:color-mix(in oklab,var(--line) 70%,transparent);border-radius:3px;overflow:hidden}.timer i{display:block;height:100%;background:var(--bad);transition:width .25s linear}
-.castlist{display:flex;flex-direction:column;gap:6px;font-size:13px}.castlist .p{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:baseline}.castlist .p i{width:10px;height:10px;border-radius:50%;display:inline-block;align-self:center}
-.castlist .p .r{color:var(--muted);font-size:12px}.castlist .p.dead{opacity:.45;text-decoration:line-through}
-.vig{font-style:italic;color:var(--muted)}
-.log .e.choice .t{font-weight:600;color:var(--accent)}.log .e.door .t{color:var(--bad);font-style:italic}.log .e.promise .t{color:var(--seal)}
-.cause{font-size:13px;border-left:3px solid var(--seal);padding:6px 10px;background:color-mix(in oklab,var(--seal) 10%,var(--sheet));border-radius:4px}
-.want{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px;padding:4px 0 10px;border-bottom:1px solid var(--line)}
-.want[hidden]{display:none}
-.want label{font-family:var(--f-display);font-size:22px;font-weight:600;color:var(--ink);white-space:nowrap}
-.want input{flex:1 1 220px;min-width:0;font:inherit;font-family:var(--f-display);font-size:20px;color:var(--ink);background:transparent;border:0;border-bottom:2px solid var(--line);padding:2px 2px 4px;outline:none}
-.want input:focus{border-bottom-color:var(--accent)}
-.want input::placeholder{color:var(--muted);opacity:.8}
-.want input:disabled{opacity:.55}
-.want-msg{flex-basis:100%;font-size:13px;color:var(--muted);min-height:0}
-.want-msg.err{color:var(--bad)}
-.actcard .out{font-family:var(--f-display);font-size:24px;margin:0}
-.actcard .out.thanh{color:var(--good)}.actcard .out.hong,.actcard .out.khong_lam_duoc{color:var(--bad)}.actcard .out.nua_voi{color:var(--seal)}
-.actcard .typed{font-family:var(--f-display);font-size:18px;margin:0;color:var(--muted)}
-.actcard .deltas{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--f-data);font-size:12px}
-.actcard .deltas .up{color:var(--good)}.actcard .deltas .dn{color:var(--bad)}
-.actcard ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
-.stories{display:flex;flex-direction:column;gap:8px}.stories .st{display:flex;flex-direction:column;font-size:13px}.stories .r{color:var(--muted);font-size:12px}
-.doorbadge{display:inline-block;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--bad);border:1px solid var(--bad);border-radius:3px;padding:0 5px;margin-top:4px}
-.epi{font-size:12px;color:var(--seal);font-style:italic}
-.delta{position:absolute;right:0;top:-10px;font-family:var(--f-data);font-size:11px;font-weight:600;animation:rise 1.4s ease-out forwards;pointer-events:none}
-.delta.up{color:var(--good)}.delta.dn{color:var(--bad)}@keyframes rise{0%{opacity:0;transform:translateY(6px)}20%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
-.stat{position:relative}
-.decision.micro{border-color:var(--line);background:var(--sheet);padding:14px}.decision.micro h3{font-size:18px}
-/* Kết thúc */
-.end{max-width:760px;margin:10px auto;display:flex;flex-direction:column;gap:20px}
-.end h2{font-size:clamp(30px,5vw,46px)}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.facts div{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:2px}
-.facts b{font-family:var(--f-data);font-size:20px;font-weight:500}
-.foot{font-size:12px;color:var(--muted);max-width:70em}
+/* thẻ tự quyết */
+.actcard .typed{font-family:var(--f-story);font-style:italic;font-size:18px;color:var(--pen)}
+.actcard .out{font-family:var(--f-story);font-size:26px;font-weight:600}
+.actcard .out.thanh{color:var(--good)}.actcard .out.hong,.actcard .out.khong_lam_duoc{color:var(--seal)}.actcard .out.nua_voi{color:var(--ochre)}
+.actcard .deltas{display:flex;flex-wrap:wrap;gap:6px}
+.actcard .deltas span{font-size:12.5px;font-weight:600;padding:1px 7px;border:1px solid currentColor;border-radius:2px}
+.actcard .deltas .up{color:var(--good)}.actcard .deltas .dn{color:var(--seal)}
+.actcard ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14.5px}
 
-@media (max-width:980px){.board{grid-template-columns:minmax(0,1fr)}.board>main{order:-1}.log{max-height:60vh}.intro{grid-template-columns:minmax(0,1fr)}}
-@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+/* ===== Tôi muốn… ===== */
+#want{display:flex;flex-direction:column;gap:6px}
+.want-row{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--print);padding-bottom:4px}
+#want label{font-family:var(--f-story);font-size:20px;font-weight:600;white-space:nowrap}
+#wantIn{flex:1;min-width:0;border:0;background:none;outline:none;font-family:var(--f-story);font-style:italic;font-size:19px;color:var(--pen);padding:8px 2px;caret-color:var(--pen)}
+#wantIn::placeholder{color:var(--muted);opacity:.85}
+#wantIn:disabled{opacity:.6}
+#wantGo{min-width:64px}
+#want.filled .want-row{animation:filled .5s ease-out}
+@keyframes filled{from{border-bottom-color:var(--pen);box-shadow:0 2px 0 var(--pen)}}
+.want-msg{font-size:13px;color:var(--muted)}
+.want-msg.err{color:var(--seal)}
+.want-hint{font-size:13px;color:var(--muted)}
+
+/* gợi ý tiền */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px dashed var(--rule);background:var(--sheet);border-radius:3px;padding:6px 10px;font-size:13.5px;text-align:left;min-height:36px;color:var(--print)}
+.chip::before{content:"Tôi muốn ";color:var(--muted)}
+.chip:hover{border-style:solid;border-color:var(--pen);color:var(--pen)}
+.chip.warn{border-color:color-mix(in oklab,var(--seal) 55%,var(--rule))}
+
+/* ===== Nhật ký ===== */
+.log{display:flex;flex-direction:column}
+.yr{display:grid;grid-template-columns:62px minmax(0,1fr);gap:0 16px;padding:12px 0;border-top:1px solid var(--rule)}
+.yr:first-child{border-top:0;padding-top:4px}
+.yr>h4{font-family:var(--f-story);font-size:22px;font-weight:600;line-height:1.1}
+.yr>h4 small{display:block;font-family:var(--f-ui);font-size:12px;font-weight:500;color:var(--muted);margin-top:3px}
+.yr ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:14.5px;min-width:0}
+.e.choice .t{color:var(--muted)}
+.e.choice .c{display:block;color:var(--pen);font-weight:500}
+.e.big{font-family:var(--f-story);font-size:16px;font-weight:600}
+.e.bad{color:var(--seal)}
+.e.good::before{content:"+ ";color:var(--good);font-weight:700}
+.e.promise{color:var(--ochre)}
+.e.door{color:var(--seal);font-weight:500}
+.e.door .st{font-size:11.5px;font-weight:700;border:1.5px solid var(--seal);border-radius:2px;padding:0 5px;margin-right:8px;display:inline-block;transform:rotate(-2deg)}
+.more{border:0;background:none;color:var(--pen);font-weight:500;padding:10px 0;text-align:left;min-height:40px}
+
+/* ===== Tiền ===== */
+.cash{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.cash div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.cash .big{font-size:24px;font-weight:600;letter-spacing:-.01em}
+.cash .neg,.flow .neg,.ledger .neg{color:var(--seal)}
+.cash .sub{font-size:12.5px;color:var(--muted)}
+.flow{display:flex;flex-direction:column;font-size:13.5px;background:var(--inset);border-radius:3px;padding:8px 12px}
+.flow div{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.flow .fh{font-size:12.5px;color:var(--muted);font-weight:600}
+.flow .tot{border-top:1px solid var(--rule);margin-top:3px;padding-top:6px;font-weight:600}
+.life{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--sheet)}
+.life button{border:0;border-left:1px solid var(--rule-soft);background:none;padding:7px 2px;font-size:12.5px;min-height:40px;line-height:1.2}
+.life button:first-child{border-left:0}
+.life button.on{background:var(--print);color:var(--paper);font-weight:600}
+.ledger{display:flex;flex-direction:column}
+.ledger .st{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 0;border-top:1px dashed var(--rule)}
+.ledger .st:first-child{border-top:0}
+.ledger .st b{font-weight:600;font-size:14px}
+.ledger .st .v{font-weight:600;text-align:right;font-size:14px}
+.ledger .st .r{font-size:12.5px;color:var(--muted);grid-column:1/-1}
+#frugalOld{align-self:flex-start}
+
+/* ===== Người ===== */
+.castlist{display:flex;flex-direction:column}
+.castlist .p{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 10px;padding:8px 0;border-top:1px solid var(--rule-soft)}
+.castlist .p:first-child{border-top:0}
+.castlist .n{font-weight:600;font-size:14.5px}
+.castlist .n span{font-weight:400;color:var(--muted);font-size:13px}
+.trust{font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.trust i::before{content:"";display:inline-block;width:22px;height:5px;border-radius:1px;vertical-align:middle;background:linear-gradient(90deg,currentColor var(--t),var(--rule-soft) 0)}
+.trust.hi{color:var(--good)} .trust.mid{color:var(--muted)} .trust.warm{color:var(--ochre)} .trust.lo{color:var(--seal)}
+.castlist .m{grid-column:1/-1;font-size:13px;color:var(--muted);font-family:var(--f-story);font-style:italic}
+.castlist .pr{grid-column:1/-1;font-size:13px;color:var(--pen)}
+.castlist .p.dead .n{color:var(--muted)}
+.stories{display:flex;flex-direction:column;gap:8px}
+.stories .st{font-size:13.5px;display:flex;flex-direction:column}
+.stories .r{color:var(--muted);font-size:12.5px}
+.peers{display:flex;flex-direction:column;gap:9px}
+.peer{display:flex;flex-direction:column;gap:3px;font-size:13px}
+.peer .pl{height:6px;border-radius:1px;background:linear-gradient(90deg,var(--muted) var(--a),var(--rule-soft) 0)}
+.peer.dead .pl{background:linear-gradient(90deg,var(--seal) var(--a),transparent 0)}
+.peer.me .pl{background:linear-gradient(90deg,var(--pen) var(--a),var(--rule-soft) 0)}
+.peer .n{font-weight:600}
+.peer span{color:var(--muted)}
+.peer.dead .n{color:var(--muted)}
+
+/* Sổ tay */
+.codex{display:flex;flex-direction:column;gap:10px;border:1px solid var(--rule);border-radius:4px;padding:14px;background:var(--sheet)}
+.codex .c{display:flex;flex-direction:column;gap:2px;font-size:13.5px;border-top:1px dashed var(--rule);padding-top:8px}
+.codex .c b{font-family:var(--f-story);font-size:16px}
+.codexhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+
+/* đường hầm khan hiếm */
+body.tunnel .ruler,body.tunnel #left .sec:not(.bw-sec),body.tunnel .board>aside:last-child .sec:not(#wealthF),body.tunnel .log{opacity:.35;transition:opacity .6s}
+body.tunnel .decision{border-top-color:var(--seal)}
+body.tunnel #wealthF .cash{outline:2px solid var(--seal);outline-offset:6px;border-radius:2px}
+
+/* thanh dưới (chỉ điện thoại) */
+.dock,.vitals,.vstrip{display:none}
+
+/* ===== Kết thúc ===== */
+.end{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:30px;padding-top:max(30px,env(safe-area-inset-top,0px))}
+.end .closed{font-size:13.5px;font-weight:600;color:var(--muted)}
+.end h2{font-family:var(--f-story);font-weight:600;font-size:clamp(32px,5vw,48px);line-height:1.05}
+.end .summary{font-size:17px;max-width:60ch}
+.end .acts{display:flex;gap:10px;flex-wrap:wrap}
+.end .ruler{border-bottom:0;padding:0}
+.end .panel{background:none;border:0;border-radius:0;padding:0;gap:10px}
+.epitaph{font-family:var(--f-story);font-size:18.5px;line-height:1.7;border-top:3px double var(--print);border-bottom:3px double var(--print);padding:18px 0}
+.epitaph .label{border:0;padding:0;font-family:var(--f-ui);margin-bottom:6px}
+.epitaph p{margin:0 0 10px;max-width:62ch}
+.epitaph p:last-of-type{margin-bottom:0}
+#epilogue{white-space:pre-line;border-top:1px dashed var(--rule);padding-top:12px;margin-top:10px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.facts div{display:flex;flex-direction:column;gap:2px;border-top:1.5px solid var(--print);padding-top:8px;min-width:0}
+.facts b{font-size:26px;font-weight:600;line-height:1.15}
+.facts b.word{font-size:17px}
+.facts .k{font-weight:500}
+.end .panel .c{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;font-size:14.5px;border-left:2px solid var(--rule);padding:2px 0 2px 14px}
+.end .panel .c b{font-weight:600}
+.end .panel .c span{color:var(--muted)}
+.end .style h3{font-family:var(--f-story);font-weight:600;font-size:24px}
+.tiers{display:flex;height:10px;border-radius:2px;overflow:hidden;background:var(--rule-soft)}
+.tiers i{display:block;background:var(--muted)}.tiers i.aw{background:var(--pen)}.tiers i.sv{background:var(--ochre)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+details.panel>summary{cursor:pointer;list-style:none}
+details.panel>summary::-webkit-details-marker{display:none}
+details.panel>summary .label::after{content:" +";color:var(--muted);font-weight:500}
+details.panel[open]>summary .label::after{content:" −"}
+
+/* ===== Điện thoại ===== */
+@media (max-width:980px) and (min-width:821px){.board{grid-template-columns:220px minmax(0,1fr);}.board>aside:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:26px}}
+@media (max-width:820px){
+  .intro{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:max(24px,env(safe-area-inset-top,0px))}
+  .counter{gap:24px}
+  .cert{padding:22px 18px 20px;margin-top:max(20px,env(safe-area-inset-top,0px))}
+  .cert dl{grid-template-columns:minmax(0,108px) minmax(0,1fr);gap:10px 12px}
+  .stamp{width:70px;height:70px;font-size:9px;right:12px;bottom:78px}
+  .facts{grid-template-columns:1fr 1fr}
+  .two{grid-template-columns:minmax(0,1fr)}
+  body.playing{padding-bottom:calc(var(--dock-h,122px) + env(safe-area-inset-bottom,0px) + 16px)}
+  html.playing{scroll-padding-bottom:calc(var(--dock-h,122px) + env(safe-area-inset-bottom,0px) + 16px)}
+  .topbar{grid-template-columns:auto minmax(0,1fr) auto;gap:6px 12px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+  .age{font-size:42px}
+  .age small{font-size:13px}
+  .who b{font-size:15.5px}
+  .who span{font-size:12.5px}
+  .morewrap{grid-row:1;grid-column:3;align-self:start}
+  .clock{grid-column:1/-1;grid-row:2;justify-content:space-between}
+  #pause{min-width:0;padding:0 14px}
+  .clock .seg{flex:1}
+  .clock .seg button{flex:1;min-width:0}
+  #moreBtn{display:inline-flex;align-items:center}
+  .menu{display:none;position:absolute;right:0;top:100%;z-index:25;flex-direction:column;align-items:stretch;background:var(--sheet);box-shadow:var(--shadow);border:1px solid var(--rule);border-radius:4px;padding:4px;min-width:210px}
+  .topbar.open .menu{display:flex}
+  .menu .q{text-align:left}
+  .ruler{padding:12px 0;border-bottom:0}
+  .cells{grid-template-columns:repeat(var(--cols-phone,45),minmax(0,1fr))}
+  .cells i{height:12px}
+  .cells i.dec::after,.ticks,.ruler-legend{display:none}
+  .ruler-head{margin-bottom:6px}
+  .ruler-head .k{font-size:12px}
+  .vitals{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;padding:12px 0 14px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .vitals .stat{grid-template-columns:68px minmax(0,1fr) 22px;font-size:13px;gap:6px}
+  .vitals .moneyline{grid-column:1/-1;display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px 10px;font-size:13.5px;padding-top:8px;border-top:1px dashed var(--rule)}
+  .vitals .moneyline b{font-weight:600}
+  .vitals .moneyline .neg{color:var(--seal)}
+  .vitals .bwline{grid-column:1/-1}
+  .vitals .bwline .stat{grid-template-columns:76px minmax(0,1fr) 22px}
+  .vstrip{width:100%;border:0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:none;padding:7px 0;text-align:left;flex-direction:column;gap:2px;font-size:12.5px;color:var(--muted);min-height:44px}
+  .vs{display:flex;justify-content:space-between;gap:8px;white-space:nowrap}
+  .vs b{color:var(--print);font-weight:600}
+  .vs b.neg{color:var(--seal)} .vs b.och{color:var(--ochre)}
+  body.pending .vstrip{display:flex}
+  body.pending .vitals{display:none}
+  body.pending .vstrip[aria-expanded="true"]+.vitals{display:grid}
+  body.pending .ruler-head,body.pending .who .epi{display:none}
+  body.pending .ruler{padding:8px 0 10px}
+  body.pending .cells i{height:9px}
+  body.pending .board{padding-top:12px}
+  body.pending .who span:not(.epi){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden}
+  body.pending .clock .seg button,body.pending #pause{min-height:34px}
+  body.pending .topbar{padding-bottom:6px}
+  body.pending .decision{gap:9px;padding:13px 14px 4px}
+  body.pending .dhead .keys{display:none}
+  body.pending .decision h3{font-size:21px}
+  body.pending .decision .txt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:15.5px;line-height:1.55}
+  body.pending .decision .txt.open{display:block}
+  body.pending .readmore{display:inline;border:0;background:none;color:var(--pen);font-weight:500;padding:0;font-size:13.5px;margin-top:-6px;align-self:flex-start;min-height:28px}
+  body.pending .cause,body.pending .gate{font-size:13px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;padding-left:10px}
+  body.pending .timer{gap:4px}
+  body.pending .timer .row{flex-wrap:nowrap;font-size:12.5px}
+  body.pending .timer .row .full{display:none}
+  body.pending .ch{padding:10px 2px 10px 0;min-height:52px}
+  body.pending .ch .h{font-size:13px}
+  body.pending .ch.locked .h,body.pending .ch.locked .tags{display:none}
+  body.pending .ch.locked .why{margin-top:2px}
+  body.pending .decision.actcard{padding-bottom:14px}
+  .board{grid-template-columns:minmax(0,1fr);gap:0;padding-top:18px}
+  .col{display:contents}
+  .board [data-tab]{display:none}
+  body[data-tab="nam"] .board [data-tab="nam"],body[data-tab="tien"] .board [data-tab="tien"],
+  body[data-tab="nguoi"] .board [data-tab="nguoi"],body[data-tab="doi"] .board [data-tab="doi"]{display:flex;margin-bottom:24px}
+  .board .left-stats{display:none!important}
+  body:not([data-tab="nam"]) .board #dec{display:none!important}
+  #codex{order:-5;margin-bottom:18px}
+  #dec{order:-4}
+  .focus-sec{order:-3}
+  .decision{padding:16px 16px 18px}
+  .decision h3{font-size:23px}
+  .decision .txt{font-size:16px}
+  .ch{grid-template-columns:30px minmax(0,1fr);gap:0 12px}
+  .yr{grid-template-columns:52px minmax(0,1fr);gap:0 12px}
+  .yr>h4{font-size:19px}
+  #foci{display:grid;grid-template-columns:repeat(2,1fr)}
+  #foci button{flex-direction:column;gap:0;border-left:1px solid var(--rule-soft)}
+  #foci button:nth-child(odd){border-left:0}
+  #foci button:nth-child(2){border-top:0}
+  #foci button:last-child:nth-child(odd){grid-column:1/-1}
+  #want{position:fixed;left:0;right:0;bottom:var(--tabs-h,46px);z-index:31;background:var(--paper);padding:8px var(--gut-r) 6px var(--gut);border-top:1.5px solid var(--print);gap:2px}
+  #want .want-row{border-bottom:1px solid var(--rule);padding-bottom:4px;gap:8px}
+  #want label{font-size:17px}
+  #wantIn{font-size:16.5px;padding:6px 2px}
+  #wantGo{min-height:38px;min-width:56px}
+  .want-msg:empty,.want-hint{display:none}
+  .dock{display:block;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);padding:0 var(--gut-r) env(safe-area-inset-bottom,0px) var(--gut)}
+  .tabs{display:grid;grid-template-columns:repeat(4,1fr)}
+  .tabs button{border:0;background:none;padding:10px 0 12px;font-size:13.5px;font-weight:500;color:var(--muted);min-height:46px;position:relative}
+  .tabs button[aria-selected="true"]{color:var(--print);font-weight:700}
+  .tabs button[aria-selected="true"]::before{content:"";position:absolute;left:22%;right:22%;top:0;height:3px;background:var(--pen)}
+  .tabs .tb{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--seal);color:var(--paper);font-size:11px;font-weight:700;margin-left:4px;line-height:18px}
+  .delta{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 
 <div class="wrap" id="app"></div>
@@ -166,6 +455,88 @@ body.tunnel .decision{box-shadow:inset 0 0 0 2px var(--bad)}
    g = GDP/người PPP ($), gi = Gini, s = số năm đi học TB, t = tỷ lệ nhập học đại học %, tf = tỷ suất sinh,
    h = mức hài lòng cuộc sống (0–10), nm = nhóm tên.
    Nguồn tham chiếu: UN WPP 2024, UN IGME, World Bank WDI, UNDP HDR, World Happiness Report (qua Our World in Data). */
+/* 50 nước bổ sung, gần đúng ~2023 (UN WPP 2024, UN IGME, World Bank WDI/PIP, UNDP HDR 2025, World Happiness Report qua OWID). Cùng thứ tự trường với COUNTRIES. Nguồn từng ô: sources.md */
+const COUNTRIES_EXTRA = [
+ ["PE","Peru",.54,78,13,17000,.41,10.2,71,2.0,5.8,"la"],
+ ["VE","Venezuela",.43,73,24,8000,.51,9.7,60,2.1,5.6,"la"],
+ ["GT","Guatemala",.38,73,21,13800,.45,5.8,27,2.3,6.3,"la"],
+ ["EC","Ecuador",.27,77,13,15900,.45,9.0,68,1.8,5.7,"la"],
+ ["BO","Bolivia",.26,69,16,12900,.42,10.0,45,2.5,5.8,"la"],
+ ["HT","Haiti",.26,65,54,3300,.41,5.4,5,2.7,3.6,"ht"],
+ ["HN","Honduras",.23,73,16,7200,.47,7.5,23,2.5,6.0,"la"],
+ ["DO","Cộng hòa Dominica",.2,74,32,25900,.38,9.4,58,2.2,5.8,"la"],
+ ["CL","Chile",.18,81,7,33200,.43,11.3,100,1.17,6.4,"la"],
+ ["PY","Paraguay",.14,74,17,17600,.44,8.9,38,2.4,6.0,"la"],
+ ["NI","Nicaragua",.13,75,14,8300,.46,9.9,30,2.2,6.3,"la"],
+ ["SV","El Salvador",.0994,72,10,12700,.4,7.3,32,1.8,6.5,"la"],
+ ["CU","Cuba",.0959,78,8,8400,.4,10.6,50,1.4,5.4,"la"],
+ ["PA","Panama",.0715,80,15,39800,.49,10.8,54,2.1,6.4,"la"],
+ ["CR","Costa Rica",.052,81,10,29200,.47,8.8,55,1.3,7.0,"la"],
+ ["UY","Uruguay",.0334,78,7,34500,.41,10.5,80,1.4,6.6,"la"],
+ ["JM","Jamaica",.033,71,18,12700,.4,10.0,26,1.4,5.8,"en"],
+ ["TT","Trinidad và Tobago",.0161,73,19,34700,.4,10.8,24,1.5,5.9,"en"],
+ ["GY","Guyana",.0168,70,26,54800,.45,8.7,25,2.4,6.0,"en"],
+ ["SR","Suriname",.0109,74,16,21100,.39,8.4,8,2.2,6.3,"nl"],
+ ["BZ","Belize",.00741,74,13,13700,.4,8.8,22,2.0,6.7,"en"],
+ ["IT","Ý",.38,84,3,60300,.34,10.8,76,1.2,6.3,"it"],
+ ["ES","Tây Ban Nha",.34,84,3,55700,.33,10.8,94,1.21,6.4,"es"],
+ ["PL","Ba Lan",.32,79,4,48500,.28,13.2,77,1.3,6.4,"pl"],
+ ["UA","Ukraina",.21,73,8,17700,.26,11.1,83,.98,4.9,"ua"],
+ ["RO","Romania",.18,76,7,46000,.3,11.6,55,1.7,6.5,"ro"],
+ ["NL","Hà Lan",.17,82,4,80400,.26,12.7,87,1.4,7.3,"nl"],
+ ["BE","Bỉ",.1,82,4,72600,.27,12.7,82,1.4,6.9,"be"],
+ ["CZ","Séc",.0918,80,3,56100,.26,13.0,67,1.4,6.8,"cs"],
+ ["GR","Hy Lạp",.0737,82,4,42600,.33,11.6,100,1.3,5.9,"gr"],
+ ["PT","Bồ Đào Nha",.0866,82,3,49800,.34,9.7,78,1.5,6.0,"pt"],
+ ["SE","Thụy Điển",.0979,83,2,68500,.29,12.7,81,1.4,7.3,"se"],
+ ["HU","Hungary",.0854,77,4,46400,.31,12.3,57,1.5,6.0,"hu"],
+ ["BY","Belarus",.065,74,2,30900,.24,12.3,73,1.21,5.8,"by"],
+ ["AT","Áo",.0771,82,3,74300,.31,12.4,92,1.3,6.9,"de"],
+ ["CH","Thụy Sĩ",.0837,84,4,93900,.34,13.9,74,1.4,7.1,"de"],
+ ["RS","Serbia",.0598,77,5,29800,.33,11.6,73,1.5,6.4,"sr"],
+ ["BG","Bulgaria",.0626,76,6,38800,.4,11.5,80,1.7,5.5,"bg"],
+ ["DK","Đan Mạch",.0578,82,4,77400,.3,13.0,81,1.5,7.6,"nordic"],
+ ["FI","Phần Lan",.0436,82,2,63500,.27,13.0,100,1.28,7.7,"fi"],
+ ["NO","Na Uy",.0515,83,2,107800,.27,13.1,95,1.4,7.3,"nordic"],
+ ["IE","Ireland",.0533,82,4,91000,/* GDP 133.400 bị phình do hạch toán của công ty đa quốc gia; dùng mức gần GNI/người PPP để phản ánh thu nhập thật */.29,11.7,78,1.6,6.8,"ie"],
+ ["SK","Slovakia",.0523,78,6,45900,.24,13.1,53,1.6,6.3,"sk"],
+ ["HR","Croatia",.0314,79,5,47800,.3,12.1,81,1.5,5.9,"hr"],
+ ["MD","Moldova",.033,71,16,17800,.27,11.8,71,1.7,5.8,"ro"],
+ ["ZA","Nam Phi",1.19,66,35,15200,.54,11.6,23,2.2,5.4,"za"],
+ ["CI","Bờ Biển Ngà",1.0,62,66,7200,.35,4.9,12,4.3,5.1,"ci"],
+ ["UZ","Uzbekistan",.94,72,14,11700,.34,11.9,46,3.5,6.2,"uz"],
+ ["DZ","Algérie",.91,76,22,16800,.28,7.4,56,2.8,5.4,"ar"],
+ ["MM","Myanmar",.9,67,38,6000,.31,6.4,20,2.1,4.4,"mm"]
+];
+
+/* SF (tuỳ chọn) = họ dạng nữ cho các nhóm có họ biến theo giới (cs, sk, bg, uz). Engine hiện chỉ đọc S; nếu muốn dùng SF: pick(r,(sex==="F"&&p.SF)||p.S). mm: người Myanmar không có họ — S là âm tiết thứ hai của tên. */
+const NAMES_EXTRA = {
+ ht:{M:["Jean","Pierre","Wilson","Jameson","Stevenson","Ricardo"],F:["Marie","Nadège","Rose","Guerline","Fabienne","Sandra"],S:["Joseph","Jean","Pierre","Louis","Charles","Jean-Baptiste"]},
+ it:{M:["Leonardo","Francesco","Alessandro","Lorenzo","Marco","Matteo"],F:["Sofia","Giulia","Aurora","Alice","Chiara","Francesca"],S:["Rossi","Russo","Ferrari","Esposito","Bianchi","Romano"]},
+ es:{M:["Hugo","Martín","Pablo","Alejandro","Daniel","Javier"],F:["Lucía","Martina","Sofía","Carmen","Laura","Paula"],S:["García","Fernández","González","Rodríguez","López","Sánchez"]},
+ pt:{M:["João","Rodrigo","Francisco","Tiago","Miguel","Duarte"],F:["Maria","Leonor","Beatriz","Inês","Ana","Matilde"],S:["Silva","Santos","Ferreira","Pereira","Oliveira","Costa"]},
+ pl:{M:["Jan","Jakub","Piotr","Tomasz","Michał","Krzysztof"],F:["Anna","Zofia","Maja","Katarzyna","Agnieszka","Julia"],S:["Nowak","Wójcik","Kowalczyk","Mazur","Krawczyk","Kaczmarek","Zając"]},
+ ua:{M:["Oleksandr","Andriy","Dmytro","Serhiy","Mykola","Bohdan"],F:["Olena","Oksana","Iryna","Tetiana","Nataliya","Sofiya"],S:["Melnyk","Bondarenko","Kovalenko","Tkachenko","Kravchenko","Boyko"]},
+ by:{M:["Aliaksandr","Dzmitry","Maksim","Artsiom","Andrei","Mikhail"],F:["Anastasiya","Darya","Maryia","Alena","Volha","Katsiaryna"],S:["Kavalenka","Bandarenka","Shauchuk","Karpovich","Navumovich","Kuzmich"]},
+ ro:{M:["Andrei","Alexandru","Ionuț","Mihai","Gabriel","Ștefan"],F:["Maria","Elena","Ioana","Andreea","Alexandra","Ana"],S:["Popescu","Popa","Pop","Radu","Ionescu","Dumitru","Stan"]},
+ nl:{M:["Daan","Sem","Lucas","Jesse","Thomas","Bram"],F:["Emma","Julia","Sophie","Lotte","Anna","Eva"],S:["de Jong","Jansen","de Vries","van den Berg","Bakker","Visser"]},
+ be:{M:["Lucas","Arthur","Louis","Noah","Jules","Adam"],F:["Olivia","Emma","Louise","Mila","Elena","Alice"],S:["Peeters","Janssens","Maes","Jacobs","Dubois","Lambert"]},
+ cs:{M:["Jakub","Jan","Tomáš","Lukáš","Martin","Petr"],F:["Tereza","Eliška","Anna","Lucie","Kateřina","Petra"],S:["Novák","Svoboda","Novotný","Dvořák","Černý","Procházka"],SF:["Nováková","Svobodová","Novotná","Dvořáková","Černá","Procházková"]},
+ sk:{M:["Jakub","Peter","Martin","Tomáš","Michal","Ján"],F:["Sofia","Ema","Zuzana","Lucia","Mária","Katarína"],S:["Horváth","Kováč","Varga","Tóth","Nagy","Baláž"],SF:["Horváthová","Kováčová","Vargová","Tóthová","Nagyová","Balážová"]},
+ gr:{M:["Georgios","Ioannis","Konstantinos","Dimitrios","Nikolaos","Panagiotis"],F:["Maria","Eleni","Aikaterini","Vasiliki","Sofia","Georgia"],S:["Georgiou","Ioannou","Dimitriou","Oikonomou","Papageorgiou","Vasileiou","Christodoulou"]},
+ se:{M:["Erik","Lars","William","Hugo","Oskar","Karl"],F:["Maja","Alice","Elsa","Astrid","Anna","Ebba"],S:["Andersson","Johansson","Karlsson","Nilsson","Eriksson","Larsson"]},
+ nordic:{M:["William","Noah","Oscar","Lucas","Emil","Jakob"],F:["Emma","Ida","Nora","Sofie","Freja","Ingrid"],S:["Hansen","Jensen","Nielsen","Pedersen","Johansen","Olsen","Larsen"]},
+ fi:{M:["Mikko","Juha","Antti","Eino","Leo","Onni"],F:["Aino","Sanna","Helmi","Laura","Emilia","Anna"],S:["Korhonen","Virtanen","Mäkinen","Nieminen","Mäkelä","Hämäläinen"]},
+ hu:{M:["Bence","Máté","Levente","Dávid","László","Zoltán"],F:["Anna","Hanna","Zsófia","Eszter","Katalin","Réka"],S:["Nagy","Kovács","Tóth","Szabó","Horváth","Varga"],first:false},
+ sr:{M:["Luka","Stefan","Nikola","Marko","Lazar","Miloš"],F:["Milica","Ana","Jelena","Marija","Teodora","Sara"],S:["Jovanović","Petrović","Nikolić","Marković","Đorđević","Stojanović"]},
+ hr:{M:["Luka","Ivan","Marko","Josip","Filip","Matej"],F:["Ana","Marija","Petra","Ivana","Mia","Lucija"],S:["Horvat","Kovačević","Babić","Marić","Jurić","Novak"]},
+ bg:{M:["Georgi","Ivan","Dimitar","Nikolay","Aleksandar","Martin"],F:["Maria","Ivana","Elena","Viktoria","Desislava","Gergana"],S:["Ivanov","Georgiev","Dimitrov","Petrov","Nikolov","Stoyanov"],SF:["Ivanova","Georgieva","Dimitrova","Petrova","Nikolova","Stoyanova"]},
+ ie:{M:["Jack","Seán","Conor","Patrick","Darragh","Cian"],F:["Aoife","Siobhán","Niamh","Ciara","Emily","Saoirse"],S:["Murphy","Kelly","O'Brien","Walsh","Byrne","Ryan"]},
+ za:{M:["Thabo","Sipho","Bongani","Johan","Themba","Lwazi"],F:["Nomvula","Thandiwe","Lerato","Ayanda","Precious","Anika"],S:["Dlamini","Nkosi","Ndlovu","Khumalo","Mokoena","Botha"]},
+ ci:{M:["Kouadio","Konan","Yao","Moussa","Serge","Ibrahim"],F:["Aya","Adjoua","Affoué","Mariam","Fatou","Christelle"],S:["Koné","Kouassi","Traoré","Kouadio","Coulibaly","Yao"]},
+ uz:{M:["Muhammad","Abdulloh","Jasur","Sardor","Bekzod","Otabek"],F:["Madina","Dilnoza","Gulnora","Zarina","Mohinur","Sevara"],S:["Karimov","Rahimov","Yusupov","Tursunov","Nazarov","Aliyev"],SF:["Karimova","Rahimova","Yusupova","Tursunova","Nazarova","Aliyeva"]},
+ mm:{M:["Aung","Kyaw","Min","Zaw","Htet","Thura"],F:["Thida","Hnin","Su","May","Khin","Aye"],S:["Win","Oo","Htun","Naing","Myint","Lwin"]}
+};
 const COUNTRIES = [
  ["IN","Ấn Độ",23.0,72,29,9200,.33,6.6,31,2.0,4.0,"in"],
  ["CN","Trung Quốc",9.0,78,7,21500,.37,8.1,60,1.0,5.8,"cn"],
@@ -209,7 +580,7 @@ const COUNTRIES = [
  ["CA","Canada",0.35,82,5,60000,.33,13.8,75,1.3,6.9,"en"],
  ["AU","Úc",0.3,83,4,65000,.34,12.7,100,1.6,7.0,"en"],
  ["KR","Hàn Quốc",0.23,84,3,50000,.31,12.5,100,0.72,6.1,"kr"]
-].map(a=>({id:a[0],n:a[1],b:a[2],le:a[3],u5:a[4],g:a[5],gi:a[6],s:a[7],t:a[8],tf:a[9],h:a[10],nm:a[11]}));
+].concat(COUNTRIES_EXTRA).map(a=>({id:a[0],n:a[1],b:a[2],le:a[3],u5:a[4],g:a[5],gi:a[6],s:a[7],t:a[8],tf:a[9],h:a[10],nm:a[11]}));
 const BY_ID = Object.fromEntries(COUNTRIES.map(c=>[c.id,c]));
 const VND_PER_PPP = 8100; // giá cả ở Việt Nam: 1 đô la PPP ≈ 8.100 đ
 
@@ -233,6 +604,7 @@ const NAMES = {
  tr:{M:["Mehmet","Emir","Reza","Ali"],F:["Zeynep","Elif","Zahra","Maryam"],S:["Yılmaz","Kaya","Hosseini","Karimi"]},
  th:{M:["Somchai","Anan","Krit"],F:["Malee","Ploy","Nok"],S:["Saetang","Wongsa","Chaiyaporn"]}
 };
+Object.assign(NAMES, NAMES_EXTRA);
 
 /* ================= TIỆN ÍCH ================= */
 function makeRng(seed){let s=seed>>>0;return function(){s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -264,7 +636,7 @@ function lifeExp(c,sex){return Math.round(c.le+(sex==="F"?2.4:-2.4))}
 
 /* ================= TẠO MỘT CUỘC ĐỜI ================= */
 function randomCountry(r){return pickWeighted(r,COUNTRIES,c=>c.b)}
-function makeName(r,c,sex){const p=NAMES[c.nm];const g=pick(r,p[sex]),s=pick(r,p.S);return p.first===false?`${s} ${g}`:`${g} ${s}`}
+function makeName(r,c,sex){const p=NAMES[c.nm];const g=pick(r,p[sex]),s=pick(r,(sex==="F"&&p.SF)||p.S);return p.first===false?`${s} ${g}`:`${g} ${s}`}
 function spouseName(r,c,sex){const p=NAMES[c.nm];return pick(r,p[sex==="M"?"F":"M"])}
 
 function createLife(seed,opts={}){
@@ -20232,6 +20604,28 @@ function settleDependent(L) {
 }
 
 /* ---- Mỗi năm: đẩy thay đổi của trò chơi vào Argon, chạy 4 quý, lấy kết quả về ---- */
+/* Thu chi của năm vừa qua, để bảng "Tiền" giải thích vì sao tiền lên xuống. Chỉ ghi sổ, không rút rng, không đổi kết quả. */
+function recordFlow(L, reports, fl, net0, net1, dS) {
+  const A = L.ar, rep = A.holdRep || null, dep = L.lw && L.lw.depYear && L.lw.depYear.age === L.age ? L.lw.depYear.amt : 0;
+  const sum = k => reports.reduce((t, r) => t + (r[k] || 0), 0);
+  const shocks = reports.reduce((t, r) => t + (r.shock ? r.shock.liquid : 0), 0);
+  const rows = [
+    ["Thu nhập", sum("income_received")],
+    ["Sinh hoạt", -sum("survival_paid")],
+    ["Lãi nợ tiêu dùng", -fl.interest],
+    ["Lạm phát ăn vào tiền mặt", -fl.inflation],
+    ["Ốm đau, chuyện bất ngờ", shocks],
+    ["Góp tiền vay mua", rep ? -rep.loan_paid : 0],
+    ["Thu từ tài sản", rep ? rep.rent : 0],
+    ["Giữ tài sản, bảo hiểm", rep ? -(rep.upkeep + rep.premiums) : 0],
+    ["Nuôi người thân", -dep],
+    ["Lựa chọn và sự kiện trong năm", (dS || 0) + dep]
+  ];
+  const net = net1 - net0, known = rows.reduce((t, r) => t + r[1], 0);
+  rows.push(["Chuyện khác trong năm", net - known]);
+  A.lastFlow = { age: L.age, indep: !!A.indep, rows: rows.filter(r => Math.abs(r[1]) >= 1), net, principal: fl.principal, lifestyle: A.state.holdings ? A.state.holdings.lifestyle : "thoai_mai" };
+  A.holdRep = null;
+}
 function argonYear(L) {
   argonInit(L); if (!L.ar || L.age < AR.START_AGE) return null;
   const s = L.ar.state, A = L.ar;
@@ -20240,12 +20634,14 @@ function argonYear(L) {
   if (!A.indep && earnsOwnLiving(L)) { settleDependent(L); const a = s.capitals.capitalAssets; A.indep = true; A.hh = 0; a.liquid = Math.max(0, L.savings); a.debt = Math.max(0, -L.savings); a.illiquid = s.holdings ? Argon.illiquidValue(s.holdings) : 0; A.syncedSavings = L.savings; }
   // 1. Đồng bộ các thay đổi trong năm từ phía trò chơi (sự kiện, kịch bản)
   const dH = L.st.health - A.syncedHealth, dS = L.savings - A.syncedSavings;
+  const net0 = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt; // trước khi cộng các khoản trong năm từ phía trò chơi
   if (dH || dS) s.capitals = Argon.applyDelta(s.capitals, { bio: dH, liquid: dS });
   s.capitals.capitalAssets.income_quarterly = householdIncome(L) / 4;
   // 2. Chính sách làm việc từ trọng tâm năm nay
   const work = L.focus === "work" ? "overtime" : (L.focus === "health" || L.focus === "rest") ? "recover" : "standard";
-  const reports = [];
+  const reports = [], fl = { interest: 0, inflation: 0, principal: 0 };
   for (let q = 0; q < 4 && !s.dead; q++) {
+    { const a = s.capitals.capitalAssets, mc = s.spawn.macro; fl.interest += a.debt * mc.interest_rate / 4; fl.inflation += Math.max(0, a.liquid) * mc.inflation_rate / 4; fl.principal += a.debt * 0.05; }
     reports.push(Argon.tick(s, { work, borrow: 0, repay: A.repay || 0, betrayed: !!A.betrayedThisYear, frugal: A.frugal, purchase: 0 }, A.rng));
     A.betrayedThisYear = false;
   }
@@ -20263,6 +20659,7 @@ function argonYear(L) {
   if (A.indep) { L.savings = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt; L.debt = s.capitals.capitalAssets.debt; }
   else { A.hh = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt - L.savings; L.debt = 0; }
   A.syncedHealth = L.st.health; A.syncedSavings = L.savings;
+  recordFlow(L, reports, fl, net0, s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt, dS);
   settleDependent(L);
   // 4. Ghi nhật ký những chuyển biến đáng kể
   const last = reports[reports.length - 1];
@@ -20536,7 +20933,7 @@ function applyEffect(L, e, npcId) {
   if (e.money) L.savings += yearly * e.money;
   if (e.income_mult && L.income > 0) L.income *= e.income_mult;
   if (e.trust) { const npc = ctxNpc(e.trust.npc); if (npc) Argon.propagate(s.graph, npc.id, e.trust.delta, s.tick); }
-  if (e.memory) { const npc = ctxNpc(e.memory.npc); if (npc) { Argon.addMemory(L.lw.mem, npc.id, e.memory.tag, L.age, e.memory.weight, e.memory.note ? `${e.memory.note} (năm bạn ${L.age} tuổi)` : "", e.memory.decayPerYear); stampP(L, Argon.prov.memory(npc.id, e.memory.tag)); if (L.curMark && Math.abs(e.memory.weight) >= 0.25) L.lw.cz.origin.set(Argon.prov.opinion(npc.id), L.curMark.id); } }
+  if (e.memory) { const npc = ctxNpc(e.memory.npc); if (npc) { Argon.addMemory(L.lw.mem, npc.id, e.memory.tag, L.age, e.memory.weight, e.memory.note ? (/năm (bạn )?\d+ tuổi/.test(e.memory.note) ? e.memory.note : `${e.memory.note} (năm bạn ${L.age} tuổi)`) : "", e.memory.decayPerYear); stampP(L, Argon.prov.memory(npc.id, e.memory.tag)); if (L.curMark && Math.abs(e.memory.weight) >= 0.25) L.lw.cz.origin.set(Argon.prov.opinion(npc.id), L.curMark.id); } }
   if (e.secret) { Argon.addSecret(L.lw.mem, e.secret.tag, L.age, e.secret.severity, e.secret.fuse_years, L.ar.rng, e.secret.note || "", (e.secret.known_by || []).filter(id => s.npcs.has(id))); stampP(L, Argon.prov.secret(e.secret.tag)); closeDoorNow(L, "clean_record"); }
   if (e.close_doors) for (const d of e.close_doors) { if (L.perks && L.perks.includes("door") && !L.doorPerkUsed) { L.doorPerkUsed = true; log(L, `Ký ức tiền kiếp giữ cánh cửa ${CH.DOOR_VN(d).vi.toLowerCase()} không đóng.`, "good"); } else closeDoorNow(L, d); }
   if (e.promise) addPromise(L, e.promise);
@@ -20642,6 +21039,7 @@ function livingYear(L) {
   // 2. Người phụ thuộc: tiền chảy ra
   const deps = Argon.dependentCosts(lw.cast, L.age, L.c.g > 30000); const yearly = Math.max(300, householdIncome(L));
   let depTotal = 0; for (const d of deps) depTotal += d.frac * supportMult(L, d.role) * yearly;
+  lw.depYear = { age: L.age, amt: depTotal };
   if (depTotal > 0) { L.savings -= depTotal; if (L.age - lw.depLogged >= 3) { lw.depLogged = L.age; log(L, `Năm nay ${fmtPPP(depTotal)} đi cho ${deps.map(d => `${d.name} (${d.why})`).join(", ")}.`); } }
   // 3. Ký ức mờ dần, bí mật rò rỉ, ngòi nổ
   Argon.decayMemories(lw.mem);
@@ -21461,6 +21859,7 @@ function moneyYear(L) {
   const s = L.ar.state, a = s.capitals.capitalAssets, m = marketCtx(L), yearly = yearlyOf(L), rng = L.ar.rng;
   const cashNow = a.liquid - a.debt;
   const rep = Argon.holdingsYear(h, m, s.economic_phase, cashNow, yearly, L.age, rng);
+  L.ar.holdRep = rep;
   let cash = rep.cash;
   for (const v of rep.revalued) log(L, `${v.name[0].toUpperCase() + v.name.slice(1)} giờ đáng ${fmtPPP(v.after)} (${v.after > v.before ? "lên" : "xuống"} từ ${fmtPPP(v.before)}).`, v.after > v.before ? "good" : "bad");
   for (const d of rep.disasters) log(L, `${d.name[0].toUpperCase() + d.name.slice(1)} gặp nạn, mất ${fmtPPP(d.loss)}${d.paid > 0 ? `; bảo hiểm trả ${fmtPPP(d.paid)}` : ""}.`, "bad");
@@ -21553,15 +21952,70 @@ function moneyPacket(L) {
   };
 }
 
-/** Mục "Của cải" trong bảng bên phải (chỉ xem). Rỗng khi chưa có gì đáng kể. */
+/** Tiền mặt và nợ tiêu dùng đang thấy (L.savings = tiền mặt − nợ tiêu dùng khi đã tự lập; nợ là một quỹ duy nhất của engine). */
+function cashView(L) {
+  const debt0 = Math.max(0, L.debt || 0), cash = L.savings + debt0;
+  return { cash: Math.max(0, cash), debt: debt0 + Math.max(0, -cash) };
+}
+const LIFE_RANK = { tan_tien: 0, vua_phai: 1, thoai_mai: 2, pho_truong: 3 };
+
+/** Đầu mục "Tiền": hai số lớn và thu chi năm qua (A.lastFlow do argonYear ghi). */
+function moneySummaryHTML(L) {
+  const h = holdingsOf(L), cv = cashView(L), loans = h ? Argon.loanTotal(h) : 0;
+  const fam = livesOnFamily(L) && L.ar && L.ar.started;
+  const mc = L.ar ? L.ar.state.spawn.macro : null;
+  let out = `<div class="cash"><div><span class="k">Tiền mặt của bạn</span><span class="big${L.savings < 0 && !cv.debt ? " neg" : ""}">${fmtPPP(cv.cash)}</span><span class="sub">${L.income > 0 ? `thu nhập ${fmtPPP(L.income)}/năm, ≈ ${fmtVND(L.income)}/tháng` : `gia đình: ${fmtPPP(L.famIncome)}/người/năm`}</span></div>`;
+  out += `<div><span class="k">Nợ tiêu dùng</span><span class="big${cv.debt > 0 ? " neg" : ""}">${fmtPPP(cv.debt)}</span><span class="sub">${cv.debt > 0 && mc ? `lãi ${Math.round(mc.interest_rate * 100)}%/năm, mỗi quý trả 5% gốc` : "không nợ"}${loans > 0 ? `; thêm ${fmtPPP(loans)} vay mua` : ""}</span></div></div>`;
+  if (fam) out += `<p class="note">Bạn còn sống nhờ gia đình. Quỹ chung của cả nhà: ${L.ar.hh < 0 ? "−" : ""}${fmtPPP(Math.abs(L.ar.hh || 0))}.</p>`;
+  const f = L.ar && L.ar.lastFlow;
+  if (f && f.age === L.age) {
+    const yi = Math.max(300, householdIncome(L)), big = [], small = [];
+    for (const r of f.rows) (Math.abs(r[1]) >= 0.02 * yi && r[0] !== "Chuyện khác trong năm" ? big : small).push(r);
+    const rest = small.reduce((t, r) => t + r[1], 0);
+    const rows = big.concat(Math.abs(rest) >= 1 ? [["Chuyện khác trong năm", rest]] : []);
+    const sg = v => `${v < 0 ? "−" : "+"}${fmtPPP(Math.abs(v))}`;
+    out += `<div class="flow" aria-label="Thu chi năm ${f.age} tuổi"><div class="fh"><span>${f.indep ? "Năm qua" : "Năm qua, cả nhà"}</span><span>${f.age} tuổi</span></div>${rows.map(r => `<div><span>${escB(r[0])}</span><span class="${r[1] < 0 ? "neg" : ""}">${sg(r[1])}</span></div>`).join("")}<div class="tot"><span>Còn lại sau một năm</span><span class="${f.net < 0 ? "neg" : ""}">${sg(f.net)}</span></div></div>`;
+  }
+  return out;
+}
+
+/** Sổ của cải (chỉ xem). Rỗng khi chưa có gì. Nợ vay mua nằm dưới món của nó; nợ tiêu dùng là một dòng. */
 function wealthPanelHTML(L) {
   const h = holdingsOf(L); if (!h || L.age < 18) return "";
-  const rows = h.assets.map(a => `<div class="st"><b>${escB(a.name)}</b><span class="r">${KIND_VN[a.kind]} · ${fmtPPP(a.value)}${a.loan > 0 ? ` · còn vay ${fmtPPP(a.loan)}` : ""}${a.co_owner ? ` · góp với ${escB(castName(L, a.co_owner))}` : ""}</span></div>`);
-  const owed = h.receivables.filter(r => !r.closed).map(r => `<div class="st"><b>${escB(castName(L, r.npc))} nợ bạn ${fmtPPP(r.amount - r.repaid)}</b><span class="r">hẹn năm ${r.due_age} tuổi</span></div>`);
+  const rows = h.assets.map(a => { const pay = a.loan > 0 ? Argon.annuity(a.loan, a.loan_rate, Math.max(1, a.loan_years_left)) : 0;
+    return `<div class="st r"><b>${escB(a.name[0].toUpperCase() + a.name.slice(1))}</b><span class="v">${fmtPPP(a.value)}</span><span class="r">${KIND_VN[a.kind]}${a.kind === "deposit" ? ` · gửi từ năm ${a.bought_age} tuổi` : a.cost > 0 && a.origin === "bought" ? ` · mua ${fmtPPP(a.cost)} năm ${a.bought_age} tuổi` : a.origin === "inherited" ? " · thừa kế" : ""}${a.loan > 0 ? ` · còn vay ${fmtPPP(a.loan)}, góp ${fmtPPP(pay)}/năm` : ""}${a.co_owner ? ` · góp với ${escB(castName(L, a.co_owner))}` : ""}${a.missed ? " · đang trễ góp" : ""}</span></div>`; });
+  const cv = cashView(L);
+  if (cv.debt > 0) rows.push(`<div class="st r"><b>Nợ tiêu dùng</b><span class="v neg">−${fmtPPP(cv.debt)}</span><span class="r">một khoản chung, lãi ${Math.round(L.ar.state.spawn.macro.interest_rate * 100)}%/năm</span></div>`);
+  const owed = h.receivables.filter(r => !r.closed).map(r => `<div class="st r"><b>${escB(castName(L, r.npc))} nợ bạn</b><span class="v">${fmtPPP(r.amount - r.repaid)}</span><span class="r">hẹn năm ${r.due_age} tuổi${L.age > r.due_age ? ` · đã trễ ${L.age - r.due_age} năm` : ""}</span></div>`);
   const pol = h.policies.map(p => p.kind === "health" ? "sức khỏe" : "tài sản");
-  const extra = [h.lifestyle !== "thoai_mai" ? `sống ${Argon.LIFESTYLE_VN[h.lifestyle]}` : "", pol.length ? `bảo hiểm ${pol.join(", ")}` : "", h.support.parents !== "du" ? `chi ${SUPPORT_VN[h.support.parents]} cho bố mẹ` : "", h.support.kids !== "du" ? `chi ${SUPPORT_VN[h.support.kids]} cho con` : ""].filter(Boolean);
+  const extra = [pol.length ? `Có bảo hiểm ${pol.join(", ")}` : "", h.support.parents !== "du" ? `chi ${SUPPORT_VN[h.support.parents]} cho bố mẹ` : "", h.support.kids !== "du" ? `chi ${SUPPORT_VN[h.support.kids]} cho con` : ""].filter(Boolean);
   if (!rows.length && !owed.length && !extra.length) return "";
-  return `<div class="st"><b>Mức sống: ${Argon.LIFESTYLE_VN[h.lifestyle]}</b>${extra.length ? `<span class="r">${extra.join(" · ")}</span>` : ""}</div>${rows.join("")}${owed.join("")}`;
+  return rows.join("") + owed.join("") + (extra.length ? `<div class="st"><span class="r">${extra.join(" · ")}</span></div>` : "");
+}
+
+/**
+ * Gợi ý việc làm với tiền, sinh từ trạng thái thật, ưu tiên việc gấp, tối đa 5.
+ * Mỗi câu khớp một việc lớn mà ô "Tôi muốn…" hiểu (muc_song, tra_no, co_cau_no, gui_tiet_kiem, ban, bao_hiem, mua, chu_cap).
+ */
+function moneySuggestions(L) {
+  if (typeof canHandleMoney !== "function" || !canHandleMoney(L)) return [];
+  const h = holdingsOf(L), yi = yearlyOf(L), cv = cashView(L), f = L.ar.lastFlow && L.ar.lastFlow.age === L.age ? L.ar.lastFlow : null;
+  const net = f ? f.net : 0, out = [], add = (text, warn) => { if (!out.some(x => x.text === text)) out.push({ text, warn: !!warn }); };
+  const rr = Argon.ratRace(L.ar.state);
+  if (net < 0 && LIFE_RANK[h.lifestyle] > 1) add("giảm mức sống xuống vừa phải", true);
+  if (rr.active && rr.reason === "debt_service" && cv.debt > 0) add("xin giãn nợ tiêu dùng", true);
+  if (cv.debt > 0 && cv.cash > 0.05 * yi) add(`trả trước ${fmtPPP(Math.min(cv.cash, cv.debt) * 0.6)} nợ tiêu dùng`, true);
+  for (const r of h.receivables) if (!r.closed && L.age > r.due_age && L.lw && L.lw.cast.has(r.npc) && L.lw.cast.get(r.npc).alive) add(`nhắc ${castName(L, r.npc)} trả ${fmtPPP(r.amount - r.repaid)}`);
+  if (cv.cash > 0.5 * yi) add(`gửi tiết kiệm phần dư (${fmtPPP(cv.cash - 0.25 * yi)})`);
+  const veh = h.assets.find(a => a.kind === "vehicle" && a.loan <= 0);
+  if (veh && net < 0 && cv.cash < 0.25 * yi) add(`bán ${veh.name}`);
+  const kids = L.kids.filter(k => k.alive).length;
+  if (!Argon.hasPolicy(h, "health") && (kids > 0 || L.st.health < 50)) add(`mua bảo hiểm sức khỏe${kids ? " cho cả nhà" : ""}`);
+  if (!h.assets.some(a => a.kind === "house")) { const m = marketCtx(L), q = Argon.quoteBuy(h, { kind: "house", name: "căn hộ nhỏ", price: Argon.basePrice("house", m), borrow: true }, m, fundsFor(L), yi); if (q.ok) add("vay ngân hàng mua một căn hộ nhỏ"); }
+  const parents = L.lw && [...L.lw.cast.values()].some(m => m.alive && (m.role === "mother" || m.role === "father") && L.age + m.age_offset >= 60);
+  if (parents && h.support.parents === "it" && net > 0) add("chu cấp cho bố mẹ đủ hơn");
+  if (h.lifestyle === "tan_tien" && L.age - (h.lifestyle_since || L.age) >= 5 && net > 0) add("nới mức sống lên vừa phải");
+  return out.sort((a, b) => b.warn - a.warn).slice(0, 5);
 }
 
 /** Cuối đời: bạn để lại gì. */
@@ -21610,90 +22064,154 @@ function inheritFamilyHome(L) {
 </script>
 
 <script>
-/* ================= GIAO DIỆN ================= */
+/* ================= GIAO DIỆN: "Sổ đời" ================= */
 const app=document.getElementById("app");
 const store={get(){try{return JSON.parse(localStorage.getItem("mlcd.lives")||"[]")}catch(e){return[]}},
   add(x){try{const a=store.get();a.unshift(x);localStorage.setItem("mlcd.lives",JSON.stringify(a.slice(0,10)))}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-let G={life:null,peers:[],speed:1,paused:false,timer:null,acc:0,last:0,autoDecide:false,yearMs:2600};
+let G={life:null,peers:[],speed:1,paused:false,timer:null,acc:0,last:0,autoDecide:false,yearMs:2600,logYears:4,tabKey:null,focusKey:null};
 const BIRTHS_PER_SEC=4.2,DEATHS_PER_SEC=2.0;
+const ICON_PAUSE=`<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="0" width="3.5" height="12"/><rect x="7.5" y="0" width="3.5" height="12"/></svg>`;
+const ICON_PLAY=`<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 0l9 6-9 6z"/></svg>`;
+const ICON_LOCK=`<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M3 6V4a3 3 0 0 1 6 0v2h1.5v8h-9V6H3zm1.5 0h3V4a1.5 1.5 0 0 0-3 0v2z"/></svg>`;
+const LIFESTYLES=[["tan_tien","Tằn tiện"],["vua_phai","Vừa phải"],["thoai_mai","Thoải mái"],["pho_truong","Phô trương"]];
+const isPhone=()=>matchMedia("(max-width:820px)").matches;
+function leaveBoard(){document.body.classList.remove("tunnel","pending","playing");document.documentElement.classList.remove("playing");delete document.body.dataset.tab}
 
-function intro(){stop();document.body.classList.remove("tunnel");clearInterval(G.timerIv);const past=store.get();const t0=performance.now();
+/* ---------- Mở đầu ---------- */
+function intro(){stop();leaveBoard();clearInterval(G.timerIv);const past=store.get();const t0=performance.now();
   app.innerHTML=`<section class="intro">
-  <div><div class="label">Mô phỏng · ${COUNTRIES.length} quốc gia · số liệu thống kê thực · động cơ Argon</div>
-   <h1>Một lần <em>chào đời</em></h1>
-   <p class="lede">Mỗi giây có khoảng bốn em bé ra đời. Bạn sẽ là một trong số đó, sinh ra ở đâu và trong gia đình nào là do may rủi, đúng theo tỷ lệ sinh thực tế của thế giới. Rồi bạn sống trọn cuộc đời ấy.</p>
-   <div class="counter"><div><b id="cb">0</b><span class="label">em bé chào đời từ lúc bạn mở trang</span></div><div><b id="cd">0</b><span class="label">người qua đời</span></div></div>
+  <div><h1>Một lần chào đời</h1>
+   <p class="lede">Mỗi giây có khoảng bốn em bé ra đời. Bạn sẽ là một trong số đó, sinh ra ở đâu và trong gia đình nào là do may rủi, đúng theo tỷ lệ sinh thực tế của ${COUNTRIES.length} quốc gia. Rồi bạn sống trọn cuộc đời ấy.</p>
+   <div class="counter"><div><b id="cb">0</b><span>em bé chào đời từ lúc bạn mở trang</span></div><div><b id="cd">0</b><span>người qua đời</span></div></div>
   </div>
   <div class="panel">
-   <div class="field"><span class="label">Một năm trôi qua trong</span><div class="seg" id="len">
-     <button class="btn" data-ms="1300">~1 giây</button><button class="btn on" data-ms="2600">~2,5 giây</button><button class="btn" data-ms="5000">~5 giây</button></div>
-     <span class="muted" style="font-size:13px">Lúc chơi vẫn tăng tốc hoặc tạm dừng được. Từ 6 tuổi, một người kể chuyện AI sẽ viết thêm tình huống riêng cho cuộc đời này (trang sẽ xin phép dùng Claude lần đầu).</span></div>
+   <div class="field"><span class="k">Một năm trôi qua trong</span><div class="seg" id="len" role="group" aria-label="Độ dài một năm">
+     <button data-ms="1300">~1 giây</button><button class="on" data-ms="2600">~2,5 giây</button><button data-ms="5000">~5 giây</button></div>
+     <span class="note">Lúc chơi vẫn tăng tốc hoặc tạm dừng được. Từ 6 tuổi, một người kể chuyện AI sẽ viết thêm tình huống riêng cho cuộc đời này (trang sẽ xin phép dùng Claude lần đầu).</span></div>
    <button class="btn primary" id="born">Chào đời</button>
-   ${(()=>{const m=META.get();return m.lives?`<span class="muted" style="font-size:13px">Kiếp thứ ${m.lives+1}. Ký ức tiền kiếp: ${m.perks.map(id=>(PERKS.find(x=>x.id===id)||{vi:id}).vi).join(", ")}.</span>`:""})()}
-   ${past.length?`<div class="field"><span class="label">Các kiếp trước</span><div class="past">${past.map(p=>`<div class="row"><span>${esc(p.name)} · ${esc(p.country)}</span><span class="mono">${p.age} tuổi</span></div>`).join("")}</div></div>`:""}
+   ${(()=>{const m=META.get();return m.lives?`<span class="note">Kiếp thứ ${m.lives+1}. Ký ức tiền kiếp: ${m.perks.map(id=>(PERKS.find(x=>x.id===id)||{vi:id}).vi).join(", ")}.</span>`:""})()}
+   ${past.length?`<div class="field"><span class="k">Các kiếp trước</span><div class="past">${past.map(p=>`<div class="row"><span>${esc(p.name)}, ${esc(p.country)}</span><span>${p.age} tuổi</span></div>`).join("")}</div></div>`:""}
   </div></section>
   <p class="foot">Số liệu gần đúng (khoảng năm 2023) cho ${COUNTRIES.length} quốc gia chiếm phần lớn số ca sinh trên thế giới: số ca sinh, tuổi thọ theo giới tính, tử vong dưới 5 tuổi, GDP bình quân (PPP), hệ số Gini, số năm đi học, tỷ lệ học đại học, tỷ suất sinh và mức hài lòng với cuộc sống. Tham chiếu UN World Population Prospects 2024, UN IGME, World Bank, UNDP và World Happiness Report qua Our World in Data. Thu nhập quy đổi theo giá cả ở Việt Nam để dễ hình dung. Cái chết và bệnh tật xảy ra theo tỷ lệ thống kê, không mô tả chi tiết.</p>`;
   const cb=document.getElementById("cb"),cd=document.getElementById("cd");
   const tick=()=>{if(!document.body.contains(cb))return;const s=(performance.now()-t0)/1000;cb.textContent=Math.floor(s*BIRTHS_PER_SEC).toLocaleString("vi-VN");cd.textContent=Math.floor(s*DEATHS_PER_SEC).toLocaleString("vi-VN");requestAnimationFrame(tick)};tick();
-  document.querySelectorAll("#len .btn").forEach(b=>b.onclick=()=>{document.querySelectorAll("#len .btn").forEach(x=>x.classList.remove("on"));b.classList.add("on");G.yearMs=+b.dataset.ms});
+  document.querySelectorAll("#len button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#len button").forEach(x=>x.classList.toggle("on",x===b));G.yearMs=+b.dataset.ms});
   document.getElementById("born").onclick=birth;
 }
 
-function birth(){const seed=(Math.random()*2**32)>>>0;const L=createLife(seed);G.life=L;
+/* ---------- Giấy khai sinh ---------- */
+function birth(){leaveBoard();const seed=(Math.random()*2**32)>>>0;const L=createLife(seed);G.life=L;
   G.peers=[1,2,3].concat([4]).map(k=>simulatePeer((seed+k*7919)>>>0));
   const now=new Date();const nth=1+Math.floor(Math.random()*4);
-  app.innerHTML=`<section class="cert">
-   <div class="stamp">ĐÃ ĐĂNG KÝ<br>${now.getFullYear()}<br>#${String(seed%1e6).padStart(6,"0")}</div>
-   <div class="label" style="text-align:center">Giấy khai sinh</div>
-   <h2>${esc(L.name)}</h2>
-   <div class="sub muted">em bé thứ ${nth} chào đời trong giây ${now.toLocaleTimeString("vi-VN")}</div>
+  app.innerHTML=`<section class="cert" aria-labelledby="certName">
+   <div class="doc">Giấy khai sinh</div>
+   <h2 id="certName">${esc(L.name)}</h2>
+   <div class="sub">em bé thứ ${nth} chào đời trong giây ${now.toLocaleTimeString("vi-VN")}</div>
    <dl>
     <dt>Nơi sinh</dt><dd>${esc(L.c.n)}</dd>
     <dt>Giới tính</dt><dd>${L.sex==="M"?"Nam":"Nữ"}</dd>
     <dt>Gia đình</dt><dd>${famWord(L.fam)} so với cả nước (khoảng ${fmtPPP(L.famIncome)}/người/năm, ≈ ${fmtVND(L.famIncome)}/tháng)</dd>
-    <dt>Tuổi thọ trung bình</dt><dd class="mono">${L.le} tuổi</dd>
-    <dt>Tử vong dưới 5 tuổi</dt><dd class="mono">${L.c.u5} trên 1.000 trẻ</dd>
-    <dt>Số năm đi học TB</dt><dd class="mono">${L.c.s} năm</dd>
+    <dt>Tuổi thọ trung bình</dt><dd>${L.le} tuổi</dd>
+    <dt>Tử vong dưới 5 tuổi</dt><dd>${L.c.u5} trên 1.000 trẻ</dd>
+    <dt>Số năm đi học TB</dt><dd>${L.c.s} năm</dd>
    </dl>
-   <div class="actions"><button class="btn primary" id="go">Bắt đầu cuộc đời này</button><button class="btn" id="back">Về trang đầu</button></div>
+   <div class="stamp" aria-hidden="true">ĐÃ ĐĂNG KÝ<br>${now.getFullYear()}<br>số ${String(seed%1e6).padStart(6,"0")}</div>
+   <div class="actions"><button class="btn primary" id="go">Bắt đầu cuộc đời này</button><button class="q" id="back">Về trang đầu</button></div>
   </section>`;
   document.getElementById("go").onclick=play;document.getElementById("back").onclick=intro}
 
-function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.storyLoading=false;
-  app.innerHTML=`<header class="topbar">
+/* ---------- Thước đời ---------- */
+function rulerN(L){return L.alive?Math.max(90,L.age+10,L.le+15):Math.max(90,L.age+1,L.le+15)}
+function rulerCells(L){const n=rulerN(L),cells=[];
+  for(let i=0;i<n;i++){const m=L.map[i-1];let cls="",st="";
+    if(i===0){cls="y";st="--h:50%"}else if(m&&m.end)cls="end";else if(m){cls="y";st=`--h:${Math.max(8,Math.min(100,Math.round((m.h-30)*1.6)))}%`}
+    if(i===L.age&&L.alive)cls+=" now";if(i===L.le)cls+=" le";if(i%10===0&&i)cls+=" dec";
+    cells.push(`<i class="${cls.trim()}"${st?` style="${st}"`:""} title="${i} tuổi"></i>`)}
+  const ticks=Array.from({length:Math.ceil(n/10)},(_,k)=>`<span style="grid-column:span ${Math.min(10,n-k*10)}">${k*10}</span>`).join("");
+  return{n,cells:cells.join(""),ticks}}
+function rulerHTML(L,id){const r=rulerCells(L);
+  return`<div class="cells" id="${id}" style="--cols-desk:${r.n};--cols-phone:${Math.ceil(r.n/2)}">${r.cells}</div><div class="ticks" style="--n:${r.n}">${r.ticks}</div>`}
+
+/* ---------- Bàn chơi ---------- */
+function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.storyLoading=false;G.logYears=4;G.tabKey=null;G.focusKey=null;
+  document.body.classList.add("playing");document.documentElement.classList.add("playing");document.body.dataset.tab="nam";
+  app.innerHTML=`<header class="topbar" id="top">
     <div class="age" id="age">0<small>tuổi</small></div>
-    <div class="who"><b>${esc(L.name)}</b><span class="muted" id="where"></span><span class="epi" id="epi"></span></div>
-    <div class="spacer"></div>
-    <div class="seg" id="speed">${[1,2,4,8,16].map(s=>`<button class="btn${s===1?" on":""}" data-s="${s}">${s}×</button>`).join("")}</div>
-    <button class="btn" id="pause">Tạm dừng</button>
-    <button class="btn" id="auto">Tự chơi: tắt</button>
-    <button class="btn" id="aiBtn">AI kể chuyện</button>
-    <button class="btn" id="codexBtn">Sổ tay</button>
-    <button class="btn" id="quit">Thoát</button>
+    <div class="who"><b>${esc(L.name)}</b><span id="where"></span><span class="epi" id="epi"></span></div>
+    <div class="clock">
+      <div class="seg" id="speed" role="group" aria-label="Tốc độ">${[1,2,4,8,16].map(s=>`<button data-s="${s}"${s===G.speed?' class="on"':""}>${s}×</button>`).join("")}</div>
+      <button class="btn pen" id="pause"></button>
+    </div>
+    <div class="morewrap">
+      <button class="btn" id="moreBtn" aria-expanded="false" aria-controls="menu">Thêm</button>
+      <nav class="menu" id="menu" aria-label="Tùy chọn">
+        <button class="q" id="auto">Tự chơi: tắt</button>
+        <button class="q" id="aiBtn">AI kể chuyện</button>
+        <button class="q" id="codexBtn">Sổ tay</button>
+        <button class="q" id="quit">Thoát</button>
+      </nav>
+    </div>
   </header>
+  <section class="ruler" aria-label="Thước đời, mỗi ô là một năm">
+    <div class="ruler-head"><span class="k" id="rulerHead"></span>
+      <span class="ruler-legend"><span><i class="sw"></i>nhạt: năm buồn, đậm: năm vui</span><span><i class="sw le"></i>tuổi thọ trung bình</span></span></div>
+    <div id="rulerBox"></div>
+  </section>
+  <button class="vstrip" id="vstrip" aria-expanded="false" aria-controls="vitals"></button>
+  <section class="vitals" id="vitals" aria-label="Tình trạng"></section>
   <div class="board">
-   <aside class="panel" id="left"></aside>
-   <main class="panel" style="gap:12px"><div id="codex" hidden></div><form id="want" class="want" autocomplete="off"><label for="wantIn" id="wantLead">Tôi muốn</label><input id="wantIn" maxlength="200" enterkeyhint="go"><button class="btn" id="wantGo" type="submit">Làm</button><span class="want-msg" id="wantMsg" role="status" aria-live="polite"></span></form><div id="dec"></div><div class="label">Nhật ký cuộc đời · mới nhất trước</div><div class="log" id="log"></div></main>
-   <aside class="panel">
-     <div class="field"><span class="label">Những người quanh bạn</span><div class="castlist" id="cast"></div></div>
-     <div class="field" id="storiesF" hidden><span class="label">Chuyện đang dở</span><div class="stories" id="stories"></div></div>
-     <div class="field" id="wealthF" hidden><span class="label">Của cải</span><div class="stories" id="wealth"></div></div>
-     <div class="field"><span class="label">Bốn em bé sinh cùng giây · ở tuổi bạn</span><div id="peers"></div></div>
-     <div class="field"><span class="label">Bản đồ cuộc đời · 1 ô = 1 năm</span><div class="map" id="map"></div>
-       <div class="legend"><span>buồn</span><span>viền vàng: tuổi thọ TB</span><span>vui</span></div></div>
-   </aside></div>`;
-  document.querySelectorAll("#speed .btn").forEach(b=>b.onclick=()=>{G.speed=+b.dataset.s;document.querySelectorAll("#speed .btn").forEach(x=>x.classList.toggle("on",x===b))});
+   <aside class="col" id="left"></aside>
+   <main class="col">
+     <div id="codex" hidden></div>
+     <div id="dec" data-tab="nam"></div>
+     <form id="want" autocomplete="off"><div class="want-row"><label for="wantIn" id="wantLead">Tôi muốn</label><input id="wantIn" maxlength="200" enterkeyhint="go"><button class="btn pen" id="wantGo" type="submit">Làm</button></div>
+       <span class="want-msg" id="wantMsg" role="status" aria-live="polite"></span><span class="want-hint" id="wantHint">Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.</span></form>
+     <section class="sec" data-tab="nam"><h2>Nhật ký <span class="k">mới nhất trước</span></h2><div class="log" id="log"></div><button class="more" id="logMore" hidden></button></section>
+   </main>
+   <aside class="col">
+     <section class="sec" id="wealthF" data-tab="tien"><h2>Tiền <span class="k">quy theo giá Việt Nam</span></h2>
+       <div id="moneySum" class="sec"></div>
+       <div class="sec" id="lifeBox" style="gap:6px"></div>
+       <div class="ledger" id="wealth"></div>
+       <div class="sec" id="chipBox" style="gap:6px"><span class="k">Bạn có thể làm ngay</span><div class="chips" id="moneyChips"></div><p class="note" id="chipNote" hidden></p></div>
+     </section>
+     <section class="sec" data-tab="nguoi"><h2>Người quanh bạn <span class="k">họ nghĩ gì về bạn</span></h2><div class="castlist" id="cast"></div></section>
+     <section class="sec" id="storiesF" data-tab="doi" hidden><h2>Chuyện đang dở</h2><div class="stories" id="stories"></div></section>
+     <section class="sec" data-tab="doi"><h2>Cùng giây ấy <span class="k">bạn và bốn em bé khác, ở tuổi bạn</span></h2><div class="peers" id="peers"></div></section>
+   </aside></div>
+  <div class="dock" id="dock"><nav class="tabs" role="tablist" aria-label="Các phần">
+    <button role="tab" data-t="nam" aria-selected="true">Năm nay</button>
+    <button role="tab" data-t="tien" aria-selected="false">Tiền<span class="tb" id="tabMoney" hidden></span></button>
+    <button role="tab" data-t="nguoi" aria-selected="false">Người</button>
+    <button role="tab" data-t="doi" aria-selected="false">Cả đời</button></nav></div>`;
+  document.querySelectorAll("#speed button").forEach(b=>b.onclick=()=>{G.speed=+b.dataset.s;document.querySelectorAll("#speed button").forEach(x=>x.classList.toggle("on",x===b))});
   document.getElementById("pause").onclick=()=>{G.paused=!G.paused;render()};
   document.getElementById("auto").onclick=()=>{if(G.acting)return;G.autoDecide=!G.autoDecide;L.auto=G.autoDecide;if(L.pending&&G.autoDecide)resolve(L,autoChoice(L));render()};
   document.getElementById("aiBtn").onclick=()=>{if(NAR.status==="off")return;NAR.enabled=!NAR.enabled;render()};
-  document.getElementById("codexBtn").onclick=()=>{const c=document.getElementById("codex");c.hidden=!c.hidden;renderCodex()};
-  document.getElementById("quit").onclick=()=>{if(G.life.alive){G.paused=true;render();askQuit()}else intro()};
+  document.getElementById("codexBtn").onclick=()=>{const c=document.getElementById("codex");c.hidden=!c.hidden;closeMenu();renderCodex();if(!c.hidden)setTab("nam")};
+  document.getElementById("quit").onclick=()=>{closeMenu();if(G.life.alive){G.paused=true;render();setTab("nam");askQuit()}else intro()};
   document.getElementById("want").onsubmit=e=>{e.preventDefault();wantSubmit()};
+  const top=document.getElementById("top"),mb=document.getElementById("moreBtn");
+  mb.onclick=()=>{const o=top.classList.toggle("open");mb.setAttribute("aria-expanded",o)};
+  document.querySelectorAll(".tabs [data-t]").forEach(b=>b.onclick=()=>setTab(b.dataset.t));
+  const vs=document.getElementById("vstrip");vs.onclick=()=>vs.setAttribute("aria-expanded",vs.getAttribute("aria-expanded")!=="true");
+  document.getElementById("logMore").onclick=()=>{G.logYears+=10;render()};
+  watchDock();
   L.auto=G.autoDecide;render();start()}
+function closeMenu(){const t=document.getElementById("top");if(t){t.classList.remove("open");document.getElementById("moreBtn").setAttribute("aria-expanded","false")}}
+function setTab(t){if(!document.getElementById("dock"))return;document.body.dataset.tab=t;document.querySelectorAll(".tabs [data-t]").forEach(b=>b.setAttribute("aria-selected",b.dataset.t===t))}
+/* Phần neo đáy (ô Tôi muốn + tab) đổi chiều cao: đo thật rồi đệm đáy trang đúng bằng thế, không gì bị che. */
+function watchDock(){const measure=()=>{const w=document.getElementById("want"),d=document.getElementById("dock");if(!w||!d)return;const r=document.documentElement;
+    if(getComputedStyle(d).display==="none"){r.style.removeProperty("--dock-h");r.style.removeProperty("--tabs-h");return}
+    const th=d.offsetHeight;r.style.setProperty("--tabs-h",th+"px");r.style.setProperty("--dock-h",(th+(w.hidden?0:w.offsetHeight))+"px")};
+  if(G.dockRO)G.dockRO.disconnect();
+  if("ResizeObserver"in window){G.dockRO=new ResizeObserver(measure);G.dockRO.observe(document.getElementById("want"));G.dockRO.observe(document.getElementById("dock"))}
+  if(!G.dockResize){G.dockResize=true;addEventListener("resize",()=>{const f=G.measureDock;if(f)f()})}
+  G.measureDock=measure;measure()}
 
-function askQuit(){const d=document.getElementById("dec");d.innerHTML=`<div class="decision"><h3>Rời khỏi cuộc đời này?</h3><p style="margin:0">Cuộc đời đang sống sẽ không được lưu.</p>
-  <div class="choices"><button class="btn" id="qy">Thoát về trang đầu</button><button class="btn" id="qn">Sống tiếp</button></div></div>`;
+function askQuit(){const d=document.getElementById("dec");d.innerHTML=`<div class="decision"><div class="dhead"><b>Rời khỏi cuộc đời này?</b></div><p class="txt">Cuộc đời đang sống sẽ không được lưu.</p>
+  <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="qy">Thoát về trang đầu</button><button class="btn pen" id="qn">Sống tiếp</button></div></div>`;
   document.getElementById("qy").onclick=intro;document.getElementById("qn").onclick=()=>{G.paused=false;render()}}
 
 function start(){stop();G.last=performance.now();G.acc=0;const loop=t=>{G.timer=requestAnimationFrame(loop);const dt=t-G.last;G.last=t;const L=G.life;
@@ -21703,146 +22221,218 @@ function start(){stop();G.last=performance.now();G.acc=0;const loop=t=>{G.timer=
 function stop(){if(G.timer)cancelAnimationFrame(G.timer);G.timer=null}
 
 /* ---- Ô "Tôi muốn…" ---- */
-function renderWant(L){const w=document.getElementById("want");if(!w)return;w.hidden=!!G.autoDecide||!L.alive;
-  const off=NAR.status==="off";const inp=document.getElementById("wantIn");
-  document.getElementById("wantLead").textContent=L.pending&&!G.card?"Tôi chọn cách khác:":"Tôi muốn";
-  inp.placeholder=off?"cần bật AI kể chuyện để tự quyết":L.pending&&!G.card?"tự viết cách xử lý của bạn…":"mở quán phở, làm lành với bố, đi học lại…";
-  inp.disabled=off||!!G.acting||!!G.card||!!G.storyLoading||!!L.storyDue;document.getElementById("wantGo").disabled=inp.disabled;
-  const msg=document.getElementById("wantMsg");if(G.acting){msg.textContent="Đang diễn ra…";msg.classList.remove("err")}}
+function wantBlock(L){if(NAR.status==="off")return"off";if(G.acting||G.card||G.storyLoading||L.storyDue)return"busy";return""}
+function renderWant(L){const w=document.getElementById("want");if(!w)return;const wasHidden=w.hidden;w.hidden=!!G.autoDecide||!L.alive;
+  const off=NAR.status==="off";const inp=document.getElementById("wantIn");const pend=L.pending&&!G.card;
+  document.getElementById("wantLead").textContent=pend?"Tôi chọn cách khác:":"Tôi muốn";
+  inp.placeholder=off?"cần AI kể chuyện để tự quyết":pend?"tự viết cách xử lý của bạn…":L.age<18?"đi học thêm, làm lành với bạn, tập một môn…":"mở quán phở, làm lành với bố, đi học lại…";
+  inp.disabled=!!wantBlock(L);document.getElementById("wantGo").disabled=inp.disabled;
+  const msg=document.getElementById("wantMsg");if(G.acting){msg.textContent="Đang diễn ra…";msg.classList.remove("err")}
+  document.getElementById("wantHint").hidden=!!msg.textContent;
+  if(wasHidden!==w.hidden&&G.measureDock)G.measureDock()}
 async function wantSubmit(){const L=G.life;const inp=document.getElementById("wantIn"),msg=document.getElementById("wantMsg");
   if(!L||!L.alive||G.acting||G.card||G.autoDecide)return;const text=inp.value.trim();if(!text){inp.focus();return}
   G.acting=true;render();
   try{const r=await agencyAct(L,text);if(G.life!==L)return;if(r.ok){inp.value="";msg.textContent="";G.card=r.card;G.card.typed=text;G.card.age=L.age}else{msg.textContent=r.error;msg.classList.add("err")}}
   finally{G.acting=false;clearInterval(G.timerIv);G.timerKey=null;render();if(!L.alive)setTimeout(ending,1400)}}
+/* Gợi ý tiền: điền sẵn vào ô Tôi muốn, đưa con trỏ vào, không tự gửi. */
+function prefillWant(text){const L=G.life,inp=document.getElementById("wantIn"),msg=document.getElementById("wantMsg");if(!L||!inp)return;
+  const why=G.autoDecide?"auto":L.pending&&!G.card?"pending":wantBlock(L);
+  if(why){msg.classList.add("err");msg.textContent=why==="off"?"Gợi ý này đi qua ô “Tôi muốn…”, cần AI kể chuyện. Trang này hiện không dùng được AI; bạn vẫn đổi được mức sống ở trên."
+      :why==="auto"?"Đang tự chơi. Tắt “Tự chơi” trong menu để tự quyết.":why==="pending"?"Chọn xong quyết định đang chờ rồi dùng gợi ý này.":"Đợi chuyện đang diễn ra xong rồi thử lại.";
+    document.getElementById("wantHint").hidden=true;return}
+  msg.textContent="";msg.classList.remove("err");document.getElementById("wantHint").hidden=false;
+  inp.value=text;inp.focus({preventScroll:true});inp.setSelectionRange(text.length,text.length);
+  const f=document.getElementById("want");f.classList.remove("filled");void f.offsetWidth;f.classList.add("filled");
+  if(!isPhone())f.scrollIntoView({block:"nearest",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
 const DELTA_VN={health:"sức khỏe",happy:"hạnh phúc",know:"kiến thức",rel:"quan hệ",savings:"tiền",income:"thu nhập/năm"};
 function renderActCard(L,dec){const c=G.card;
   const ds=Object.entries(c.deltas||{}).map(([k,v])=>`<span class="${v>0?"up":"dn"}">${DELTA_VN[k]||k} ${v>0?"+":"−"}${k==="savings"||k==="income"?fmtPPP(Math.abs(v)):Math.abs(v)}</span>`).join("");
-  dec.innerHTML=`<div class="decision actcard" id="actcard"><span class="label">Bạn tự quyết · tuổi ${c.age}</span><p class="typed">“${esc(c.typed)}”</p><h3 class="out ${c.outcome}">${esc(c.outcomeVN)}</h3><p style="margin:0" id="actText"></p>
+  dec.innerHTML=`<article class="decision actcard" id="actcard"><div class="dhead"><b>Bạn tự quyết</b><span>${c.age} tuổi</span></div><p class="typed">“${esc(c.typed)}”</p><h3 class="out ${c.outcome}">${esc(c.outcomeVN)}</h3><p class="txt" id="actText"></p>
    ${ds?`<div class="deltas">${ds}</div>`:""}${c.reactions&&c.reactions.length?`<ul>${c.reactions.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
-   ${c.story?`<div class="cause">Chuyện còn đang dở: ${esc(c.story)}. Sẽ còn quay lại.</div>`:""}
-   <div class="choices"><button class="btn" id="actOk"><b>Tiếp tục</b></button></div></div>`;
+   ${c.story?`<p class="cause">Chuyện còn đang dở: ${esc(c.story)}. Sẽ còn quay lại.</p>`:""}
+   <div><button class="btn pen" id="actOk">Tiếp tục</button></div></article>`;
   const t=document.getElementById("actText");const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(reduce||c.shown)t.textContent=c.text;else{c.shown=true;let i=0;const step=()=>{if(!document.body.contains(t))return;i=Math.min(c.text.length,i+3);t.textContent=c.text.slice(0,i);if(i<c.text.length)requestAnimationFrame(step)};step()}
   const ok=document.getElementById("actOk");ok.onclick=()=>{G.card=null;render()};ok.focus({preventScroll:true})}
+
+/* ---- Lựa chọn ---- */
+function lockWhy(L,g){const rr=g.s?Argon.ratRace(g.s):null;
+  if(g.bw<Argon.BANDWIDTH_LOCK_LEVEL)return`Đầu óc đang quá tải (băng thông ${Math.round(g.bw)}/100). Nghỉ ngơi hoặc bớt lo tiền để mở lại.`;
+  if(rr&&rr.reason==="debt_service")return`${Math.round(rr.debt_service_ratio*100)}% thu nhập mỗi quý đi trả nợ tiêu dùng. Trả bớt nợ để mở lại.`;
+  return"Bạn đã thiếu tiền nhiều quý liền. Có dư vài quý thì mở lại."}
+function choiceHTML(L,p,c,i,st,g,yearly){
+  if(st==="hidden")return`<button class="ch hiddenc" disabled><span class="key">?</span><span><span class="blank" aria-hidden="true"></span><span class="h">Còn một lựa chọn bạn chưa thấy. Nó hiện ra khi bạn lên tầng ${esc(AR.TIER_VN[c.tier]||"Thức tỉnh")}.</span></span></button>`;
+  const tags=[];if(c.longterm)tags.push(`<span class="tag lt">đường dài</span>`);
+  const mon=c._fx&&c._fx.money;if(mon)tags.push(`<span class="tag money">${mon>0?"+":"−"}${fmtPPP(Math.abs(mon)*yearly)}</span>`);
+  for(const d of choiceDoors(c))tags.push(`<span class="tag door">đóng cửa: ${esc(CH.DOOR_VN(d).vi)}</span>`);
+  const locked=st==="locked";
+  return`<button class="ch${locked?" locked":""}" data-i="${i}" ${locked?`disabled aria-describedby="why${i}"`:""}><span class="key">${locked?ICON_LOCK:i+1}</span>
+    <span><b>${esc(c.label)}</b>${c.hint?`<span class="h">${esc(c.hint)}</span>`:""}${tags.length?`<span class="tags">${tags.join("")}</span>`:""}${locked?`<span class="why" id="why${i}" title="${esc(g.reason||"")}">Bạn không với tới: ${esc(lockWhy(L,g))}</span>`:""}</span></button>`}
+function timerPick(L,p,g){const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);return ok.includes(p.def)?p.def:(ok[0]??0)}
+
 function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
+  const g=argonGate(L);
   document.getElementById("age").innerHTML=`${L.age}<small>tuổi</small>`;
-  document.getElementById("epi").textContent=epithets(L).join(" · ");
+  document.getElementById("epi").textContent=epithets(L).join(", ");
   document.getElementById("where").textContent=`${L.c.n}${L.migrated?` (sinh ở ${L.birthC.n})`:""} · ${stateLine(L)}`;
-  document.getElementById("pause").textContent=G.paused?"Tiếp tục":"Tạm dừng";
+  document.getElementById("pause").innerHTML=G.paused?`${ICON_PLAY}Tiếp tục`:`${ICON_PAUSE}Tạm dừng`;
   document.getElementById("codexBtn").textContent=`Sổ tay (${Object.keys(L.codex||{}).length})`;
   const ab=document.getElementById("aiBtn");ab.textContent=NAR.status==="off"?"AI kể chuyện: không có":`AI kể chuyện: ${NAR.enabled?(NAR.status==="busy"?"đang viết…":"bật"):"tắt"}`;ab.classList.toggle("on",NAR.enabled&&NAR.status!=="off");ab.disabled=NAR.status==="off";renderCodex();
-  document.getElementById("auto").textContent=`Tự chơi: ${G.autoDecide?"bật":"tắt"}`;renderWant(L);document.getElementById("auto").classList.toggle("on",G.autoDecide);
+  document.getElementById("auto").textContent=`Tự chơi: ${G.autoDecide?"bật":"tắt"}`;document.getElementById("auto").classList.toggle("on",G.autoDecide);renderWant(L);
+  const pend=!!(L.pending||G.card);document.body.classList.toggle("pending",pend&&L.alive);
+  // thước đời
+  document.getElementById("rulerHead").innerHTML=`Năm thứ <b>${L.age}</b> trên tuổi thọ trung bình <b>${L.le}</b> ở ${esc(L.birthC?L.birthC.n:L.c.n)}`;
+  document.getElementById("rulerBox").innerHTML=rulerHTML(L,"map");
+  // chỉ số
   const st=[["Sức khỏe","health"],["Hạnh phúc","happy"],["Kiến thức","know"],["Quan hệ","rel"]];
+  const statRow=([n,k],withDelta)=>{const v=Math.round(L.st[k]);const prev=G.prevSt?G.prevSt[k]:L.st[k];const d=Math.round(L.st[k]-prev);
+    return`<div class="stat${v<25?" low":""}"><span>${n}</span><div class="bar"><i style="width:${v}%"></i></div><span class="v">${v}</span>${withDelta&&Math.abs(d)>=2?`<span class="delta ${d>0?"up":"dn"}">${d>0?"+":""}${d}</span>`:""}</div>`};
+  const bwRow=lab=>L.ar&&L.ar.started?`<div class="stat bw${g.bw<30?" low":""}"><span>${lab}</span><div class="bar"><i style="width:${g.bw}%"></i><b title="Dưới 30: khóa các lựa chọn đường dài"></b></div><span class="v">${Math.round(g.bw)}</span></div>`:"";
+  const cv=typeof cashView==="function"?cashView(L):{cash:Math.max(0,L.savings),debt:Math.max(0,-L.savings)};
+  const f=L.ar&&L.ar.lastFlow&&L.ar.lastFlow.age===L.age?L.ar.lastFlow:null;
+  document.getElementById("vstrip").innerHTML=`<span class="vs">${st.map(([n,k])=>`<span>${n} <b>${Math.round(L.st[k])}</b></span>`).join("")}</span>
+    <span class="vs">${L.ar&&L.ar.started?`<span>Băng thông <b class="och">${Math.round(g.bw)}</b></span>`:""}<span>Tiền mặt <b>${fmtPPP(cv.cash)}</b></span><span>Nợ <b class="${cv.debt>0?"neg":""}">${fmtPPP(cv.debt)}</b></span></span>`;
+  document.getElementById("vitals").innerHTML=st.map(x=>statRow(x,false)).join("")+(L.ar&&L.ar.started?`<div class="bwline">${bwRow("Băng thông")}</div>`:"")+
+    `<div class="moneyline"><span>Tiền mặt <b>${fmtPPP(cv.cash)}</b></span><span>Nợ tiêu dùng <b class="${cv.debt>0?"neg":""}">${fmtPPP(cv.debt)}</b></span>${f?`<span>Năm qua <b class="${f.net<0?"neg":""}">${f.net<0?"−":"+"}${fmtPPP(Math.abs(f.net))}</b></span>`:""}</div>`;
   const foci=availableFoci(L);
-  document.getElementById("left").innerHTML=`<span class="label">Trạng thái · 0–100</span>
-   ${st.map(([n,k])=>{const prev=G.prevSt?G.prevSt[k]:L.st[k];const d=Math.round(L.st[k]-prev);return`<div class="stat"><span>${n}</span><div class="bar"><i style="width:${L.st[k]}%"></i></div><span class="mono">${Math.round(L.st[k])}</span>${Math.abs(d)>=2?`<span class="delta ${d>0?"up":"dn"}">${d>0?"+":""}${d}</span>`:""}</div>`}).join("")}
-   <div class="money"><span class="label">Thu nhập của bạn</span>
-     <span class="big">${L.income>0?fmtPPP(L.income)+"/năm":"chưa có"}</span>
-     ${L.income>0?`<span class="muted">≈ ${fmtVND(L.income)}/tháng theo giá Việt Nam</span>`:`<span class="muted">Gia đình: ${fmtPPP(L.famIncome)}/người/năm</span>`}
-     <span class="label" style="margin-top:8px">Tiết kiệm${L.debt>0?" − nợ":""}</span><span class="big" style="color:${L.savings<0?"var(--bad)":"inherit"}">${L.savings<0?"−":""}${fmtPPP(Math.abs(L.savings))}</span>${L.debt>0?`<span class="muted">đang nợ ${fmtPPP(L.debt)}</span>`:""}${livesOnFamily(L)&&L.ar.started?`<span class="muted">Quỹ chung của gia đình: ${L.ar.hh<0?"−":""}${fmtPPP(Math.abs(L.ar.hh))}</span>`:""}</div>
-   ${argonPanel(L)}
-   <div class="field" style="border-top:1px solid var(--line);padding-top:12px"><span class="label">Trọng tâm năm nay</span>
-    <div class="seg" id="foci">${foci.map(f=>`<button class="btn${L.focus===f?" on":""}" data-f="${f}" ${G.autoDecide?"disabled":""}>${FOCI[f].label}</button>`).join("")}</div>
-    ${FOCI[L.focus]&&FOCI[L.focus].hint?`<span class="muted" style="font-size:12px">${FOCI[L.focus].hint}</span>`:""}</div>`;
+  document.getElementById("left").innerHTML=`<section class="sec left-stats" data-tab="nam"><h2>Bạn năm nay <span class="k">0–100</span></h2>${st.map(x=>statRow(x,true)).join("")}</section>
+   ${argonPanel(L,g,bwRow)}
+   <section class="sec focus-sec" data-tab="nam"><h2>Trọng tâm năm nay</h2>
+    <div id="foci" role="radiogroup" aria-label="Trọng tâm năm nay">${foci.map(fc=>`<button data-f="${fc}" role="radio" aria-checked="${L.focus===fc}"${L.focus===fc?' class="on"':""} ${G.autoDecide?"disabled":""}>${FOCI[fc].label}${FOCI[fc].hint?`<span>${fc==="work"?"+tiền, −sức khỏe":FOCI[fc].hint}</span>`:""}</button>`).join("")}</div></section>`;
   G.prevSt={...L.st};
-  document.querySelectorAll("#foci .btn").forEach(b=>b.onclick=()=>{L.focus=b.dataset.f;render()});
-  const fr=document.getElementById("frugal");if(fr)fr.onclick=()=>{const h=L.ar.state.holdings;if(typeof canHandleMoney==="function"&&canHandleMoney(L)){if(!L.ar.frugal){L.ar.prevLifestyle=h.lifestyle;moneyEffect(L,{lifestyle:"tan_tien"})}else moneyEffect(L,{lifestyle:L.ar.prevLifestyle&&L.ar.prevLifestyle!=="tan_tien"?L.ar.prevLifestyle:"vua_phai"})}else L.ar.frugal=!L.ar.frugal;render()};
+  document.querySelectorAll("#foci button").forEach(b=>b.onclick=()=>{L.focus=b.dataset.f;render()});
   // quyết định
   const dec=document.getElementById("dec");
+  const fa=document.activeElement,fb=fa&&fa.closest?fa.closest("#dec [data-i]"):null,fi=fb?fb.dataset.i:null;
   if(G.card)renderActCard(L,dec);
-  else if(G.storyLoading&&L.storyDue)dec.innerHTML=`<div class="decision"><span class="label">Chuyện đang dở · tuổi ${L.age}</span><h3>${esc(L.storyDue.title)}</h3><p style="margin:0" class="muted">Chuyện đang tiếp diễn…</p></div>`;
-  else if(L.pending){const p=L.pending;const g=argonGate(L);const key=p.key||p.id+L.age;
-    const states=p.choices.map(c=>choiceState(L,c,g));const anyHidden=states.includes("hidden"),anyLocked=states.includes("locked");
+  else if(G.storyLoading&&L.storyDue)dec.innerHTML=`<div class="decision"><div class="dhead"><b>Chuyện đang dở</b><span>${L.age} tuổi</span></div><h3>${esc(L.storyDue.title)}</h3><p class="note">Chuyện đang tiếp diễn…</p></div>`;
+  else if(L.pending){const p=L.pending;const key=p.key||p.id+L.age;
+    const states=p.choices.map(c=>choiceState(L,c,g));const yearly=Math.max(300,householdIncome(L));
     const m=p.matrix?(p.fog?fogMatrix(L,p.matrix,key):p.matrix):null;
     const ddCost=35;const canDD=L.ar&&p.fog&&!L.ar.dd[key]&&g.tier!=="autopilot";
-    dec.innerHTML=`<div class="decision${p.micro?" micro":""}"><span class="label">${p.micro?"Chuyện nhỏ":"Một quyết định đang chờ"} · tuổi ${L.age}${p.ai?" · do AI viết":""} · phím 1–${p.choices.length}</span><h3>${esc(p.title)}</h3><p style="margin:0">${esc(p.text)}</p>${m?matrixHtml(m):""}
+    const nOk=states.filter(s=>s==="show").length;
+    const timed=g.bw<50&&L.ar;
+    dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
+     <h3 id="decT">${esc(p.title)}</h3><p class="txt" id="decTxt">${esc(p.text)}</p><button class="readmore" id="readmore" aria-controls="decTxt">Đọc hết</button>${m?matrixHtml(m):""}
      ${p.npc&&L.ar&&L.ar.dd[key]?`<div class="signal">${esc(npcSignalVN(L,p.npc,key))}</div>`:""}
-     ${canDD?`<div><button class="btn" id="dd" ${g.bw<ddCost?"disabled":""}>Thẩm định (−${ddCost} băng thông)</button> <span class="muted" style="font-size:12px">${g.bw<ddCost?"Không đủ băng thông để thẩm định.":"Làm rõ các con số và đọc tín hiệu của đối phương."}</span></div>`:""}
+     ${canDD?`<div><button class="btn" id="dd" ${g.bw<ddCost?"disabled":""}>Thẩm định (−${ddCost} băng thông)</button> <span class="note">${g.bw<ddCost?"Không đủ băng thông để thẩm định.":"Làm rõ các con số và đọc tín hiệu của đối phương."}</span></div>`:""}
      ${p.tempt&&p.npc&&L.ar&&g.tier!=="autopilot"?temptationVN(L,p.npc,p.tempt.stake,p.tempt.roundsLeft):""}
-     ${p.causes&&p.causes.length?`<div class="cause">${esc(causeLine(L,p.causes))}</div>`:""}
-     ${anyLocked?`<div class="gate">${esc(g.reason)}</div>`:""}
-     ${anyHidden?`<div class="gate soft">Có một lựa chọn ở đây mà bạn chưa nhìn thấy. Người nhìn thấy nó là người đã bước ra khỏi kịch bản sẵn có.</div>`:""}
-     ${g.bw<50&&L.ar?`<div class="timer" title="Băng thông thấp: bạn không có nhiều thời gian để nghĩ"><i id="timerbar" style="width:100%"></i></div>`:""}
-     <div class="choices">${p.choices.map((c,i)=>{const st=states[i];if(st==="hidden")return`<button class="btn hiddenc" disabled><b>?</b><small>chưa nhìn thấy</small></button>`;
-       const doors=choiceDoors(c);return`<button class="btn${st==="locked"?" locked":""}" data-i="${i}" ${st==="locked"?"disabled":""}><b>${esc(c.label)}</b><small>${st==="locked"?"không với tới được lúc này":esc(c.hint||"")}</small>${doors.map(d=>`<span class="doorbadge">đóng cửa: ${esc(CH.DOOR_VN(d).vi)}</span>`).join("")}</button>`}).join("")}</div></div>`;
+     ${p.causes&&p.causes.length?`<p class="cause">${esc(causeLine(L,p.causes))}</p>`:""}
+     ${timed?`<div class="timer"><div class="row"><span><span class="full">Đầu óc đang căng: bạn </span>còn <span id="timerLeft">${Math.round(6+24*(g.bw/100))}</span> giây để nghĩ</span><span>hết giờ sẽ chọn ${timerPick(L,p,g)+1}</span></div><div class="track" title="Băng thông thấp: bạn không có nhiều thời gian để nghĩ"><i id="timerbar" style="width:100%"></i></div></div>`:""}
+     <div class="choices">${p.choices.map((c,i)=>choiceHTML(L,p,c,i,states[i],g,yearly)).join("")}</div></article>`;
     if(G.acting)dec.querySelectorAll("[data-i]").forEach(b=>b.disabled=true);
     dec.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(G.acting)return;clearInterval(G.timerIv);G.timerKey=null;resolve(L,+b.dataset.i);render()});
-    if(g.bw<50&&L.ar&&G.timerKey!==key){clearInterval(G.timerIv);G.timerKey=key;const total=(6+24*(g.bw/100))*1000;const t0=performance.now();
+    const rm=document.getElementById("readmore");rm.onclick=()=>{const t=document.getElementById("decTxt");const o=t.classList.toggle("open");rm.textContent=o?"Thu gọn":"Đọc hết"};
+    if(G.tabKey!==key){G.tabKey=key;setTab("nam")}
+    if(fi!==null){const b=dec.querySelector(`[data-i="${fi}"]:not([disabled])`);if(b)b.focus({preventScroll:true})}
+    else if(G.focusKey!==key){G.focusKey=key;const a=document.activeElement;if(!a||a===document.body){const b=dec.querySelector("[data-i]:not([disabled])");if(b)b.focus({preventScroll:true})}}
+    if(timed&&G.timerKey!==key){clearInterval(G.timerIv);G.timerKey=key;const total=(6+24*(g.bw/100))*1000;const t0=performance.now();
       G.timerIv=setInterval(()=>{if(G.acting)return;const bar=document.getElementById("timerbar");if(!bar||!L.pending||L.pending.key!==key){clearInterval(G.timerIv);return}const left=Math.max(0,1-(performance.now()-t0)/total);bar.style.width=(left*100)+"%";
-        if(left<=0){clearInterval(G.timerIv);G.timerKey=null;const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);const pickI=ok.includes(p.def)?p.def:(ok[0]??0);log(L,"Bạn không kịp nghĩ. Bạn làm điều dễ nhất.","bad");resolve(L,pickI);render()}},250)}
+        const tl=document.getElementById("timerLeft");if(tl)tl.textContent=Math.ceil(left*total/1000);
+        if(left<=0){clearInterval(G.timerIv);G.timerKey=null;const pickI=timerPick(L,p,argonGate(L));log(L,"Bạn không kịp nghĩ. Bạn làm điều dễ nhất.","bad");resolve(L,pickI);render()}},250)}
     const ddb=document.getElementById("dd");if(ddb)ddb.onclick=()=>{if(dueDiligence(L,key,ddCost))render()}}
-  else if(narratorWaiting(L))dec.innerHTML=`<div class="decision"><span class="label">Người kể chuyện đang viết một tình huống cho tuổi ${L.nextAi}…</span><p style="margin:0" class="muted">Lần đầu, trình duyệt sẽ hỏi bạn có cho phép trang này dùng Claude không. Có thể tắt AI kể chuyện trên thanh trên để chơi với kịch bản sẵn.</p></div>`;
+  else if(narratorWaiting(L))dec.innerHTML=`<div class="decision micro"><div class="dhead"><b>Người kể chuyện đang viết một tình huống cho tuổi ${L.nextAi}…</b></div><p class="note">Lần đầu, trình duyệt sẽ hỏi bạn có cho phép trang này dùng Claude không. Có thể tắt AI kể chuyện trong menu để chơi với kịch bản sẵn.</p></div>`;
   else if(!document.querySelector("#dec #qy"))dec.innerHTML="";
-  // nhật ký
-  document.getElementById("log").innerHTML=L.log.slice(-160).reverse().map(e=>`<div class="e ${e.tone}"><span class="a">${e.age}t</span><span class="t">${esc(e.text)}</span></div>`).join("");
+  renderLog(L);
   if(!L.alive)document.body.classList.remove("tunnel");
-  // dàn nhân vật
-  if(L.lw){const s=L.ar.state;const rows=[...L.lw.cast.values()].filter(m=>!m.absent&&(m.alive||m.role==="mother"||m.role==="father"||m.role==="spouse")).sort((a,b)=>(b.alive-a.alive)||Math.abs(Argon.opinionOf(s,L.lw.mem,b.id))-Math.abs(Argon.opinionOf(s,L.lw.mem,a.id))).slice(0,10);
-    document.getElementById("cast").innerHTML=rows.map(m=>{const op=Argon.opinionOf(s,L.lw.mem,m.id);const col=op>=.5?"var(--good)":op<=-.35?"var(--bad)":op<=-.1?"var(--seal)":"var(--line)";const mem=m.alive?memoryLine(L,m.id):"";
-      const pr=(L.lw.promises||[]).find(p=>p.to===m.id&&p.kept===null);
-      return`<div class="p${m.alive?"":" dead"}" title="${esc(mem)}"><i style="background:${col}"></i><span><b>${esc(m.name)}</b> <span class="r">${esc(m.roles.map(r=>LW.ROLE_VN[r]).join(", "))}${m.alive?` · gọi bạn là “${addressOf(L,m.id)}”`:" · đã mất"}</span>${mem?`<br><span class="r">${esc(mem)}</span>`:""}${pr?`<br><span class="r" style="color:var(--seal)">bạn hứa: ${esc(pr.what)} (trước ${pr.due} tuổi)</span>`:""}</span><span class="mono r">${m.alive?(L.age+m.age_offset)+"t":""}</span></div>`}).join("")}
-  {const wf=document.getElementById("wealthF");if(wf&&typeof wealthPanelHTML==="function"){const w=wealthPanelHTML(L);wf.hidden=!w;document.getElementById("wealth").innerHTML=w}}
-  {const sf=document.getElementById("storiesF");const open=(L.stories||[]).filter(x=>!x.closed);if(sf){sf.hidden=!open.length;document.getElementById("stories").innerHTML=open.map(x=>`<div class="st"><b>${esc(x.title)}</b><span class="r">${esc(x.summary||"")}${x.summary?" · ":""}hẹn năm ${x.nextAge} tuổi</span></div>`).join("")}}
-  // đường hầm khan hiếm
-  {const g=argonGate(L);document.body.classList.toggle("tunnel",!!(g.bw<30||(g.scarcity&&g.scarcity.bandwidth_tax>=15)));}
-  // người cùng giây
-  document.getElementById("peers").innerHTML=G.peers.map(p=>{const dead=p.deathAge<L.age||(p.deathAge===L.age&&p.tl[L.age]==null);
-    const line=dead?`đã mất ở tuổi ${p.deathAge} (${p.cause})`:(p.tl[L.age]||p.tl[p.tl.length-1]);
-    return`<div class="peer${dead?" dead":""}"><span class="n">${esc(p.name)}</span><span class="muted">${p.sex==="M"?"Nam":"Nữ"} · ${esc(p.c.n)}</span><span>${esc(line)}</span></div>`}).join("");
-  // bản đồ
-  const n=Math.max(L.le+10,L.map.length+1,60);const cells=[];
-  for(let i=0;i<Math.ceil(n/10)*10;i++){const m=L.map[i-1];let cls="",style="";
-    if(i===0)style="background:var(--seal)";else if(m&&m.end)cls="end";else if(m)style=`background:color-mix(in oklab,var(--low),var(--high) ${Math.round(m.h)}%)`;
-    if(i===L.age&&L.alive)cls+=" now";if(i===L.le)cls+=" le";cells.push(`<i class="${cls}" style="${style}" title="${i} tuổi"></i>`)}
-  document.getElementById("map").innerHTML=cells.join("")}
+  renderCast(L);
+  renderMoney(L,g);
+  {const sf=document.getElementById("storiesF");const open=(L.stories||[]).filter(x=>!x.closed);sf.hidden=!open.length;document.getElementById("stories").innerHTML=open.map(x=>`<div class="st"><b>${esc(x.title)}</b><span class="r">${esc(x.summary||"")}${x.summary?" · ":""}hẹn năm ${x.nextAge} tuổi</span></div>`).join("")}
+  document.body.classList.toggle("tunnel",!!(L.alive&&(g.bw<30||(g.scarcity&&g.scarcity.bandwidth_tax>=15))));
+  renderPeers(L);
+  if(G.measureDock)G.measureDock()}
 
-function argonPanel(L){if(!L.ar)return"";const g=argonGate(L);
-  const badges=[`<span class="badge ${g.tier==="sovereign"?"seal":g.tier==="awakened"?"acc":""}">${AR.TIER_VN[g.tier]}</span>`];
-  if(g.scarcity)badges.push(`<span class="badge bad">Bẫy khan hiếm</span>`);if(g.ratRace)badges.push(`<span class="badge bad">Vòng xoáy chuột chạy</span>`);
-  return`<div class="field" style="border-top:1px solid var(--line);padding-top:12px"><span class="label">Băng thông nhận thức</span>
-   <div class="stat"><span>Băng thông</span><div class="bar"><i style="width:${g.bw}%;background:${g.bw<30?"var(--bad)":"var(--accent)"}"></i></div><span class="mono">${Math.round(g.bw)}</span></div>
-   <div style="display:flex;gap:6px;flex-wrap:wrap">${badges.join("")}</div>
-   ${g.locked?`<span class="muted" style="font-size:12px">${esc(g.reason)}</span>`:g.scarcity?`<span class="muted" style="font-size:12px">Lo toan ${g.scarcity.reason==="stress"?"căng thẳng":"tiền bạc"} đang lấy mất ${Math.round(g.scarcity.bandwidth_tax)} điểm băng thông mỗi quý.</span>`:""}
-   ${g.tier!=="autopilot"?`<button class="btn${L.ar.frugal?" on":""}" id="frugal" style="font-size:12px">Sống dưới mức thu nhập: ${L.ar.frugal?"bật":"tắt"}</button>`:""}</div>`}
+function renderLog(L){const ents=L.log.slice(-160).reverse();const groups=[];for(const e of ents){const last=groups[groups.length-1];if(last&&last.age===e.age)last.items.push(e);else groups.push({age:e.age,items:[e]})}
+  const shown=groups.slice(0,G.logYears);
+  document.getElementById("log").innerHTML=shown.map(gp=>`<div class="yr"><h4>${gp.age}<small>tuổi</small></h4><ul>${gp.items.map(logItem).join("")}</ul></div>`).join("");
+  const more=document.getElementById("logMore"),rest=groups.length-shown.length;more.hidden=rest<=0;if(rest>0)more.textContent=`Xem ${Math.min(10,rest)} năm trước`}
+function logItem(e){const t=String(e.text),tone=e.tone||"";
+  if(/\bchoice\b/.test(tone)){const SEP=" — bạn chọn: ",k=t.indexOf(SEP);if(k>0)return`<li class="e choice"><span class="t">${esc(t.slice(0,k))}</span><span class="c">Bạn chọn: ${esc(t.slice(k+SEP.length))}</span></li>`}
+  if(/\bdoor\b/.test(tone)){const m=t.match(/^Cánh cửa đã đóng:\s*(.*)$/);return`<li class="e door"><span class="st">Cửa đã đóng</span>${esc(m?m[1]:t)}</li>`}
+  return`<li class="e ${esc(tone)}">${esc(t)}</li>`}
+
+function trustOf(op,m){if(op>=.5)return["hi",m&&m.roles.includes("child")?"quấn bạn":"tin bạn"];if(op>=.1)return["hi","quý bạn"];if(op>-.1)return["mid","bình thường"];if(op>-.35)return["warm","dè chừng"];return["lo","giận bạn"]}
+function renderCast(L){if(!L.lw)return;const s=L.ar.state;
+  const rows=[...L.lw.cast.values()].filter(m=>!m.absent&&(m.alive||m.role==="mother"||m.role==="father"||m.role==="spouse")).sort((a,b)=>(b.alive-a.alive)||Math.abs(Argon.opinionOf(s,L.lw.mem,b.id))-Math.abs(Argon.opinionOf(s,L.lw.mem,a.id))).slice(0,10);
+  document.getElementById("cast").innerHTML=rows.map(m=>{const op=Argon.opinionOf(s,L.lw.mem,m.id);const mem=m.alive?memoryLine(L,m.id):"";const [cls,word]=trustOf(op,m);
+    const pr=(L.lw.promises||[]).find(p=>p.to===m.id&&p.kept===null);
+    return`<div class="p${m.alive?"":" dead"}" title="${esc(mem)}"><span class="n">${esc(m.name)} <span>${esc(m.roles.map(r=>LW.ROLE_VN[r]).join(", "))}${m.alive?` · ${L.age+m.age_offset} tuổi · gọi bạn là “${addressOf(L,m.id)}”`:" · đã mất"}</span></span>${m.alive?`<span class="trust ${cls}"><i style="--t:${Math.round((op+1)*50)}%"></i>${word}</span>`:"<span></span>"}${mem?`<span class="m">${esc(mem)}</span>`:""}${pr?`<span class="pr">Bạn hứa: ${esc(pr.what)} (trước ${pr.due} tuổi)</span>`:""}</div>`}).join("")}
+
+function renderPeers(L){const n=rulerN(L);
+  const me=`<div class="peer me"><div class="pl" style="--a:${Math.round(L.age/n*100)}%"></div><span><b class="n">Bạn</b>, ${esc(L.c.n)} · ${esc(stateLine(L))}</span></div>`;
+  document.getElementById("peers").innerHTML=me+G.peers.map(p=>{const dead=p.deathAge<L.age||(p.deathAge===L.age&&p.tl[L.age]==null);
+    const line=dead?`mất năm ${p.deathAge} tuổi (${p.cause})`:(p.tl[L.age]||p.tl[p.tl.length-1]);const a=dead?p.deathAge:L.age;
+    return`<div class="peer${dead?" dead":""}"><div class="pl" style="--a:${Math.round(a/n*100)}%"></div><span><b class="n">${esc(p.name)}</b>, ${esc(p.c.n)} · ${esc(line)}</span></div>`}).join("")}
+
+function renderMoney(L,g){
+  document.getElementById("moneySum").innerHTML=typeof moneySummaryHTML==="function"?moneySummaryHTML(L):"";
+  const can=typeof canHandleMoney==="function"&&canHandleMoney(L),h=can?holdingsOf(L):null;
+  const lb=document.getElementById("lifeBox");
+  if(h)lb.innerHTML=`<span class="k">Mức sống</span><div class="life" role="radiogroup" aria-label="Mức sống">${LIFESTYLES.map(([k,n])=>`<button${k==="tan_tien"?' id="frugal"':""} data-ly="${k}" role="radio" aria-checked="${h.lifestyle===k}"${h.lifestyle===k?' class="on"':""}>${n}</button>`).join("")}</div><span class="note">Mức sống quyết định phần lớn tiền chi mỗi năm. Tằn tiện để dành nhanh nhưng lâu ngày thì mệt mỏi.</span>`;
+  else if(L.ar&&L.ar.started&&g.tier!=="autopilot")lb.innerHTML=`<button class="btn${L.ar.frugal?" on":""}" id="frugal">Sống dưới mức thu nhập: ${L.ar.frugal?"bật":"tắt"}</button>`;
+  else lb.innerHTML=L.age<18?`<span class="note">Từ 18 tuổi bạn tự chọn mức sống, mua bán, gửi tiết kiệm.</span>`:"";
+  lb.querySelectorAll("[data-ly]").forEach(b=>b.onclick=()=>{if(!canHandleMoney(L))return;if(b.dataset.ly!==h.lifestyle){moneyEffect(L,{lifestyle:b.dataset.ly});render()}});
+  const fr=document.getElementById("frugal");if(fr&&!fr.dataset.ly)fr.onclick=()=>{L.ar.frugal=!L.ar.frugal;render()};
+  const w=typeof wealthPanelHTML==="function"?wealthPanelHTML(L):"";const wl=document.getElementById("wealth");wl.innerHTML=w;wl.hidden=!w;
+  const sug=typeof moneySuggestions==="function"&&L.alive?moneySuggestions(L):[];const cb=document.getElementById("chipBox");cb.hidden=!sug.length;
+  document.getElementById("moneyChips").innerHTML=sug.map((c,i)=>`<button type="button" class="chip${c.warn?" warn":""}" data-c="${i}">${esc(c.text)}</button>`).join("");
+  document.querySelectorAll("#moneyChips .chip").forEach(b=>b.onclick=()=>prefillWant(sug[+b.dataset.c].text));
+  const note=document.getElementById("chipNote"),off=NAR.status==="off";note.hidden=!(sug.length&&(off||G.autoDecide));
+  note.textContent=off?"Các gợi ý này đi qua ô “Tôi muốn…”, cần AI kể chuyện. Trang này hiện không dùng được AI.":"Đang tự chơi. Tắt “Tự chơi” trong menu để dùng các gợi ý này.";
+  const nw=sug.filter(c=>c.warn).length,tb=document.getElementById("tabMoney");tb.hidden=!nw;tb.textContent=nw}
+
+function argonPanel(L,g,bwRow){if(!L.ar||!L.ar.started)return"";
+  const tiers=["autopilot","awakened","sovereign"].map(t=>`<span${g.tier===t?' class="on"':""}>${AR.TIER_VN[t]}</span>`).join("");
+  const warn=g.locked?`<p class="note seal">Đang khóa: ${esc(lockWhy(L,g))}</p>`:g.scarcity?`<p class="note seal">Lo toan ${g.scarcity.reason==="stress"?"căng thẳng":"tiền bạc"} đang lấy mất ${Math.round(g.scarcity.bandwidth_tax)} điểm băng thông mỗi quý.</p>`:"";
+  const badges=[g.scarcity?`<span class="badge bad">Bẫy khan hiếm</span>`:"",g.ratRace?`<span class="badge bad">Vòng xoáy chuột chạy</span>`:""].join("");
+  return`<section class="sec bw-sec" data-tab="nam"><h2>Băng thông <span class="k">còn ${Math.round(g.bw)}</span></h2>${bwRow("Đầu óc")}
+   <p class="note">Vạch đỏ là ${Argon.BANDWIDTH_LOCK_LEVEL}. Xuống dưới vạch, các lựa chọn <b style="color:var(--pen)">đường dài</b> bị khóa.</p>${warn}${badges?`<div style="display:flex;gap:6px;flex-wrap:wrap">${badges}</div>`:""}
+   <div class="tier" aria-label="Tầng tự chủ">${tiers}</div></section>`}
 function choiceDoors(c){const e=c._fx;if(!e)return[];const out=new Set(e.close_doors||[]);if(e.secret)out.add("clean_record");if(e.gamble){for(const d of [...(e.gamble.win.close_doors||[]),...(e.gamble.lose.close_doors||[])])out.add(d);if(e.gamble.win.secret||e.gamble.lose.secret)out.add("clean_record")}return[...out].filter(d=>!(G.life&&G.life.lw&&G.life.lw.cz.doors.has(d)))}
-function matrixHtml(m){return `<div class="mx"><table><tr><th></th>${m.them.map(t=>`<th>${esc(m.who||"Họ")}: ${esc(t)}</th>`).join("")}</tr>${m.me.map((a,i)=>`<tr><th>Bạn: ${esc(a)}</th>${m.them.map((b,j)=>{const c=m.cells[i][j];const hide=m.hideOffDiag&&i!==j;return`<td class="${m.fogged?"fog":""}">${hide?"?":`<b>${m.fogged?"≈":""}${fmtCell(c[0],m.unit)}</b> / ${fmtCell(c[1],m.unit)}`}</td>`}).join("")}</tr>`).join("")}</table><span class="muted" style="font-size:12px">Mỗi ô: bạn / ${esc(m.who||"họ")} · ${esc(m.unit)}${m.fogged?" · con số là ước lượng, băng thông thấp thì càng mờ":""}</span></div>`}
+function matrixHtml(m){return `<div class="mx"><table><tr><th></th>${m.them.map(t=>`<th>${esc(m.who||"Họ")}: ${esc(t)}</th>`).join("")}</tr>${m.me.map((a,i)=>`<tr><th>Bạn: ${esc(a)}</th>${m.them.map((b,j)=>{const c=m.cells[i][j];const hide=m.hideOffDiag&&i!==j;return`<td class="${m.fogged?"fog":""}">${hide?"?":`<b>${m.fogged?"≈":""}${fmtCell(c[0],m.unit)}</b> / ${fmtCell(c[1],m.unit)}`}</td>`}).join("")}</tr>`).join("")}</table><span class="note">Mỗi ô: bạn / ${esc(m.who||"họ")}, đơn vị ${esc(m.unit)}${m.fogged?". Con số là ước lượng, băng thông thấp thì càng mờ":""}</span></div>`}
 function fmtCell(v,u){return u==="$ PPP"?(v<0?"−":"")+fmtPPP(Math.abs(v)):(v>0?"+":"")+v}
-function codexHtml(L){const ids=Object.keys(L.codex||{});if(!ids.length)return`<span class="muted">Chưa có trang nào. Mỗi tình huống bạn gặp sẽ mở thêm một khái niệm của lý thuyết trò chơi.</span>`;
-  return ids.map(id=>`<div class="c"><b>${esc(CONCEPTS[id][0])}</b><span class="muted">mở ở tuổi ${L.codex[id]}</span><span>${esc(CONCEPTS[id][1])}</span></div>`).join("")}
+function codexHtml(L){const ids=Object.keys(L.codex||{});if(!ids.length)return`<span class="note">Chưa có trang nào. Mỗi tình huống bạn gặp sẽ mở thêm một khái niệm của lý thuyết trò chơi.</span>`;
+  return ids.map(id=>`<div class="c"><b>${esc(CONCEPTS[id][0])}</b><span class="note">mở ở tuổi ${L.codex[id]}</span><span>${esc(CONCEPTS[id][1])}</span></div>`).join("")}
 function renderCodex(){const L=G.life,c=document.getElementById("codex");if(!c||c.hidden)return;const n=Object.keys(L.codex||{}).length;
-  c.innerHTML=`<div class="codex"><div style="display:flex;justify-content:space-between;align-items:center"><span class="label">Sổ tay lý thuyết trò chơi · ${n}/${Object.keys(CONCEPTS).length}</span><button class="btn" id="codexClose">Đóng</button></div>${codexHtml(L)}</div>`;
+  c.innerHTML=`<div class="codex"><div class="codexhead"><span class="k">Sổ tay lý thuyết trò chơi: ${n}/${Object.keys(CONCEPTS).length} trang</span><button class="btn" id="codexClose">Đóng</button></div>${codexHtml(L)}</div>`;
   document.getElementById("codexClose").onclick=()=>{c.hidden=true}}
-function ending(){stop();document.body.classList.remove("tunnel");clearInterval(G.timerIv);const L=G.life;const meta=metaOnDeath(L);const kids=L.kids.filter(k=>k.alive).length;
+
+/* ---------- Kết thúc ---------- */
+function ending(){stop();leaveBoard();clearInterval(G.timerIv);const L=G.life;const meta=metaOnDeath(L);const kids=L.kids.filter(k=>k.alive).length;
   const avgH=Math.round(L.map.filter(m=>!m.end).reduce((s,m)=>s+m.h,0)/Math.max(1,L.map.filter(m=>!m.end).length));
   store.add({name:L.name,country:L.birthC.n,age:L.age,cause:L.cause,date:Date.now()});
-  const diff=L.age-L.le;
+  const diff=L.age-L.le,n=rulerN(L);const safe=f=>{try{return f()}catch(e){console.error(e);return""}};
+  const bars=`<div class="peer me"><div class="pl" style="--a:${Math.round(L.age/n*100)}%"></div><span><b class="n">Bạn</b>, ${esc(L.birthC.n)} · sống ${L.age} năm</span></div>`+G.peers.map(p=>`<div class="peer${p.deathAge<L.age?" dead":""}"><div class="pl" style="--a:${Math.round(p.deathAge/n*100)}%"></div><span><b class="n">${esc(p.name)}</b>, ${esc(p.c.n)} · sống đến ${p.deathAge} tuổi, ${esc(p.cause)}. ${esc(p.tl[Math.max(0,p.deathAge-1)]||"")}</span></div>`).join("");
   app.innerHTML=`<section class="end">
-   <div class="label">Cuộc đời đã khép lại</div>
-   <h2>${esc(L.name)}, ${L.age} tuổi</h2>
-   <div class="panel" style="font-family:var(--f-display);font-size:17px;line-height:1.65;gap:12px"><span class="label" style="font-family:var(--f-body)">Văn bia</span>${eulogyVN(L).map(p=>`<p style="margin:0">${esc(p)}</p>`).join("")}<div id="epilogue" style="white-space:pre-line;border-top:1px dashed var(--line);padding-top:12px" hidden></div></div>
-   <p style="font-size:18px;margin:0">Sinh ra ở ${esc(L.birthC.n)}${L.migrated?`, mất ở ${esc(L.c.n)}`:""}. Qua đời vì ${esc(L.cause)}. ${diff>=0?`Sống lâu hơn tuổi thọ trung bình nơi sinh ${diff} năm.`:`Ít hơn tuổi thọ trung bình nơi sinh ${-diff} năm.`}</p>
+   <div><p class="closed">Cuộc đời đã khép lại</p><h2>${esc(L.name)}, ${L.age} tuổi</h2></div>
+   <div class="ruler">${rulerHTML(L,"endmap")}</div>
+   <p class="summary">Sinh ra ở ${esc(L.birthC.n)}${L.migrated?`, mất ở ${esc(L.c.n)}`:""}. Qua đời vì ${esc(L.cause)}. ${diff>=0?`Sống lâu hơn tuổi thọ trung bình nơi sinh ${diff} năm.`:`Ít hơn tuổi thọ trung bình nơi sinh ${-diff} năm.`}</p>
+   <div class="acts"><button class="btn primary" id="again">Chào đời lần nữa</button><button class="btn" id="home">Về trang đầu</button></div>
+   <div class="epitaph"><span class="label">Văn bia</span>${eulogyVN(L).map(p=>`<p>${esc(p)}</p>`).join("")}<div id="epilogue" hidden></div></div>
    <div class="facts">
-    <div><span class="label">Đi học</span><b>${L.school.years} năm</b><span class="muted">${L.school.deg?"có bằng đại học":L.school.never?"chưa từng đến trường":"không học đại học"}</span></div>
-    <div><span class="label">Nghề</span><b style="font-size:16px;font-family:var(--f-body)">${esc(L.job||"không có")}</b></div>
-    <div><span class="label">Gia đình</span><b>${L.kids.length} con</b><span class="muted">${kids} còn sống${L.spouse?` · bạn đời ${esc(L.spouse)}`:""}</span></div>
-    <div><span class="label">Hạnh phúc TB</span><b>${avgH}/100</b></div>
+    <div><span class="k">Đi học</span><b>${L.school.years} năm</b><span class="note">${L.school.deg?"có bằng đại học":L.school.never?"chưa từng đến trường":"không học đại học"}</span></div>
+    <div><span class="k">Nghề</span><b class="word">${esc(L.job||"không có")}</b></div>
+    <div><span class="k">Gia đình</span><b>${L.kids.length} con</b><span class="note">${kids} còn sống${L.spouse?`, bạn đời ${esc(L.spouse)}`:""}</span></div>
+    <div><span class="k">Hạnh phúc trung bình</span><b>${avgH}/100</b></div>
    </div>
-   ${(()=>{const ps=playStyle(L);return`<div class="panel style"><span class="label">Phong cách chơi của bạn</span><h3 style="font-size:24px">${esc(ps.name)}</h3><p style="margin:0">${esc(ps.desc)}</p>
-     <span class="muted mono" style="font-size:12px">hợp tác ${ps.t.coop>=0?"+":""}${ps.t.coop} · công bằng ${ps.t.fair>=0?"+":""}${ps.t.fair} · liều ${ps.t.risk>=0?"+":""}${ps.t.risk} · cứng rắn ${ps.t.bold>=0?"+":""}${ps.t.bold} · thắng ${ps.g.w}/${ps.g.n} ván có đối thủ</span></div>`})()}
-   ${(()=>{try{return counterfactualVN(L)}catch(e){console.error(e);return""}})()}
-   ${causalityVN(L)}
-   ${(()=>{try{const t=typeof legacyVN==="function"?legacyVN(L):"";return t?`<div class="panel"><span class="label">Bạn để lại gì</span><p style="margin:0">${esc(t)}</p></div>`:""}catch(e){console.error(e);return""}})()}
-   ${topologyVN(L)}
-   <div class="panel"><span class="label">Sổ tay lý thuyết trò chơi · ${Object.keys(L.codex||{}).length}/${Object.keys(CONCEPTS).length} trang</span>${codexHtml(L)}</div>
-   <div class="panel"><span class="label">Bốn em bé sinh cùng giây với bạn</span>
-    ${G.peers.map(p=>`<div class="peer"><span class="n">${esc(p.name)} · ${esc(p.c.n)}</span><span>Sống đến ${p.deathAge} tuổi, ${esc(p.cause)}. ${esc(p.tl[Math.max(0,p.deathAge-1)]||"")}</span></div>`).join("")}</div>
-   <div class="panel"><span class="label">Tiền kiếp</span><p style="margin:0">Đây là kiếp thứ ${meta.lives}. Ký ức mang sang kiếp sau: ${meta.perks.map(id=>{const p=PERKS.find(x=>x.id===id);return p?`<b>${p.vi}</b> (${p.desc})`:id}).join(" · ")||"chưa có"}.</p></div>
-   <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" id="again">Chào đời lần nữa</button><button class="btn" id="home">Về trang đầu</button></div>
+   <div class="panel"><span class="label">Bốn em bé sinh cùng giây với bạn</span><div class="peers">${bars}</div></div>
+   ${(()=>{const ps=playStyle(L);return`<div class="panel style"><span class="label">Phong cách chơi của bạn</span><h3>${esc(ps.name)}</h3><p>${esc(ps.desc)}</p>
+     <span class="note">hợp tác ${ps.t.coop>=0?"+":""}${ps.t.coop}, công bằng ${ps.t.fair>=0?"+":""}${ps.t.fair}, liều ${ps.t.risk>=0?"+":""}${ps.t.risk}, cứng rắn ${ps.t.bold>=0?"+":""}${ps.t.bold}; thắng ${ps.g.w}/${ps.g.n} ván có đối thủ</span></div>`})()}
+   ${safe(()=>counterfactualVN(L))}
+   ${safe(()=>causalityVN(L))}
+   ${safe(()=>{const t=typeof legacyVN==="function"?legacyVN(L):"";return t?`<div class="panel"><span class="label">Bạn để lại gì</span><p>${esc(t)}</p></div>`:""})}
+   ${safe(()=>topologyVN(L))}
+   <details class="panel"><summary><span class="label">Sổ tay lý thuyết trò chơi: ${Object.keys(L.codex||{}).length}/${Object.keys(CONCEPTS).length} trang</span></summary>${codexHtml(L)}</details>
+   <details class="panel"><summary><span class="label">Tiền kiếp</span></summary><p>Đây là kiếp thứ ${meta.lives}. Ký ức mang sang kiếp sau: ${meta.perks.map(id=>{const p=PERKS.find(x=>x.id===id);return p?`<b>${p.vi}</b> (${p.desc})`:id}).join(", ")||"chưa có"}.</p></details>
+   <div class="acts"><button class="btn primary" id="again2">Chào đời lần nữa</button><button class="btn" id="home2">Về trang đầu</button></div>
    <p class="foot">Đây là mô phỏng dựa trên số liệu trung bình, không dự đoán cuộc đời của bất kỳ ai có thật.</p></section>`;
-  document.getElementById("again").onclick=birth;document.getElementById("home").onclick=intro;
+  for(const id of["again","again2"])document.getElementById(id).onclick=birth;for(const id of["home","home2"])document.getElementById(id).onclick=intro;
+  scrollTo(0,0);
   const ep=document.getElementById("epilogue");if(NAR.enabled&&NAR.status!=="off"&&NAR.sample){ep.hidden=false;narratorEpilogue(L,ep)}}
 
 narratorInit();
 document.addEventListener("keydown",e=>{if(G.acting)return;if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;const n=parseInt(e.key,10);if(!n)return;const b=document.querySelector(`#dec [data-i="${n-1}"]:not([disabled])`);if(b){e.preventDefault();b.click()}});
+document.addEventListener("click",e=>{const t=document.getElementById("top");if(t&&t.classList.contains("open")&&!e.target.closest(".morewrap"))closeMenu()});
 intro();
 </script>

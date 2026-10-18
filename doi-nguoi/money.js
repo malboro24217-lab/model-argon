@@ -99,6 +99,7 @@ function moneyYear(L) {
   const s = L.ar.state, a = s.capitals.capitalAssets, m = marketCtx(L), yearly = yearlyOf(L), rng = L.ar.rng;
   const cashNow = a.liquid - a.debt;
   const rep = Argon.holdingsYear(h, m, s.economic_phase, cashNow, yearly, L.age, rng);
+  L.ar.holdRep = rep;
   let cash = rep.cash;
   for (const v of rep.revalued) log(L, `${v.name[0].toUpperCase() + v.name.slice(1)} giờ đáng ${fmtPPP(v.after)} (${v.after > v.before ? "lên" : "xuống"} từ ${fmtPPP(v.before)}).`, v.after > v.before ? "good" : "bad");
   for (const d of rep.disasters) log(L, `${d.name[0].toUpperCase() + d.name.slice(1)} gặp nạn, mất ${fmtPPP(d.loss)}${d.paid > 0 ? `; bảo hiểm trả ${fmtPPP(d.paid)}` : ""}.`, "bad");
@@ -191,15 +192,70 @@ function moneyPacket(L) {
   };
 }
 
-/** Mục "Của cải" trong bảng bên phải (chỉ xem). Rỗng khi chưa có gì đáng kể. */
+/** Tiền mặt và nợ tiêu dùng đang thấy (L.savings = tiền mặt − nợ tiêu dùng khi đã tự lập; nợ là một quỹ duy nhất của engine). */
+function cashView(L) {
+  const debt0 = Math.max(0, L.debt || 0), cash = L.savings + debt0;
+  return { cash: Math.max(0, cash), debt: debt0 + Math.max(0, -cash) };
+}
+const LIFE_RANK = { tan_tien: 0, vua_phai: 1, thoai_mai: 2, pho_truong: 3 };
+
+/** Đầu mục "Tiền": hai số lớn và thu chi năm qua (A.lastFlow do argonYear ghi). */
+function moneySummaryHTML(L) {
+  const h = holdingsOf(L), cv = cashView(L), loans = h ? Argon.loanTotal(h) : 0;
+  const fam = livesOnFamily(L) && L.ar && L.ar.started;
+  const mc = L.ar ? L.ar.state.spawn.macro : null;
+  let out = `<div class="cash"><div><span class="k">Tiền mặt của bạn</span><span class="big${L.savings < 0 && !cv.debt ? " neg" : ""}">${fmtPPP(cv.cash)}</span><span class="sub">${L.income > 0 ? `thu nhập ${fmtPPP(L.income)}/năm, ≈ ${fmtVND(L.income)}/tháng` : `gia đình: ${fmtPPP(L.famIncome)}/người/năm`}</span></div>`;
+  out += `<div><span class="k">Nợ tiêu dùng</span><span class="big${cv.debt > 0 ? " neg" : ""}">${fmtPPP(cv.debt)}</span><span class="sub">${cv.debt > 0 && mc ? `lãi ${Math.round(mc.interest_rate * 100)}%/năm, mỗi quý trả 5% gốc` : "không nợ"}${loans > 0 ? `; thêm ${fmtPPP(loans)} vay mua` : ""}</span></div></div>`;
+  if (fam) out += `<p class="note">Bạn còn sống nhờ gia đình. Quỹ chung của cả nhà: ${L.ar.hh < 0 ? "−" : ""}${fmtPPP(Math.abs(L.ar.hh || 0))}.</p>`;
+  const f = L.ar && L.ar.lastFlow;
+  if (f && f.age === L.age) {
+    const yi = Math.max(300, householdIncome(L)), big = [], small = [];
+    for (const r of f.rows) (Math.abs(r[1]) >= 0.02 * yi && r[0] !== "Chuyện khác trong năm" ? big : small).push(r);
+    const rest = small.reduce((t, r) => t + r[1], 0);
+    const rows = big.concat(Math.abs(rest) >= 1 ? [["Chuyện khác trong năm", rest]] : []);
+    const sg = v => `${v < 0 ? "−" : "+"}${fmtPPP(Math.abs(v))}`;
+    out += `<div class="flow" aria-label="Thu chi năm ${f.age} tuổi"><div class="fh"><span>${f.indep ? "Năm qua" : "Năm qua, cả nhà"}</span><span>${f.age} tuổi</span></div>${rows.map(r => `<div><span>${escB(r[0])}</span><span class="${r[1] < 0 ? "neg" : ""}">${sg(r[1])}</span></div>`).join("")}<div class="tot"><span>Còn lại sau một năm</span><span class="${f.net < 0 ? "neg" : ""}">${sg(f.net)}</span></div></div>`;
+  }
+  return out;
+}
+
+/** Sổ của cải (chỉ xem). Rỗng khi chưa có gì. Nợ vay mua nằm dưới món của nó; nợ tiêu dùng là một dòng. */
 function wealthPanelHTML(L) {
   const h = holdingsOf(L); if (!h || L.age < 18) return "";
-  const rows = h.assets.map(a => `<div class="st"><b>${escB(a.name)}</b><span class="r">${KIND_VN[a.kind]} · ${fmtPPP(a.value)}${a.loan > 0 ? ` · còn vay ${fmtPPP(a.loan)}` : ""}${a.co_owner ? ` · góp với ${escB(castName(L, a.co_owner))}` : ""}</span></div>`);
-  const owed = h.receivables.filter(r => !r.closed).map(r => `<div class="st"><b>${escB(castName(L, r.npc))} nợ bạn ${fmtPPP(r.amount - r.repaid)}</b><span class="r">hẹn năm ${r.due_age} tuổi</span></div>`);
+  const rows = h.assets.map(a => { const pay = a.loan > 0 ? Argon.annuity(a.loan, a.loan_rate, Math.max(1, a.loan_years_left)) : 0;
+    return `<div class="st r"><b>${escB(a.name[0].toUpperCase() + a.name.slice(1))}</b><span class="v">${fmtPPP(a.value)}</span><span class="r">${KIND_VN[a.kind]}${a.kind === "deposit" ? ` · gửi từ năm ${a.bought_age} tuổi` : a.cost > 0 && a.origin === "bought" ? ` · mua ${fmtPPP(a.cost)} năm ${a.bought_age} tuổi` : a.origin === "inherited" ? " · thừa kế" : ""}${a.loan > 0 ? ` · còn vay ${fmtPPP(a.loan)}, góp ${fmtPPP(pay)}/năm` : ""}${a.co_owner ? ` · góp với ${escB(castName(L, a.co_owner))}` : ""}${a.missed ? " · đang trễ góp" : ""}</span></div>`; });
+  const cv = cashView(L);
+  if (cv.debt > 0) rows.push(`<div class="st r"><b>Nợ tiêu dùng</b><span class="v neg">−${fmtPPP(cv.debt)}</span><span class="r">một khoản chung, lãi ${Math.round(L.ar.state.spawn.macro.interest_rate * 100)}%/năm</span></div>`);
+  const owed = h.receivables.filter(r => !r.closed).map(r => `<div class="st r"><b>${escB(castName(L, r.npc))} nợ bạn</b><span class="v">${fmtPPP(r.amount - r.repaid)}</span><span class="r">hẹn năm ${r.due_age} tuổi${L.age > r.due_age ? ` · đã trễ ${L.age - r.due_age} năm` : ""}</span></div>`);
   const pol = h.policies.map(p => p.kind === "health" ? "sức khỏe" : "tài sản");
-  const extra = [h.lifestyle !== "thoai_mai" ? `sống ${Argon.LIFESTYLE_VN[h.lifestyle]}` : "", pol.length ? `bảo hiểm ${pol.join(", ")}` : "", h.support.parents !== "du" ? `chi ${SUPPORT_VN[h.support.parents]} cho bố mẹ` : "", h.support.kids !== "du" ? `chi ${SUPPORT_VN[h.support.kids]} cho con` : ""].filter(Boolean);
+  const extra = [pol.length ? `Có bảo hiểm ${pol.join(", ")}` : "", h.support.parents !== "du" ? `chi ${SUPPORT_VN[h.support.parents]} cho bố mẹ` : "", h.support.kids !== "du" ? `chi ${SUPPORT_VN[h.support.kids]} cho con` : ""].filter(Boolean);
   if (!rows.length && !owed.length && !extra.length) return "";
-  return `<div class="st"><b>Mức sống: ${Argon.LIFESTYLE_VN[h.lifestyle]}</b>${extra.length ? `<span class="r">${extra.join(" · ")}</span>` : ""}</div>${rows.join("")}${owed.join("")}`;
+  return rows.join("") + owed.join("") + (extra.length ? `<div class="st"><span class="r">${extra.join(" · ")}</span></div>` : "");
+}
+
+/**
+ * Gợi ý việc làm với tiền, sinh từ trạng thái thật, ưu tiên việc gấp, tối đa 5.
+ * Mỗi câu khớp một việc lớn mà ô "Tôi muốn…" hiểu (muc_song, tra_no, co_cau_no, gui_tiet_kiem, ban, bao_hiem, mua, chu_cap).
+ */
+function moneySuggestions(L) {
+  if (typeof canHandleMoney !== "function" || !canHandleMoney(L)) return [];
+  const h = holdingsOf(L), yi = yearlyOf(L), cv = cashView(L), f = L.ar.lastFlow && L.ar.lastFlow.age === L.age ? L.ar.lastFlow : null;
+  const net = f ? f.net : 0, out = [], add = (text, warn) => { if (!out.some(x => x.text === text)) out.push({ text, warn: !!warn }); };
+  const rr = Argon.ratRace(L.ar.state);
+  if (net < 0 && LIFE_RANK[h.lifestyle] > 1) add("giảm mức sống xuống vừa phải", true);
+  if (rr.active && rr.reason === "debt_service" && cv.debt > 0) add("xin giãn nợ tiêu dùng", true);
+  if (cv.debt > 0 && cv.cash > 0.05 * yi) add(`trả trước ${fmtPPP(Math.min(cv.cash, cv.debt) * 0.6)} nợ tiêu dùng`, true);
+  for (const r of h.receivables) if (!r.closed && L.age > r.due_age && L.lw && L.lw.cast.has(r.npc) && L.lw.cast.get(r.npc).alive) add(`nhắc ${castName(L, r.npc)} trả ${fmtPPP(r.amount - r.repaid)}`);
+  if (cv.cash > 0.5 * yi) add(`gửi tiết kiệm phần dư (${fmtPPP(cv.cash - 0.25 * yi)})`);
+  const veh = h.assets.find(a => a.kind === "vehicle" && a.loan <= 0);
+  if (veh && net < 0 && cv.cash < 0.25 * yi) add(`bán ${veh.name}`);
+  const kids = L.kids.filter(k => k.alive).length;
+  if (!Argon.hasPolicy(h, "health") && (kids > 0 || L.st.health < 50)) add(`mua bảo hiểm sức khỏe${kids ? " cho cả nhà" : ""}`);
+  if (!h.assets.some(a => a.kind === "house")) { const m = marketCtx(L), q = Argon.quoteBuy(h, { kind: "house", name: "căn hộ nhỏ", price: Argon.basePrice("house", m), borrow: true }, m, fundsFor(L), yi); if (q.ok) add("vay ngân hàng mua một căn hộ nhỏ"); }
+  const parents = L.lw && [...L.lw.cast.values()].some(m => m.alive && (m.role === "mother" || m.role === "father") && L.age + m.age_offset >= 60);
+  if (parents && h.support.parents === "it" && net > 0) add("chu cấp cho bố mẹ đủ hơn");
+  if (h.lifestyle === "tan_tien" && L.age - (h.lifestyle_since || L.age) >= 5 && net > 0) add("nới mức sống lên vừa phải");
+  return out.sort((a, b) => b.warn - a.warn).slice(0, 5);
 }
 
 /** Cuối đời: bạn để lại gì. */

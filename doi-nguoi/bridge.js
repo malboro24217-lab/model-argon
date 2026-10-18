@@ -71,6 +71,28 @@ function settleDependent(L) {
 }
 
 /* ---- Mỗi năm: đẩy thay đổi của trò chơi vào Argon, chạy 4 quý, lấy kết quả về ---- */
+/* Thu chi của năm vừa qua, để bảng "Tiền" giải thích vì sao tiền lên xuống. Chỉ ghi sổ, không rút rng, không đổi kết quả. */
+function recordFlow(L, reports, fl, net0, net1, dS) {
+  const A = L.ar, rep = A.holdRep || null, dep = L.lw && L.lw.depYear && L.lw.depYear.age === L.age ? L.lw.depYear.amt : 0;
+  const sum = k => reports.reduce((t, r) => t + (r[k] || 0), 0);
+  const shocks = reports.reduce((t, r) => t + (r.shock ? r.shock.liquid : 0), 0);
+  const rows = [
+    ["Thu nhập", sum("income_received")],
+    ["Sinh hoạt", -sum("survival_paid")],
+    ["Lãi nợ tiêu dùng", -fl.interest],
+    ["Lạm phát ăn vào tiền mặt", -fl.inflation],
+    ["Ốm đau, chuyện bất ngờ", shocks],
+    ["Góp tiền vay mua", rep ? -rep.loan_paid : 0],
+    ["Thu từ tài sản", rep ? rep.rent : 0],
+    ["Giữ tài sản, bảo hiểm", rep ? -(rep.upkeep + rep.premiums) : 0],
+    ["Nuôi người thân", -dep],
+    ["Lựa chọn và sự kiện trong năm", (dS || 0) + dep]
+  ];
+  const net = net1 - net0, known = rows.reduce((t, r) => t + r[1], 0);
+  rows.push(["Chuyện khác trong năm", net - known]);
+  A.lastFlow = { age: L.age, indep: !!A.indep, rows: rows.filter(r => Math.abs(r[1]) >= 1), net, principal: fl.principal, lifestyle: A.state.holdings ? A.state.holdings.lifestyle : "thoai_mai" };
+  A.holdRep = null;
+}
 function argonYear(L) {
   argonInit(L); if (!L.ar || L.age < AR.START_AGE) return null;
   const s = L.ar.state, A = L.ar;
@@ -79,12 +101,14 @@ function argonYear(L) {
   if (!A.indep && earnsOwnLiving(L)) { settleDependent(L); const a = s.capitals.capitalAssets; A.indep = true; A.hh = 0; a.liquid = Math.max(0, L.savings); a.debt = Math.max(0, -L.savings); a.illiquid = s.holdings ? Argon.illiquidValue(s.holdings) : 0; A.syncedSavings = L.savings; }
   // 1. Đồng bộ các thay đổi trong năm từ phía trò chơi (sự kiện, kịch bản)
   const dH = L.st.health - A.syncedHealth, dS = L.savings - A.syncedSavings;
+  const net0 = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt; // trước khi cộng các khoản trong năm từ phía trò chơi
   if (dH || dS) s.capitals = Argon.applyDelta(s.capitals, { bio: dH, liquid: dS });
   s.capitals.capitalAssets.income_quarterly = householdIncome(L) / 4;
   // 2. Chính sách làm việc từ trọng tâm năm nay
   const work = L.focus === "work" ? "overtime" : (L.focus === "health" || L.focus === "rest") ? "recover" : "standard";
-  const reports = [];
+  const reports = [], fl = { interest: 0, inflation: 0, principal: 0 };
   for (let q = 0; q < 4 && !s.dead; q++) {
+    { const a = s.capitals.capitalAssets, mc = s.spawn.macro; fl.interest += a.debt * mc.interest_rate / 4; fl.inflation += Math.max(0, a.liquid) * mc.inflation_rate / 4; fl.principal += a.debt * 0.05; }
     reports.push(Argon.tick(s, { work, borrow: 0, repay: A.repay || 0, betrayed: !!A.betrayedThisYear, frugal: A.frugal, purchase: 0 }, A.rng));
     A.betrayedThisYear = false;
   }
@@ -102,6 +126,7 @@ function argonYear(L) {
   if (A.indep) { L.savings = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt; L.debt = s.capitals.capitalAssets.debt; }
   else { A.hh = s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt - L.savings; L.debt = 0; }
   A.syncedHealth = L.st.health; A.syncedSavings = L.savings;
+  recordFlow(L, reports, fl, net0, s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt, dS);
   settleDependent(L);
   // 4. Ghi nhật ký những chuyển biến đáng kể
   const last = reports[reports.length - 1];
