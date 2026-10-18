@@ -8,7 +8,9 @@
  *    chữ không rỗng, không `{`, `}`, `undefined`, không vết thừa khi vết rỗng ("bạn nhớ ."), 2–3 lựa chọn,
  *    nhịp chung kết chỉ gồm landing (bền + season_end), nhịp khác không được có season_end;
  *  - vết: nhịp cu_lat dùng ≥ 1 vết, nhịp chung_ket dùng vết "no"; k.npc chỉ gọi khóa có trong reset.cast;
- *  - id thẻ duy nhất trên toàn kho (cả id đã biên dịch so với các kho khác của engine).
+ *  - id thẻ duy nhất trên toàn kho (cả id đã biên dịch so với các kho khác của engine);
+ *  - tuổi 8–90: luôn có thẻ chung kết mở, luôn có landing không phải nghề, không mở become:<p> ngoài [ages[0], ages[1] + 5];
+ *  - mạch truyện: ≥ 2 cờ/bộ đếm do lựa chọn ở nhịp 0–2 đặt làm đổi một thẻ ở nhịp 2–4.
  * Mùa kỳ dị (của WEIRD) thêm: years trong [5, 12], màu theo loại (sf xanh–tím, abs vàng–cam).
  * Mỗi nhánh kỳ dị (WEIRD): id /^(S|X)\d\d$/ duy nhất, kind khớp chữ đầu, season.weird = kind, season.id = "w_" + id,
  *  `when` không ném lỗi trên 200 bối cảnh fuzz (randomCtx + áp lực + vật gài ngẫu nhiên, chỗ trống điền như generator)
@@ -234,6 +236,68 @@ function checkSeason(def: SeasonDef): void {
     if (!Number.isInteger(len) || len < 5 || len < y0 || len > y1 || age + len > 85) bad(`${S}: seasonLength(${age}, ${r}) = ${len} ngoài years / quá 85 / < 5`);
   }
 
+  /* tuổi: mọi tuổi 8–90 (có và chưa có gia đình) có ≥ 1 thẻ chung kết mở; lựa chọn mở luôn có ≥ 1 landing không phải nghề,
+     và không mở become:<p> ngoài [ages[0], ages[1] + 5] của con đường đó. */
+  {
+    const base = randomCtx(createRng(31));
+    const noOpen: number[] = [];
+    const outAge = new Map<string, number[]>();
+    for (let age = 8; age <= 90; age++) for (const married of [false, true]) {
+      const c: FactContext = { ...base, age, married, season: def.id, season_beat: 4, counters: { ...base.counters, season_next: age } };
+      const open = def.beats[4].filter((card) => { try { return !card.when || card.when(c); } catch { return false; } });
+      if (!open.length) { noOpen.push(age); continue; }
+      for (const card of open) {
+        let v: StoryletView;
+        try { v = card.build(c, fakeKit(def, false, { scar: new Set(), gag: false, npcBad: new Set() }, 0)); } catch (e) { bad(`${S} ${card.id}: build ném lỗi ở tuổi ${age} ${String(e)}`); continue; }
+        if (v.choices.length < 2 || v.choices.length > 3) { const key = `${card.id}: ${v.choices.length} lựa chọn (cần 2–3)`; outAge.set(key, [...(outAge.get(key) ?? []), age]); }
+        const career = (ch: { effects: Effect }) => customParts(ch.effects).filter((x) => x.startsWith("become:")).map((x) => x.slice(7));
+        if (!v.choices.some((ch) => career(ch).length === 0)) { const key = `${card.id}: mọi lựa chọn đều là nghề (cần ≥ 1 landing không phải nghề)`; outAge.set(key, [...(outAge.get(key) ?? []), age]); }
+        for (const ch of v.choices) for (const id of career(ch)) {
+          const pd = PATHS[id];
+          if (pd && (age < pd.ages[0] || age > pd.ages[1] + 5)) { const key = `${card.id} → become:${id} [${pd.ages[0]}, ${pd.ages[1] + 5}]`; outAge.set(key, [...(outAge.get(key) ?? []), age]); }
+        }
+      }
+    }
+    if (noOpen.length) bad(`${S}: không thẻ chung kết nào mở ở tuổi ${[...new Set(noOpen)].join(",")}`);
+    for (const [key, ages] of outAge) bad(`${S} ${key} — ở tuổi ${[...new Set(ages)].join(",")}`);
+  }
+
+  /* mạch truyện đọc lại chính nó (content-guide §4.4): ≥ 2 cờ/bộ đếm do lựa chọn ở nhịp 0–2 đặt ra làm đổi chữ hoặc
+     lựa chọn (hay `when`) của một thẻ ở nhịp 2–4. Dò bằng cách dựng thẻ sau với ctx có và không có khóa đó. */
+  {
+    const probes = [0, 1, 2, 3].map((i) => randomCtx(createRng(600 + i)));
+    const set = new Map<string, { kind: "flag" | "counter"; from: string }>();
+    const collect = (e: Effect, from: string) => {
+      for (const f of e.flags ?? []) set.set(f, { kind: "flag", from });
+      for (const k of Object.keys(e.counters ?? {})) set.set(k, { kind: "counter", from });
+      if (e.gamble) { collect(e.gamble.win, from); collect(e.gamble.lose, from); }
+    };
+    def.beats.slice(0, 3).forEach((beat, bi) => beat.forEach((card) => probes.forEach((p) => {
+      const c: FactContext = { ...p, season: def.id, season_beat: bi, counters: { ...p.counters, season_next: p.age } };
+      try { if (card.when && !card.when(c)) return; card.build(c, fakeKit(def, false, { scar: new Set(), gag: false, npcBad: new Set() }, 0)).choices.forEach((ch) => collect(ch.effects, card.id)); } catch { /* đã báo ở trên */ }
+    })));
+    const read = new Set<string>();
+    for (const [key, info] of set) {
+      for (let bi = 2; bi <= 4 && !read.has(key); bi++) for (const card of def.beats[bi]!) {
+        if (card.id === info.from || read.has(key)) continue;
+        for (const p of probes) {
+          const flags0 = new Set(p.flags); flags0.delete(key);
+          const counters0: Record<string, number> = { ...p.counters, season_next: p.age }; delete counters0[key];
+          const c0: FactContext = { ...p, season: def.id, season_beat: bi, flags: flags0, counters: counters0 };
+          const c1: FactContext = info.kind === "flag" ? { ...c0, flags: new Set([...flags0, key]) } : { ...c0, counters: { ...counters0, [key]: 5 } };
+          const run = (c: FactContext): string => {
+            try {
+              if (card.when && !card.when(c)) return "off";
+              return JSON.stringify(card.build(c, fakeKit(def, false, { scar: new Set(), gag: false, npcBad: new Set() }, 0)));
+            } catch { return "err"; }
+          };
+          if (run(c0) !== run(c1)) { read.add(key); break; }
+        }
+      }
+    }
+    if (read.size < 2) bad(`${S}: nhịp cú lật/đáy/chung kết chỉ đọc lại ${read.size} cờ/bộ đếm do lựa chọn trước đặt (${[...read].join(", ") || "không có"}), cần ≥ 2`);
+  }
+
   /* biên dịch: id, cổng, meta, build qua names */
   const st = compileSeason(def);
   ok(st.length === total, `${S}: compileSeason ra ${st.length} storylet, cần ${total}`);
@@ -276,7 +340,7 @@ const FUZZ_PLANTS: [PlantKind, string, string][] = [
   ["place", "bep_an_cho_tam_cu", "bếp ăn ở chỗ tạm cư"], ["skill", "nghe_cong_ty_can", "nghề công ty cần bạn học lại"],
   ["person", "nguoi_chu_o_thanh_pho", "người chú có chỗ ở thành phố"],
 ];
-/** randomCtx + áp lực 8 trục ngẫu nhiên (0–12) + 0–3 vật gài + Độ điên 1–2. */
+/** randomCtx + áp lực 8 trục ngẫu nhiên (0–12) + 0–3 vật gài + canon_n 0–2 + Độ điên 1–2. */
 function weirdCtx(r: ReturnType<typeof createRng>): FactContext {
   const c = randomCtx(r);
   const pressure = { ...c.pressure };
@@ -290,7 +354,10 @@ function weirdCtx(r: ReturnType<typeof createRng>): FactContext {
     if (kind === "person" && people.length) p.npc = r.pick(people);
     plants.push(p);
   }
-  return { ...c, pressure, plants, weird: r.chance(0.5) ? 1 : 2 };
+  // Số canon event đã nổ: 0–2, tuổi lần trước khớp với khoảng cách CANON_GAP (8 năm) — nhánh như S22 cần canon_n ≥ 1.
+  const canon_n = Math.floor(r.next() * 3);
+  const last_canon_age = canon_n > 0 ? c.age - 8 - Math.floor(r.next() * 10) : -99;
+  return { ...c, pressure, plants, canon_n, last_canon_age, weird: r.chance(0.5) ? 1 : 2 };
 }
 /** Chỗ trống như generator điền cho trục Kỳ (bản sao KY_SLOTS của Canon.ts). */
 const KY_FUZZ: CanonSeed = {

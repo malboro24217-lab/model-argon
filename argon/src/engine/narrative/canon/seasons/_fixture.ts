@@ -70,13 +70,15 @@ export const FIXTURE_SEASON: SeasonDef = {
     ],
     /* chung_ket */
     [
-      card("fx_ket_chon", "Đèn hẻm sáng lần cuối", (c, k) => `Sáng nay, ${k.scar("no") || "món nợ cũ"} lại được nhắc tới, kèm một tờ giấy hẹn ngày trả. ${cap(k.npc("quan_doi_dien"))} vẫn chờ câu trả lời. Đã đến lúc quyết quán này sẽ thành gì.`,
-        [ending(L_QUAN, "Đăng ký tên quán, làm cho ra hồn", "Thành nghề, nhưng buộc chân ở đây"),
-         ending(L_BAN, "Bán lại quán, trả nợ", "Có tiền, mất chỗ đứng")]),
+      card("fx_ket_chon", "Đèn hẻm sáng lần cuối", (c, k) => `Sáng nay, ${k.scar("no") || "món nợ cũ"} lại được nhắc tới, kèm một tờ giấy hẹn ngày trả. ${cap(k.npc("quan_doi_dien"))} ${c.flags.has("fx_tu_choi") ? "chưa quên lần bạn đẩy phong bì lại, vẫn đứng bên kia hẻm chờ." : c.flags.has("fx_nhan_phong_bi") ? "nhắc khéo cái phong bì bạn đã nhận." : "vẫn chờ câu trả lời."} Đã đến lúc quyết quán này sẽ thành gì.`,
+        // Nghề chỉ mở trong khoảng tuổi của con đường (bộ kiểm tuổi 8–90); ngoài khoảng thì bán quán hoặc lên phố.
+        (c) => c.age >= 18 && c.age <= 55
+          ? [ending(L_QUAN, "Đăng ký tên quán, làm cho ra hồn", "Thành nghề, nhưng buộc chân ở đây"), ending(L_BAN, "Bán lại quán, trả nợ", "Có tiền, mất chỗ đứng")]
+          : [ending(L_BAN, "Bán lại quán, trả nợ", "Có tiền, mất chỗ đứng"), ending(L_DI, "Lên xe, đi thành phố khác", "Làm lại từ đầu, bỏ quán lại sau lưng")]),
       card("fx_ket_xe_som", "Chuyến xe sớm", (c, k) => `Một người bà con ở thành phố khác nhắn: có việc cho bạn làm, có phòng để ở, vé xe sáng mai. Còn ${k.scar("no") || "món nợ ở quán"} thì vẫn chưa trả xong.`,
         [ending(L_DI, "Lên xe, đi thành phố khác", "Làm lại từ đầu, bỏ quán lại sau lưng"),
          ending(L_QUAN, "Ở lại, giữ quán", "Bám trụ, chịu thêm vài năm vất vả")],
-        (c) => c.age < 60),
+        (c) => c.age >= 18 && c.age <= 55),
     ],
   ],
 };
