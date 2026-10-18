@@ -7,7 +7,7 @@ import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
 import { PATHS } from "../../paths/registry.ts";
-import { C, cap, card, ending, finale as kitFinale, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, finale as kitFinale, land, noOr, season, weird } from "../kit.ts";
 
 const ac = (c: FactContext): string => (c.sex === "M" ? "anh" : "chị");
 const bm = (c: FactContext): string => (c.sex === "M" ? "bố" : "mẹ");
@@ -110,7 +110,7 @@ const X41 = weird("X41", "abs", ["ky", "danh", "tien"],
       ],
       /* chung_ket */
       [
-        card("x41_ket", "Đại hội cổ đông", (c, k) => `Đại hội cổ đông, ghế đầu bàn có hai người cùng tới: bạn, và giám đốc thật da cháy nắng, tay xách giỏ cá. ${k.gag()} ${n(c, "x41_that") >= 2 ? "Vì bạn nói thật từ trước, cả hội trường đã biết chuyện, chỉ còn chờ bỏ phiếu." : "Cả hội trường lần đầu biết chuyện, xôn xao như chợ."} Trong đầu bạn vẫn là ${k.scar("no") || "món nợ cũ"}, chưa trả xong.`,
+        card("x41_ket", "Đại hội cổ đông", (c, k) => `Đại hội cổ đông, ghế đầu bàn có hai người cùng tới: bạn, và giám đốc thật da cháy nắng, tay xách giỏ cá. ${k.gag()} ${n(c, "x41_that") >= 2 ? "Vì bạn nói thật từ trước, cả hội trường đã biết chuyện, chỉ còn chờ bỏ phiếu." : "Cả hội trường lần đầu biết chuyện, xôn xao như chợ."} Trong đầu bạn vẫn là ${noOr(c, k)}, chưa trả xong.`,
           (c) => finale(c,
             [O(L41_QL, "Ra ứng cử làm giám đốc thật", "Thành người quản lý, bị soi từng bước", "factory_owner")],
             [O(L41_LO, "Đứng dậy, trả lại ghế", "Mất việc, mất lương, hết phải giả vờ"),
@@ -194,7 +194,7 @@ const X42 = weird("X42", "abs", ["ky", "danh", "mau"],
       ],
       /* chung_ket */
       [
-        card("x42_ket", "Buổi tiễn được làm lại", (c, k) => `Mấy năm sau ngày ${ong42()} đi, cả xóm đòi làm lại buổi đầu tiên, lần này vé bán từ tháng trước. ${k.gag()} ${n(c, "x42_show") >= 3 ? "Tên bạn in to hơn tên ban kèn trên tấm áp phích." : "Tấm áp phích chỉ in ảnh ông, cười rất tươi."} Trước giờ mở màn, bạn còn ${k.scar("no") || "một món nợ cũ"} phải tính, và một câu hỏi: tiếp tục hay hạ màn.`,
+        card("x42_ket", "Buổi tiễn được làm lại", (c, k) => `Mấy năm sau ngày ${ong42()} đi, cả xóm đòi làm lại buổi đầu tiên, lần này vé bán từ tháng trước. ${k.gag()} ${n(c, "x42_show") >= 3 ? "Tên bạn in to hơn tên ban kèn trên tấm áp phích." : "Tấm áp phích chỉ in ảnh ông, cười rất tươi."} Trước giờ mở màn, bạn còn ${noOr(c, k, "một món nợ cũ", "một món ân tình cũ")} phải tính, và một câu hỏi: tiếp tục hay hạ màn.`,
           (c) => finale(c,
             [O(L42_SK, "Mở công ty lo tang lễ có kèn", "Thành nghề, quanh năm gặp người buồn", "funeral_worker"),
              O(L42_NHAC, "Giữ cây kèn, đi diễn", "Sống bằng sân khấu, bỏ phần lo việc", "folk_musician")],
@@ -277,7 +277,7 @@ const X43 = weird("X43", "abs", ["ky", "luat", "danh"],
       ],
       /* chung_ket */
       [
-        card("x43_ket", "Phán quyết cuối", (c, k) => `Ngày tuyên án, cả nhà mặc áo giống nhau, in hình mặt trời. ${k.gag()} ${f(c, "x43_rut_don") ? "Dù bạn đã rút đơn, tòa vẫn mời cả nhà đến nghe kết luận." : "Hội trường chật kín, nửa ủng hộ, nửa phản đối."} Bạn còn ${k.scar("no") || "món nợ cũ"} chưa trả, và ai cũng chờ bạn nói câu cuối.`,
+        card("x43_ket", "Phán quyết cuối", (c, k) => `Ngày tuyên án, cả nhà mặc áo giống nhau, in hình mặt trời. ${k.gag()} ${f(c, "x43_rut_don") ? "Dù bạn đã rút đơn, tòa vẫn mời cả nhà đến nghe kết luận." : "Hội trường chật kín, nửa ủng hộ, nửa phản đối."} Bạn còn ${noOr(c, k)} chưa trả, và ai cũng chờ bạn nói câu cuối.`,
           (c) => finale(c,
             [O(L43_LS, "Học luật, nhận những vụ như mình", "Thành luật sư, cả đời ở tòa", "lawyer"),
              O(L43_DANH, "Kể chuyện nhà cho cả nước nghe", "Nổi tiếng, con mất riêng tư", "influencer")],
@@ -362,7 +362,7 @@ const X44 = weird("X44", "abs", ["ky", "dat", "danh"],
       ],
       /* chung_ket */
       [
-        card("x44_ket", "Tờ phiếu bầu đầu ngõ", (c, k) => `Ngày bầu trưởng khu phố mới, tờ phiếu nào cũng có tên bạn, viết tay, ${n(c, "x44_long_pho") >= 3 ? "kèm vài hình bóng đèn vẽ vội" : "nhiều tờ kèm một dòng trách móc"}. ${k.gag()} Bạn vẫn còn ${k.scar("no") || "một món nợ cũ"} chưa trả, và cả phố đang chờ bạn chọn.`,
+        card("x44_ket", "Tờ phiếu bầu đầu ngõ", (c, k) => `Ngày bầu trưởng khu phố mới, tờ phiếu nào cũng có tên bạn, viết tay, ${n(c, "x44_long_pho") >= 3 ? "kèm vài hình bóng đèn vẽ vội" : "nhiều tờ kèm một dòng trách móc"}. ${k.gag()} Bạn vẫn còn ${noOr(c, k, "một món nợ cũ", "một món ân tình cũ")} chưa trả, và cả phố đang chờ bạn chọn.`,
           (c) => finale(c,
             [O(L44_TT, "Nhận làm người đứng đầu khu phố", "Lo chuyện chung, chuyện riêng xếp sau", "activist"),
              O(L44_NC, "Theo thợ điện đi tìm nguồn điện", "Thành người mày mò, phố tự lo lấy", "inventor")],
@@ -443,7 +443,7 @@ const X45 = weird("X45", "abs", ["ky", "danh", "luat"],
       ],
       /* chung_ket */
       [
-        card("x45_ket", "Bài báo cuối về con voi", (c, k) => `Mấy năm sau buổi sáng ấy, ${k.npc("phong_vien")} xin viết bài cuối cùng về con voi và mời bạn cùng ký tên. ${k.gag()} ${f(c, "x45_hua_qt") || f(c, "x45_anh_qt") ? "Ông quản tượng gửi lời: con voi Bông đã được về rừng." : "Không ai biết con voi giờ ở đâu."} Bạn còn ${k.scar("no") || "một món nợ cũ"} chưa trả, và một quyết định cho phần đời còn lại.`,
+        card("x45_ket", "Bài báo cuối về con voi", (c, k) => `Mấy năm sau buổi sáng ấy, ${k.npc("phong_vien")} xin viết bài cuối cùng về con voi và mời bạn cùng ký tên. ${k.gag()} ${f(c, "x45_hua_qt") || f(c, "x45_anh_qt") ? "Ông quản tượng gửi lời: con voi Bông đã được về rừng." : "Không ai biết con voi giờ ở đâu."} Bạn còn ${noOr(c, k, "một món nợ cũ", "một món ân tình cũ")} chưa trả, và một quyết định cho phần đời còn lại.`,
           (c) => finale(c,
             [O(L45_BAO, "Đi làm phóng viên", "Thành người đi hỏi, thôi làm người bị hỏi", "journalist"),
              O(L45_TV, "Nhận dẫn chương trình chuyện lạ", "Nổi tiếng, cả đời gắn với con voi", "tv_host")],
@@ -522,7 +522,7 @@ const X46 = weird("X46", "abs", ["ky", "mau", "tien"],
       ],
       /* chung_ket */
       [
-        card("x46_ket", "Hợp đồng cuối cùng", (c, k) => `${n(c, "x46_con") >= 1 ? "Lần này con bạn tự mang tới tận nơi" : "Con bạn gửi tới"} một bản hợp đồng in sẵn, mục giá để trống, mục thời hạn ghi "đến khi nào ${bm(c)} chán". ${k.gag()} ${n(c, "x46_than") >= 2 ? "Cậu khách quen cũng gửi một bản, nét chữ run run." : "Ngoài kia vẫn còn một danh sách khách đang chờ."} Bạn còn ${k.scar("no") || "một món nợ cũ"} phải lo, và một câu trả lời phải đưa.`,
+        card("x46_ket", "Hợp đồng cuối cùng", (c, k) => `${n(c, "x46_con") >= 1 ? "Lần này con bạn tự mang tới tận nơi" : "Con bạn gửi tới"} một bản hợp đồng in sẵn, mục giá để trống, mục thời hạn ghi "đến khi nào ${bm(c)} chán". ${k.gag()} ${n(c, "x46_than") >= 2 ? "Cậu khách quen cũng gửi một bản, nét chữ run run." : "Ngoài kia vẫn còn một danh sách khách đang chờ."} Bạn còn ${noOr(c, k, "một món nợ cũ", "một món ân tình cũ")} phải lo, và một câu trả lời phải đưa.`,
           (c) => finale(c,
             [O(L46_CHAM, "Học nghề chăm người già", "Thành nghề thật, lương không cao", "caregiver")],
             [O(L46_CTY, "Mở hẳn dịch vụ cha mẹ cho thuê", "Có tiền, có việc, ít thời gian cho nhà"),
@@ -620,7 +620,7 @@ const X47 = weird("X47", "abs", ["ky", "tinh", "danh"],
 const L48_THANG = land("x48_thang", "Quán bên kia trả mặt bằng. Bạn mua lại bộ bàn ghế, giữ nguyên giá cũ, và khách đông gấp đôi.",
   { income_mult: 1.4, happy: 3 });
 const L48_PHA_SAN = land("x48_pha_san", "Cuộc chiến một đồng xu nuốt hết vốn của bạn. Bạn đóng quán, trả nợ dần, và từ đó không ăn món ấy nữa.",
-  { money: -2, happy: -4 });
+  { money: -2, custom: "repay:1", happy: -4 });
 const L48_TAI_HOP = land("x48_tai_hop", "Hai người tháo một tấm bảng giá, gộp hai quán làm một, và làm đám cưới ngay giữa con đường từng chia đôi họ.",
   { custom: "marry", happy: 8 });
 const L48_GOP = land("x48_gop_quan", "Hai người gộp hai quán làm một, chia ca sáng chiều, chia đôi tiền lãi. Cả phố chỉ còn một tấm bảng giá.",
@@ -685,7 +685,7 @@ const X48 = weird("X48", "abs", ["ky", "tinh", "tien"],
       ],
       /* chung_ket */
       [
-        card("x48_ket", "Một đồng xu cuối cùng", (c, k) => `${n(c, "x48_hoa") > n(c, "x48_chien") ? "Hai quán giờ đã chung nhau một chiếc ô che nắng." : "Hai quán vẫn kéo bạt quay lưng vào nhau."} ${k.gag()} Bạn còn ${k.scar("no") || "một món nợ cũ"} phải trả, và người bên kia đường đang băng qua, tay cầm một đồng xu.`,
+        card("x48_ket", "Một đồng xu cuối cùng", (c, k) => `${n(c, "x48_hoa") > n(c, "x48_chien") ? "Hai quán giờ đã chung nhau một chiếc ô che nắng." : "Hai quán vẫn kéo bạt quay lưng vào nhau."} ${k.gag()} Bạn còn ${noOr(c, k, "một món nợ cũ", "một món ân tình cũ")} phải trả, và người bên kia đường đang băng qua, tay cầm một đồng xu.`,
           (c): Choice[] => [
             ending(L48_THANG, "Mua lại quán bên kia", "Thắng cuộc chiến, phố có một người buồn"),
             ending(L48_PHA_SAN, "Hạ giá lần cuối, tới đâu thì tới", "Có thể trắng tay"),
@@ -766,7 +766,7 @@ const X49 = weird("X49", "abs", ["ky", "tien", "than"],
       ],
       /* chung_ket */
       [
-        card("x49_ket", "Kiểm kê giờ cuối mùa", (c, k) => `Cuối mùa, bạn đếm lại kho giờ của mình trên bàn ăn. ${k.gag()} ${n(c, "x49_gio") >= 3 ? "Số còn lại nhiều hơn một đời người dùng." : "Số còn lại vừa đủ cho vài buổi chiều."} Riêng ${k.scar("no") || "món nợ cũ"} thì vẫn tính bằng tiền, không chịu nhận giờ.`,
+        card("x49_ket", "Kiểm kê giờ cuối mùa", (c, k) => `Cuối mùa, bạn đếm lại kho giờ của mình trên bàn ăn. ${k.gag()} ${n(c, "x49_gio") >= 3 ? "Số còn lại nhiều hơn một đời người dùng." : "Số còn lại vừa đủ cho vài buổi chiều."} ${k.scar("no") || c.debt > 0 ? `Riêng ${noOr(c, k)} thì vẫn tính bằng tiền, không chịu nhận giờ.` : "Riêng tiền chợ thì vẫn tính bằng tiền, không chịu nhận giờ."}`,
           (c) => finale(c,
             [O(L49_NGHE, "Dựng quầy bán giờ ở đầu chợ", "Một nghề lạ, khách lúc nào cũng vội", "street_vendor")],
             [O(L49_CHAM, "Giữ giờ cho mình, sống chậm", "Ít tiền, nhiều buổi chiều"),

@@ -65,13 +65,16 @@ const NO_CU: CanonSeed = {
   title: (s, c, N) => vua(`${ten(s, N, "Chủ nợ")} quay lại đòi nợ`, "Món nợ cũ quay lại"),
   text: (s, c, N) => {
     const ai = ten(s, N, "Chủ nợ"), w = s.what;
-    const ky = c.independent ? "Chữ ký bên dưới là của bạn" : "Chữ ký bên dưới là của bố mẹ bạn";
+    // Không nợ nần gì (quy tắc 9): lời đòi nợ có thể sai, chữ nói rõ bạn không nhớ đã vay.
+    const ky = !c.independent ? "Chữ ký bên dưới là của bố mẹ bạn, nét chữ run run của một năm túng quẫn"
+      : c.debt > 0 || c.loans > 0 ? "Chữ ký bên dưới là của bạn, nét chữ run run của một năm túng quẫn"
+      : "Chữ ký bên dưới giống hệt chữ của bạn, dù bạn không nhớ đã từng vay ai";
     if (w && w.kind === "debt")
       return `${ai} đứng trước cửa nhà bạn ở ${noi(s)}, tay cầm ${w.label}. Giấy đã ố vàng sau ${khi(s, c)}, nhưng con số trên đó thì có thêm lãi. ${ai} không ngồi, chỉ nói: “Tới hạn rồi.”`;
     if (w && w.kind === "promise")
       return `${ai} đứng trước cửa nhà bạn ở ${noi(s)}, nhắc lại ${w.label} từ ${khi(s, c)} trước. Kèm theo là một tờ giấy ghi rõ từng khoản ${ai} đã ứng ra, cộng cả lãi. “Tới hạn rồi.”`;
     const doa = w ? `${ai} liếc qua ${w.label} rồi nói: không trả bằng tiền thì trả bằng thứ khác.` : `Con số đã có thêm lãi. ${ai} không ngồi, chỉ nói: “Tới hạn rồi.”`;
-    return `${ai} đứng trước cửa nhà bạn ở ${noi(s)}, tay cầm một tờ giấy nợ đã ố vàng. ${ky}, nét chữ run run của một năm túng quẫn. ${doa}`;
+    return `${ai} đứng trước cửa nhà bạn ở ${noi(s)}, tay cầm một tờ giấy nợ đã ố vàng. ${ky}. ${doa}`;
   },
   doors: [
     { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Rõ trắng đen, nhưng cả họ sẽ bị lôi vào cuộc",
@@ -202,7 +205,8 @@ const NOI_TIENG: CanonSeed = {
     { kind: "lat_ban", season: "ngoi_sao", hint: "Nổi hơn nữa, và không còn đường lui về đời thường",
       label: () => "Nhận lời lên sóng trực tiếp tối nay" },
     { kind: "danh_cuoc", season: "ngoi_sao", hint: "Được ăn cả; ngã thì cả nước cùng thấy",
-      label: (s, c) => (c.independent ? "Nghỉ việc, sống hẳn bằng tiếng tăm này" : "Xin bố mẹ cho dồn hết sức vào kênh riêng") },
+      label: (s, c) => (!c.independent ? "Xin bố mẹ cho dồn hết sức vào kênh riêng"
+        : c.has_job ? "Nghỉ việc, sống hẳn bằng tiếng tăm này" : "Gác mọi dự định, sống hẳn bằng tiếng tăm này") },
     { kind: "thoa_hiep", season: "vu_an_gia_toc", hint: "Nhà có thêm thu nhập, và thêm chuyện để tranh nhau",
       label: () => "Để cả nhà đứng ra lo, chia nhau lời mời" },
     { kind: "nhan_toi", season: "lam_lai", hint: "Giữ được lòng tự trọng, mất gần hết những gì đang có",
@@ -282,7 +286,7 @@ const NAM_CUOI: CanonSeed = {
     { kind: "danh_cuoc", season: "xu_nguoi", hint: "Sống điều mình muốn; nếu kết quả sai, bạn làm lại ở xứ lạ",
       label: (s, c) => (c.flags.has(`${C27}_route_0`) ? "Bán hết, đi lại con đường năm ấy, không hẹn ngày về" : "Bán hết, đi chuyến đi đã hoãn, không hẹn ngày về"), when: indep },
     { kind: "buong", season: "lam_lai", hint: "Một năm sống trọn, sau đó là hai bàn tay trắng",
-      label: () => "Nghỉ việc, cho đi hết những gì đang có" },
+      label: (s, c) => (c.has_job ? "Nghỉ việc, cho đi hết những gì đang có" : "Cho đi hết những gì đang có, sống trọn từng ngày") },
     { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Hết giấu giếm, mở ra những chuyện cũ chưa ai dám nói",
       label: () => "Gọi cả nhà về, nói thật và chia lại mọi thứ" },
     { kind: "lat_ban", season: "ngoi_sao", hint: "Người lạ thương bạn, đời riêng thành của chung",

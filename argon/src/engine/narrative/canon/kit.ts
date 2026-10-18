@@ -19,7 +19,7 @@
  *       [ … khoi_dong … ],
  *       [ … cu_lat: ít nhất 1 thẻ dùng k.scar(...) … ],
  *       [ … day … ],
- *       [card("x_ket", "Chung kết", (c, k) => `${cap(k.scar("no") || "món nợ cũ")} vẫn còn đó…`,
+ *       [card("x_ket", "Chung kết", (c, k) => `${cap(noOr(c, k))} vẫn còn đó…`,
  *             [ending(L_THO, "Ở lại sửa xe"), ending(L_DI, "Mua vé đi")])],
  *     ],
  *   };
@@ -27,6 +27,7 @@
  * Quy tắc (bộ kiểm bắt hết):
  *  - Mùa thường 13–17 thẻ, 2–3 người mới; mùa kỳ dị 7–10 thẻ, 1–2 người mới. Nhịp nào cũng ≥ 1 thẻ.
  *  - Vết và người mới CHỈ lấy qua k: k.scar("nguoi" | "do" | "no") có thể là "" → luôn viết `k.scar("do") || "chữ dự phòng"`.
+ *    Vết "no" dùng noOr(c, k): dự phòng chỉ gọi là nợ khi c.debt > 0 (quy tắc 9; bộ kiểm dò bằng probe sự thật tương phản).
  *    k.npc(key) chỉ với key có trong reset.cast. Không dùng `{...}` trong chữ.
  *  - Nhịp cu_lat dùng ≥ 1 vết.
  *  - Thẻ chung kết: MỌI lựa chọn là ending(landing, nhãn), mỗi lựa chọn một landing khác nhau. land(id, …) tự gắn
@@ -128,6 +129,15 @@ export function card(id: string, title: Txt, text: (c: FactContext, k: SeasonKit
 
 /** Viết hoa chữ đầu: dùng khi vết hay nhãn người mới đứng đầu câu (`${cap(k.npc("chu_tro"))} đưa chìa khóa.`). */
 export const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+
+/**
+ * Vết "no" (món nợ hay lời hứa mang từ đời cũ) cho chữ của thẻ, hoặc chữ dự phòng ĐÚNG với đời này (addendum quy tắc 9).
+ * Vết rỗng nghĩa là lúc vào mùa không có nợ ngân hàng, vật gài nợ hay lời hứa nào: chỉ khi đang nợ (c.debt > 0, nợ phát
+ * sinh trong mùa) mới được gọi là nợ; không thì là một món ân tình (đọc trôi với "chưa trả", "khép", "vẫn còn đó").
+ * Câu quanh nó phải đọc được với cả ba: nhãn vết thật, `debt`, `other`.
+ */
+export const noOr = (c: FactContext, k: SeasonKit, debt = "món nợ cũ", other = "món ân tình cũ"): string =>
+  k.scar("no") || (c.debt > 0 ? debt : other);
 
 /** Một chung kết. Tự thêm custom "season_end:<id>" (nối bằng "|"); host đọc id bằng landingOf. */
 export const land = (id: string, line: string, effects: Effect): Landing => ({ id, line, effects: addCustom(effects, `season_end:${id}`) });

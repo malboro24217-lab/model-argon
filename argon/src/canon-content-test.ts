@@ -229,6 +229,19 @@ function checkSeason(def: SeasonDef): void {
     if (bi === 2 && beatUse.scar.size === 0) bad(`${S}: nhịp cu_lat phải dùng ít nhất 1 vết (k.scar)`);
   });
   if (gagCards < 3) bad(`${S}: gag phải lặp ≥ 3 lần mỗi mùa — chỉ ${gagCards} thẻ gọi k.gag()`);
+  // Landing chỉ mở khi người chơi đã gom đủ cờ / bộ đếm của mùa (vd. phần thừa kế trọn khi thắng kiện): dựng thêm thẻ
+  // chung kết với mọi cờ và bộ đếm (= 5) do lựa chọn trong mùa đặt.
+  if (def.landings.some((l) => !landingUsed.has(l.id))) {
+    const sf = new Set<string>(), sc: Record<string, number> = {};
+    const grab = (e: Effect) => { for (const f of e.flags ?? []) sf.add(f); for (const k of Object.keys(e.counters ?? {})) sc[k] = 5; if (e.gamble) { grab(e.gamble.win); grab(e.gamble.lose); } };
+    def.beats.slice(0, 4).forEach((beat, bi) => beat.forEach((card) => ctxs.slice(0, 8).forEach((p) => {
+      try { const c: FactContext = { ...p, season: def.id, season_beat: bi }; if (card.when && !card.when(c)) return; card.build(c, fakeKit(def, false, { scar: new Set(), gag: false, npcBad: new Set() }, 0)).choices.forEach((ch) => grab(ch.effects)); } catch { /* đã báo */ }
+    })));
+    for (const card of def.beats[4]) for (const p of ctxs) {
+      const c: FactContext = { ...p, season: def.id, season_beat: 4, flags: new Set([...p.flags, ...sf]), counters: { ...p.counters, ...sc, season_next: p.age } };
+      try { if (card.when && !card.when(c)) continue; for (const ch of card.build(c, fakeKit(def, false, { scar: new Set(), gag: false, npcBad: new Set() }, 0)).choices) { const l = landingOf(ch.effects); if (l) landingUsed.add(l); } } catch { /* đã báo */ }
+    }
+  }
   for (const l of def.landings) if (!landingUsed.has(l.id)) bad(`${S}: landing ${l.id} không thẻ chung kết nào dùng`);
 
   /* Chung kết theo tuổi (16–85, có/không vợ chồng): luôn có thẻ hạ cánh được, và landing đổi nghề become:<p> chỉ ra

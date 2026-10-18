@@ -3,12 +3,12 @@
  * Gag: câu cảm ơn đầu tiên bạn học bằng tiếng bản xứ hóa ra nghĩa là "Tôi là một cái ấm nước".
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, finale, land } from "../kit.ts";
+import { C, cap, card, ending, finale, land, noOr, pathOpen } from "../kit.ts";
 
 const L_QUAN = land("quan_am_nuoc", "Bạn mở một quán ăn nhỏ ở xứ người, đặt tên là “Ấm nước”. Khách bản xứ không hiểu tại sao cái tên làm người nhập cư bật cười.", { custom: "become:restaurateur", happy: 6 });
 const L_VE = land("ve_nuoc", "Bạn về nước, mang theo một công thức, một biệt danh và một cách nhìn mới, rồi làm lại lần nữa ở quê nhà.", { custom: "return_home|become:returnee", happy: 4 });
 const L_CUOI = land("cuoi_o_lai", "Bạn ở lại xứ người và cưới một người ở đây. Ở đám cưới, bàn nào cũng có một cái ấm nước.", { custom: "marry", happy: 8 });
-const L_O = land("o_lai_xu_nguoi", "Bạn ở lại xứ này, gửi về một khoản lớn để khép chuyện cũ ở quê, và từ đó là người của cả hai nơi.", { money: -1, happy: 3 });
+const L_O = land("o_lai_xu_nguoi", "Bạn ở lại xứ này, gửi về một khoản lớn để khép chuyện cũ ở quê, và từ đó là người của cả hai nơi.", { money: -1, custom: "repay:1", happy: 3 });
 const L_VE_GIA = land("ve_gia", "Bạn về quê nhà, dùng tiền dành dụm sửa lại căn bếp cũ, và ở lại gần những người thân còn lại.", { custom: "return_home", money: -1, happy: 5 });
 
 type Ctx = { flags: Set<string>; counters: Record<string, number> };
@@ -17,8 +17,10 @@ const tieng = (c: Ctx) => c.counters.xn_tieng ?? 0;
 /** Cưới ai: đọc lại người bạn đã gần gũi trong mùa (không đặt tên cast vì host marry tự đặt tên bạn đời). */
 /** Cưới chỉ mở cho người trưởng thành chưa có vợ/chồng. */
 const cuoiOk = (c: { age: number; married: boolean }) => !c.married && c.age >= 18;
-const o = ending(L_O, "Xé vé, ở lại, gửi tiền về khép chuyện cũ", "Mất một khoản lớn, giữ được cả hai nơi");
-const veGia = ending(L_VE_GIA, "Về quê, sửa lại căn bếp cũ", "Tiêu hết tiền dành dụm, ở gần người thân");
+/** Ở lại, gửi tiền về: nhãn theo cảnh (chỉ thẻ sân bay mới có vé để xé). */
+const o = (label: string) => ending(L_O, label, "Mất một khoản lớn, giữ được cả hai nơi");
+/** Về quê ở gần người thân (khác L_VE: về nước làm nghề mới, nên hai nhãn không na ná). */
+const veGia = ending(L_VE_GIA, "Về quê nghỉ ngơi, sửa lại căn bếp cũ", "Tiêu hết tiền dành dụm, ở gần người thân");
 const cuoi = (c: Ctx) => ending(L_CUOI,
   has(c, "xn_go_cua") ? "Ở lại, cưới người hàng xóm bạn gõ cửa đêm ốm"
     : has(c, "xn_noi_giup") ? "Ở lại, cưới người bạn từng đứng ra nói giúp"
@@ -104,15 +106,16 @@ export const XU_NGUOI: SeasonDef = {
     /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng.
        restaurateur nhận tới 50, returnee tới 60 (PATHS) → mở tới 55 / 65; già hơn chỉ có tiền, về quê, hôn nhân. */
     [
-      card("xn_ket_bien_quan", "Tấm biển tên quán", (c, k) => `${(c.counters.xn_quan ?? 0) >= 3 ? `${cap(k.npc("dong_huong"))} để ý một mặt bằng nhỏ đang cho thuê, giá vừa đủ để hai người cùng liều.` : "Một mặt bằng nhỏ gần bến tàu điện đang cho thuê, giá vừa đủ để liều."} ${has(c, "xn_chua_ve") ? "Lá thư “Chưa” năm ấy vẫn chưa có lá nào viết tiếp." : has(c, "xn_ve_tham") ? "Từ chuyến về thăm, bạn biết căn bếp cũ giờ chỉ còn một người nấu." : "Ở quê nhà, căn bếp cũ vẫn chờ."} Còn một chuyện bạn chưa làm xong: ${k.scar("no") || "món nợ cũ của gia đình"}. ${k.gag()}`,
+      card("xn_ket_bien_quan", "Tấm biển tên quán", (c, k) => `${(c.counters.xn_quan ?? 0) >= 3 ? `${cap(k.npc("dong_huong"))} để ý một mặt bằng nhỏ đang cho thuê, giá vừa đủ để hai người cùng liều.` : "Một mặt bằng nhỏ gần bến tàu điện đang cho thuê, giá vừa đủ để liều."} ${has(c, "xn_chua_ve") ? "Lá thư “Chưa” năm ấy vẫn chưa có lá nào viết tiếp." : has(c, "xn_ve_tham") ? "Từ chuyến về thăm, bạn biết căn bếp cũ giờ chỉ còn một người nấu." : "Ở quê nhà, căn bếp cũ vẫn chờ."} Còn một chuyện bạn chưa làm xong: ${noOr(c, k, "món nợ cũ của gia đình", "món ân tình cũ với gia đình")}. ${k.gag()}`,
         (c) => finale(c.age,
-          [ending(L_QUAN, "Mở quán, đặt tên là “Ấm nước”", has(c, "xn_dung_vet") ? "Ông chủ bếp cũ hứa gửi khách, bám rễ ở xứ người" : "Bám rễ ở xứ người, gửi tiền về khép chuyện cũ"),
-           ending(L_VE, "Về nước, làm lại lần nữa ở quê nhà", "Về gần nhà, thu nhập tụt một nửa")],
-          [...(cuoiOk(c) ? [cuoi(c)] : []), o, veGia]), (c) => c.age <= 55),
-      card("xn_ket_chuyen_bay", "Chuyến bay một chiều", (c, k) => `Bạn ngồi ở sân bay, cầm một tấm vé một chiều và một quyết định chưa viết xong. ${(c.counters.xn_quen ?? 0) >= 3 ? "Một nhóm người quen ở xứ này ra tận nơi tiễn, mang theo một cái ấm nước làm quà." : "Không ai ra tiễn, nên bạn có nhiều thời gian để nghĩ."} Chuyện cũ ở quê nhà vẫn chờ: ${k.scar("no") || "món nợ cũ của gia đình"}. ${k.gag()}`,
+          [ending(L_QUAN, "Mở quán, đặt tên là “Ấm nước”", has(c, "xn_dung_vet") ? "Ông chủ bếp cũ hứa gửi khách, bám rễ ở xứ người" : "Bám rễ ở xứ người, buộc chân với cái bếp"),
+           ending(L_VE, "Về nước, mở nghề mới bằng công thức học được", "Về gần nhà, thu nhập tụt một nửa")],
+          [...(cuoiOk(c) ? [cuoi(c)] : []), o("Ở lại làm thuê, gửi tiền về khép chuyện cũ"), veGia]), (c) => c.age <= 55),
+      card("xn_ket_chuyen_bay", "Chuyến bay một chiều", (c, k) => `Bạn ngồi ở sân bay, cầm một tấm vé một chiều và một quyết định chưa viết xong. ${(c.counters.xn_quen ?? 0) >= 3 ? "Một nhóm người quen ở xứ này ra tận nơi tiễn, mang theo một cái ấm nước làm quà." : "Không ai ra tiễn, nên bạn có nhiều thời gian để nghĩ."} Chuyện cũ ở quê nhà vẫn chờ: ${noOr(c, k, "món nợ cũ của gia đình", "món ân tình cũ với gia đình")}. ${k.gag()}`,
         (c) => finale(c.age,
-          [ending(L_VE, "Lên máy bay, về hẳn quê nhà", "Về gần nhà, thu nhập tụt một nửa")],
-          [o, ...(cuoiOk(c) ? [cuoi(c)] : []), veGia])),
+          [ending(L_VE, "Lên máy bay, về nước làm lại bằng nghề mới", "Về gần nhà, thu nhập tụt một nửa")],
+          // Về quê nghỉ ngơi chỉ hiện khi đã quá tuổi làm lại (returnee), để hai lối về nước không đứng cạnh nhau.
+          [o("Xé vé, ở lại, gửi tiền về khép chuyện cũ"), ...(cuoiOk(c) ? [cuoi(c)] : []), ...(pathOpen("returnee", c.age) ? [] : [veGia])])),
     ],
   ],
 };
