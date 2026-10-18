@@ -34,6 +34,8 @@ export interface CanonSeed {
 }
 export interface WeirdBranch {
   id: string; kind: "sf" | "abs"; axes: Axis[]; when: (c: FactContext, s: Slots) => boolean;
+  /** Gợi ý dưới nhãn cửa (≤ 70 ký tự). Không có thì sinh "Viễn tưởng|Phi lý: <tên mùa>", kẹp ở 70. */
+  hint?: string;
   /** Nhãn cửa. */
   door: (s: Slots, c: FactContext, N: Names) => string;
   /** Biến cố khi trục Kỳ nổ và nhánh này làm trigger (cả 3 cửa kỳ dị). */
@@ -43,11 +45,17 @@ export interface WeirdBranch {
 export interface ResolvedDoor { kind: DoorKind | "ky"; label: string; hint: string; season: string; weird?: string; effects?: Effect }
 export interface CanonEvent { id: string; seed: string; axis: Axis; age: number; slots: Slots; title: string; text: string; doors: ResolvedDoor[] }
 
+/** Mầm đã dùng trong đời này bị trừ chừng này. */
+const USED_PENALTY = 100;
+/** Mầm có trục vừa nổ được cộng chừng này: đủ thắng mầm lệch trục, nhưng luôn nhỏ hơn USED_PENALTY (mầm chưa dùng luôn thắng). */
+const ON_AXIS_BONUS = 50;
 /** 5 mùa thường theo thứ tự lùi về của cửa chung. */
 const NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"] as const;
 /** Mùa cần đã tự lập (bỏ đi, sang nước khác). */
 const NEEDS_INDEPENDENT = new Set<string>(["tron_chay", "xu_nguoi"]);
-const played = (c: FactContext, season: string): boolean => c.flags.has("season_played_" + season);
+/** Cờ host đặt khi vào một mùa (R7: mùa đã chơi không mở lại trong đời này). */
+export const playedFlag = (seasonId: string): string => "season_played_" + seasonId;
+const played = (c: FactContext, season: string): boolean => c.flags.has(playedFlag(season));
 const whoName = (s: Slots, N: Names, dflt: string): string => (s.who ? N(s.who) : dflt);
 
 /**
@@ -142,8 +150,11 @@ const KY_SLOTS: CanonSeed = {
   what: { plants: ["object", "animal", "skill", "debt", "promise", "secret", "place"], owns: [...ASSET_KINDS], required: false },
 };
 
+/** Độ dài tối đa của hint (như bộ kiểm nội dung). */
+const HINT_MAX = 70;
+const clampHint = (h: string): string => (h.length <= HINT_MAX ? h : h.slice(0, HINT_MAX - 1).trimEnd() + "…");
 const weirdDoor = (b: WeirdBranch, s: Slots, c: FactContext, N: Names): ResolvedDoor =>
-  ({ kind: "ky", label: b.door(s, c, N), hint: `${b.kind === "sf" ? "Viễn tưởng" : "Phi lý"}: ${b.season.vn}`, season: b.season.id, weird: b.id });
+  ({ kind: "ky", label: b.door(s, c, N), hint: clampHint(b.hint ?? `${b.kind === "sf" ? "Viễn tưởng" : "Phi lý"}: ${b.season.vn}`), season: b.season.id, weird: b.id });
 
 const seedDoor = (d: SeedDoor, season: string, s: Slots, c: FactContext, N: Names): ResolvedDoor => {
   const out: ResolvedDoor = { kind: d.kind, label: d.label(s, c, N), hint: d.hint, season };
@@ -174,24 +185,25 @@ function fillGeneric(doors: ResolvedDoor[], n: number, s: Slots, c: FactContext,
  * hay trục Kỳ mà không nhánh kỳ dị nào khả thi).
  *
  * Trục thường:
- *  - mầm khả thi: trong khoảng tuổi `ages` và điền đủ chỗ trống bắt buộc. Ưu tiên mầm có `axis` trong `axes`;
- *    không có thì xét mọi mầm khả thi.
- *  - điểm = 3 × fromPlayer + Σ c.pressure[axes] − (cờ canon_<id> ? 100 : 0); hòa thì rng.pick.
+ *  - mầm khả thi: trong khoảng tuổi `ages` và điền đủ chỗ trống bắt buộc.
+ *  - điểm = 3 × fromPlayer + Σ c.pressure[axes] + (axis ∈ axes ? 50 : 0) − (cờ canon_<id> ? 100 : 0); hòa thì rng.pick.
+ *    Mầm chưa dùng luôn thắng mầm đã dùng; ev.axis vẫn là trục vừa nổ.
  *  - cửa: lọc `when` và mùa đã chơi, xáo bằng rng, lấy 3 cửa khác kiểu; thiếu thì bù GENERIC_DOORS.
  *  - Độ điên > 0 và pressure.ky × weird ≥ WEIRD_DOOR_AT: cửa thứ 3 thành một nhánh kỳ dị khả thi
  *    (ưu tiên nhánh có `axis` trong `axes`).
- * Trục Kỳ: trigger = rng.pick(nhánh khả thi), cửa đầu là trigger, 2 cửa sau là nhánh khả thi khác (thiếu thì bù cửa chung).
+ * Trục Kỳ (null nếu Độ điên 0): trigger = rng.pick(nhánh khả thi), cửa đầu là trigger, 2 cửa sau là nhánh khả thi khác (thiếu thì bù cửa chung).
  */
 export function generateCanon(c: FactContext, axis: Axis, plants: Plant[], rng: Rng, N: Names, seeds: CanonSeed[], weird: WeirdBranch[]): CanonEvent | null {
   const weirdOk = (s: Slots) => weird.filter((b) => !played(c, b.season.id) && b.when(c, s));
 
   if (axis === "ky") {
+    if (c.weird === 0) return null;   // Đời thật: không bao giờ có biến cố kỳ dị
     const slots = fillSlots(KY_SLOTS, c, plants, N)!;
     const ok = weirdOk(slots);
     if (!ok.length) return null;
     const trig = rng.pick(ok);
     const doors = [trig, ...shuffle(ok.filter((b) => b !== trig), rng).slice(0, 2)].map((b) => weirdDoor(b, slots, c, N));
-    if (doors.length < 3) fillGeneric(doors, 3, slots, c, N, rng);
+    if (doors.length < 3) fillGeneric(doors, 3, slots, c, N, rng);   // R11: thiếu nhánh kỳ dị thì cửa chung bù, cửa trộn được chấp nhận
     if (doors.length < 3) return null;
     const { title, text } = trig.trigger(slots, c, N);
     return { id: `canon_${trig.id}_${c.age}`, seed: trig.id, axis, age: c.age, slots, title, text, doors };
@@ -203,11 +215,11 @@ export function generateCanon(c: FactContext, axis: Axis, plants: Plant[], rng: 
     const slots = fillSlots(seed, c, plants, N);
     if (slots) feasible.push({ seed, slots });
   }
-  const onAxis = feasible.filter((f) => f.seed.axes.includes(axis));
-  const pool = onAxis.length ? onAxis : feasible;
+  const pool = feasible;
   if (!pool.length) return null;
   const score = (f: { seed: CanonSeed; slots: Slots }) =>
-    3 * f.slots.fromPlayer + f.seed.axes.reduce((t, a) => t + (c.pressure[a] ?? 0), 0) - (c.flags.has(`canon_${f.seed.id}`) ? 100 : 0);
+    3 * f.slots.fromPlayer + f.seed.axes.reduce((t, a) => t + (c.pressure[a] ?? 0), 0)
+    + (f.seed.axes.includes(axis) ? ON_AXIS_BONUS : 0) - (c.flags.has(`canon_${f.seed.id}`) ? USED_PENALTY : 0);
   const top = Math.max(...pool.map(score));
   const best = pool.filter((f) => score(f) === top);
   const { seed, slots } = best.length === 1 ? best[0]! : rng.pick(best);

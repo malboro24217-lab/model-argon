@@ -1,7 +1,7 @@
 /** Kiểm thử lớp canon event / Mùa (narrative/canon). Chạy: node --experimental-strip-types src/canon-test.ts */
 import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
-import { generateCanon, fillSlots, canonView, GENERIC_DOORS, type CanonSeed, type WeirdBranch } from "./engine/index.ts";
+import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch } from "./engine/index.ts";
 import { FIXTURE_SEASON } from "./engine/narrative/canon/seasons/_fixture.ts";
 
 let fails = 0;
@@ -151,6 +151,11 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     const OTHER: CanonSeed = { ...SEED, id: "khac", what: { owns: ["house"], required: false } };
     ok(gen(base(), "tien", [debt], 7, [OTHER, SEED])?.seed === "no_cu", "canon: +3 mỗi chỗ trống từ người chơi");
     ok(gen(base({ flags: new Set(["canon_no_cu"]) }), "tien", [debt], 7, [OTHER, SEED])?.seed === "khac", "canon: mầm đã dùng bị trừ 100");
+    /* fix 1: ưu tiên trục là điểm cộng nhỏ hơn án phạt đã dùng */
+    const USED: CanonSeed = { ...SEED, id: "da_dung", axes: ["tien"] }, FRESH: CanonSeed = { ...SEED, id: "moi", axes: ["mau"] };
+    const evU = gen(base({ flags: new Set(["canon_da_dung"]), pressure: P({ tien: 12 }) }), "tien", [debt], 7, [USED, FRESH]);
+    ok(evU?.seed === "moi" && evU.axis === "tien", "canon: mầm chưa dùng lệch trục thắng mầm đã dùng đúng trục; axis giữ trục nổ");
+    ok(gen(base({ pressure: P({ tien: 12 }) }), "tien", [debt], 7, [FRESH, USED])?.seed === "da_dung", "canon: cùng chưa dùng → ưu tiên mầm đúng trục");
     const A: CanonSeed = { ...OTHER, id: "a" }, B: CanonSeed = { ...OTHER, id: "b" };
     const picks = new Set<string>();
     for (let i = 1; i <= 40; i++) picks.add(gen(base(), "tien", [], i, [A, B])?.seed ?? "");
@@ -176,7 +181,7 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     ok(!!e2 && e2.doors.every((d) => d.season !== "lam_lai" && d.season !== "tron_chay") && e2.doors.length === 3, "canon: không mở lại mùa đã chơi (R7)");
     const allPlayed = new Set(["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai"].map((x) => "season_played_" + x));
     const e3 = gen(base({ weird: 0, flags: allPlayed }), "tien", [debt], 5, [ONE]);
-    ok(!e3 || e3.doors.every((d) => d.season === "xu_nguoi"), "canon: cửa chung lùi về mùa thường chưa chơi đầu tiên");
+    ok(!!e3 && e3.doors.length === 3 && e3.doors.every((d) => d.season === "xu_nguoi"), "canon: cửa chung lùi về mùa thường chưa chơi đầu tiên");
   }
   {
     const kinds = GENERIC_DOORS.map((d) => d.kind);
@@ -210,6 +215,24 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     const trig = [W1, W2, W3].find((w) => w.id === evK?.seed);
     ok(!!trig && evK!.title === trig.trigger(evK!.slots, base(), N).title, "canon: trục ky → tiêu đề từ trigger");
     ok(gen(base({ pressure: P({ ky: 12 }) }), "ky", [debt], 7, [SEED], []) === null, "canon: trục ky không nhánh khả thi → null");
+    ok(gen(base({ weird: 0, pressure: P({ ky: 40 }) }), "ky", [debt], 7, [SEED], [W1, W2, W3]) === null, "canon: trục ky với Độ điên 0 → null");
+    /* R11: < 3 nhánh kỳ dị khả thi → cửa chung bù, trigger vẫn là cửa đầu */
+    for (let i = 1; i <= 10; i++) {
+      const e = gen(base({ pressure: P({ ky: 12 }) }), "ky", [debt], i, [SEED], [W1]);
+      ok(!!e && e.doors.length === 3 && e.doors[0]!.weird === "w_mot" && e.seed === "w_mot" && e.doors.filter((d) => d.weird).length === 1
+        && new Set(e.doors.map((d) => d.kind)).size === 3, `canon: trục ky, 1 nhánh khả thi → 1 cửa kỳ dị + 2 cửa chung (rng ${i})`);
+      const e2 = gen(base({ pressure: P({ ky: 12 }) }), "ky", [debt], i, [SEED], [W1, W2]);
+      ok(!!e2 && e2.doors.length === 3 && e2.doors.filter((d) => d.weird).length === 2 && !!e2.doors[0]!.weird && !e2.doors[2]!.weird, `canon: trục ky, 2 nhánh khả thi → 2 kỳ dị + 1 cửa chung (rng ${i})`);
+    }
+    /* hint cửa kỳ dị ≤ 70 */
+    const LONG: WeirdBranch = { ...W1, id: "w_dai", season: { ...W1.season, id: "w_dai_mua", vn: "Một cái tên mùa rất rất dài để thử xem gợi ý có bị cắt cho vừa bảy mươi ký tự không" } };
+    const eL = gen(base({ pressure: P({ ky: 12 }) }), "ky", [debt], 1, [SEED], [LONG]);
+    const hL = eL?.doors[0]?.hint ?? "";
+    ok(hL.length > 0 && hL.length <= 70 && hL.endsWith("…"), "canon: hint kỳ dị tự sinh bị kẹp ≤ 70, kết bằng …");
+    const eH = gen(base({ pressure: P({ ky: 12 }) }), "ky", [debt], 1, [SEED], [{ ...LONG, hint: "Một gợi ý riêng" }]);
+    ok(eH?.doors[0]?.hint === "Một gợi ý riêng", "canon: WeirdBranch.hint được dùng khi có");
+    ok(playedFlag("lam_lai") === "season_played_lam_lai", "playedFlag");
+
     ok(JSON.stringify(gen(base({ pressure: P({ ky: 12 }) }), "ky", [], 4, [], [W1, W2, W3])) === JSON.stringify(gen(base({ pressure: P({ ky: 12 }) }), "ky", [], 4, [], [W1, W2, W3])), "canon: trục ky tất định");
   }
 

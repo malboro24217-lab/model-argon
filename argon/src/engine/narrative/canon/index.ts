@@ -9,7 +9,7 @@ import { FIXTURE_SEASON } from "./seasons/_fixture.ts";
 /** Mùa thường đã đăng ký. Task 6 thay mùa mẫu bằng 5 mùa thật (và thêm WEIRD). */
 export const SEASONS: SeasonDefT[] = [FIXTURE_SEASON];
 /* ---- Task 5: generator canon event ---- */
-export { generateCanon, fillSlots, canonView, GENERIC_DOORS } from "./Canon.ts";
+export { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag } from "./Canon.ts";
 export type { DoorKind, Slots, SeedDoor, CanonSeed, WeirdBranch, ResolvedDoor, CanonEvent } from "./Canon.ts";
 import type { CanonSeed as CanonSeedT, WeirdBranch as WeirdBranchT } from "./Canon.ts";
 /** Mầm canon event đã đăng ký (Task 6b điền). */
