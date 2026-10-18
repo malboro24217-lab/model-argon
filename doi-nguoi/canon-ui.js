@@ -1,16 +1,18 @@
 /* ================= MÙA: giao diện (canon event, Task 8a) =================
    Màu nhấn theo mùa đang chạy, banner "Mùa N: …", ô chọn "Độ điên" trong menu.
    Chỉ ĐỌC dữ liệu host do canon.js ghi: L.lw.season = { id, from, end, … } | null, L.lw.canon.seasons, L.weird (0|1|2).
-   Tên và màu mùa lấy từ engine qua canonSeasonDef(id) (phase1.js): Argon.SEASONS và Argon.WEIRD[i].season.
+   Tên và màu mùa lấy qua canonSeasonDef(id) (phase1.js), tức seasonDef(id) của canon.js.
    Mọi hàm an toàn khi chưa có document / Argon / L.lw (không ném lỗi, không vẽ gì).
 
    API
-     seasonTheme(L)   → đặt body[data-season], body[data-weird] và biến --season, --season-ink-l, --season-ink-d; L không có mùa thì gỡ hết
+     seasonTheme(L)   → đặt body[data-season], body[data-weird] và biến --season, --season-ink-l/-d (chữ, ≥ 4,5), --season-mark-l/-d
+                        (vạch, viền, thanh tiến độ, ≥ 3) cho giấy sáng / tối; L không có mùa thì gỡ hết
      seasonBanner(L)  → điền #season-banner ("Mùa N: tên" + khoảng tuổi + năm thứ mấy + nhịp); không có mùa thì ẩn
-     weirdMenu(L)     → ô chọn Độ điên trong menu (#weirdBox); đổi thì gọi window.setWeird(G.life, v) (Task 8b, qua uiOp)
+     weirdMenu(L)     → ô chọn Độ điên trong menu (#weirdBox); đổi thì gọi window.setWeird(G.life, v) (Task 8b, qua uiOp);
+                        chưa có window.setWeird thì ẩn ô
 */
 const WEIRD_LEVELS = [[0, "Đời thật", "Không có chuyện kỳ dị: chỉ những mùa có thể xảy ra ngoài đời."], [1, "Phim", "Thỉnh thoảng đời rẽ sang một mùa kỳ dị, như trong phim."], [2, "Điên", "Chuyện kỳ dị đến thường hơn."]];
-const _SEASON_VARS = ["--season", "--season-ink-l", "--season-ink-d"];
+const _SEASON_VARS = ["--season", "--season-ink-l", "--season-ink-d", "--season-mark-l", "--season-mark-d"];
 /* Nền giấy hai giao diện (khớp :root trong index.html): chữ màu mùa phải đọc được trên cả paper lẫn sheet. */
 const _SEASON_BG = { l: ["#E3E8E1", "#F6F8F3", "#ECF0E9"], d: ["#0F1512", "#18201C", "#1F2924"] };
 const _SEASON_TO = { l: "#24302B", d: "#DCE5DE" };
@@ -18,13 +20,28 @@ const _SEASON_TO = { l: "#24302B", d: "#DCE5DE" };
 function _hexRgb(h) { return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); }
 function _lum(h) { const c = _hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
 function _contrast(a, b) { const x = _lum(a), y = _lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
-function _mixHex(a, b, t) { const A = _hexRgb(a), B = _hexRgb(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); }
-/* Màu chữ của mùa cho một giao diện: pha dần về màu chữ in (sáng: tối hơn, tối: sáng hơn) tới khi tương phản ≥ 4,5 trên mọi nền giấy. */
-function seasonInk(hex, theme) {
-  const bg = _SEASON_BG[theme], to = _SEASON_TO[theme];
-  for (let t = 0; t <= 1.0001; t += 0.05) { const c = _mixHex(hex, to, Math.min(1, t)); if (bg.every(b => _contrast(c, b) >= 4.5)) return c; }
-  return to;
+function _hsl(h) {
+  const [r, g, b] = _hexRgb(h).map(v => v / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  if (!d) return [0, 0, l];
+  const s = d / (1 - Math.abs(2 * l - 1)), hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [(hh * 60 + 360) % 360, s, l];
 }
+function _hslHex(h, s, l) {
+  const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+  const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+  return "#" + [r, g, b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, "0")).join("");
+}
+/* Màu mùa đọc được trên giấy của một giao diện: giữ sắc độ (hue, độ bão hòa), chỉ đổi độ sáng
+   (giấy sáng: tối dần, giấy tối: sáng dần) tới khi tương phản ≥ min trên mọi nền giấy.
+   min 4,5 cho chữ (seasonInk), 3 cho vạch, viền, thanh tiến độ (seasonMark). */
+function seasonInk(hex, theme, min) {
+  const bg = _SEASON_BG[theme], need = min || 4.5, ok = c => bg.every(b => _contrast(c, b) >= need);
+  if (ok(hex)) return hex.toLowerCase();
+  const [h, s, l0] = _hsl(hex), dir = theme === "d" ? 1 : -1;
+  for (let l = l0; l >= 0 && l <= 1; l += dir * 0.01) { const c = _hslHex(h, s, Math.min(1, Math.max(0, l))); if (ok(c)) return c; }
+  return _SEASON_TO[theme];
+}
+function seasonMark(hex, theme) { return seasonInk(hex, theme, 3); }
 function _seasonNow(L) {
   const s = L && L.alive !== false && L.lw && L.lw.season;
   if (!s || !s.id || typeof canonSeasonDef !== "function") return null;
@@ -45,6 +62,8 @@ function seasonTheme(L) {
   b.style.setProperty("--season", hex);
   b.style.setProperty("--season-ink-l", seasonInk(hex, "l"));
   b.style.setProperty("--season-ink-d", seasonInk(hex, "d"));
+  b.style.setProperty("--season-mark-l", seasonMark(hex, "l"));
+  b.style.setProperty("--season-mark-d", seasonMark(hex, "d"));
 }
 
 function seasonBanner(L) {
@@ -53,7 +72,7 @@ function seasonBanner(L) {
   const now = _seasonNow(L);
   if (!now || !L.alive) { el.hidden = true; el.innerHTML = ""; delete el.dataset.key; return; }
   const { s, def } = now, E = typeof esc === "function" ? esc : (x => String(x));
-  const n = ((L.lw.canon && L.lw.canon.seasons) || []).length + 1;
+  const n = Number.isInteger(s.n) && s.n > 0 ? s.n : ((L.lw.canon && L.lw.canon.seasons) || []).length + 1;
   const from = Number.isFinite(s.from) ? s.from : L.age, end = Number.isFinite(s.end) && s.end > from ? s.end : null;
   const len = end ? end - from : 0, yr = Math.max(0, Math.min(len || Infinity, L.age - from));
   const bi = L.lw.counters && L.lw.counters.season_beat;
@@ -74,7 +93,9 @@ function weirdMenu(L) {
   if (typeof document === "undefined") return;
   const box = document.getElementById("weirdBox"); if (!box) return;
   const v = L && (L.weird === 0 || L.weird === 1 || L.weird === 2) ? L.weird : 1;
-  const can = typeof window !== "undefined" && typeof window.setWeird === "function" && !!L && L.alive !== false && !L.replay;
+  const has = typeof window !== "undefined" && typeof window.setWeird === "function";
+  if (!has) { box.hidden = true; return; }   // chưa có setWeird (Task 8b): không hiện một ô bấm không được
+  const can = !!L && L.alive !== false && !L.replay;
   let sel = box.querySelector("select");
   if (!sel) {
     box.innerHTML = `<label for="weirdSel">Độ điên</label><select id="weirdSel">${WEIRD_LEVELS.map(([k, n, h]) => `<option value="${k}" title="${h}">${n}</option>`).join("")}</select>`;
@@ -88,6 +109,6 @@ function weirdMenu(L) {
   if (document.activeElement !== sel) sel.value = String(v);
   sel.disabled = !can;
   const lv = WEIRD_LEVELS.find(x => x[0] === v);
-  box.title = can ? lv[2] : "Độ điên chưa đổi được lúc này.";
+  box.title = can ? lv[2] : "Độ điên chưa đổi được lúc này.";   // đời đã hết hoặc đang tua lại
   box.hidden = false;
 }

@@ -433,20 +433,12 @@ function funeralLine(r, came) {
 /* ================= CÁC MÙA CỦA ĐỜI BẠN (canon event, Task 8a) =================
    Chỉ đọc L.lw.canon.seasons = [{ id, from, to, reason: "landing" | "cut" | "death", landing }] và L.lw.season (canon.js ghi).
    Không có dữ liệu mùa thì mọi hàm trả rỗng: màn kết, thước đời và Tấm bia giữ nguyên như trước.
-     canonSeasonDef(id)  → SeasonDef (Argon.SEASONS hoặc Argon.WEIRD[i].season; id kỳ dị viết hoa kiểu "w_S01") | null
+     canonSeasonDef(id)  → SeasonDef qua seasonDef(id) của canon.js (id kỳ dị viết hoa kiểu "w_S01") | null
      canonSeasonsOf(L)   → [{ n, id, vn, color, weird, from, to, reason, line }] theo thứ tự; mùa còn chạy lúc chết mà host chưa ghi thì thêm "death"
      seasonSpans(L)      → [{ from, to, color, ahead }] để tô thước đời (mùa đang chạy: phần chưa sống là ahead)
      seasonsEndHTML(L)   → mục "Các mùa của đời bạn" ở màn kết, "" khi không có mùa */
-let _seasonDefs = null;
-function canonSeasonDef(id) {
-  if (!id || typeof Argon === "undefined" || !Argon) return null;
-  if (!_seasonDefs || !_seasonDefs.size) {
-    _seasonDefs = new Map();
-    for (const s of Argon.SEASONS || []) if (s && s.id) _seasonDefs.set(s.id, s);
-    for (const w of Argon.WEIRD || []) if (w && w.season && w.season.id) _seasonDefs.set(w.season.id, w.season);
-  }
-  return _seasonDefs.get(id) || null;
-}
+/* Định nghĩa mùa: dùng seasonDef của canon.js (một nguồn duy nhất); chưa có canon.js thì không có mùa nào. */
+function canonSeasonDef(id) { return id && typeof seasonDef === "function" ? seasonDef(id) : null; }
 function canonSeasonsOf(L) {
   const lw = L && L.lw; if (!lw) return [];
   const raw = lw.canon && Array.isArray(lw.canon.seasons) ? lw.canon.seasons.slice() : [];

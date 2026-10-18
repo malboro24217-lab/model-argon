@@ -395,13 +395,15 @@ body.modal-open{overflow:hidden}
 /* ===== Mùa (canon event): màu nhấn theo mùa đang chạy, banner, mùa trên thước đời, danh sách mùa ở màn kết =====
    canon-ui.js đặt body[data-season] (id mùa, kỳ dị viết hoa kiểu w_S01), body[data-weird] (sf | abs), --season (màu gốc của mùa)
    và --season-ink-l / --season-ink-d (màu chữ đã kéo tương phản ≥ 4,5 trên giấy sáng / tối). Màu gốc chỉ dùng cho vạch, nền nhạt. */
-body[data-season]{--season-ink:var(--season-ink-l,var(--season));--season-wash:color-mix(in oklab,var(--season) 8%,var(--sheet));--season-edge:color-mix(in oklab,var(--season) 40%,var(--rule))}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body[data-season]{--season-ink:var(--season-ink-d,var(--season));--season-wash:color-mix(in oklab,var(--season) 14%,var(--sheet));--season-edge:color-mix(in oklab,var(--season) 45%,var(--rule))}}
-:root[data-theme="dark"] body[data-season]{--season-ink:var(--season-ink-d,var(--season));--season-wash:color-mix(in oklab,var(--season) 14%,var(--sheet));--season-edge:color-mix(in oklab,var(--season) 45%,var(--rule))}
+body[data-season]{--season-ink:var(--season-ink-l,var(--season));--season-mark:var(--season-mark-l,var(--season));--season-wash:color-mix(in oklab,var(--season) 8%,var(--sheet));--season-edge:color-mix(in oklab,var(--season-mark) 40%,var(--rule))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body[data-season]{--season-ink:var(--season-ink-d,var(--season));--season-mark:var(--season-mark-d,var(--season));--season-wash:color-mix(in oklab,var(--season-mark) 14%,var(--sheet));--season-edge:color-mix(in oklab,var(--season-mark) 45%,var(--rule))}
+  :root:not([data-theme="light"]) .cells i.ss::before,:root:not([data-theme="light"]) .sm{--sc-mark:color-mix(in oklab,var(--sc) 60%,var(--print))}}
+:root[data-theme="dark"] body[data-season]{--season-ink:var(--season-ink-d,var(--season));--season-mark:var(--season-mark-d,var(--season));--season-wash:color-mix(in oklab,var(--season-mark) 14%,var(--sheet));--season-edge:color-mix(in oklab,var(--season-mark) 45%,var(--rule))}
+:root[data-theme="dark"] .cells i.ss::before,:root[data-theme="dark"] .sm{--sc-mark:color-mix(in oklab,var(--sc) 60%,var(--print))}
 body[data-season] .sec>h2{border-bottom-color:color-mix(in oklab,var(--season-ink) 70%,var(--print))}
-body[data-season]:not(.tunnel) .decision:not(.micro):not(.actcard){border-top-color:var(--season)}
+body[data-season]:not(.tunnel) .decision:not(.micro):not(.actcard){border-top-color:var(--season-mark)}
 .season-banner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 20px;align-items:baseline;margin:0 0 14px;padding:10px 16px 12px 16px;
-  background:var(--season-wash,var(--sheet));border:1px solid var(--season-edge,var(--rule));border-left:5px solid var(--season,var(--print));border-radius:3px}
+  background:var(--season-wash,var(--sheet));border:1px solid var(--season-edge,var(--rule));border-left:5px solid var(--season-mark,var(--print));border-radius:3px}
 .season-banner.enter{animation:season-in .8s ease-out}
 @keyframes season-in{from{opacity:0;transform:translateY(-6px)}}
 .sb-head{display:flex;align-items:baseline;gap:6px 12px;min-width:0;flex-wrap:wrap}
@@ -411,18 +413,18 @@ body[data-season]:not(.tunnel) .decision:not(.micro):not(.actcard){border-top-co
 .sb-meta{display:flex;gap:2px 14px;font-size:13px;color:var(--muted);white-space:nowrap;justify-self:end}
 .sb-yr{font-weight:600;color:var(--print)}
 .sb-beat{font-weight:600;color:var(--season-ink)}
-.sb-track{grid-column:1/-1;height:4px;margin-top:6px;border-radius:2px;overflow:hidden;position:relative;background:color-mix(in oklab,var(--season) 18%,var(--rule-soft))}
-.sb-track i{display:block;height:100%;background:var(--season);transition:width .4s}
-.cells i.ss::before{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--sc);border-radius:0 0 1px 1px}
+.sb-track{grid-column:1/-1;height:4px;margin-top:6px;border-radius:2px;overflow:hidden;position:relative;background:color-mix(in oklab,var(--season-mark) 18%,var(--rule-soft))}
+.sb-track i{display:block;height:100%;background:var(--season-mark);transition:width .4s}
+.cells i.ss::before{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--sc-mark,var(--sc));border-radius:0 0 1px 1px}
 .cells i.ss.ahead::before{opacity:.38}
 @media (min-width:821px){.topbar{grid-template-columns:auto minmax(150px,1fr) auto auto}.menu{flex-wrap:wrap;justify-content:flex-end}}
-.menu .weird{display:flex;align-items:center;gap:6px;cursor:default}
+.menu .weird{display:flex;align-items:center;gap:6px;cursor:default;padding-block:0}
 .menu .weird label{cursor:pointer}
 .menu .weird select{border:1px solid var(--rule);background:var(--sheet);color:var(--print);border-radius:4px;padding:3px 4px;font-size:13px;min-height:32px;cursor:pointer}
 .menu .weird select:disabled{opacity:.6;cursor:default}
-body[data-weird] .menu .weird select{border-color:var(--season)}
+body[data-weird] .menu .weird select{border-color:var(--season-mark)}
 .seasons-end .slist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.sm{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:2px 14px;align-items:baseline;padding:6px 0 6px 14px;border-left:5px solid var(--sc)}
+.sm{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:2px 14px;align-items:baseline;padding:6px 0 6px 14px;border-left:5px solid var(--sc-mark,var(--sc))}
 .sm-n{font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
 .sm-b{min-width:0;font-size:15.5px}
 .sm-b b{font-family:var(--f-story);font-weight:600;font-size:17px}
@@ -38957,7 +38959,7 @@ function rulerCells(L){const n=rulerN(L),cells=[];const spans=typeof seasonSpans
   for(let i=0;i<n;i++){const m=L.map[i-1];let cls="",st="";
     if(i===0){cls="y";st="--h:50%"}else if(m&&m.end)cls="end";else if(m){cls="y";st=`--h:${Math.max(8,Math.min(100,Math.round((m.h-30)*1.6)))}%`}
     if(i===L.age&&L.alive)cls+=" now";if(i===L.le)cls+=" le";if(i%10===0&&i)cls+=" dec";
-    const sp=spans.find(x=>i>=x.from&&i<=(x.aheadTo||x.to));if(sp){cls+=i>sp.to?" ss ahead":" ss";st+=(st?";":"")+`--sc:${sp.color}`}
+    const sp=spans.findLast(x=>i>=x.from&&i<=(x.aheadTo||x.to));if(sp){cls+=i>sp.to?" ss ahead":" ss";st+=(st?";":"")+`--sc:${sp.color}`}
     cells.push(`<i class="${cls.trim()}"${st?` style="${st}"`:""} title="${i} tuổi"></i>`)}
   const ticks=Array.from({length:Math.ceil(n/10)},(_,k)=>`<span style="grid-column:span ${Math.min(10,n-k*10)}">${k*10}</span>`).join("");
   return{n,cells:cells.join(""),ticks}}
