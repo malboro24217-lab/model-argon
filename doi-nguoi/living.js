@@ -5,7 +5,7 @@ const POOL = { major: null, micro: null, generic: null };
 function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || [], (Argon.PATH_STORYLETS || []).filter(s => s.category === "micro")); POOL.major = POOL.major.concat((Argon.PATH_STORYLETS || []).filter(s => s.category !== "micro")); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
 let _moneyIds = null;
 function MONEY_IDS() { if (!_moneyIds) _moneyIds = new Set((Argon.PATH_STORYLETS || []).filter(s => s.meta && s.meta.kind === "money").map(s => s.id)); return _moneyIds; }
-function yearBudget(L) { const a = L.age; if (a < 6) return 0; if (a < 13) return 1; if (a < 18) return 2; if (a < 65) return 2 + (L.ar && L.ar.rng.next() < 0.35 ? 1 : 0); return 1; }
+function yearBudget(L) { const a = L.age; if (a < 6) return 0; if (a < 13) return 1; if (a < 18) return 2; if (a < 65) return 2 + (L.ar && L.ar.rngStory.next() < 0.35 ? 1 : 0); return 1; }
 const LW = {
   ROLE_VN: { mother: "mẹ", father: "cha", sibling: "anh/chị/em", childhood_friend: "bạn thân từ nhỏ", bully: "kẻ bắt nạt ngày xưa", neighbor: "hàng xóm", first_boss: "sếp đầu tiên", official: "cán bộ", partner: "đối tác", creditor: "chủ nợ", mentor: "người thầy", rival: "đối thủ", spouse: "bạn đời", child: "con" },
   TAG_VN: { HELPED_IN_CRISIS: "đã giúp lúc khó", WIN_WIN_DEAL: "làm ăn sòng phẳng", KEPT_PROMISE: "giữ lời", STOOD_UP_FOR_ME: "đứng về phía họ", BETRAYED_PARTNERSHIP: "phản bội khi hùn vốn", REFUSED_HELP: "từ chối giúp", CHEATED_ME: "lừa họ", HUMILIATED_ME: "làm họ bẽ mặt", TOOK_MY_LAND: "lấy đất", BULLIED_ME: "bắt nạt", GOSSIP_HEARD_BAD: "nghe tiếng xấu", GOSSIP_HEARD_GOOD: "nghe tiếng tốt" },
@@ -26,7 +26,8 @@ function livingInit(L) {
     for (const m of cast.values()) { const p = absent[m.role]; if (p && rng.next() < p) { m.alive = false; m.absent = true; m.dependent = false; if (m.role === "sibling") L.flagsInit = (L.flagsInit || []).concat("only_child"); } } }
   for (const m of cast.values()) L.ar.npcStart.set(m.id, s.npcs.get(m.id).liquid);
   L.lw = { cast, mem: Argon.createMemory(), st: Argon.createStoryteller(rng), history: [], recentVig: [], sflags: new Set(), counters: {}, queue: [], lastVig: -9, depLogged: -9, cz: Argon.createCausality(), promises: [] };
-  if (!L.replay) metaApply(L);
+  // Ký ức tiền kiếp là đầu vào của đời: đời thật đọc từ trình duyệt và ghi lại vào actLog, bản tua lại đọc đúng bản ghi đó.
+  metaApply(L, L.replay ? metaFromActs(L.replayActs) : metaSnapshot(L));
   for (const fl of (L.flagsInit || [])) L.lw.sflags.add(fl);
   { const urbanShare = clamp(0.1 + 0.28 * Math.log10(Math.max(900, L.c.g) / 800), 0.15, 0.85); const urban = rng.next() < urbanShare; const o = L.fam > 0.75 ? "rich" : L.fam < 0.4 ? (urban ? "poor_urban" : "poor_rural") : "middle"; L.lw.sflags.add("origin_" + o); L.lw.sflags.add(urban ? "urban" : "rural"); L.origin = o; }
 }
@@ -172,7 +173,8 @@ function memoryLine(L, id) {
 /* ---- Một năm của mạng lưới sống. Gọi từ lifeEvents. Trả về true nếu đã đặt L.pending ---- */
 function livingYear(L) {
   livingInit(L);
-  const s = L.ar.state, rng = L.ar.rng, lw = L.lw;
+  // rng: người thân, bí mật (luồng npc) · srng: nhịp kể và chọn tình huống (luồng story). Xem ledger 2026-10-18-tat-dinh.
+  const s = L.ar.state, rng = L.ar.rng, srng = L.ar.rngStory, lw = L.lw;
   lw.decisions = 0; lw.budget = yearBudget(L);
   if (L.school.uni || L.school.deg) lw.sflags.add("path_uni"); if (L.migrated) lw.sflags.add("path_migrant"); if (!L.school.in && !L.school.deg && L.school.years < 9 && L.age >= 10) lw.sflags.add("path_dropout");
   habitYear(L);
@@ -202,22 +204,22 @@ function livingYear(L) {
   const ctx = factContext(L);
   for (const q of due) { if (q.custom) { customEffect(L, q.custom); continue; } const st = pools().major.find(x => x.id === q.storylet); if (st && st.prerequisites(ctx)) { fire(L, st, ctx); return true; } }
   // 5. Storyteller quyết định nhịp
-  const d = Argon.decide(lw.st, ctx, rng);
+  const d = Argon.decide(lw.st, ctx, srng);
   const hist = lw.history;
-  // Tình huống AI (nếu có) chỉ chen vào khi đang "bão" và không có storylet khẩn
-  const urgent = Argon.selectStorylet(pools().major, ctx, { minUrgency: 80, history: hist, age: L.age }, rng);
+  // Tình huống AI (nếu có) chỉ chen vào khi đang "bão" và không có storylet khẩn. Bản tua lại lấy đúng cảnh đã lưu trong actLog.
+  const urgent = Argon.selectStorylet(pools().major, ctx, { minUrgency: 80, history: hist, age: L.age }, srng);
   if (urgent) { fire(L, urgent, ctx); return true; }
-  if (d.phase === "storm" && L.aiReady && narratorPresent(L)) { Argon.onFired(lw.st, L.age, 10, rng); return true; }
-  const st = Argon.selectStorylet(pools().major, ctx, { minUrgency: d.minUrgency, history: hist, age: L.age }, rng);
+  if (d.phase === "storm" && (L.aiReady || L.replay) && narratorPresent(L)) { Argon.onFired(lw.st, L.age, 10, srng); return true; }
+  const st = Argon.selectStorylet(pools().major, ctx, { minUrgency: d.minUrgency, history: hist, age: L.age }, srng);
   if (st) { fire(L, st, ctx); return true; }
   // 6. Năm lặng: một dòng tự sự
-  if (d.vignette && L.age - lw.lastVig >= 1) { const v = Argon.selectVignette(Argon.VIGNETTES, ctx, rng, lw.recentVig); if (v) { lw.recentVig.push(v.id); if (lw.recentVig.length > 12) lw.recentVig.shift(); lw.lastVig = L.age; log(L, fill(L, rng.pick(v.lines)), v.tone || ""); } }
+  if (d.vignette && L.age - lw.lastVig >= 1) { const v = Argon.selectVignette(Argon.VIGNETTES, ctx, srng, lw.recentVig); if (v) { lw.recentVig.push(v.id); if (lw.recentVig.length > 12) lw.recentVig.shift(); lw.lastVig = L.age; log(L, fill(L, srng.pick(v.lines)), v.tone || ""); } }
   return microScene(L, ctx);
 }
 function fire(L, st, ctx) {
   L.lw.decisions = (L.lw.decisions || 0) + 1;
   L.lw.history.push({ id: st.id, age: L.age });
-  Argon.onFired(L.lw.st, L.age, st.tension, L.ar.rng);
+  Argon.onFired(L.lw.st, L.age, st.tension, L.ar.rngStory);
   if (st.category === "reflection") { L.lw.sflags.add("reflect_" + L.age); }
   const sc = sceneFromStorylet(L, st, ctx);
   let marks = [];
@@ -259,9 +261,9 @@ function microScene(L, ctx) {
   const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.meta && (s.meta.path || s.meta.kind === "money") ? (s.maxPerLife ?? 1) : 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10) && !(moneyDone && s.meta && s.meta.kind === "money"));
   // Chuyện mới trước: chỉ cho một thẻ quay lại khi không còn thẻ nào chưa gặp.
   const opts = { minUrgency: 0, history: lw.history, age: L.age };
-  let st = Argon.selectStorylet(pool.filter(s => !cnt[s.id]), ctx, opts, L.ar.rng) || Argon.selectStorylet(pool, ctx, opts, L.ar.rng);
+  let st = Argon.selectStorylet(pool.filter(s => !cnt[s.id]), ctx, opts, L.ar.rngStory) || Argon.selectStorylet(pool, ctx, opts, L.ar.rngStory);
   // Lấp chỗ trống: chuyện chung không theo nhánh, chỉ khi nhánh hết chuyện
-  if (!st && L.ar.rng.next() < 0.6) { const fill = Argon.eligible(pools().generic.filter(s => !cnt[s.id]), ctx, { minUrgency: 0, history: lw.history, age: L.age }); if (fill.length) st = fill[Math.floor(L.ar.rng.next() * fill.length)].s; }
+  if (!st && L.ar.rngStory.next() < 0.6) { const fill = Argon.eligible(pools().generic.filter(s => !cnt[s.id]), ctx, { minUrgency: 0, history: lw.history, age: L.age }); if (fill.length) st = fill[Math.floor(L.ar.rngStory.next() * fill.length)].s; }
   if (!st) return false;
   lw.decisions = (lw.decisions || 0) + 1;
   lw.history.push({ id: st.id, age: L.age });

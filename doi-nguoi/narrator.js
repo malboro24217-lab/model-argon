@@ -110,7 +110,7 @@ function sceneFromAi(L, raw) {
 function narratorPlan(L) {
   if (!NAR.enabled || NAR.status !== "ready" || !L.alive) return;
   if (L.age < 6) return;
-  if (L.nextAi == null) L.nextAi = L.age + 1 + Math.floor(Math.random() * 2);
+  if (L.nextAi == null) L.nextAi = L.age + 1 + Math.floor(aiRand(L) * 2);
   const due = (L.threads || []).find(t => t.due && t.due <= L.age + 1);
   if (due && L.nextAi > L.age + 1) L.nextAi = L.age + 1;
   if (L.age === L.nextAi - 1 && !L.aiPending && !L.aiReady) narratorFetch(L);
@@ -121,8 +121,8 @@ async function narratorFetch(L) {
   try {
     NAR.calls++;
     const raw = await NAR.sample.json(NAR_RULES + "\n\nNHÂN VẬT:\n" + packet, { modelTier: NAR.mode === "deep" ? "default" : "quick", cache: false });
-    const sc = sceneFromAi(L, raw);
-    if (sc) L.aiReady = sc; else NAR.lastErr = "Tình huống AI không hợp lệ, dùng kịch bản sẵn.";
+    // Chỉ giữ JSON thô. Dựng cảnh (tạo người mới, rút rng) để đến lúc trình diễn, trong stepYear, cho tua lại khớp.
+    if (aiRawOk(raw)) L.aiReady = { raw: JSON.parse(JSON.stringify(raw)) }; else NAR.lastErr = "Tình huống AI không hợp lệ, dùng kịch bản sẵn.";
     NAR.status = "ready";
   } catch (e) {
     NAR.lastErr = e && e.code ? e.code : "lỗi";
@@ -131,13 +131,22 @@ async function narratorFetch(L) {
   }
   L.aiPending = false; if (typeof render === "function") render();
 }
-/* Gọi từ lifeEvents: nếu có tình huống AI đã sẵn sàng và đến hạn thì trình diễn */
+/** Số ngẫu nhiên cho nhịp gọi AI: rút từ (hạt giống, tuổi), không dùng Math.random và không đụng các luồng mô phỏng. */
+function aiRand(L) { return makeRng(subSeed(L.seed, L.age, RNG_SUB.ai))(); }
+function aiRawOk(raw) { return !!raw && typeof raw === "object" && Array.isArray(raw.choices) && raw.choices.length >= 2; }
+/* Gọi từ livingYear: nếu có tình huống AI đã sẵn sàng và đến hạn thì trình diễn.
+   Đời thật: lấy JSON AI đã viết, ghi nguyên văn vào actLog (kind "ai"). Bản tua lại: lấy bản ghi cùng tuổi, không gọi AI. */
 function narratorPresent(L) {
-  if (!L.aiReady || L.pending || L.age < (L.nextAi || 0)) return false;
-  const sc = L.aiReady; L.aiReady = null;
+  if (L.pending) return false;
+  let raw;
+  if (L.replay) { const rec = (L.replayActs || []).find(a => a.kind === "ai" && a.age === L.age); if (!rec) return false; raw = rec.raw; }
+  else { if (!L.aiReady || L.age < (L.nextAi || 0)) return false; raw = L.aiReady.raw; L.aiReady = null; }
+  const sc = sceneFromAi(L, raw);
+  if (!sc) return false;
+  if (!L.replay) { L.actLog = L.actLog || []; L.actLog.push({ age: L.age, kind: "ai", key: sc.key, raw }); }
   if (sc.concept) learn(L, sc.concept);
   L.threads = (L.threads || []).filter(t => !(t.due && t.due <= L.age));
-  L.nextAi = L.age + NAR.cooldownMin + Math.floor(Math.random() * (NAR.cooldownMax - NAR.cooldownMin + 1));
+  L.nextAi = L.age + NAR.cooldownMin + Math.floor(aiRand(L) * (NAR.cooldownMax - NAR.cooldownMin + 1));
   scene(L, sc); return true;
 }
 /* Nếu đến hạn mà AI chưa viết xong thì đồng hồ chờ (giao diện hiện "đang viết") */

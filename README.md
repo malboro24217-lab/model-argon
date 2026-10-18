@@ -23,6 +23,7 @@ node doi-nguoi/tests/path-test.js
 node doi-nguoi/tests/agency-host-test.js
 node doi-nguoi/tests/review-fixes-test.js
 node doi-nguoi/tests/money-test.js        # tiền: không NaN, tối đa 1 thẻ tiền/năm, mua-bán liên tục thì lỗ, chơi lại khớp
+node doi-nguoi/tests/replay-test.js       # tất định: 200 đời có sương mù, AI, tiền, perk; vẽ giao diện không đổi đời; tua lại khớp 100%; đời giả định giữ nguyên các năm trước (ledger 2026-10-18-tat-dinh)
 node doi-nguoi/tests/ui-agency-test.mjs   # cần playwright-core và Chromium; sửa đường dẫn import ở dòng 2 cho đúng máy
 node doi-nguoi/tests/ui-test.mjs
 cd argon && node --experimental-strip-types src/agency-test.ts && node --experimental-strip-types src/narrative-test.ts && node --experimental-strip-types src/holdings-test.ts

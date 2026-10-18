@@ -98,7 +98,7 @@ function moneyYear(L) {
   if (L.lw && L.lw.sflags.has("parent_died") && !L.lw.sflags.has("inherited_home") && ![...L.lw.cast.values()].some(m => m.alive && (m.role === "mother" || m.role === "father"))) {
     if (L.lw.counters.parents_gone_at === undefined) L.lw.counters.parents_gone_at = L.age; else if (L.age > L.lw.counters.parents_gone_at) inheritFamilyHome(L);
   }
-  const s = L.ar.state, a = s.capitals.capitalAssets, m = marketCtx(L), yearly = yearlyOf(L), rng = L.ar.rng;
+  const s = L.ar.state, a = s.capitals.capitalAssets, m = marketCtx(L), yearly = yearlyOf(L), rng = L.ar.rngMoney; // luồng tiền riêng (ledger 2026-10-18-tat-dinh)
   const cashNow = a.liquid - a.debt;
   const rep = Argon.holdingsYear(h, m, s.economic_phase, cashNow, yearly, L.age, rng);
   L.ar.holdRep = rep;
@@ -292,7 +292,7 @@ function inheritFamilyHome(L) {
   L.lw.sflags.add("inherited_home");
   if (L.lw.cz.doors && L.lw.cz.doors.has("inheritance")) return;
   const own = { rich: 1, middle: 0.8, poor_rural: 0.7, poor_urban: 0.3 }[L.origin] ?? 0.6;
-  if (L.ar.rng.next() >= own) return;
+  if (L.ar.rngMoney.next() >= own) return;
   const sibs = [...L.lw.cast.values()].filter(m => m.alive && m.role === "sibling").length;
   const m = { ...marketCtx(L), urban: L.origin === "rich" || L.origin === "poor_urban", gdp: L.birthC.g, median_yearly: incomeAt(L.birthC, 0.5) };
   const value = Argon.basePrice("house", m) * (L.origin === "rich" ? 1.5 : 1) / (1 + sibs);

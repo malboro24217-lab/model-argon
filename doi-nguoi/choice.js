@@ -92,13 +92,14 @@ function lifeSummary(P) {
   const T = P.ar ? Argon.lifeTopology(P.ar.state, P.ar.npcStart) : null;
   return { age: P.age, cause: P.cause, country: P.c.n, job: P.job || P.lastJob || "không nghề", hist: P.lw.history.map(h => [h.id, h.age]), net: Math.round(P.savings), married: P.married || P.widowed, kids: P.kids.filter(k => k.alive).length, rep: P.ar ? Math.round(P.ar.state.capitals.socialLedger.reputation) : 50, tier: P.ar ? Argon.tierOf(P.ar.state) : "autopilot", quadrant: T ? T.quadrant : null, epithets: epithets(P), doors: [...P.lw.cz.doors] };
 }
-function replayLife(seed, choices, override, actLog) {
+/** Tua lại một đời từ hạt giống + lựa chọn + actLog (việc gõ, cảnh AI, ký ức tiền kiếp, thao tác giao diện). onYear(P) (tùy chọn) được gọi sau mỗi năm. */
+function replayLife(seed, choices, override, actLog, onYear) {
   const script = replayScript(choices, actLog || []);
   const focus = {}; for (const k in (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS) || {}) focus[k] = (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS)[k];
   const was = NAR.enabled; NAR.enabled = false;
-  const P = createLife(seed, { auto: true, script, override, focus });
+  const P = createLife(seed, { auto: true, script, override, focus, replayActs: actLog || [] });
   P.replayActs = actLog || [];
-  let g = 0; while (P.alive && g++ < 130) { stepYear(P); if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; } }
+  let g = 0; while (P.alive && g++ < 130) { stepYear(P); if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; } if (onYear) onYear(P); }
   NAR.enabled = was;
   return P;
 }
@@ -156,4 +157,31 @@ const PERKS = [
   { id: "door", vi: "Một cửa để ngỏ", desc: "Cánh cửa đầu tiên bị đóng trong đời sẽ không đóng." },
 ];
 function metaOnDeath(L) { const m = META.get(); m.lives++; const next = PERKS[Math.min(m.perks.length, PERKS.length - 1)]; if (next && !m.perks.includes(next.id) && m.perks.length < PERKS.length) m.perks.push(next.id); for (const k in (L.codex || {})) m.codex[k] = true; META.set(m); return m; }
-function metaApply(L) { const m = META.get(); if (!m.lives) return; if (m.perks.includes("codex")) { L.codex = L.codex || {}; for (const k in m.codex) if (!L.codex[k]) L.codex[k] = 0; } if (m.perks.includes("mentor")) { const me = castRole(L, "mentor"); if (me) Argon.setEdge(L.ar.state.graph, me.id, "player", 0.5, 0); } L.perks = m.perks.slice(); }
+/** Ảnh chụp ký ức tiền kiếp lúc chào đời, ghi vào actLog (kind "meta") để bản tua lại áp đúng như đời thật. */
+function metaSnapshot(L) { const m = META.get(); if (!m.lives) return null; const snap = { lives: m.lives, perks: (m.perks || []).slice(), codex: Object.keys(m.codex || {}) };
+  L.actLog = L.actLog || []; L.actLog.push({ kind: "meta", age: 0, ...snap }); return snap; }
+function metaFromActs(acts) { const r = (acts || []).find(a => a.kind === "meta"); return r ? { lives: r.lives, perks: r.perks || [], codex: r.codex || [] } : null; }
+function metaApply(L, m) { if (!m || !m.lives) return; const codex = Array.isArray(m.codex) ? m.codex : Object.keys(m.codex || {});
+  if (m.perks.includes("codex")) { L.codex = L.codex || {}; for (const k of codex) if (!L.codex[k]) L.codex[k] = 0; }
+  if (m.perks.includes("mentor")) { const me = castRole(L, "mentor"); if (me) Argon.setEdge(L.ar.state.graph, me.id, "player", 0.5, 0); }
+  L.perks = m.perks.slice(); }
+
+/* ---- Thao tác giao diện có đổi trạng thái: thẩm định (tốn băng thông), mức sống, sống dưới mức thu nhập ----
+   Đi qua uiOp để được ghi vào actLog (kind "ui", kèm số lựa chọn đã có lúc bấm); bản tua lại áp lại đúng chỗ đó. */
+function applyUiOp(L, op) {
+  if (!op || !L.ar) return false;
+  if (op.t === "dd") return dueDiligence(L, op.key, op.cost);
+  if (op.t === "ly") { if (!canHandleMoney(L)) return false; moneyEffect(L, { lifestyle: op.v }); return true; }
+  if (op.t === "frugal") { L.ar.frugal = !!op.v; return true; }
+  return false;
+}
+function uiOp(L, op) {
+  const ok = applyUiOp(L, op);
+  if (ok && !L.replay) { L.actLog = L.actLog || []; L.actLog.push({ kind: "ui", age: L.age, at: L.choices.length, op }); }
+  return ok;
+}
+function replayUiOps(L) {
+  if (!L.replay || !L.replayActs) return;
+  L.uiDone = L.uiDone || new Set();
+  L.replayActs.forEach((a, i) => { if (a.kind === "ui" && a.age === L.age && a.at <= L.choices.length && !L.uiDone.has(i)) { L.uiDone.add(i); applyUiOp(L, a.op); } });
+}

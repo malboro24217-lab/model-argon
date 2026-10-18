@@ -53,6 +53,10 @@ function argonInit(L, force) {
     hh: s.capitals.capitalAssets.liquid - s.capitals.capitalAssets.debt - L.savings };
   L.st.bw = s.capitals.cognitiveBandwidth.value;
   L.debt = 0;
+  // Luồng riêng cho từng hệ con; stepYear đặt lại cả bốn mỗi năm (rekeyYear, xem ledger 2026-10-18-tat-dinh).
+  L.ar.rngTick = Argon.createRng(subSeed(L.seed, L.age, RNG_SUB.tick));
+  L.ar.rngStory = Argon.createRng(subSeed(L.seed, L.age, RNG_SUB.story));
+  L.ar.rngMoney = Argon.createRng(subSeed(L.seed, L.age, RNG_SUB.money));
 }
 /* Trước khi đi làm, gia đình nuôi: thu nhập hộ tính theo thu nhập gia đình */
 const CHILD_JOBS = new Set(["phụ giúp việc đồng áng", "làm việc vặt"]);
@@ -109,7 +113,7 @@ function argonYear(L) {
   const reports = [], fl = { interest: 0, inflation: 0, principal: 0 };
   for (let q = 0; q < 4 && !s.dead; q++) {
     { const a = s.capitals.capitalAssets, mc = s.spawn.macro; fl.interest += a.debt * mc.interest_rate / 4; fl.inflation += Math.max(0, a.liquid) * mc.inflation_rate / 4; fl.principal += a.debt * 0.05; }
-    reports.push(Argon.tick(s, { work, borrow: 0, repay: A.repay || 0, betrayed: !!A.betrayedThisYear, frugal: A.frugal, purchase: 0 }, A.rng));
+    reports.push(Argon.tick(s, { work, borrow: 0, repay: A.repay || 0, betrayed: !!A.betrayedThisYear, frugal: A.frugal, purchase: 0 }, A.rngTick));
     A.betrayedThisYear = false;
   }
   A.repay = 0;
@@ -180,7 +184,8 @@ function fogMatrix(L, m, sceneKey) {
   const bw = A.state.cognitiveBandwidth ? A.state.cognitiveBandwidth.value : A.state.capitals.cognitiveBandwidth.value;
   const amp = dd ? 0 : clamp(1 - bw / 100, 0, 1) * 0.6;
   if (!A.noise) A.noise = {};
-  if (!A.noise[sceneKey]) A.noise[sceneKey] = m.cells.map(row => row.map(() => { const rn = () => A.rng.next(); return [nrm(rn), nrm(rn)]; }));
+  // Nhiễu lấy từ (hạt giống, khóa cảnh), KHÔNG rút A.rng: vẽ lại giao diện bao nhiêu lần cũng không đổi tương lai.
+  if (!A.noise[sceneKey]) { const rn = makeRng(mix32(subSeed(L.seed, 0, RNG_SUB.fog) ^ strHash(sceneKey))); A.noise[sceneKey] = m.cells.map(row => row.map(() => [nrm(rn), nrm(rn)])); }
   const n = A.noise[sceneKey];
   const cells = m.cells.map((row, i) => row.map((c, j) => c.map((v, k) => amp === 0 ? v : v + Math.abs(v) * amp * n[i][j][k])));
   return { ...m, cells, fogged: amp > 0, hideOffDiag: !dd && bw < Argon.BANDWIDTH_LOCK_LEVEL };

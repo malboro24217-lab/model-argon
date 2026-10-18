@@ -272,9 +272,11 @@ function replayProactive(L) {
     if (L.override && L.override.removeAct === a.seq) { L.replayDone.add(a.seq); continue; }
     if (L.pending) autoChain(L);
     if (!L.alive || L.pending) break;
+    replayUiOps(L);
     L.replayDone.add(a.seq);
     applyAct(L, a.result, "proactive", a.text, null, a.seq);
   }
+  replayUiOps(L);
 }
 /** Kịch bản tua lại: lựa chọn bấm nút giữ chỉ số; lựa chọn tự viết trỏ tới kết quả AI đã lưu. */
 function replayScript(choices, actLog) {
