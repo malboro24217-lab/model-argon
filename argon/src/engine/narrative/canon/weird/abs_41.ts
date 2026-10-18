@@ -15,6 +15,22 @@ const n = (c: FactContext, k: string): number => c.counters[k] ?? 0;
 const f = (c: FactContext, k: string): boolean => c.flags.has(k);
 const vn = (c: FactContext): boolean => c.country === "VN";
 
+/** Việc làm công ăn lương (có công ty, phòng kế toán, ghế giám đốc). */
+const WAGE_JOBS = ["job_office", "job_factory", "job_teach", "job_health", "job_tech"];
+/** Con đường đời không phải làm thuê cho công ty: tự làm chủ, buôn bán, nghệ sĩ tự do, tu hành, tị nạn, phạm pháp. */
+const NON_WAGE_PATHS = new Set([
+  "smuggler", "loan_shark", "scammer", "gangster", "gambler", "counterfeiter", "hacker", "ex_convict",
+  "monk", "priest", "refugee", "streamer", "influencer", "vlogger", "painter", "writer", "folk_musician", "comedian",
+  "barber", "fortune_teller", "street_vendor", "restaurateur", "startup", "ecommerce", "factory_owner", "investor",
+  "border_trader", "real_estate", "ride_hailing", "shipper", "waste_picker", "agritech", "fish_farmer", "homemaker",
+  "artisan", "herbalist", "baker", "deep_fisher", "explorer", "activist", "climber", "chess",
+]);
+/** Người làm công ăn lương: có việc ở công ty/xưởng/trường/viện (cờ job_* hoặc c.worker), không tự làm chủ, không đi con đường ngoài biên chế. */
+const wageEarner = (c: FactContext): boolean =>
+  c.has_job && !c.farmer && (WAGE_JOBS.some((x) => f(c, x)) || c.worker)
+  && !f(c, "own_business") && !f(c, "shop_active") && !f(c, "job_market")
+  && !Object.keys(PATHS).some((id) => NON_WAGE_PATHS.has(id) && f(c, "life_" + id));
+
 /** Một lựa chọn chung kết; `path` = id nghề trong PATHS khi landing là become:<path>. */
 interface Opt { l: Landing; label: string; hint: string; path?: string }
 const O = (l: Landing, label: string, hint: string, path?: string): Opt => (path ? { l, label, hint, path } : { l, label, hint });
@@ -37,7 +53,8 @@ const L41_THUONG = land("x41_giu_ghe_am", "Giám đốc thật trả bạn một
   { money: 2, happy: 3 });
 
 const X41 = weird("X41", "abs", ["ky", "danh", "tien"],
-  (c) => c.has_job && !c.farmer && c.age >= 22 && c.age <= 58,
+  // Làm công trong một công ty có phòng họp, cổ đông (xem wageEarner).
+  (c) => wageEarner(c) && c.age >= 22 && c.age <= 58,
   () => "Ngồi yên trên chiếc ghế da đầu bàn họp",
   (s, c) => ({
     title: "Chiếc ghế không ai dám ngồi",
@@ -449,7 +466,7 @@ const L46_CON_NUOI = land("x46_con_nuoi", "Bạn ghi tên cậu khách quen vào
 
 const X46 = weird("X46", "abs", ["ky", "mau", "tien"],
   // Con đã lớn: có con còn sống, không đứa nào còn tuổi đi học.
-  (c) => c.kids_alive >= 1 && c.kids_school === 0 && c.age >= 55 && c.age <= 75,
+  (c) => c.kids_alive >= 1 && c.kids_school === 0 && c.kids_teen === 0 && c.age >= 55 && c.age <= 75,
   (s, c) => `Đi làm ${bm(c)} cho thuê theo giờ`,
   (s, c) => ({
     title: `${cap(bm(c))} còn tốt, giá theo giờ`,
@@ -684,9 +701,6 @@ const X48 = weird("X48", "abs", ["ky", "tinh", "tien"],
 
 /* ================================================================ X49: lương trả bằng thời gian rảnh */
 
-/** Cờ của người tự làm chủ hay buôn bán riêng (không có ai trả lương). */
-const SELF_EMPLOYED = ["own_business", "shop_active", "job_market", "life_street_vendor", "life_restaurateur", "life_startup", "life_ecommerce",
-  "life_factory_owner", "life_investor", "life_border_trader", "life_ride_hailing", "life_shipper", "life_waste_picker", "life_agritech", "life_fish_farmer", "life_homemaker"];
 const L49_NGHE = land("x49_ban_gio", "Bạn dựng một quầy nhỏ đầu chợ, bán giờ rảnh theo phút cho người bận. Khách hiếm khi trả giá, vì ai cũng vội.",
   { custom: "become:street_vendor", happy: 6 }); // gần nhất: không có nghề bán thời gian
 const L49_CHAM = land("x49_song_cham", "Bạn giữ lại thói quen của người giàu giờ: làm ít, ăn chậm, ngủ trưa. Thu nhập teo lại, nụ cười thì không.",
@@ -695,8 +709,8 @@ const L49_DOI = land("x49_doi_tien", "Bạn bán hết kho giờ cho chị doanh
   { money: 1.5 });
 
 const X49 = weird("X49", "abs", ["ky", "tien", "than"],
-  // Làm công ăn lương: có phòng kế toán trả lương, không phải chủ hay người tự làm.
-  (c) => c.has_job && !c.farmer && !SELF_EMPLOYED.some((x) => f(c, x)) && c.pressure.ky >= 4 && c.age >= 20 && c.age <= 62,
+  // Làm công ăn lương: có phòng kế toán trả lương (xem wageEarner).
+  (c) => wageEarner(c) && c.pressure.ky >= 4 && c.age >= 20 && c.age <= 62,
   () => "Ký nhận lương bằng giờ rảnh",
   () => ({
     title: "Lương tháng này: ba trăm giờ rảnh",
