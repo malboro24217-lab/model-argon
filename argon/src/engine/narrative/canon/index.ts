@@ -8,5 +8,13 @@ import { compileSeason as compileSeasonFn, type SeasonDef as SeasonDefT } from "
 import { FIXTURE_SEASON } from "./seasons/_fixture.ts";
 /** Mùa thường đã đăng ký. Task 6 thay mùa mẫu bằng 5 mùa thật (và thêm WEIRD). */
 export const SEASONS: SeasonDefT[] = [FIXTURE_SEASON];
-/** Mọi thẻ mùa, host nối vào kho major (Task 7). */
-export const SEASON_STORYLETS = SEASONS.flatMap(compileSeasonFn);
+/* ---- Task 5: generator canon event ---- */
+export { generateCanon, fillSlots, canonView, GENERIC_DOORS } from "./Canon.ts";
+export type { DoorKind, Slots, SeedDoor, CanonSeed, WeirdBranch, ResolvedDoor, CanonEvent } from "./Canon.ts";
+import type { CanonSeed as CanonSeedT, WeirdBranch as WeirdBranchT } from "./Canon.ts";
+/** Mầm canon event đã đăng ký (Task 6b điền). */
+export const CANON_SEEDS: CanonSeedT[] = [];
+/** Nhánh kỳ dị đã đăng ký (các đợt kỳ dị điền). */
+export const WEIRD: WeirdBranchT[] = [];
+/** Mọi thẻ mùa (mùa thường và mùa của nhánh kỳ dị), host nối vào kho major (Task 7). */
+export const SEASON_STORYLETS = [...SEASONS, ...WEIRD.map((b) => b.season)].flatMap(compileSeasonFn);
