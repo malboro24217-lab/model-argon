@@ -68,7 +68,7 @@ export const beatGap = (len: number): number => Math.max(1, Math.round(len / 5))
 const DURABLE_CUSTOM = new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child"]);
 /** Thay đổi bền, đủ làm chung kết: đổi con đường, đổi nước/thành phố, hôn nhân, con, mua/bán, thu nhập ×k, tiền ≥ 1 năm. */
 export function isDurable(e: Effect): boolean {
-  if ((e.custom ?? "").split("|").some((p) => p.startsWith("become:") || DURABLE_CUSTOM.has(p))) return true;
+  if ((e.custom ?? "").split("|").some((p) => p.startsWith("become:") || p.startsWith("marry:") || DURABLE_CUSTOM.has(p))) return true;
   if (e.buy || e.sell) return true;
   if (e.income_mult !== undefined && (e.income_mult >= 1.2 || e.income_mult <= 0.8)) return true;
   return e.money !== undefined && Math.abs(e.money) >= 1;

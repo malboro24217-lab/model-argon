@@ -21221,7 +21221,7 @@ var Argon = (() => {
     rival: ["opportunist", "tit_for_tat", "grudger"],
     spouse: ["generous_tit_for_tat", "tit_for_tat", "grudger"],
     child: ["generous_tit_for_tat", "tit_for_tat", "opportunist"]
-  }, ROLE_SEX = {
+  }, NEUTRAL_ARCH = ["tit_for_tat", "generous_tit_for_tat"], ROLE_SEX = {
     mother: "F",
     father: "M",
     sibling: "any",
@@ -21265,7 +21265,9 @@ var Argon = (() => {
     return link("mother", "father", 0.8), link("mother", "sibling", 0.8), link("father", "sibling", 0.7), link("neighbor", "official", 0.5), link("official", "creditor", 0.5), link("creditor", "first_boss", 0.4), link("childhood_friend", "bully", 0.3), link("rival", "partner", 0.4), link("mentor", "first_boss", 0.5), link("neighbor", "mother", 0.5), cast;
   }
   function addCastMember(s, cast, rng, role7, name, ageOffset, trust = 0.5, archOverride) {
-    let n18 = [...cast.values()].filter((c) => c.role === role7).length, id = `cast_${role7}${n18 ? n18 + 1 : ""}`, drawn = rng.pick(ROLE_ARCH[role7]), arch = archOverride ?? drawn, npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
+    let n18 = [...cast.values()].filter((c) => c.role === role7).length, id = `cast_${role7}${n18 ? n18 + 1 : ""}`;
+    for (; cast.has(id) || s.npcs.has(id); ) id = `cast_${role7}${++n18 + 1}`;
+    let drawn = rng.pick(ROLE_ARCH[role7] ?? NEUTRAL_ARCH), arch = archOverride ?? drawn, npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
     s.npcs.set(id, npc), addNpcToGraph(s.graph, npc, 0.5, s.tick, trust);
     let m = { id, name, role: role7, roles: [role7], age_offset: ageOffset, alive: !0, health: role7 === "child" ? 95 : 80, dependent: role7 === "child", true_archetype: arch };
     return cast.set(id, m), m;
@@ -21567,7 +21569,7 @@ var Argon = (() => {
   }
   var beatGap = (len) => Math.max(1, Math.round(len / 5)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child"]);
   function isDurable(e) {
-    return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
+    return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || p.startsWith("marry:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
   }
   function addCustom(e, part) {
     let parts = e.custom ? e.custom.split("|") : [];
@@ -22548,7 +22550,7 @@ var Argon = (() => {
   var SEASONS_NORMAL = [TRON_CHAY, VU_AN_GIA_TOC, NGOI_SAO, LAM_LAI, XU_NGUOI];
 
   // src/engine/narrative/canon/Canon.ts
-  var USED_PENALTY = 100, ON_AXIS_BONUS = 50, NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], NEEDS_INDEPENDENT = /* @__PURE__ */ new Set(["tron_chay", "xu_nguoi"]), playedFlag = (seasonId) => "season_played_" + seasonId, played = (c, season2) => c.flags.has(playedFlag(season2)), whoName = (s, N, dflt) => s.who ? N(s.who) : dflt, GENERIC_DOORS = [
+  var USED_PENALTY = 100, ON_AXIS_BONUS = 50, NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], NEEDS_INDEPENDENT = /* @__PURE__ */ new Set(["tron_chay", "xu_nguoi"]), playedFlag = (seasonId) => "season_played_" + seasonId, played = (c, season2) => c.flags.has(playedFlag(season2)), EMIGRATION_SEASONS = /* @__PURE__ */ new Set(["xu_nguoi"]), seasonOpen = (c, season2) => !played(c, season2) && (!EMIGRATION_SEASONS.has(season2) || c.can_migrate), whoName = (s, N, dflt) => s.who ? N(s.who) : dflt, GENERIC_DOORS = [
     {
       kind: "doi_dau",
       season: "vu_an_gia_toc",
@@ -22601,7 +22603,7 @@ var Argon = (() => {
     }
   ];
   function genericSeason(d, c) {
-    for (let s of [d.season, ...NORMAL_SEASONS]) if (!played(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
+    for (let s of [d.season, ...NORMAL_SEASONS]) if (seasonOpen(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
     return null;
   }
   function shuffle(arr, rng) {
@@ -22679,7 +22681,7 @@ var Argon = (() => {
     }
   }
   function generateCanon(c, axis, plants, rng, N, seeds, weird2) {
-    let weirdOk = (s) => weird2.filter((b) => !played(c, b.season.id) && b.when(c, s));
+    let weirdOk = (s) => weird2.filter((b) => seasonOpen(c, b.season.id) && b.when(c, s));
     if (axis === "ky") {
       if (c.weird === 0) return null;
       let slots2 = fillSlots(KY_SLOTS, c, plants, N), ok = weirdOk(slots2);
@@ -22698,7 +22700,7 @@ var Argon = (() => {
     let pool = feasible;
     if (!pool.length) return null;
     let score2 = (f9) => 3 * f9.slots.fromPlayer + f9.seed.axes.reduce((t, a) => t + (c.pressure[a] ?? 0), 0) + (f9.seed.axes.includes(axis) ? ON_AXIS_BONUS : 0) - (c.flags.has(`canon_${f9.seed.id}`) ? USED_PENALTY : 0), top = Math.max(...pool.map(score2)), best = pool.filter((f9) => score2(f9) === top), { seed, slots } = best.length === 1 ? best[0] : rng.pick(best), doors = [], kinds = /* @__PURE__ */ new Set();
-    for (let d of shuffle(seed.doors.filter((d2) => !played(c, d2.season) && (!d2.when || d2.when(c, slots))), rng)) {
+    for (let d of shuffle(seed.doors.filter((d2) => seasonOpen(c, d2.season) && (!d2.when || d2.when(c, slots))), rng)) {
       if (doors.length >= 3) break;
       kinds.has(d.kind) || (doors.push(seedDoor(d, d.season, slots, c, N)), kinds.add(d.kind));
     }

@@ -14,8 +14,9 @@ assert.strictEqual(Argon.PATH_LIST.length, 96, 'registry has 96 paths');
   assert.strictEqual(P.lw.counters.p_singer, 0, 'p_singer = 0');
   assert.strictEqual(P.lw.counters.p_singer_at, P.age, 'p_singer_at = age');
   // đổi sang con đường nghề khác thì bỏ cờ con đường nghề cũ
-  customEffect(P, 'become:journalist');
-  assert(!P.lw.sflags.has('life_singer') && P.lw.sflags.has('life_journalist'), 'switch path clears old career path');
+  // Task 7 (R15): become chỉ đổi nghề khi tuổi trong khoảng của con đường; nhà báo từ 21 tuổi nên đổi sang bán hàng online (16–50).
+  customEffect(P, 'become:ecommerce');
+  assert(!P.lw.sflags.has('life_singer') && P.lw.sflags.has('life_ecommerce'), 'switch path clears old career path');
 }
 
 // 3. Nhịp truyện nối nhau sau khi bước vào.

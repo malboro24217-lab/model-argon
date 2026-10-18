@@ -1,7 +1,7 @@
 /** Kiểm thử lớp canon event / Mùa (narrative/canon). Chạy: node --experimental-strip-types src/canon-test.ts */
 import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
-import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
+import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, isDurable, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
 import { SEASONS_NORMAL } from "./engine/narrative/canon/seasons/index.ts";
 import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, CANON_SEEDS } from "./engine/index.ts";
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
@@ -183,8 +183,19 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     const e2 = gen(base({ weird: 0, flags: new Set(["season_played_lam_lai", "season_played_tron_chay"]) }), "tien", [debt], 5);
     ok(!!e2 && e2.doors.every((d) => d.season !== "lam_lai" && d.season !== "tron_chay") && e2.doors.length === 3, "canon: không mở lại mùa đã chơi (R7)");
     const allPlayed = new Set(["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai"].map((x) => "season_played_" + x));
-    const e3 = gen(base({ weird: 0, flags: allPlayed }), "tien", [debt], 5, [ONE]);
+    const e3 = gen(base({ weird: 0, flags: allPlayed, can_migrate: true }), "tien", [debt], 5, [ONE]);
     ok(!!e3 && e3.doors.length === 3 && e3.doors.every((d) => d.season === "xu_nguoi"), "canon: cửa chung lùi về mùa thường chưa chơi đầu tiên");
+    /* R14: không còn đường di cư thì không có cửa tới xu_nguoi (cửa mầm, cửa chung, cửa lùi) */
+    const e4 = gen(base({ weird: 0, flags: allPlayed, can_migrate: false }), "tien", [debt], 5, [ONE]);
+    ok(e4 === null, "canon R14: 4 mùa thường đã chơi, không còn đường di cư → không dựng được 3 cửa (không lùi về xu_nguoi)");
+    let migDoor = 0;
+    for (let i = 1; i <= 20; i++) {
+      const ev = gen(base({ weird: 0, can_migrate: false, owns: new Set(["house"]) }), "tien", [debt], i);
+      ok(!!ev && ev.doors.length === 3 && ev.doors.every((d) => d.season !== "xu_nguoi"), `canon R14: mầm + cửa chung không dẫn tới xu_nguoi (rng ${i})`);
+      const ev2 = gen(base({ weird: 0, can_migrate: true, owns: new Set(["house"]) }), "tien", [debt], i);
+      if (ev2?.doors.some((d) => d.season === "xu_nguoi")) migDoor++;
+    }
+    ok(migDoor > 0, `canon R14: còn đường di cư thì cửa xu_nguoi vẫn mở (${migDoor}/20)`);
   }
   {
     const kinds = GENERIC_DOORS.map((d) => d.kind);
@@ -488,6 +499,9 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     ok(good >= 30, `kho mầm, trục ${ax}: ${good}/50 ra biến cố 3 cửa`);
   }
 }
+
+/* R20: chung kết cưới một người có tên vẫn là thay đổi bền */
+ok(isDurable({ custom: "marry:Lan" }) && isDurable({ custom: "season_end:x|marry:Lan" }), "isDurable nhận marry:<tên>");
 
 if (fails) { console.log(`${fails} FAIL`); process.exit(1); }
 console.log("canon-test: OK");

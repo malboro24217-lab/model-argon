@@ -5,6 +5,7 @@
  * Trục thường: chọn mầm (CanonSeed) có điểm cao nhất trong các mầm điền đủ chỗ trống bắt buộc, rồi 3 cửa khác kiểu.
  * Trục Kỳ: không dùng mầm; một nhánh kỳ dị (WeirdBranch) làm biến cố, cả 3 cửa là nhánh kỳ dị.
  * Không mở lại mùa đã chơi trong đời này (R7): host đặt cờ "season_played_<id>" khi vào mùa.
+ * Cửa dẫn tới mùa di cư (xu_nguoi) chỉ khả thi khi c.can_migrate (R14).
  */
 import type { Axis, CastRole, Effect, FactContext, Plant, PlantKind, StoryletView } from "../types.ts";
 import type { AssetKind } from "../../economy/Holdings.ts";
@@ -56,6 +57,10 @@ const NEEDS_INDEPENDENT = new Set<string>(["tron_chay", "xu_nguoi"]);
 /** Cờ host đặt khi vào một mùa (R7: mùa đã chơi không mở lại trong đời này). */
 export const playedFlag = (seasonId: string): string => "season_played_" + seasonId;
 const played = (c: FactContext, season: string): boolean => c.flags.has(playedFlag(season));
+/** Mùa mà phần chính là di cư sang nước khác (R14): chỉ mở khi đời này còn đường di cư. */
+const EMIGRATION_SEASONS = new Set<string>(["xu_nguoi"]);
+/** Mùa còn mở được cho đời này: chưa chơi, và nếu là mùa di cư thì c.can_migrate. */
+const seasonOpen = (c: FactContext, season: string): boolean => !played(c, season) && (!EMIGRATION_SEASONS.has(season) || c.can_migrate);
 const whoName = (s: Slots, N: Names, dflt: string): string => (s.who ? N(s.who) : dflt);
 
 /**
@@ -83,7 +88,7 @@ export const GENERIC_DOORS: SeedDoor[] = [
 
 /** Mùa thật của một cửa chung: mùa của nó nếu còn mở, không thì mùa thường chưa chơi đầu tiên; null nếu hết. */
 function genericSeason(d: SeedDoor, c: FactContext): string | null {
-  for (const s of [d.season, ...NORMAL_SEASONS]) if (!played(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
+  for (const s of [d.season, ...NORMAL_SEASONS]) if (seasonOpen(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
   return null;
 }
 
@@ -194,7 +199,7 @@ function fillGeneric(doors: ResolvedDoor[], n: number, s: Slots, c: FactContext,
  * Trục Kỳ (null nếu Độ điên 0): trigger = rng.pick(nhánh khả thi), cửa đầu là trigger, 2 cửa sau là nhánh khả thi khác (thiếu thì bù cửa chung).
  */
 export function generateCanon(c: FactContext, axis: Axis, plants: Plant[], rng: Rng, N: Names, seeds: CanonSeed[], weird: WeirdBranch[]): CanonEvent | null {
-  const weirdOk = (s: Slots) => weird.filter((b) => !played(c, b.season.id) && b.when(c, s));
+  const weirdOk = (s: Slots) => weird.filter((b) => seasonOpen(c, b.season.id) && b.when(c, s));
 
   if (axis === "ky") {
     if (c.weird === 0) return null;   // Đời thật: không bao giờ có biến cố kỳ dị
@@ -226,7 +231,7 @@ export function generateCanon(c: FactContext, axis: Axis, plants: Plant[], rng: 
 
   const doors: ResolvedDoor[] = [];
   const kinds = new Set<string>();
-  for (const d of shuffle(seed.doors.filter((d) => !played(c, d.season) && (!d.when || d.when(c, slots))), rng)) {
+  for (const d of shuffle(seed.doors.filter((d) => seasonOpen(c, d.season) && (!d.when || d.when(c, slots))), rng)) {
     if (doors.length >= 3) break;
     if (kinds.has(d.kind)) continue;
     doors.push(seedDoor(d, d.season, slots, c, N)); kinds.add(d.kind);

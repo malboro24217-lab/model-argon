@@ -662,7 +662,7 @@ function makeRng(seed){let s=seed>>>0;return function(){s=s+0x6D2B79F5|0;let t=M
    Đổi một lựa chọn chỉ làm lệch những lượt rút của chính năm đó; năm sau mọi luồng bắt đầu lại từ cùng một chỗ.
    Đổi SIM_VERSION mỗi khi kết quả của cùng một hạt giống thay đổi (điểm, mã đời, di sản gắn vào số này). */
 const SIM_VERSION="2026-10-18.tat-dinh";
-const RNG_SUB={host:1,tick:2,story:3,money:4,npc:5,auto:6,ai:7,fog:8};
+const RNG_SUB={host:1,tick:2,story:3,money:4,npc:5,auto:6,ai:7,fog:8,canon:9};
 function mix32(h){h=h>>>0;h^=h>>>16;h=Math.imul(h,0x85ebca6b);h^=h>>>13;h=Math.imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0}
 function strHash(str){let h=0x811c9dc5;str=String(str);for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)}return h>>>0}
 function subSeed(seed,age,sub){return mix32(mix32(mix32(seed)^Math.imul((age|0)+1,0x9e3779b9))^Math.imul(sub,0x27d4eb2f))}
@@ -819,14 +819,14 @@ function careerOptions(L){const c=L.c,S=L.school,fl=L.lw?L.lw.sflags:new Set();c
   const tal=(Argon.PATH_LIST||[]).filter(d=>d.kind==="career"&&fl.has("talent_"+d.id)&&L.age<=d.ages[1]).slice(0,2).map(d=>"path:"+d.id);return tal.concat(out).slice(0,4)}
 function assignJob(L,fam){const fl=L.lw.sflags;const old=famOf(L);for(const k in FAM)fl.delete("job_"+k);fl.add("job_"+fam);
   const t=FAM[fam].t;const title=fam==="health"?(L.school.deg&&L.r()<.35?"bác sĩ":"y tá"):fam==="office"&&!L.school.deg?"nhân viên văn phòng":t[Math.floor(L.r()*t.length)];
-  if(old&&L.income>0){L.income*=FAM[fam].m/FAM[old].m}else L.income=incomeAt(L.c,L.incomePct||.4)*FAM[fam].m;
+  if(old&&L.income>0){L.income*=FAM[fam].m/FAM[old].m}else L.income=incomeAt(L.c,L.incomePct||.4)*FAM[fam].m*seasonIncomeMult(L);
   L.job=title;L.lastJob=title;log(L,`Bạn bắt đầu làm ${title}. Thu nhập khoảng ${fmtPPP(L.income)}/năm (≈ ${fmtVND(L.income)}/tháng theo giá Việt Nam).`)}
 function getJob(L,child){const c=L.c,r=L.r;
   const edu=L.school.years/12*.6+(L.school.deg?.4:0);
   let p=clamp(.45*L.fam+.3*edu+.25*r()+(L.st.know-50)/400,.02,.98);
   if(L.migrated)p*=.6;
   L.incomePct=p;
-  if(child||!L.lw){const title=c.g<10000?"phụ giúp việc đồng áng":"làm việc vặt";L.job=title;L.income=incomeAt(c,p)*.3;log(L,`Bạn bắt đầu làm ${title}.`);return}
+  if(child||!L.lw){const title=c.g<10000?"phụ giúp việc đồng áng":"làm việc vặt";L.job=title;L.income=incomeAt(c,p)*.3*seasonIncomeMult(L);log(L,`Bạn bắt đầu làm ${title}.`);return}
   const opts=careerOptions(L);
   const take=(L2,o)=>o.startsWith("path:")?becomePath(L2,o.slice(5)):assignJob(L2,o);
   if(L.pending||opts.length<2){take(L,opts[0]||"market");return}
@@ -924,7 +924,7 @@ function die(L,forced){L.alive=false;if(L.stories)for(const st of L.stories)st.c
     else if(x<40)cause=pick(r,c.g<8000?["tai nạn giao thông","lao phổi","HIV","tai nạn lao động"]:["tai nạn giao thông","ung thư","tai nạn lao động"]);
     else if(x<70)cause=pick(r,["bệnh tim","đột quỵ","ung thư","tiểu đường","bệnh gan"]);
     else cause=pick(r,["bệnh tim","đột quỵ","ung thư","bệnh phổi mạn tính","tuổi già"])}
-  L.cause=cause;log(L,`Bạn qua đời ở tuổi ${x} vì ${cause}.`,"bad big");L.map.push({end:true})}
+  L.cause=cause;if(typeof canonDeath==="function")canonDeath(L);log(L,`Bạn qua đời ở tuổi ${x} vì ${cause}.`,"bad big");L.map.push({end:true})}
 
 /* ================= HIỂN THỊ ================= */
 function fmtPPP(v){v=Math.round(v);return"$"+(v>=1e6?(v/1e6).toFixed(1)+" tr":v.toLocaleString("en-US"))}
@@ -22165,7 +22165,7 @@ var Argon = (() => {
     rival: ["opportunist", "tit_for_tat", "grudger"],
     spouse: ["generous_tit_for_tat", "tit_for_tat", "grudger"],
     child: ["generous_tit_for_tat", "tit_for_tat", "opportunist"]
-  }, ROLE_SEX = {
+  }, NEUTRAL_ARCH = ["tit_for_tat", "generous_tit_for_tat"], ROLE_SEX = {
     mother: "F",
     father: "M",
     sibling: "any",
@@ -22209,7 +22209,9 @@ var Argon = (() => {
     return link("mother", "father", 0.8), link("mother", "sibling", 0.8), link("father", "sibling", 0.7), link("neighbor", "official", 0.5), link("official", "creditor", 0.5), link("creditor", "first_boss", 0.4), link("childhood_friend", "bully", 0.3), link("rival", "partner", 0.4), link("mentor", "first_boss", 0.5), link("neighbor", "mother", 0.5), cast;
   }
   function addCastMember(s, cast, rng, role7, name, ageOffset, trust = 0.5, archOverride) {
-    let n18 = [...cast.values()].filter((c) => c.role === role7).length, id = `cast_${role7}${n18 ? n18 + 1 : ""}`, drawn = rng.pick(ROLE_ARCH[role7]), arch = archOverride ?? drawn, npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
+    let n18 = [...cast.values()].filter((c) => c.role === role7).length, id = `cast_${role7}${n18 ? n18 + 1 : ""}`;
+    for (; cast.has(id) || s.npcs.has(id); ) id = `cast_${role7}${++n18 + 1}`;
+    let drawn = rng.pick(ROLE_ARCH[role7] ?? NEUTRAL_ARCH), arch = archOverride ?? drawn, npc = makeNpc(id, name, arch, rng, s.spawn.macro.survival_cost_quarterly * 2);
     s.npcs.set(id, npc), addNpcToGraph(s.graph, npc, 0.5, s.tick, trust);
     let m = { id, name, role: role7, roles: [role7], age_offset: ageOffset, alive: !0, health: role7 === "child" ? 95 : 80, dependent: role7 === "child", true_archetype: arch };
     return cast.set(id, m), m;
@@ -22511,7 +22513,7 @@ var Argon = (() => {
   }
   var beatGap = (len) => Math.max(1, Math.round(len / 5)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child"]);
   function isDurable(e) {
-    return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
+    return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || p.startsWith("marry:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
   }
   function addCustom(e, part) {
     let parts = e.custom ? e.custom.split("|") : [];
@@ -23492,7 +23494,7 @@ var Argon = (() => {
   var SEASONS_NORMAL = [TRON_CHAY, VU_AN_GIA_TOC, NGOI_SAO, LAM_LAI, XU_NGUOI];
 
   // src/engine/narrative/canon/Canon.ts
-  var USED_PENALTY = 100, ON_AXIS_BONUS = 50, NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], NEEDS_INDEPENDENT = /* @__PURE__ */ new Set(["tron_chay", "xu_nguoi"]), playedFlag = (seasonId) => "season_played_" + seasonId, played = (c, season2) => c.flags.has(playedFlag(season2)), whoName = (s, N, dflt) => s.who ? N(s.who) : dflt, GENERIC_DOORS = [
+  var USED_PENALTY = 100, ON_AXIS_BONUS = 50, NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], NEEDS_INDEPENDENT = /* @__PURE__ */ new Set(["tron_chay", "xu_nguoi"]), playedFlag = (seasonId) => "season_played_" + seasonId, played = (c, season2) => c.flags.has(playedFlag(season2)), EMIGRATION_SEASONS = /* @__PURE__ */ new Set(["xu_nguoi"]), seasonOpen = (c, season2) => !played(c, season2) && (!EMIGRATION_SEASONS.has(season2) || c.can_migrate), whoName = (s, N, dflt) => s.who ? N(s.who) : dflt, GENERIC_DOORS = [
     {
       kind: "doi_dau",
       season: "vu_an_gia_toc",
@@ -23545,7 +23547,7 @@ var Argon = (() => {
     }
   ];
   function genericSeason(d, c) {
-    for (let s of [d.season, ...NORMAL_SEASONS]) if (!played(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
+    for (let s of [d.season, ...NORMAL_SEASONS]) if (seasonOpen(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
     return null;
   }
   function shuffle(arr, rng) {
@@ -23623,7 +23625,7 @@ var Argon = (() => {
     }
   }
   function generateCanon(c, axis, plants, rng, N, seeds, weird2) {
-    let weirdOk = (s) => weird2.filter((b) => !played(c, b.season.id) && b.when(c, s));
+    let weirdOk = (s) => weird2.filter((b) => seasonOpen(c, b.season.id) && b.when(c, s));
     if (axis === "ky") {
       if (c.weird === 0) return null;
       let slots2 = fillSlots(KY_SLOTS, c, plants, N), ok = weirdOk(slots2);
@@ -23642,7 +23644,7 @@ var Argon = (() => {
     let pool = feasible;
     if (!pool.length) return null;
     let score2 = (f9) => 3 * f9.slots.fromPlayer + f9.seed.axes.reduce((t, a) => t + (c.pressure[a] ?? 0), 0) + (f9.seed.axes.includes(axis) ? ON_AXIS_BONUS : 0) - (c.flags.has(`canon_${f9.seed.id}`) ? USED_PENALTY : 0), top = Math.max(...pool.map(score2)), best = pool.filter((f9) => score2(f9) === top), { seed, slots } = best.length === 1 ? best[0] : rng.pick(best), doors = [], kinds = /* @__PURE__ */ new Set();
-    for (let d of shuffle(seed.doors.filter((d2) => !played(c, d2.season) && (!d2.when || d2.when(c, slots))), rng)) {
+    for (let d of shuffle(seed.doors.filter((d2) => seasonOpen(c, d2.season) && (!d2.when || d2.when(c, slots))), rng)) {
       if (doors.length >= 3) break;
       kinds.has(d.kind) || (doors.push(seedDoor(d, d.season, slots, c, N)), kinds.add(d.kind));
     }
@@ -36810,7 +36812,7 @@ function playStyle(L){const t=L.traits||{coop:0,fair:0,risk:0,bold:0};const g=L.
    Dàn nhân vật bền suốt đời · người phụ thuộc · ký ức & bí mật · storyteller · storylet → cảnh.
    Mọi thay đổi thế giới đi qua applyEffect(); kịch bản chỉ là dữ liệu. */
 const POOL = { major: null, micro: null, generic: null };
-function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || [], (Argon.PATH_STORYLETS || []).filter(s => s.category === "micro")); POOL.major = POOL.major.concat((Argon.PATH_STORYLETS || []).filter(s => s.category !== "micro")); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
+function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || [], (Argon.PATH_STORYLETS || []).filter(s => s.category === "micro")); POOL.major = POOL.major.concat((Argon.PATH_STORYLETS || []).filter(s => s.category !== "micro"), Argon.SEASON_STORYLETS || []); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
 let _moneyIds = null;
 function MONEY_IDS() { if (!_moneyIds) _moneyIds = new Set((Argon.PATH_STORYLETS || []).filter(s => s.meta && s.meta.kind === "money").map(s => s.id)); return _moneyIds; }
 function yearBudget(L) { const a = L.age; if (a < 6) return 0; if (a < 13) return 1; if (a < 18) return 2; if (a < 65) return 2 + (L.ar && L.ar.rngStory.next() < 0.35 ? 1 : 0); return 1; }
@@ -36838,9 +36840,10 @@ function livingInit(L) {
   metaApply(L, L.replay ? metaFromActs(L.replayActs) : metaSnapshot(L));
   for (const fl of (L.flagsInit || [])) L.lw.sflags.add(fl);
   { const urbanShare = clamp(0.1 + 0.28 * Math.log10(Math.max(900, L.c.g) / 800), 0.15, 0.85); const urban = rng.next() < urbanShare; const o = L.fam > 0.75 ? "rich" : L.fam < 0.4 ? (urban ? "poor_urban" : "poor_rural") : "middle"; L.lw.sflags.add("origin_" + o); L.lw.sflags.add(urban ? "urban" : "rural"); L.origin = o; }
+  canonInit(L);
 }
 function ROLE_SEX_OF(role, rng) { return role === "mother" ? "F" : (role === "father" || role === "bully" || role === "official") ? "M" : (rng.next() < 0.5 ? "M" : "F"); }
-function castName(L, id) { const m = L.lw && L.lw.cast.get(id); if (m) return m.name; const n = L.ar && L.ar.state.npcs.get(id); return n ? n.name : "ai đó"; }
+function castName(L, id) { if (isCanonKey(id)) return canonName(L, id); const m = L.lw && L.lw.cast.get(id); if (m) return m.name; const n = L.ar && L.ar.state.npcs.get(id); return n ? n.name : "ai đó"; }
 function castRole(L, r) { return Argon.byRole(L.lw.cast, r); }
 function fill(L, text) {
   const map = { mother: "mother", father: "father", sibling: "sibling", friend: "childhood_friend", bully: "bully", neighbor: "neighbor", mentor: "mentor", spouse: "spouse", child: "child" };
@@ -36871,13 +36874,13 @@ function factContext(L) {
     econ_phase: s.economic_phase, ill: !!L.ill, migrated: L.migrated, flags: L.lw.sflags, counters: L.lw.counters, cast: castMap, opinion, roles, hooks: hooksMap, last_move, doors: L.lw.cz.doors,
     years_since_major: L.age - L.lw.st.last_major_age, tension: L.lw.st.tension, crises_survived: s.perception.crises_survived, traits: L.traits || { coop: 0, fair: 0, risk: 0, bold: 0 },
     ...moneyFacts(L),
-    /* Canon event / Mùa: giá trị trung tính cho tới khi Task 7 nối thật. */
-    pressure: { tien: 0, tinh: 0, mau: 0, danh: 0, luat: 0, than: 0, dat: 0, ky: 0 }, plants: [], season: null, season_beat: 0, canon_n: 0, last_canon_age: -99, weird: 1, nemesis: undefined
+    ...canonFacts(L)
   };
 }
 
 /* ---- Hiệu ứng khai báo → thế giới ---- */
 function applyEffect(L, e, npcId) {
+  e = canonOnEffect(L, e);   // áp lực, vật gài, kết mùa trước khi tính tiền của chung kết
   const s = L.ar.state, yearly = Math.max(300, householdIncome(L)), ctxNpc = id => (id && s.npcs.get(id)) || (npcId && s.npcs.get(npcId));
   if (e.gamble) { const win = L.r() < e.gamble.p; applyEffect(L, { ...e, gamble: undefined, log: undefined }, npcId); applyEffect(L, win ? e.gamble.win : e.gamble.lose, npcId); return; }
   if (e.game) { const npc = ctxNpc(e.game.npc); if (npc) { const r = argonPlay(L, npc, e.game.move, yearly * e.game.stake_frac, npc.id); const o = r.outcome;
@@ -36917,18 +36920,31 @@ function becomePath(L, id) {
   L.lw.queue = L.lw.queue.filter(q => q.custom !== "job_new"); // "job_lose|become:x" = đổi đường, không tìm việc mới nữa
   // Thu nhập nền: đang đi một con đường nghề thì gỡ hệ số của con đường đó ra, không gỡ hệ số họ nghề (tránh hao hụt khi đổi đường nhiều lần).
   const fam = famOf(L); let base;
-  if (cur && L.lw.pathBase > 0) base = cur.incomeMult > 0 && L.income > 0 ? L.income / cur.incomeMult : L.lw.pathBase;
-  else base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4);
-  L.lw.pathBase = base;
+  // pathBase luôn lưu không kèm hệ số mùa; base đang dùng thì có (thu nhập trong mùa đã nhân hệ số).
+  const sm = seasonIncomeMult(L);
+  if (cur && L.lw.pathBase > 0) base = cur.incomeMult > 0 && L.income > 0 ? L.income / cur.incomeMult : L.lw.pathBase * sm;
+  else base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4) * sm;
+  L.lw.pathBase = base / sm;
   if (d.fam && FAM[d.fam]) { for (const k in FAM) fl.delete("job_" + k); fl.add("job_" + d.fam); }
   L.job = d.title; L.lastJob = d.title; L.income = base * d.incomeMult; if (d.kind === "career") L.retired = false;
   log(L, `Bạn bước vào con đường ${d.vn}.`, "big");
   return true;
 }
+/** Cưới một người đã có trong dàn nhân vật (R20): thêm vai spouse cho chính người đó, không tạo NPC mới. */
+function marryMember(L, m) {
+  for (const o of L.lw.cast.values()) if (o !== m && o.roles.includes("spouse")) { o.roles = o.roles.filter(r => r !== "spouse"); }
+  // Vai chính thành spouse: ageCast báo cái chết theo m.role, nên người này mất thì bạn góa như mọi bạn đời khác.
+  m.role = "spouse"; m.roles = m.roles.filter(r => r !== "season"); if (!m.roles.includes("spouse")) m.roles.push("spouse");
+  L.married = true; L.spouse = m.name; L.flags.marriedAt = L.age; L.lw.counters.married_years = 0;
+  const kind = { generous_tit_for_tat: "warm", grudger: "proud", opportunist: "restless", always_defect: "restless", tit_for_tat: "fair" }[m.true_archetype] || "fair";
+  for (const k of ["warm", "proud", "restless", "fair"]) L.lw.sflags.delete("spouse_" + k); L.lw.sflags.add("spouse_" + kind);
+  log(L, `Bạn kết hôn với ${m.name}.`, "good big"); addSt(L, "happy", 10); addSt(L, "rel", 8);
+}
 function customEffect(L, c, npcId) {
   const s = L.ar.state, yearly = Math.max(300, householdIncome(L));
   if (c.includes("|")) { for (const part of c.split("|")) customEffect(L, part, npcId); return; }
   const [kind, arg] = c.split(":"); const x = +arg || 0;
+  if (canonCustom(L, kind, arg)) return;
   switch (kind) {
     case "borrow": s.capitals.capitalAssets.debt += yearly * x; s.capitals.capitalAssets.liquid += yearly * x; syncFromArgon(L); break;
     case "repay": { const pay = Math.min(s.capitals.capitalAssets.debt, yearly * x); s.capitals.capitalAssets.debt -= pay; syncFromArgon(L); break; }
@@ -36937,11 +36953,18 @@ function customEffect(L, c, npcId) {
     case "job_lose_maybe": if (L.r() < 0.5) customEffect(L, "job_lose"); break;
     case "job_new": getJob(L); break;
     case "job_switch": if (FAM[arg]) assignJob(L, arg); break;
-    case "become": becomePath(L, arg); break;
+    case "become": { const d = Argon.PATHS[arg]; // R15: chỉ đổi nghề khi tuổi nằm trong khoảng của con đường (tới ages[1] + 5)
+      if (d && (L.age < d.ages[0] || L.age > d.ages[1] + 5)) { L.lw.sflags.add("tp_practice_" + arg); log(L, L.age < d.ages[0] ? `Bạn bắt đầu tập tành theo con đường ${d.vn}, chờ ngày đủ lớn.` : `Bạn vẫn mê con đường ${d.vn}, nhưng giờ chỉ làm cho vui.`); }
+      else becomePath(L, arg); break; }
     case "move_city": L.lw.sflags.add("path_city"); L.lw.sflags.add("left_home"); if (L.income > 0) L.income *= 1.15; addSt(L, "rel", -5); log(L, "Bạn chuyển lên thành phố.", "big"); break;
     case "study": L.lw.studying = true; if (L.income > 0) L.income *= 0.7; L.lw.queue.push({ at: L.age + 2, custom: "study_done" }); log(L, "Bạn đi học lại, vừa học vừa làm.", "big"); break;
     case "study_done": L.lw.studying = false; addSt(L, "know", 10); if (L.school.years >= 12) { L.school.deg = true; if (L.income > 0) L.income = L.income / 0.7 * 1.1; log(L, "Bạn lấy được tấm bằng.", "good big"); } else { L.school.years = Math.min(12, L.school.years + 2); if (L.income > 0) L.income /= 0.7; log(L, `Bạn học xong lớp ${L.school.years}.`, "good"); } break;
-    case "marry": resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex) }, 0, L.r, L.c); break;
+    case "marry": { // R20: cưới đúng người đang có tên đó; ưu tiên người mới của mùa, không bao giờ là người trong nhà
+      const fam = new Set(["mother", "father", "sibling", "child", "spouse"]), sc = new Set(Object.values((L.lw.season && L.lw.season.cast) || {}));
+      const cands = arg ? [...L.lw.cast.values()].filter(x => x.alive && x.name === arg && !fam.has(x.role)) : [];
+      const m = cands.find(x => sc.has(x.id)) || cands[0];
+      if (arg && L.married && [...L.lw.cast.values()].some(x => x.alive && x.role === "spouse" && x.name === arg)) break;   // đã cưới chính người này
+      if (m) marryMember(L, m); else resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex) }, 0, L.r, L.c); break; }
     case "have_child": bornChild(L); break;
     case "retire": { L.retired = true; const pen = L.c.g > 30000 ? .55 : L.c.g > 10000 ? .35 : .1; L.income *= pen; log(L, "Bạn nghỉ hưu sớm.", "big"); break; }
     case "migrate_now": { L.flags.migAsked = true; const dest = pickWeighted(L.r, COUNTRIES.filter(d => d.g > L.c.g * 1.5 && d.g > 15000), d => d.b + (d.g > 40000 ? 1 : 0)); if (dest) resolveCore(L, { id: "migrate", data: dest.id }, 0, L.r, L.c); else log(L, "Không tìm được nơi nào nhận bạn.", "bad"); break; }
@@ -36980,6 +37003,12 @@ function memoryLine(L, id) {
   return "";
 }
 
+/** Hẹn không phải cảnh (study_done, job_new…) không chờ năm rảnh: áp mọi hẹn custom tới hạn. true nếu một hẹn mở cảnh. */
+function runDueCustoms(L) {
+  const q = L.lw.queue;
+  for (let qi = 0; qi < q.length;) { const it = q[qi]; if (it.at <= L.age && it.custom) { q.splice(qi, 1); customEffect(L, it.custom); if (L.pending) return true; } else qi++; }
+  return false;
+}
 /* ---- Một năm của mạng lưới sống. Gọi từ lifeEvents. Trả về true nếu đã đặt L.pending ---- */
 function livingYear(L) {
   livingInit(L);
@@ -36988,9 +37017,10 @@ function livingYear(L) {
   lw.decisions = 0; lw.budget = yearBudget(L);
   if (L.school.uni || L.school.deg) lw.sflags.add("path_uni"); if (L.migrated) lw.sflags.add("path_migrant"); if (!L.school.in && !L.school.deg && L.school.years < 9 && L.age >= 10) lw.sflags.add("path_dropout");
   habitYear(L);
+  seasonYearly(L);   // luật năm của mùa: mỗi năm một lần, kể cả năm bận
   // 1. Dàn nhân vật già đi
   for (const ev of Argon.ageCast(lw.cast, L.age, rng, L.c.g < 8000)) {
-    const r = LW.ROLE_VN[ev.role];
+    const r = LW.ROLE_VN[ev.role] || (lw.cast.get(ev.id) || {}).label || "người quen";
     if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
       if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
     else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
@@ -37009,13 +37039,16 @@ function livingYear(L) {
   if (L.age < 5) { if (L.age === 3) { const st = pools().major.find(x => x.id === "temper_3"); if (st && !lw.history.some(h => h.id === st.id)) { fire(L, st, factContext(L)); return true; } } return false; }
   foreshadow(L);
   if (promiseDueScene(L)) return true;
+  // Hẹn không phải cảnh (study_done, job_new…) không chờ năm rảnh: áp trước canon event / thẻ mùa.
+  if (runDueCustoms(L)) return true;
+  if (canonYear(L)) return true;
   // 4. Hẹn trước (dây cháy chậm có chủ đích)
   const ctx = factContext(L);
   // Consume only the appointment being handled. Other due scenes survive a busy year.
   for (let qi = 0; qi < lw.queue.length;) {
     const q = lw.queue[qi];
     if (q.at > L.age) { qi++; continue; }
-    if (q.custom) { lw.queue.splice(qi, 1); customEffect(L, q.custom); continue; }
+    if (q.custom) { qi++; continue; }   // hẹn custom đã chạy ở runDueCustoms (trước canonYear)
     const st = pools().major.find(x => x.id === q.storylet) || pools().micro.find(x => x.id === q.storylet);
     if (!st || lw.history.some(h => h.id === st.id) && st.once) { lw.queue.splice(qi, 1); continue; }
     if (!st.prerequisites(factContext(L))) { qi++; continue; }
@@ -37081,7 +37114,14 @@ function microScene(L, ctx) {
   const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.meta && (s.meta.path || s.meta.kind === "money") ? (s.maxPerLife ?? 1) : 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10) && !(moneyDone && s.meta && s.meta.kind === "money"));
   // Chuyện mới trước: chỉ cho một thẻ quay lại khi không còn thẻ nào chưa gặp.
   const opts = { minUrgency: 0, history: lw.history, age: L.age };
-  let st = Argon.selectStorylet(pool.filter(s => !cnt[s.id]), ctx, opts, L.ar.rngStory) || Argon.selectStorylet(pool, ctx, opts, L.ar.rngStory);
+  // Trong mùa: thẻ của mùa trước (thứ tự khai báo), rồi cảnh phụ gắn tag mùa; thẻ ngoài mùa chỉ khi rng < 0.3.
+  const se = lw.season;
+  if (se) { const ss = nextSeasonCard(L); if (ss) { fireSeasonCard(L, ss); return true; } if (!lw.season) ctx = factContext(L); }
+  let st = null;
+  if (lw.season) { const tagged = pool.filter(s => s.meta && s.meta.season && s.meta.season.includes(lw.season.id));
+    st = Argon.selectStorylet(tagged.filter(s => !cnt[s.id]), ctx, opts, L.ar.rngStory) || Argon.selectStorylet(tagged, ctx, opts, L.ar.rngStory);
+    if (!st && L.ar.rngStory.next() >= 0.3) return false; }
+  if (!st) st = Argon.selectStorylet(pool.filter(s => !cnt[s.id]), ctx, opts, L.ar.rngStory) || Argon.selectStorylet(pool, ctx, opts, L.ar.rngStory);
   // Lấp chỗ trống: chuyện chung không theo nhánh, chỉ khi nhánh hết chuyện
   if (!st && L.ar.rngStory.next() < 0.6) { const fill = Argon.eligible(pools().generic.filter(s => !cnt[s.id]), ctx, { minUrgency: 0, history: lw.history, age: L.age }); if (fill.length) st = fill[Math.floor(L.ar.rngStory.next() * fill.length)].s; }
   if (!st) return false;
@@ -38540,6 +38580,259 @@ function inheritFamilyHome(L) {
   L.lw.sflags.add("home_owner"); L.lw.sflags.add("own_house"); stampP(L, Argon.prov.flag("own_house"));
   log(L, `${sibs ? `Bạn và ${sibs} anh chị em chia nhau căn nhà cũ của bố mẹ. Phần của bạn` : "Căn nhà cũ của bố mẹ về tay bạn. Nó"} đáng khoảng ${fmtPPP(value)}.`, "big");
   syncHoldingsIlliquid(L);
+}
+
+</script>
+<script id="canon">
+/* ================= CANON EVENT & MÙA (host) =================
+   Lựa chọn đẩy áp lực 8 trục → một trục nổ thành canon event (dựng từ vật gài của chính đời này) → 3 cửa →
+   mỗi cửa mở một Mùa chiếm mấy năm sau (luật, người mới, 3 vết, 5 nhịp) → chung kết đáp xuống đời thường.
+   Engine: argon/src/engine/narrative/canon. Spec: argon/docs/superpowers/specs/2026-10-18-canon-event-design.md §2, §3, §5.
+   Tất định: mọi lượt rút đi qua luồng RNG_SUB.canon, rekey theo (hạt giống, tuổi[, mùa]); không đụng luồng khác. */
+
+let _seasonDefs = null, _seasonCards = null;
+/** Độ căng storyteller tiêu đi khi một canon event nổ (thẻ mùa dùng tension của chính thẻ). */
+const CANON_TENSION = 9;
+/** Hệ số thu nhập của mùa đang chạy (1 ngoài mùa). Mọi chỗ đặt thu nhập tuyệt đối (assignJob, getJob, becomePath) nhân thêm hệ số này. */
+function seasonIncomeMult(L) { return (L.lw && L.lw.season && L.lw.season.mult) || 1; }
+/** SeasonDef theo id (5 mùa thường + mùa của 100 nhánh kỳ dị). */
+function seasonDef(id) {
+  if (!_seasonDefs) { _seasonDefs = new Map(); for (const d of Argon.SEASONS) _seasonDefs.set(d.id, d); for (const b of Argon.WEIRD) _seasonDefs.set(b.season.id, b.season); }
+  return _seasonDefs.get(id) || null;
+}
+/** Thẻ của một mùa theo đúng thứ tự khai báo (R9: cùng nhịp thì thẻ khai báo trước ra trước). */
+function seasonCards(id) {
+  if (!_seasonCards) { _seasonCards = new Map(); for (const s of Argon.SEASON_STORYLETS) { const k = s.meta.season[0]; if (!_seasonCards.has(k)) _seasonCards.set(k, []); _seasonCards.get(k).push(s); } }
+  return _seasonCards.get(id) || [];
+}
+/** Luồng rng riêng của canon event cho (hạt giống, tuổi, nhãn). Không rút từ luồng nào khác. */
+function canonRng(L, tag) { return Argon.createRng(tag ? mix32(subSeed(L.seed, L.age, RNG_SUB.canon) ^ strHash(tag)) : subSeed(L.seed, L.age, RNG_SUB.canon)); }
+/** Đã tự lập: cùng định nghĩa với moneyFacts().independent. */
+function canonIndependent(L) { return !!(L.ar && !livesOnFamily(L) && L.age >= 18); }
+/** Còn đường di cư (R14): cùng bộ lọc với custom migrate_now. */
+function canMigrate(L) { return !L.migrated && COUNTRIES.some(d => d.g > Math.max(L.c.g * 1.5, 15000)); }
+/** Nơi đang sống, cho chỗ trống {noi}. Host không có tên thành phố: thành phố hay làng. */
+function placeName(L) { const fl = L.lw.sflags; return L.migrated || fl.has("path_city") || fl.has("urban") ? "thành phố" : "làng"; }
+
+/* ---- khởi tạo lúc sinh (gọi cuối livingInit, sau khi đã có cờ origin_* / rural / only_child) ---- */
+function canonInit(L) {
+  const lw = L.lw; if (!lw || lw.canon) return;
+  const fl = lw.sflags;
+  const rural = fl.has("rural") || fl.has("origin_poor_rural");
+  if (rural) fl.add("rural");
+  lw.pressure = Argon.basePressure({ family_wealth: L.fam, gdp: L.c.g, sibling: !fl.has("only_child"), rural });
+  lw.plants = [];
+  lw.canon = { n: 0, last: -99, seasons: [] };
+  lw.season = null;
+  L.weird ??= 1;
+}
+
+/** Các trường canon của FactContext. nemesis để trống: mầm chưa kiểm vai cho kẻ thù (xem báo cáo Task 7). */
+function canonFacts(L) {
+  const lw = L.lw; if (!lw.canon) canonInit(L);
+  const se = lw.season;
+  return {
+    pressure: { ...lw.pressure }, plants: lw.plants.slice(), season: se ? se.id : null, season_beat: se ? (lw.counters.season_beat || 0) : 0,
+    canon_n: lw.canon.n, last_canon_age: lw.canon.last, weird: L.weird ?? 1, nemesis: undefined, can_migrate: canMigrate(L)
+  };
+}
+
+/**
+ * Người chưa tự lập không được để chung kết / luật năm / đầu mùa đụng tới quỹ chung của gia đình:
+ * money đi vào tiền riêng (âm thì chỉ trừ tới hết tiền riêng), bỏ repay / borrow / restructure (nợ của nhà) và migrate_now
+ * (đi nước ngoài tốn tiền vé của nhà; một đứa trẻ không tự di cư).
+ * dropMoves: bỏ thêm move_city / migrate_now / job_* / become:* (đầu mùa, R15). Trả về effect còn lại để applyEffect áp.
+ */
+function canonOwnOnly(L, e, dropMoves) {
+  if (canonIndependent(L)) return e;
+  const out = { ...e };
+  if (e.money) { const amt = Math.max(300, householdIncome(L)) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
+  if (e.custom) {
+    const keep = e.custom.split("|").filter(p => !/^(repay|borrow|restructure|migrate_now|migrate)(:|$)/.test(p) && !(dropMoves && /^(move_city|job_[a-z_]*|become)(:|$)/.test(p)));
+    if (keep.length) out.custom = keep.join("|"); else delete out.custom;
+  }
+  return out;
+}
+
+/** Gọi ở đầu applyEffect. Cộng áp lực, ghi vật gài, kết mùa trước khi áp tiền của chung kết. Trả về effect để áp tiếp. */
+function canonOnEffect(L, e) {
+  const lw = L.lw; if (!lw || !e) return e;
+  if (!lw.canon) canonInit(L);
+  if (e.gamble) return e;   // phần chung và nhánh thắng/thua đi qua applyEffect riêng, mỗi phần cộng một lần
+  if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
+  if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
+  const land = Argon.landingOf(e);
+  if (land !== null) {
+    // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
+    if (lw.season) exitSeason(L, "landing", land);
+    return canonOwnOnly(L, e, false);
+  }
+  return e;
+}
+function canonApplyQuiet(L, e) { const lw = L.lw; lw.canonQuiet = true; try { applyEffect(L, e); } finally { lw.canonQuiet = false; } }
+
+/* ---- vào / ra mùa ---- */
+const CANON_FEMALE = /^(bà|cô|chị|mẹ|dì|thím|mợ|em gái|người phụ nữ|nữ|góa phụ|bé gái)\b/i, CANON_MALE = /^(ông|anh|chú|cậu|bác trai|bố|cha|người đàn ông|nam|bé trai|lão)\b/i;
+/** Người mới của mùa: NPC thật trong dàn nhân vật, tên theo nước đang sống. */
+function seasonCastMember(L, nc, r, ar) {
+  const sex = CANON_FEMALE.test(nc.label) ? "F" : CANON_MALE.test(nc.label) || nc.role === "official" || nc.role === "bully" ? "M" : (r() < 0.5 ? "M" : "F");
+  const used = new Set([L.name, ...[...L.lw.cast.values()].filter(m => m.alive).map(m => m.name)]);
+  let name = makeName(r, L.c, sex); for (let k = 0; k < 40 && used.has(name); k++) name = makeName(r, L.c, sex);
+  const off = nc.role === "child" ? Math.min(-1, 8 - L.age) : ["mentor", "official", "first_boss", "creditor"].includes(nc.role) ? 10 + Math.floor(r() * 16) : -4 + Math.floor(r() * 10);
+  const trust = nc.role === "rival" || nc.role === "bully" ? -0.1 : nc.role === "mentor" ? 0.3 : 0.1;
+  const m = Argon.addCastMember(L.ar.state, L.lw.cast, ar, nc.role, name, off, trust);
+  // Vai theo mùa: vai gốc (nc.role) chỉ để rút archetype. Người mới không thành người phụ thuộc, không chiếm ctx.cast.<vai chuẩn>.
+  m.role = "season"; m.roles = ["season"]; m.seasonRole = nc.role; m.label = nc.label; m.dependent = false;
+  L.ar.npcStart.set(m.id, L.ar.state.npcs.get(m.id).liquid);
+  return m;
+}
+
+/** Vào mùa `id` (customEffect season:<id>, hoặc gọi thẳng). Mùa đang chạy bị cắt. */
+function enterSeason(L, id) {
+  const d = seasonDef(id); const lw = L.lw; if (!d || !lw) return false;
+  if (!lw.canon) canonInit(L);
+  if (lw.season) exitSeason(L, "cut");                                                           // 1
+  const ctx = factContext(L);
+  const scars = Argon.pickScars(ctx, lw.plants, lw.promises.filter(p => p.kept === null).map(p => ({ to: p.to, what: p.what })), x => castName(L, x)); // 2
+  const rs = canonRng(L, "season:" + id), r = () => rs.next(), ar = canonRng(L, "cast:" + id);
+  // 3. đặt lại: tiền (chỉ người đã tự lập, tính trên tiền riêng), hiệu ứng đầu mùa, người mới
+  if (d.reset.cash !== undefined && ctx.independent) L.savings += d.reset.cash * Math.max(300, householdIncome(L)) - ctx.own_cash;
+  if (d.reset.effects) canonApplyQuiet(L, canonOwnOnly(L, d.reset.effects, true));
+  const cast = {};
+  for (const nc of d.reset.cast || []) cast[nc.key] = seasonCastMember(L, nc, r, ar).id;
+  // 4. hệ số thu nhập: sống suốt mùa (chưa có thu nhập thì việc làm sau này cũng nhân hệ số, xem seasonIncomeMult); gỡ khi ra mùa
+  const want = d.rules.income ?? 1, mult = want > 0 ? want : 1;
+  if (mult !== 1 && L.income > 0) L.income *= mult;
+  // 5. cờ thế giới của mùa + cờ đã chơi (R7)
+  for (const f of d.rules.flags || []) lw.sflags.add(f);
+  lw.sflags.add(Argon.playedFlag(id));
+  // 6. nhịp
+  lw.counters.season_beat = 0; lw.counters.season_next = L.age;
+  // 7. trạng thái
+  const len = Argon.seasonLength(d, L.age, r());
+  const n = lw.canon.seasons.length + 1;
+  lw.season = { id, n, from: L.age, end: L.age + len, scars, mult, cast, lastAt: L.age, beatAt: null, yearAt: L.age };
+  // 8.
+  log(L, `Mùa ${n}: ${d.vn}.`, "big");
+  return true;
+}
+
+/** Ra khỏi mùa đang chạy. reason: "landing" (chung kết) | "cut" (canon event mới cắt ngang) | "lapsed" (chung kết không ra được thẻ) | "death". */
+function exitSeason(L, reason, landing) {
+  const lw = L.lw, se = lw && lw.season; if (!se) return null;
+  const d = seasonDef(se.id);
+  if (se.mult && se.mult !== 1 && L.income > 0) L.income /= se.mult;
+  for (const f of (d && d.rules.flags) || []) lw.sflags.delete(f);
+  const rec = { id: se.id, from: se.from, to: L.age, reason, landing: landing ?? null };
+  lw.canon.seasons.push(rec);
+  lw.season = null; lw.counters.season_beat = 0; delete lw.counters.season_next;
+  if (reason === "landing" && d) { const l = d.landings.find(x => x.id === landing); if (l && l.line) log(L, l.line, "good big"); }
+  else if (reason === "cut" && d) log(L, `${d.vn} khép lại giữa chừng.`, "big");
+  return rec;
+}
+/** Gọi khi qua đời (die). */
+function canonDeath(L) { if (L.lw && L.lw.season) exitSeason(L, "death"); }
+
+/** Bộ công cụ tên của mùa đang chạy (như thẻ mùa thấy), hoặc null. */
+function seasonKit(L) { const se = L.lw && L.lw.season; const d = se && seasonDef(se.id); return d ? Argon.seasonKitFromNames(d, id => castName(L, id), 0) : null; }
+
+/** Tên cho các khóa đặc biệt của thẻ mùa / canon: scar:<k>, npc:<key>, place. castName chuyển các khóa này sang đây. */
+function canonName(L, id) {
+  if (id === "place") return placeName(L);
+  const se = L.lw && L.lw.season;
+  if (id.startsWith("scar:")) {
+    if (!se) return "";
+    return Argon.scarText(se.scars, id.slice(5), x => castName(L, x), x => { const m = L.lw.cast.get(x); return !!m && m.alive; });
+  }
+  if (id.startsWith("npc:")) { const cid = se && se.cast[id.slice(4)]; const m = cid && L.lw.cast.get(cid); return m ? m.name : ""; }
+  return "";
+}
+function isCanonKey(id) { return typeof id === "string" && (id === "place" || id.startsWith("scar:") || id.startsWith("npc:")); }
+
+/* ---- vòng năm ---- */
+/** Luật năm của mùa (rules.yearly), đúng một lần mỗi năm trong mùa (không tính năm vào mùa). */
+function seasonYearly(L) {
+  const lw = L.lw, se = lw && lw.season; if (!se || se.yearAt >= L.age) return;
+  se.yearAt = L.age;
+  const d = seasonDef(se.id), y = d && d.rules.yearly;
+  if (y) canonApplyQuiet(L, canonOwnOnly(L, y, false));
+}
+
+/**
+ * Thẻ mùa kế tiếp (thứ tự khai báo), hoặc null. Hết thẻ khả thi của nhịp hiện tại thì sang nhịp sau:
+ * season_next = (tuổi lúc nhịp hiện tại mở) + beatGap(độ dài mùa), để các nhịp cách đều nhau dù một nhịp tràn sang năm sau.
+ */
+function nextSeasonCard(L) {
+  const lw = L.lw, se = lw.season; if (!se) return null;
+  const done = new Set(lw.history.map(h => h.id));
+  for (let guard = 0; guard < 6 && lw.season; guard++) {
+    if ((lw.counters.season_next ?? 0) > L.age) return null;
+    const beat = lw.counters.season_beat || 0, ctx = factContext(L);
+    const st = seasonCards(se.id).find(s => !done.has(s.id) && (() => { try { return s.prerequisites(ctx); } catch { return false; } })());
+    if (st) return st;
+    if (beat >= 4) { if (L.age >= se.end + 2) exitSeason(L, "lapsed"); return null; }   // chung kết không ra được thẻ nào: đóng mùa
+    lw.counters.season_beat = beat + 1;
+    lw.counters.season_next = (se.beatAt ?? L.age) + Argon.beatGap(se.end - se.from);
+    se.beatAt = null;
+  }
+  return null;
+}
+/** Khóa nhân quả của 3 vết: nhịp cú lật và chung kết dùng vết, nên cảnh in "Vì năm N…" về lựa chọn đã gieo vết đó. */
+function scarCauses(L, se) {
+  const keys = [], sc = se.scars || {};
+  for (const k of ["do", "no"]) { const x = sc[k]; const p = x && L.lw.plants.find(q => q.key === x.key); if (p) keys.push(Argon.prov.flag(Argon.plantFlag(p))); }
+  if (sc.nguoi) keys.push(Argon.prov.opinion(sc.nguoi.npc));
+  return keys;
+}
+function fireSeasonCard(L, st, ctx) {
+  const se = L.lw.season; se.lastAt = L.age; if (se.beatAt == null) se.beatAt = L.age;
+  const beat = L.lw.counters.season_beat || 0;
+  fire(L, beat === 2 || beat === 4 ? { ...st, causes: () => scarCauses(L, se) } : st, ctx || factContext(L));
+}
+
+/** Cảnh canon event: bọc canonView như sceneFromStorylet, ghi lịch sử, tính ngân sách, nối nhân quả về vật gài đã dùng. */
+function canonScene(L, ev) {
+  const lw = L.lw, view = Argon.canonView(ev);
+  lw.decisions = (lw.decisions || 0) + 1;
+  lw.history.push({ id: ev.id, age: L.age });
+  Argon.onFired(lw.st, L.age, CANON_TENSION, L.ar.rngStory);
+  const sc = sceneFromStorylet(L, { id: ev.id, build: () => view }, null);
+  sc.canon = { axis: ev.axis, seed: ev.seed, seasons: ev.doors.map(d => d.season) };
+  const keys = [];
+  if (ev.slots.what && ev.slots.what.kind !== "asset") keys.push(Argon.prov.flag(Argon.plantFlag(ev.slots.what)));
+  if (ev.slots.who) { for (const p of lw.plants) if (p.npc === ev.slots.who) keys.push(Argon.prov.flag(Argon.plantFlag(p))); keys.push(Argon.prov.opinion(ev.slots.who)); }
+  let marks = []; try { marks = Argon.resolveCauses(lw.cz, keys); } catch { marks = []; }
+  if (marks.length) { Argon.attachConsequence(marks, L.age, ev.id, sc.title); sc.causes = marks; }
+  lw.canon.fromPlayer = (lw.canon.fromPlayer || 0) + (ev.slots.fromPlayer > 0 ? 1 : 0);
+  return sc;
+}
+
+/** Gọi trong livingYear ngay sau promiseDueScene. true nếu đã đặt cảnh. */
+function canonYear(L) {
+  const lw = L.lw; if (!lw.canon) canonInit(L);   // luật năm của mùa đã chạy ở livingYear (seasonYearly sau habitYear)
+  const se = lw.season;
+  if (se && L.age >= se.end && (lw.counters.season_beat || 0) < 4) { lw.counters.season_beat = 4; lw.counters.season_next = L.age; }   // quá hạn: ép chung kết
+  const ctx = factContext(L);
+  const axis = Argon.dueAxis(ctx);
+  if (axis) {
+    const ev = Argon.generateCanon(ctx, axis, lw.plants, canonRng(L), id => castName(L, id), Argon.CANON_SEEDS, Argon.WEIRD);
+    if (ev) { scene(L, canonScene(L, ev)); return true; }
+  }
+  const st = nextSeasonCard(L);
+  if (st) { fireSeasonCard(L, st); return true; }
+  return false;
+}
+
+/** customEffect: canon:<trục> | season:<id> | season_end:<landing> | các custom của Task 8 (no-op). true nếu đã xử lý. */
+function canonCustom(L, kind, arg) {
+  const lw = L.lw;
+  switch (kind) {
+    case "canon": { if (!lw.canon) canonInit(L); if (arg in lw.pressure) lw.pressure[arg] = Math.max(0, lw.pressure[arg] - Argon.DISCHARGE); lw.canon.n++; lw.canon.last = L.age; return true; }
+    case "season": enterSeason(L, arg); return true;
+    case "season_end": if (lw.season) exitSeason(L, "landing", arg || null); return true;   // thường đã kết ở canonOnEffect
+    case "swap_other": case "remark": case "age_skip": case "longevity": return true;          // Task 8
+  }
+  return false;
 }
 
 </script>

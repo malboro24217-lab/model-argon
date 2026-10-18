@@ -194,6 +194,8 @@ export interface FactContext {
   econ_phase: "boom" | "stagnation" | "crisis";
   ill: boolean;
   migrated: boolean;
+  /** Còn đường di cư: chưa di cư và có nước thu nhập > max(1,5 × nước này, 15000) (cùng bộ lọc với custom migrate_now). */
+  can_migrate: boolean;
   flags: Set<string>;
   counters: Record<string, number>;
   /** cast role → id for quick role predicates ("bully" → "cast_bully"). Only living members. */
