@@ -20,12 +20,15 @@ const animal = (c: FactContext, label: RegExp, key: RegExp) =>
   c.plants.find((p) => p.kind === "animal" && (label.test(p.label) || key.test(p.key)));
 /** Vật gài khớp chính xác: khóa có đúng từ "meo"/"ga" (tách bằng _), nhãn có đúng chữ "con mèo"/"con gà". */
 const catOf = (c: FactContext) => animal(c, /(^|\s)con mèo(\s|$)/i, /(^|_)meo(_|$)/);
-const henOf = (c: FactContext) => animal(c, /(^|\s)con gà(\s|$)/i, /(^|_)ga(_|$)/);
+const henOf = (c: FactContext) => { const p = animal(c, /(^|\s)con gà(\s|$)/i, /(^|_)ga(_|$)/); return p && !/trống|chọi/.test(p.label) && !/(^|_)(trong|choi)(_|$)/.test(p.key) ? p : undefined; };
 /** Đồ ông để lại: khóa trong danh sách, hoặc nhãn kết thúc bằng "ông để lại". */
 const GRANDPA_KEYS = new Set(["dong_ho_cua_ong", "ban_do_cua_ong"]);
 const grandpaOf = (c: FactContext) => c.plants.find((p) => p.kind === "object" && (GRANDPA_KEYS.has(p.key) || /ông (nội |ngoại )?để lại$/.test(p.label)));
 /** Người bác/chú (vật gài người), dùng chung cho cửa, biến cố và thẻ của X04. */
-const uncleOf = (c: FactContext) => c.plants.find((p) => p.kind === "person" && /^(người|ông) (bác|chú)(\s|$)/.test(p.label));
+const uncleOf = (c: FactContext) => c.plants.find((p) => p.kind === "person" && /^(người|ông) (bác|chú)(\s|$)/.test(p.label)
+  && (!p.npc || !Object.values(c.cast).includes(p.npc)));   // người đã mất: không còn trong dàn nhân vật sống
+/** Vết đồ có thể là đồ vật, con vật, kỹ năng, tài sản hay nghề: luôn gọi là "thứ bạn mang theo từ đời cũ". */
+const doTxt = (x: string, pre: string, post: string, alt: string): string => (x ? `${pre}thứ bạn mang theo từ đời cũ, ${x}, ${post}` : alt);
 const bac = (c: FactContext): string => uncleOf(c)?.label ?? "ông bác ruột";
 
 /* ================================================================== X01 Nhiệm kỳ của trâu */
@@ -33,10 +36,10 @@ const bac = (c: FactContext): string => uncleOf(c)?.label ?? "ông bác ruột";
 const L01_CAN_BO = land("x01_can_bo", "Huyện gọi bạn lên làm cán bộ, vì bạn là người duy nhất trong tỉnh từng thắng một con trâu trong bầu cử.", { custom: "become:official", happy: 3 });
 const L01_DAI_BIEU = land("x01_dai_bieu", "Bạn tự nộp đơn ra ứng cử đại biểu, lần đầu tiên trong đời, và trúng. Đốm không ra tranh.", { custom: "become:politician", happy: 3 });
 const L01_THUA = land("x01_thua_trau", "Bạn thua Đốm, nộp lại con dấu, tiền vận động mất trắng. Mỗi sáng Đốm đi ngang nhà bạn và dừng một chút, như chào đồng nghiệp cũ.", { money: -1, happy: 4, flags: ["x01_thua_trau"] });
-const L01_LEN_PHO = land("x01_len_pho", "Bạn giao con dấu, theo con cháu lên phố. Trong va li có một túm lông trâu gói giấy báo.", { custom: "move_city", happy: 2 });
+const L01_LEN_PHO = land("x01_len_pho", "Bạn giao con dấu, khăn gói lên phố sống những năm còn lại. Trong va li có một túm lông trâu gói giấy báo.", { custom: "move_city", happy: 2 });
 
 const X01 = weird("X01", "abs", ["danh", "dat"],
-  (c) => c.age >= 22 && c.age <= 70 && rural(c) && c.pressure.danh >= 2,
+  (c) => c.age >= 22 && c.age <= 68 && rural(c) && c.pressure.danh >= 2,
   () => "Nhận con dấu thôn, đấu với con trâu",
   (s) => ({ title: "Trưởng thôn bất đắc dĩ",
     text: `Thôn bạn ở ${s.noi || "quê"} vừa bầu trưởng thôn, và bạn trúng cử dù chưa từng nộp đơn. Người về nhì là con trâu Đốm, kém bạn đúng ba phiếu, mà ba phiếu ấy đều của nhà bạn. Ông tổ trưởng bầu cử cầm loa nói: "Trên giấy thì bạn thắng. Ngoài đồng thì trâu thắng." Ngoài sân, Đốm nhai rơm, nhìn bạn như người chờ đếm lại phiếu.` }),
@@ -69,8 +72,10 @@ const X01 = weird("X01", "abs", ["danh", "dat"],
            C("Kệ bảng thăm dò, lo việc thôn", { flags: ["x01_lo_viec"], know: 2 }, "Làm được việc, chưa chắc được phiếu")]),
       ],
       [
-        card("x01_cl_truyen_don", "Người in truyền đơn", (c, k) => `Bạn lần ra người in truyền đơn "Đốm không ăn hối lộ": đó là ${k.scar("nguoi") || "một người quen cũ"}. Người đó rót cho bạn một chén nước rồi nói: "Tôi không ghét bạn. Tôi chỉ tin trâu hơn." Trong góc nhà người đó còn ${k.scar("do") || "một món đồ cũ của bạn"}, thứ bạn tưởng đã mất từ lâu.`,
-          [C("Mời người đó về làm phó thôn", { flags: ["x01_moi_nguoi_cu"], counters: { x01_long_dan: 2 }, rel: 2 }, "Thêm một cánh tay, chia bớt một nửa quyền"),
+        card("x01_cl_truyen_don", "Người in truyền đơn", (c, k) => `Bạn lần ra người in truyền đơn "Đốm không ăn hối lộ": đó là ${k.scar("nguoi") || "một người quen cũ"}. Người đó rót cho bạn một chén nước rồi nói: "Tôi không ghét bạn. Tôi chỉ tin trâu hơn." ${doTxt(k.scar("do"), "Người đó còn nhắc tới ", "và bảo trâu thì chẳng cần mang theo gì.", "Người đó còn bảo trâu thì chẳng cần đời cũ nào cả.")}`,
+          (c) => [c.flags.has("x01_pho_trau")
+            ? C("Mời người đó làm phó thôn thứ hai, cạnh Đốm", { flags: ["x01_moi_nguoi_cu"], counters: { x01_long_dan: 2 }, rel: 2 }, "Thôn có hai phó, một người một trâu")
+            : C("Mời người đó về làm phó thôn", { flags: ["x01_moi_nguoi_cu"], counters: { x01_long_dan: 2 }, rel: 2 }, "Thêm một cánh tay, chia bớt một nửa quyền"),
            C("Đem chuyện ra họp thôn", { flags: ["x01_phoi"], counters: { x01_long_dan: -1 }, pressure: { danh: 1 } }, "Thắng lý, thua tình")]),
       ],
       [
@@ -87,7 +92,7 @@ const X01 = weird("X01", "abs", ["danh", "dat"],
             const thua = ending(L01_THUA, "Nhường ghế cho Đốm", "Mất chức, mất tiền vận động, được ngủ ngon");
             if (pathOk(c, "official")) return [ending(L01_CAN_BO, "Nhận lời lên huyện làm cán bộ", "Thành người nhà nước, xa thôn"), thua];
             if (pathOk(c, "politician")) return [ending(L01_DAI_BIEU, "Tự nộp đơn ra ứng cử đại biểu", "Lên cao hơn, lần này phải tự xin phiếu"), thua];
-            return [ending(L01_LEN_PHO, "Giao con dấu, theo con cháu lên phố", "Rời thôn, mang theo chuyện kể cả đời"), thua];
+            return [ending(L01_LEN_PHO, "Giao con dấu, lên phố sống tuổi già", "Rời thôn, mang theo chuyện kể cả đời"), thua];
           }),
       ],
     ] }),
@@ -99,10 +104,10 @@ const L02_HOA = land("x02_hoa", "Bạn ở lại, nhận chiếc ghế cạnh co
 const L02_TACH = land("x02_tach", "Bạn tách khỏi họ, chuyển lên thành phố, ở một căn hộ cấm nuôi mèo. Lần đầu sau nhiều năm, bạn tự xếp lịch cho mình.", { custom: "move_city", happy: 3, rel: -4 });
 
 const X02 = weird("X02", "abs", ["mau"],
-  (c) => c.age >= 18 && c.pressure.mau >= 4 && !!catOf(c),
+  (c) => c.age >= 18 && c.age <= 68 && c.pressure.mau >= 4 && !!catOf(c),
   () => "Để cả họ sống theo lịch của con mèo",
   (s, c) => ({ title: "Gia tộc theo lịch mèo",
-    text: `Cuộc họp họ ở ${s.noi || "nhà họ"} kéo dài sáu tiếng và chỉ tan khi ${catOf(c)?.label ?? "con mèo nhà bạn"} ngáp. Ông trưởng họ đập bàn: "Từ nay mèo ngáp thì tan họp, mèo ngủ thì cấm cãi." Cả họ giơ tay biểu quyết. Con mèo không giơ, vì nó đang nằm trên cuốn sổ biểu quyết.` }),
+    text: `Cuộc họp họ ở ${s.noi || "nhà họ"} kéo dài sáu tiếng và chỉ tan khi con mèo nhà bạn ngáp một cái thật dài. Ông trưởng họ đập bàn: "Từ nay mèo ngáp thì tan họp, mèo ngủ thì cấm cãi." Cả họ giơ tay biểu quyết. Con mèo không giơ, vì nó đang nằm trên cuốn sổ biểu quyết.` }),
   season({ id: "w_X02", vn: "Gia tộc mèo", color: "#e0a030", years: [5, 9], weird: "abs",
     rules: { flags: ["w_x02_gia_toc_meo"] },
     reset: { cast: [{ key: "truong_ho", role: "mentor", label: "ông chú trưởng họ" }, { key: "em_ho", role: "sibling", label: "cô em họ giữ sổ lịch mèo" }] },
@@ -123,15 +128,15 @@ const X02 = weird("X02", "abs", ["mau"],
            C("Hỏi công khai về tiền phí giữ sổ", { flags: ["x02_hoi_phi"], counters: { x02_tach: 1 } }, "Đúng lẽ, mất một đồng minh")]),
       ],
       [
-        card("x02_kd_dam_cuoi", "Đám cưới chờ mèo", (c, k) => `Đám cưới của đứa em họ đã hoãn ba tuần vì con mèo không chịu bước vào rạp cưới. Hai trăm khách, mười bàn tiệc nguội, cô dâu đứng cầm hoa cạnh chiếc lồng trống. Mọi người quay sang bạn, người duy nhất con mèo cho bế. ${k.gag()}`,
-          [C("Bế mèo vào rạp cưới", { flags: ["x02_be_meo"], counters: { x02_quyen: 1 }, happy: 2 }, "Cưới được, nhưng bạn vừa phá luật họ"),
+        card("x02_kd_dam_cuoi", "Đám cưới chờ mèo", (c, k) => `Đám cưới của đứa em họ đã hoãn ba tuần vì con mèo không chịu bước vào phòng tiệc. Hai trăm khách, mười bàn tiệc nguội, cô dâu đứng cầm hoa cạnh chiếc lồng trống. Mọi người quay sang bạn, người duy nhất con mèo cho bế. ${k.gag()}`,
+          [C("Bế mèo vào phòng tiệc", { flags: ["x02_be_meo"], counters: { x02_quyen: 1 }, happy: 2 }, "Cưới được, nhưng bạn vừa phá luật họ"),
            C("Giữ đúng lịch, hoãn tiếp", { flags: ["x02_hoan_cuoi"], rel: -2, counters: { x02_tach: 1 } }, "Không ai trách bạn, chỉ trách số phận")]),
         card("x02_kd_quy_ca", "Quỹ họ mua cá", (c, k) => `Sổ quỹ họ cuối năm ghi: tiền mua cá cho mèo gấp ba tiền học bổng cho con cháu. ${cap(k.npc("truong_ho"))} giải thích rằng mèo no thì họp mới yên. Một đứa cháu học giỏi đứng ngoài cửa, cầm tờ giấy khen, chờ xin tiền mua sách.`,
           [C("Đề nghị chia lại quỹ họ", { flags: ["x02_chia_quy"], counters: { x02_tach: 1 }, pressure: { mau: 1 } }, "Đứa cháu có sách, ông trưởng họ mất mặt"),
            C("Bỏ tiền túi mua sách cho cháu", { money: -0.05, flags: ["x02_mua_sach"], rel: 2 }, "Êm chuyện, tiền mình chịu")]),
       ],
       [
-        card("x02_cl_thong_dich", "Người hiểu ý mèo", (c, k) => `Con mèo bắt đầu ngủ trên đùi bạn ở mọi buổi họp, và cả họ kết luận bạn là "người hiểu ý mèo". ${cap(k.scar("nguoi") || "một người họ hàng xa")} thì thầm rằng ngày trước ông nội cũng được gọi như thế, và ông đã dùng danh ấy để chia đất cho cả họ. Lúc đó con mèo đang nằm ngủ trên ${k.scar("do") || "chiếc túi cũ bạn mang theo"}.`,
+        card("x02_cl_thong_dich", "Người hiểu ý mèo", (c, k) => `Con mèo bắt đầu ngủ trên đùi bạn ở mọi buổi họp, và cả họ kết luận bạn là "người hiểu ý mèo". ${cap(k.scar("nguoi") || "một người họ hàng xa")} thì thầm rằng ngày trước ông nội cũng được gọi như thế, và ông đã dùng danh ấy để chia đất cho cả họ. ${doTxt(k.scar("do"), "Người đó bảo con mèo chọn bạn vì ", "thứ có mùi của người biết việc.", "Người đó bảo con mèo chọn bạn vì bạn ngồi yên nhất họ.")}`,
           [C("Nhận làm người thông dịch cho mèo", { flags: ["x02_thong_dich"], counters: { x02_quyen: 2 } }, "Nắm quyền trong họ, gánh mọi lời trách"),
            C("Nói thật: mèo chỉ thích chỗ ấm", { flags: ["x02_noi_that"], counters: { x02_tach: 1 } }, "Thật thà, cả họ cho là bạn phá đám")]),
       ],
@@ -160,10 +165,10 @@ const L03_BAN = land("x03_ban_ten", "Bạn bán quyền đặt tên lễ hội c
 const L03_GIU = land("x03_giu_hoi", "Bạn giữ lễ hội, mở quầy bán hình nộm lưu niệm ngay cạnh sân khấu. Mỗi mùa hội nuôi cả năm.", { income_mult: 1.2, money: 0.5, flags: ["x03_giu_hoi"] });
 
 const X03 = weird("X03", "abs", ["tinh", "danh"],
-  (c) => !c.married && !!c.cast.partner && c.age >= 20 && c.age <= 50,
+  (c) => !c.married && !c.widowed && c.age >= 22 && c.age <= 45 && c.rel >= 40,
   () => "Để đám cưới thành lễ hội của cả tỉnh",
-  (s, c, N) => ({ title: "Đám cưới thành lễ hội",
-    text: `Ba ngày trước đám cưới, thiệp mời của bạn bị in nhầm vào lịch lễ hội của cả tỉnh. Sáng nay xe tải chở tới một sân khấu, bốn đội múa và một ông cán bộ văn hóa cầm cờ: "Năm đầu thì phải làm cho hoành tráng." ${c.cast.partner ? N(c.cast.partner) : "Người sắp cưới của bạn"} đứng ở cổng với bó hoa cưới, kẹt giữa hai hàng xúc xích nướng.` }),
+  () => ({ title: "Đám cưới thành lễ hội",
+    text: `Ba ngày trước đám cưới, thiệp mời của bạn bị in nhầm vào lịch lễ hội của cả tỉnh. Sáng nay xe tải chở tới một sân khấu, bốn đội múa và một ông cán bộ văn hóa cầm cờ: "Năm đầu thì phải làm cho hoành tráng." Người sắp cưới của bạn đứng ở cổng với bó hoa cưới, kẹt giữa hai hàng xúc xích nướng.` }),
   season({ id: "w_X03", vn: "Lễ hội mang tên mình", color: "#e8b23a", years: [6, 10], weird: "abs",
     rules: { flags: ["w_x03_le_hoi"], yearly: { money: -0.05 } },
     reset: { cast: [{ key: "can_bo", role: "official", label: "ông cán bộ văn hóa tỉnh" }] },
@@ -184,7 +189,7 @@ const X03 = weird("X03", "abs", ["tinh", "danh"],
            C("Xin đổi tên lễ hội", { flags: ["x03_doi_ten"], counters: { x03_danh: -1 } }, "Bớt mang tiếng, tỉnh phật ý")]),
       ],
       [
-        card("x03_kd_tai_hien", "Cưới lại lần thứ ba", (c, k) => `Năm thứ ba, hai người lại mặc đồ cưới, lại đọc lời thề, lần này có thêm màn bắn pháo giấy và một đoàn xe hoa của nhà tài trợ. ${c.flags.has("x03_cuoi_lai") ? "Đám cưới thật ở nhà năm ấy giờ chỉ còn trong một tấm ảnh nhòe." : "Hai người đã thuộc kịch bản hơn cả lời thề thật."} ${k.gag()}`,
+        card("x03_kd_tai_hien", "Cưới lại thêm lần nữa", (c, k) => `Mấy mùa hội sau, hai người lại mặc đồ cưới, lại đọc lời thề, lần này có thêm màn bắn pháo giấy và một đoàn xe hoa của nhà tài trợ. ${c.flags.has("x03_cuoi_lai") ? "Đám cưới thật ở nhà năm ấy giờ chỉ còn trong một tấm ảnh nhòe." : "Hai người đã thuộc kịch bản hơn cả lời thề thật."} ${k.gag()}`,
           [C("Diễn cho tròn vai", { counters: { x03_danh: 2 }, rel: -2, flags: ["x03_dien_tron"] }, "Khán giả đông thêm, hai người mệt thêm"),
            C("Thuê một cặp đóng thế", { money: -0.05, flags: ["x03_dong_the"], counters: { x03_danh: -1 } }, "Đỡ mệt, báo tỉnh viết rằng cô dâu chú rể gầy đi")]),
         card("x03_kd_tai_tro", "Nhà tài trợ nước chấm", () => `Hãng nước chấm Ba Sao muốn gắn thêm chữ "mùa nước chấm" vào sau tên lễ hội, trả một khoản bằng nửa năm thu nhập. Trên bản phác thảo, chai nước chấm to hơn mặt hai người cộng lại.`,
@@ -200,7 +205,7 @@ const X03 = weird("X03", "abs", ["tinh", "danh"],
         card("x03_day_bao", "Bão đêm khai mạc", (c, k) => `Bão vào đúng đêm khai mạc. Sân khấu đổ, hình nộm bay sang ruộng bên, và vì bạn là trưởng ban danh dự nên giấy đòi đền gửi thẳng về nhà bạn. ${c.flags.has("x03_tai_tro") ? "Hãng nước chấm rút tài trợ ngay trong đêm, chỉ để lại một thùng nước chấm." : "Không có nhà tài trợ nào đỡ, quỹ hội trống trơn."} ${k.gag()}`,
           [C("Bỏ tiền nhà ra đền", { money: -0.4, flags: ["x03_den_tien"], counters: { x03_danh: 1 } }, "Mất tiền, giữ được tên tuổi"),
            C("Đẩy trách nhiệm về cho tỉnh", { flags: ["x03_day_tinh"], counters: { x03_danh: -2 }, pressure: { luat: 1 } }, "Giữ tiền, mất lòng ông cán bộ")]),
-        card("x03_day_cai_nhau", "Vương miện giấy", () => `Ngay trước giờ tái hiện năm thứ tám, nửa kia của bạn tháo chiếc vương miện giấy xuống: "Mình cưới nhau hay cưới cái lễ hội?" Hai nghìn khán giả đang chờ sau tấm màn.`,
+        card("x03_day_cai_nhau", "Vương miện giấy", () => `Một mùa hội nọ, ngay trước giờ tái hiện, nửa kia của bạn tháo chiếc vương miện giấy xuống: "Mình cưới nhau hay cưới cái lễ hội?" Hai nghìn khán giả đang chờ sau tấm màn.`,
           [C("Hứa đây là năm cuối", { flags: ["x03_hua_nghi"], rel: 3, counters: { x03_danh: -1 } }, "Giữ được nhà, lễ hội thiếu người"),
            C("Xin thêm một năm nữa thôi", { flags: ["x03_them_nam"], rel: -3, counters: { x03_danh: 1 } }, "Giữ được hội, nhà lạnh thêm")]),
       ],
@@ -224,7 +229,7 @@ const L04_KIEN = land("x04_kien_tung", "Bạn kiện đến cùng và thua. Ba m
 const L04_BAN = land("x04_ban_nuoc", "Bạn bán cả vương quốc cho một nhà sưu tập kỳ quặc, kèm cờ, dấu và quốc ca. Giá bằng ba năm thu nhập.", { money: 3, happy: 2 });
 
 const X04 = weird("X04", "abs", ["dat", "tien"],
-  (c) => c.age >= 18 && (c.owns.has("land") || !!uncleOf(c)),
+  (c) => c.age >= 18 && c.age <= 68 && (c.owns.has("land") || !!uncleOf(c)),
   () => "Nhận thừa kế một quốc gia 30 m²",
   (s, c) => ({ title: "Quốc gia ba mươi mét vuông",
     text: `${cap(bac(c))} mất, để lại cho bạn đúng ba mươi mét vuông đất ${c.owns.has("land") ? "giáp mảnh đất của bạn" : `sau chợ ${s.noi || "quê"}`} và một tờ giấy đóng con dấu tự khắc: "Vương quốc Ba Mươi Mét, diện tích toàn quốc 30 m²." Trong hộp có lá cờ may bằng áo mưa, một con dấu và cuốn sổ ghi "dân số: 1, đã mất". Người đọc di chúc gập giấy lại, cúi đầu: "Mời bệ hạ ký nhận."` }),
@@ -232,10 +237,10 @@ const X04 = weird("X04", "abs", ["dat", "tien"],
     rules: { flags: ["w_x04_quoc_vuong"] },
     reset: { cast: [{ key: "dia_chinh", role: "official", label: "anh cán bộ địa chính" }, { key: "khach", role: "neighbor", label: "cô du khách xin nhập quốc tịch" }] },
     gag: { key: "quoc_ca", lines: [
-      "Quốc ca của vương quốc dài đúng mười một giây, phát bằng một cái loa kẹo kéo.",
+      "Quốc ca của vương quốc dài đúng mười một giây, phát bằng một cái loa cầm tay.",
       "Quốc ca vang lên lúc bảy giờ sáng. Hàng xóm gõ tường xin vặn nhỏ, gõ đúng nhịp.",
       "Có khách lạ thuộc lòng quốc ca, hát luôn cả đoạn hai mà bạn chưa từng viết.",
-      "Loa kẹo kéo hỏng hẳn. Bạn tự hát quốc ca, mười một giây, không lệch nhịp nào.",
+      "Cái loa cầm tay hỏng hẳn. Bạn tự hát quốc ca, mười một giây, không lệch nhịp nào.",
     ] },
     landings: [L04_DU_LICH, L04_KIEN, L04_BAN],
     beats: [
@@ -281,10 +286,10 @@ const X04 = weird("X04", "abs", ["dat", "tien"],
 
 const L05_KHO_BAU = land("x05_kho_bau", "Phong bì cuối là cuốn sổ tiết kiệm ông gửi từ năm bạn ra đời, ghi tên người giải được câu đố. Đó là bạn.", { money: 3, happy: 3, rel: -4 });
 const L05_CHIA = land("x05_chia_deu", "Bạn đọc to phong bì cuối và chia đều cho cả họ. Phần mỗi người không lớn, nhưng năm sau cả họ lại ngồi chung một bàn.", { money: 1, rel: 5, happy: 3 });
-const L05_BAI_HOC = land("x05_bai_hoc", "Phong bì cuối chỉ có một dòng: \"Mười năm cả họ ngồi lại với nhau, thế là đủ.\" Tiền bạn đổ vào cuộc săn mất trắng.", { money: -1, happy: 2, know: 5 });
+const L05_BAI_HOC = land("x05_bai_hoc", "Phong bì cuối chỉ có một dòng: \"Ngần ấy năm cả họ ngồi lại với nhau, thế là đủ.\" Tiền bạn đổ vào cuộc săn mất trắng.", { money: -1, happy: 2, know: 5 });
 
 const X05 = weird("X05", "abs", ["mau", "tien"],
-  (c) => c.age >= 16 && c.age <= 50 && c.pressure.mau >= 2 && (!!grandpaOf(c) || c.flags.has("heir")),
+  (c) => c.age >= 18 && c.age <= 50 && c.pressure.mau >= 2 && (!!grandpaOf(c) || c.flags.has("heir")),
   () => "Tham gia cuộc săn kho báu ông để lại",
   (s, c) => ({ title: "Di chúc là câu đố",
     text: `Ông mất, để lại cho cả họ một chồng phong bì dán kín và một câu dặn: "Mỗi năm mở một cái. Ai đi đến cuối thì được hết." Manh mối đầu tiên là ${grandpaOf(c)?.label ?? "một chiếc chìa khóa không vừa ổ nào"}. Mười bảy người cháu cùng nhìn nó, rồi nhìn nhau như nhìn đối thủ.` }),
@@ -312,20 +317,20 @@ const X05 = weird("X05", "abs", ["mau", "tien"],
           [C("Đọc to cuốn sổ trước cả họ", { flags: ["x05_doc_so"], counters: { x05_dua: 1 }, pressure: { mau: 2 } }, "Sự thật ra ánh sáng, bữa cơm họ thành phiên tòa"),
            C("Cất sổ, giữ cho riêng mình", { flags: ["x05_giu_so"], know: 2, counters: { x05_dua: 1 } }, "Nắm thóp nửa họ, ngủ không yên"),
            C("Đốt cuốn sổ trong bếp", { flags: ["x05_dot_so"], counters: { x05_hop: 2 } }, "Xóa nợ cho cả họ, mất một manh mối")]),
-        card("x05_kd_ao_doi", "Ba đội áo màu", (c, k) => `Năm thứ tư, cả họ chia làm ba đội, in áo ba màu, lập nhóm nhắn tin riêng và cài người sang đội khác. ${cap(k.npc("luat_su"))} nhắc rằng di chúc cấm phá hoại, nhưng không cấm in áo.`,
+        card("x05_kd_ao_doi", "Ba đội áo màu", (c, k) => `Tới phong bì thứ tư, cả họ chia làm ba đội, in áo ba màu, lập nhóm nhắn tin riêng và cài người sang đội khác. ${cap(k.npc("luat_su"))} nhắc rằng di chúc cấm phá hoại, nhưng không cấm in áo.`,
           [C("Lập đội riêng, áo màu cam", { flags: ["x05_doi_rieng"], counters: { x05_dua: 2 } }, "Tự quyết mọi thứ, cả họ coi bạn là đối thủ"),
            C("Đề nghị gộp ba đội làm một", { flags: ["x05_gop_doi"], counters: { x05_hop: 2 }, rel: 2 }, "Ít người tranh, kho báu chia nhỏ")]),
       ],
       [
-        card("x05_cl_chia_khoa", "Thứ cháu đã mang theo", (c, k) => `Phong bì thứ sáu viết: "Thứ cần tìm, một đứa cháu đã mang theo từ lâu." Cả họ lục túi nhau. Bạn chợt nhận ra ${k.scar("do") || "một món đồ cũ bạn vẫn giữ"} mang đúng ký hiệu trên phong bì, còn ${k.scar("nguoi") || "một người họ hàng xa"} là người duy nhất biết điều đó, và đang nhìn bạn.`,
-          [C("Đưa cho cả họ cùng xem", { flags: ["x05_cong_khai"], counters: { x05_hop: 2 } }, "Mọi người tin bạn, cuộc đua chậm lại"),
+        card("x05_cl_chia_khoa", "Thứ cháu đã mang theo", (c, k) => `Phong bì thứ sáu viết: "Thứ cần tìm, một đứa cháu đã mang theo từ lâu." Cả họ lục túi nhau. ${doTxt(k.scar("do"), "Bạn chợt hiểu ", "chính là lời giải ông muốn nói tới,", "Bạn chợt hiểu thứ ông muốn nói là thói quen ông dạy bạn hồi nhỏ,")} còn ${k.scar("nguoi") || "một người họ hàng xa"} là người duy nhất biết điều đó, và đang nhìn bạn.`,
+          [C("Nói cho cả họ cùng biết", { flags: ["x05_cong_khai"], counters: { x05_hop: 2 } }, "Mọi người tin bạn, cuộc đua chậm lại"),
            C("Giấu đi, tự giải một mình", { flags: ["x05_giau_manh"], counters: { x05_dua: 2 }, pressure: { mau: 1 } }, "Đi trước một bước, mang tiếng giấu bài")]),
       ],
       [
         card("x05_day_vuon", "Mảnh vườn bị bán", (c, k) => `${cap(k.npc("anh_ho"))} bán mảnh vườn của ông để lấy tiền săn tiếp, và người mua san phẳng nó trong một buổi sáng. Manh mối thứ bảy, nếu có, giờ đã nằm dưới móng nhà mới. ${k.gag()}`,
           [C("Đưa anh họ ra trước hội đồng họ", { flags: ["x05_kien_anh"], counters: { x05_dua: 1 }, pressure: { mau: 2 } }, "Đòi được lẽ phải, mất luôn người anh"),
            C("Xin chủ mới cho đào một góc", { money: -0.1, flags: ["x05_xin_dao"], counters: { x05_hop: 1 } }, "Tốn tiền, có thể tìm lại manh mối")]),
-        card("x05_day_bua_com", "Bữa cơm không ai nói", (c, k) => `Ngày tưởng nhớ ông năm thứ chín, bữa cơm chỉ còn bảy người, và không ai nói chuyện gì ngoài manh mối. Một đứa cháu nhỏ hỏi: "Ông để lại kho báu, hay để lại cái họ này?" Không ai trả lời${c.flags.has("x05_giau_manh") ? ", và vài người liếc sang bạn." : "."}`,
+        card("x05_day_bua_com", "Bữa cơm không ai nói", (c, k) => `Ngày tưởng nhớ ông năm ấy, bữa cơm chỉ còn bảy người, và không ai nói chuyện gì ngoài manh mối. Một đứa cháu nhỏ hỏi: "Ông để lại kho báu, hay để lại cái họ này?" Không ai trả lời${c.flags.has("x05_giau_manh") ? ", và vài người liếc sang bạn." : "."}`,
           [C("Mời cả họ một bữa, cấm nhắc kho báu", { money: -0.05, flags: ["x05_bua_com"], counters: { x05_hop: 2 } }, "Tốn một bữa, kéo lại được vài người"),
            C("Tranh thủ đêm đó đọc lại mọi phong bì", { flags: ["x05_doc_lai"], know: 2, counters: { x05_dua: 1 } }, "Gần lời giải hơn, xa mọi người hơn")]),
       ],
@@ -343,10 +348,10 @@ const X05 = weird("X05", "abs", ["mau", "tien"],
 const L06_QC = land("x06_quang_cao", "Một công ty quảng cáo tuyển bạn vào làm người nghĩ chữ. Họ không cần câu thứ hai, họ cần người dám nói câu thứ nhất.", { custom: "become:ad_creative", happy: 3 });
 const L06_MC = land("x06_mc", "Bạn nhận dẫn một chương trình truyền hình buổi tối, mở màn bằng câu khẩu hiệu cũ, khán giả hô theo.", { custom: "become:tv_host", happy: 3 });
 const L06_SACH = land("x06_sach", "Bạn in một cuốn sách mỏng mang đúng tên câu khẩu hiệu, bán chạy mùa tốt nghiệp, đủ tiêu hơn một năm.", { money: 1.5, happy: 2 });
-const L06_IM = land("x06_im", "Bạn từ chối mọi lời mời, về làm việc cũ với đồng lương thấp hơn, và chỉ nói đùa ở những bàn quen.", { income_mult: 0.8, happy: 4 });
+const L06_IM = land("x06_im", "Bạn từ chối mọi lời mời, về làm một công việc bình thường với đồng lương thấp hơn, và chỉ nói đùa ở những bàn quen.", { income_mult: 0.8, happy: 4 });
 
 const X06 = weird("X06", "abs", ["danh"],
-  (c) => c.age >= 18 && c.pressure.danh >= 3 && (has(c, "temper_bold", "temper2_bold", "life_comedian", "talent_comedian") || n(c, "drink") >= 3),
+  (c) => c.age >= 18 && c.age <= 68 && c.pressure.danh >= 3 && (has(c, "temper_bold", "temper2_bold", "life_comedian", "talent_comedian") || n(c, "drink") >= 3),
   () => "Nhận mình là tác giả câu khẩu hiệu",
   (s) => ({ title: "Câu đùa thành khẩu hiệu",
     text: `Ở một bàn nhậu tại ${s.noi || "quán quen"}, bạn buột miệng một câu cho cả bàn cười: "Nghèo thì nghèo, đừng nghèo ý tưởng." Ba tuần sau, câu đó in trên băng rôn khắp nước, góc dưới ghi tên bạn. Sáng nay điện thoại reo lần thứ bốn mươi: người ta mời bạn lên sân khấu nói về "tầm nhìn".` }),
@@ -393,7 +398,7 @@ const X06 = weird("X06", "abs", ["danh"],
       [
         card("x06_ket", "Câu thứ hai", (c, k) => `${n(c, "x06_uy_tin") >= 3 ? "Người ta vẫn tin bạn, dù biết bạn chỉ có một câu." : "Người ta bắt đầu hỏi bạn còn câu nào khác không."} ${cap(k.scar("no") || "lời hứa viết câu thứ hai")} vẫn treo đó như một tấm băng rôn chưa căng. Trên bàn có ba lá thư mời. ${k.gag()}`,
           (c) => {
-            const im = ending(L06_IM, "Từ chối hết, về làm việc cũ", "Thu nhập giảm, được làm người bình thường");
+            const im = ending(L06_IM, "Từ chối hết, về sống bình thường", "Thu nhập giảm, được làm người bình thường");
             if (pathOk(c, "ad_creative") && pathOk(c, "tv_host")) return [ending(L06_QC, "Vào làm cho công ty quảng cáo", "Sống bằng chữ, phải nghĩ câu mới mỗi tuần"), ending(L06_MC, "Nhận dẫn chương trình truyền hình", "Lên hình mỗi tối, câu đùa thành nghề"), im];
             if (pathOk(c, "ad_creative")) return [ending(L06_QC, "Vào làm cho công ty quảng cáo", "Sống bằng chữ, phải nghĩ câu mới mỗi tuần"), ending(L06_SACH, "In một cuốn sách mỏng", "Kiếm một khoản rồi thôi"), im];
             return [ending(L06_SACH, "In một cuốn sách mỏng", "Kiếm một khoản rồi thôi"), im];
@@ -404,15 +409,15 @@ const X06 = weird("X06", "abs", ["danh"],
 
 /* ================================================================== X07 Gương mặt trên bao bì */
 
-const L07_GIA_HAN = land("x07_gia_han", "Bạn ký thêm mười năm. Tiền về đều như mì lên kệ, còn bữa cơm nhà thì thưa dần, rồi thôi hẳn.", { money: 3, rel: -10, happy: -3, flags: ["x07_gia_han"] });
+const L07_GIA_HAN = land("x07_gia_han", "Bạn ký gia hạn thêm một kỳ nữa. Tiền về đều như mì lên kệ, còn bữa cơm nhà thì thưa dần, rồi thôi hẳn.", { money: 3, rel: -10, happy: -3, flags: ["x07_gia_han"] });
 const L07_MUA_LAI = land("x07_mua_lai", "Bạn bỏ tiền mua lại khuôn mặt của mình, rồi cắt phăng mái tóc ngay ở bãi gửi xe.", { money: -1, rel: 6, happy: 6 });
 const L07_DIEN_VIEN = land("x07_dien_vien", "Một đạo diễn thấy bạn trên bao bì, mời đóng vai một người bán mì. Bạn đóng thật, không cần trang điểm.", { custom: "become:actor", happy: 3 });
 
 const X07 = weird("X07", "abs", ["danh", "tinh"],
-  (c) => c.age >= 16 && c.age <= 60 && (has(c, "life_actor", "talent_actor", "life_influencer", "talent_influencer", "life_singer", "talent_singer", "life_dancer") || c.pressure.danh >= 4),
+  (c) => c.age >= 18 && c.age <= 60 && (has(c, "life_actor", "talent_actor", "life_influencer", "talent_influencer", "life_singer", "talent_singer", "life_dancer") || c.pressure.danh >= 4),
   () => "Bán bản quyền khuôn mặt cho một hãng mì",
   () => ({ title: "Khuôn mặt có hợp đồng",
-    text: `Hãng mì gói Ba Phút Rưỡi muốn mua bản quyền khuôn mặt bạn trong mười năm, trả trước một khoản bằng ba năm lương. Điều khoản số bảy dài đúng một dòng: "Bên B không được thay đổi kiểu tóc." Người đại diện đẩy cây bút sang và mỉm cười. Trên gói mì mẫu đặt giữa bàn, bạn cũng đang mỉm cười y hệt.` }),
+    text: `Hãng mì gói Ba Phút Rưỡi muốn mua bản quyền khuôn mặt bạn dài hạn, trả trước một khoản bằng ba năm thu nhập. Điều khoản số bảy dài đúng một dòng: "Bên B không được thay đổi kiểu tóc." Người đại diện đẩy cây bút sang và mỉm cười. Trên gói mì mẫu đặt giữa bàn, bạn cũng đang mỉm cười y hệt.` }),
   season({ id: "w_X07", vn: "Gương mặt trên bao bì", color: "#e39a4f", years: [8, 12], weird: "abs",
     rules: { flags: ["w_x07_bao_bi"], income: 1.2 },
     reset: { cast: [{ key: "dai_dien", role: "first_boss", label: "chị đại diện của hãng mì" }, { key: "dong_the", role: "rival", label: "người đóng thế giống bạn" }] },
@@ -428,8 +433,8 @@ const X07 = weird("X07", "abs", ["danh", "tinh"],
         card("x07_mo_ky", "Trang mười bốn", (c, k) => `Bản hợp đồng dày ba mươi trang, chữ ký của bạn nằm ở trang mười bốn, ngay dưới hình vẽ mái tóc được đo bằng thước. ${cap(k.npc("dai_dien"))} nói: "Từ hôm nay, mặt bạn là tài sản. Giữ gìn giúp chúng tôi." ${k.gag()}`,
           [C("Ký ngay, nhận tiền trước", { money: 0.8, flags: ["x07_ky_ngay"], counters: { x07_xa: 1 } }, "Tiền về ngay, chưa kịp đọc trang mười lăm"),
            C("Đòi một tháng nghỉ phép cho khuôn mặt", { money: 0.5, flags: ["x07_nghi_phep"] }, "Ít tiền hơn, mỗi năm có một tháng được là mình")]),
-        card("x07_mo_ke_hang", "Mười nghìn gói mì", () => "Khuôn mặt bạn có mặt trên mười nghìn gói mì ở mọi kệ hàng. Đứa cháu vẽ thêm râu lên một gói rồi chụp ảnh, và tấm ảnh ấy được chia sẻ nhiều hơn mọi quảng cáo của hãng. Hãng gọi hỏi có phải bạn đứng sau không.",
-          [C("Nhận là ý mình, xin lỗi hãng", { flags: ["x07_nhan_loi"], money: -0.1 }, "Giữ cháu khỏi rắc rối, bị trừ tiền"),
+        card("x07_mo_ke_hang", "Mười nghìn gói mì", () => "Khuôn mặt bạn có mặt trên mười nghìn gói mì ở mọi kệ hàng. Một đứa trẻ hàng xóm vẽ thêm râu lên một gói rồi chụp ảnh, và tấm ảnh ấy được chia sẻ nhiều hơn mọi quảng cáo của hãng. Hãng gọi hỏi có phải bạn đứng sau không.",
+          [C("Nhận là ý mình, xin lỗi hãng", { flags: ["x07_nhan_loi"], money: -0.1 }, "Giữ đứa trẻ khỏi rắc rối, bị trừ tiền"),
            C("Đề nghị hãng in luôn bản có râu", { flags: ["x07_ban_rau"], counters: { x07_tu_do: 1 }, pressure: { danh: 1 } }, "Có thể thành trào lưu, có thể bị phạt")]),
       ],
       [
@@ -441,7 +446,7 @@ const X07 = weird("X07", "abs", ["danh", "tinh"],
            C("Đòi hãng thôi dùng người đóng thế", { flags: ["x07_doi_cham_dut"], counters: { x07_xa: 1 }, health: -2 }, "Giữ mặt cho riêng mình, phải tự đi mọi sự kiện")]),
       ],
       [
-        card("x07_cl_xin_loi", "Khuôn mặt xin lỗi", (c, k) => `${cap(k.scar("nguoi") || "một người quen cũ")} gọi lúc nửa đêm: người đó vừa thấy mặt bạn trên tấm biển xin lỗi khách hàng vì một lô mì bị lỗi. Hãng dùng mặt bạn để xin lỗi mà không hỏi bạn một câu${c.flags.has("x07_ban_rau") ? ", lần này còn vẽ thêm râu cho giống trào lưu" : ""}. ${k.scar("do") ? `Người đó còn nhắc ngày xưa bạn từng hứa sẽ sống bằng ${k.scar("do")}, không cần cho ai thuê mặt.` : "Người đó hỏi bạn còn nhớ mặt thật của mình không."}`,
+        card("x07_cl_xin_loi", "Khuôn mặt xin lỗi", (c, k) => `${cap(k.scar("nguoi") || "một người quen cũ")} gọi lúc nửa đêm: người đó vừa thấy mặt bạn trên tấm biển xin lỗi khách hàng vì một lô mì bị lỗi. Hãng dùng mặt bạn để xin lỗi mà không hỏi bạn một câu${c.flags.has("x07_ban_rau") ? ", lần này còn vẽ thêm râu cho giống trào lưu" : ""}. ${k.scar("do") ? doTxt(k.scar("do"), "Người đó còn nhắc tới ", "và hỏi bạn có còn nhớ mình là ai trước khi lên bao bì.", "") : "Người đó hỏi bạn còn nhớ mặt thật của mình không."}`,
           [C("Kiện hãng vì dùng mặt sai mục đích", { flags: ["x07_kien_hang"], counters: { x07_tu_do: 2 }, pressure: { luat: 1 } }, "Có thể đòi lại mặt, có thể mất hết tiền"),
            C("Im lặng, ký phụ lục xin lỗi", { money: 0.3, flags: ["x07_ky_phu_luc"], counters: { x07_xa: 1 } }, "Có thêm tiền, mặt bạn xin lỗi thay người khác")]),
       ],
@@ -454,16 +459,16 @@ const X07 = weird("X07", "abs", ["danh", "tinh"],
            C("Gửi thêm tiền về thay cho mình", { money: -0.1, flags: ["x07_gui_tien"], counters: { x07_xa: 1 } }, "Người nhà đủ ăn, bàn ăn vẫn trống")]),
       ],
       [
-        card("x07_ket", "Hết hạn mười năm", (c, k) => `Hợp đồng sắp hết hạn, và ${k.npc("dai_dien")} đặt lên bàn bản gia hạn với con số gấp đôi. ${cap(k.scar("no") || "lời hứa với người nhà")} vẫn chưa trả được. ${c.flags.has("x07_toc_bac") ? "Trong gương, sợi tóc bạc vẫn còn đó, thứ duy nhất trên đầu bạn không thuộc về hãng." : "Trong gương, mái tóc vẫn y như ngày ký."} ${k.gag()}`,
+        card("x07_ket", "Hết hạn hợp đồng", (c, k) => `Hợp đồng sắp hết hạn, và ${k.npc("dai_dien")} đặt lên bàn bản gia hạn với con số gấp đôi. ${cap(k.scar("no") || "lời hứa với người nhà")} vẫn chưa trả được. ${c.flags.has("x07_toc_bac") ? "Trong gương, sợi tóc bạc vẫn còn đó, thứ duy nhất trên đầu bạn không thuộc về hãng." : "Trong gương, mái tóc vẫn y như ngày ký."} ${k.gag()}`,
           (c) => {
-            const out = [ending(L07_GIA_HAN, "Ký gia hạn thêm mười năm", "Giàu thêm, bàn ăn trống thêm"),
+            const out = [ending(L07_GIA_HAN, "Ký gia hạn thêm một kỳ", "Giàu thêm, bàn ăn trống thêm"),
               ending(L07_MUA_LAI, "Mua lại khuôn mặt của mình", "Mất một khoản, được lại cái đầu và người nhà")];
             if (pathOk(c, "actor")) out.push(ending(L07_DIEN_VIEN, "Nhận lời đóng phim", "Dùng khuôn mặt cho việc của mình"));
             return out;
           }),
       ],
     ] }),
-  "Tiền về đều, nhưng mười năm không được đổi kiểu tóc");
+  "Tiền về đều, nhưng suốt hợp đồng không được đổi kiểu tóc");
 
 /* ================================================================== X08 Cụ tổ 30 tuổi */
 
@@ -506,7 +511,7 @@ const X08 = weird("X08", "abs", ["mau", "dat"],
            C("Nói thật: cụ không nhớ gì", { flags: ["x08_khong_nho"], counters: { x08_uy: -1 }, happy: 1 }, "Thật thà, ông trưởng chi được thể")]),
       ],
       [
-        card("x08_cl_cau_ru", "Câu ru năm xưa", (c, k) => `Bạn chợt nhớ ra câu nói mê bằng giọng cổ kia là câu ${k.scar("nguoi") || "một người già trong xóm"} vẫn đọc dỗ bạn ngủ hồi nhỏ. Không có cụ tổ nào cả, chỉ có một câu ru. Đúng lúc đó, ${k.npc("truong_chi")} lôi ra ${k.scar("do") || "một món đồ cũ của bạn"} từ đống lễ vật, giơ lên như bằng chứng cụ đã chọn bạn từ lâu.`,
+        card("x08_cl_cau_ru", "Câu ru năm xưa", (c, k) => `Bạn chợt nhớ ra câu nói mê bằng giọng cổ kia là câu ${k.scar("nguoi") || "một người già trong xóm"} vẫn đọc dỗ bạn ngủ hồi nhỏ. Không có cụ tổ nào cả, chỉ có một câu ru. Đúng lúc đó, ${k.npc("truong_chi")} quay ngoắt sang tin: ${doTxt(k.scar("do"), "ông đem ", "ra làm bằng chứng cụ đã chọn bạn từ lâu.", "ông bảo chính vì bạn không nhớ gì nên mới là cụ thật.")}`,
           [C("Công khai: không có cụ tổ nào cả", { flags: ["x08_cong_khai"], counters: { x08_uy: -2 }, happy: 3 }, "Nhẹ người, cả làng hụt hẫng"),
            C("Giữ bí mật, tiếp tục làm cụ", { flags: ["x08_giu_bi_mat"], counters: { x08_uy: 1 }, pressure: { mau: 1 } }, "Làng yên, bạn sống trong một vai diễn")]),
       ],
@@ -514,12 +519,12 @@ const X08 = weird("X08", "abs", ["mau", "dat"],
         card("x08_day_canh_dong", "Vụ cánh đồng", (c, k) => `Một công ty muốn mua cả cánh đồng của làng để làm khu nghỉ dưỡng. Nửa làng muốn bán, nửa làng muốn giữ, và cả hai nửa đều chờ cụ phán. ${c.flags.has("x08_cong_khai") ? "Dù bạn đã nói không có cụ tổ nào, không ai chịu nghe, và tối đó người của công ty vẫn để lại một phong bì dày dưới chiếc ghế gỗ." : "Tối đó, người của công ty để lại một phong bì dày dưới chiếc ghế gỗ."} ${k.gag()}`,
           [C("Phán bán đất, nhận phong bì", { money: 0.5, flags: ["x08_nhan_phong_bi"], counters: { x08_uy: -2 }, secret: { tag: "PAID_BRIBE", severity: 0.5, fuse_years: [2, 6], note: "phong bì dưới ghế cụ tổ" } }, "Giàu lên, làng mất đồng, bí mật nằm dưới ghế"),
            C("Phán giữ đất, trả phong bì", { flags: ["x08_giu_dat"], counters: { x08_uy: 2 }, pressure: { dat: 1 } }, "Giữ được đồng, thêm một kẻ thù có tiền")]),
-        card("x08_day_met", "Cụ cũng biết mệt", () => "Mười giờ đêm vẫn có người gõ cửa xin cụ chọn ngày dời chuồng lợn. Bạn chưa được ăn một bữa cơm trọn vẹn từ đầu năm, và đã quên giọng nói thật của mình nghe ra sao.",
+        card("x08_day_met", "Cụ cũng biết mệt", () => "Mười giờ đêm vẫn có người gõ cửa nhờ cụ phân xử vụ con lợn nhà bên sang ủi nát luống rau. Bạn chưa được ăn một bữa cơm trọn vẹn từ đầu năm, và đã quên giọng nói thật của mình nghe ra sao.",
           [C("Treo biển: cụ nghỉ chủ nhật", { flags: ["x08_nghi_cn"], happy: 3, counters: { x08_uy: -1 } }, "Có một ngày là mình, uy giảm một chút"),
            C("Tiếp hết, không từ chối ai", { health: -4, flags: ["x08_tiep_het"], counters: { x08_uy: 2 } }, "Làng thương, người kiệt sức")]),
       ],
       [
-        card("x08_ket", "Lễ mừng thọ cụ", (c, k) => `Làng tổ chức mừng thọ cụ tổ, dù cụ ${c.age < 50 ? "chưa tới năm mươi" : "còn kém tuổi nhiều người ngồi dưới"}. ${cap(k.scar("no") || "lời hứa với làng")} được ${k.npc("ba_cu")} đọc to giữa buổi, như một món nợ của cụ với con cháu. ${n(c, "x08_uy") >= 3 ? "Cả làng chờ cụ nhận ghế mãi mãi." : "Có người bắt đầu đòi cụ rời làng."} ${k.gag()}`,
+        card("x08_ket", "Tiệc tri ân cụ tổ", (c, k) => `Làng mở tiệc tri ân cụ tổ, dù cụ ${c.age < 50 ? "chưa tới năm mươi" : "còn kém tuổi nhiều người ngồi dưới"}. ${cap(k.scar("no") || "lời hứa với làng")} được ${k.npc("ba_cu")} đọc to giữa buổi, như một món nợ của cụ với con cháu. ${n(c, "x08_uy") >= 3 ? "Cả làng chờ cụ nhận ghế mãi mãi." : "Có người bắt đầu đòi cụ rời làng."} ${k.gag()}`,
           (c) => {
             const o = [ending(L08_TRUONG_LANG, "Ở lại làm người phân xử của làng", "Có ruộng, có uy, không bao giờ được là mình"),
               ending(L08_BO_LANG, "Bỏ làng lên thành phố", "Hết làm cụ, mất cả làng")];
@@ -537,10 +542,10 @@ const L09_BAN_GA = land("x09_ban_ga", "Bạn bán con gà cho một nhà sưu t�
 const L09_GIU_GA = land("x09_giu_ga", "Bạn giữ con gà tới ngày nó mất, và trả lại tiền cho những ai từng mua theo trứng. Trên mộ nó có ba con số, không ai dám mua.", { money: -1, happy: 5, flags: ["x09_giu_ga"] });
 
 const X09 = weird("X09", "abs", ["tien", "dat"],
-  (c) => c.age >= 14 && (!!henOf(c) || c.farmer || has(c, "job_farm")),
+  (c) => c.age >= 18 && c.age <= 68 && (!!henOf(c) || c.farmer || has(c, "job_farm")),
   () => "Bán vé xem con gà đẻ trứng có số",
   (s, c) => ({ title: "Quả trứng có số",
-    text: `Sáng nay ${henOf(c)?.label ?? "con gà mái nhà bạn"} đẻ một quả trứng có ba con số in mờ trên vỏ, và tối đó ba số ấy trúng giải xổ số ở ${s.noi || "tỉnh nhà"}. Đến trưa hôm sau, hàng rào nhà bạn đổ vì người chen. Một bà cụ chìa nắm thóc qua khe cửa: "Cho gà ăn giùm, tôi đặt trước lượt đẻ sau."` }),
+    text: `Sáng nay ${henOf(c)?.label ?? "con gà mái già bạn nuôi lấy trứng sau nhà"} đẻ một quả trứng có ba con số in mờ trên vỏ, và tối đó ba số ấy trúng giải xổ số ở ${s.noi || "tỉnh nhà"}. Đến trưa hôm sau, hàng rào nhà bạn đổ vì người chen. Một bà cụ chìa nắm thóc qua khe cửa: "Cho gà ăn giùm, tôi đặt trước lượt đẻ sau."` }),
   season({ id: "w_X09", vn: "Gà tiên tri", color: "#e6c13a", years: [5, 9], weird: "abs",
     rules: { flags: ["w_x09_ga_tien_tri"] },
     reset: { cast: [{ key: "ong_buon", role: "rival", label: "ông buôn gà lạ mặt" }, { key: "phong_vien", role: "neighbor", label: "cậu phóng viên báo tỉnh" }] },
@@ -571,7 +576,7 @@ const X09 = weird("X09", "abs", ["tien", "dat"],
            C("Tự đi tìm khắp các chợ gà", { health: -3, flags: ["x09_tu_tim"], counters: { x09_on: 1 } }, "Mỏi chân, có thể tìm thấy, có thể không")]),
       ],
       [
-        card("x09_cl_nguoi_ban_ga", "Người bán gà năm xưa", (c, k) => `Mười ngày sau, con gà về, gầy đi và khó tính hơn. Theo sau nó là ${k.scar("nguoi") || "một người quen cũ"}, người từng bán nó cho bạn với giá một bữa cơm, giờ đứng ở cổng đòi chia phần: "Gà của tôi đẻ, chỉ là đẻ ở nhà bạn."${k.scar("do") ? ` Người đó còn nhắc rằng ngày ấy bạn trả bằng ${k.scar("do")}, chứ không phải bằng tiền.` : ""}`,
+        card("x09_cl_nguoi_ban_ga", "Người bán gà năm xưa", (c, k) => `Mười ngày sau, con gà về, gầy đi và khó tính hơn. Theo sau nó là ${k.scar("nguoi") || "một người quen cũ"}, người từng bán nó cho bạn từ hồi nó còn là gà con, với giá một bữa cơm, giờ đứng ở cổng đòi chia phần: "Gà của tôi đẻ, chỉ là đẻ ở nhà bạn."${k.scar("do") ? ` ${doTxt(k.scar("do"), "Người đó còn nhắc tới ", "và bảo con gà đẻ ra số là nhờ hơi của nó.", "")}` : ""}`,
           [C("Chia cho người đó một phần ba", { flags: ["x09_chia_ba"], money: -0.1, counters: { x09_on: 1 }, rel: 2 }, "Mất ít tiền, thêm một người đứng chung"),
            C("Đuổi về, gà là của mình", { flags: ["x09_duoi"], pressure: { tien: 1 } }, "Giữ trọn phần, thêm một người hiểu rõ nhà bạn")]),
       ],
@@ -603,7 +608,7 @@ const L10_BAN = land("x10_ban_cong_thuc", "Bạn bán công thức cho một chu
 const L10_TRUYEN = land("x10_truyen_nghe", "Bạn trao chảo cho cậu phụ bếp, nhận một khoản tiền sang quán, và lần đầu sau nhiều năm ăn một bữa cơm chín bằng lửa vừa.", { money: 1, happy: 3 });
 
 const X10 = weird("X10", "abs", ["tien", "danh"],
-  (c) => c.age >= 16 && (has(c, "life_restaurateur", "talent_restaurateur", "life_baker", "talent_baker", "life_street_vendor") || (c.flags.has("shop_active") && c.poor_country)),
+  (c) => c.age >= 18 && c.age <= 68 && (has(c, "life_restaurateur", "talent_restaurateur", "life_baker", "talent_baker", "life_street_vendor") || (c.flags.has("shop_active") && c.poor_country)),
   () => "Bán món ăn ra đời từ vụ cháy bếp",
   (s) => ({ title: "Món ăn từ đám cháy",
     text: `Chảo dầu bùng lửa cao ngang mái, khách la hét chạy ra đường, và khi khói tan thì trên chảo chỉ còn một miếng thịt đen sì. Ông khách quen nếm thử, im lặng rất lâu, rồi nói: "Từ nay tôi chỉ ăn món này." Hôm sau có bốn mươi người xếp hàng trước bếp của bạn ở ${s.noi || "đầu phố"}, chỉ để gọi đúng món bạn làm hỏng.` }),
@@ -635,7 +640,7 @@ const X10 = weird("X10", "abs", ["tien", "danh"],
            C("Dạy miễn phí cách đốt chảo an toàn", { flags: ["x10_day_mien_phi"], counters: { x10_on: 2 } }, "Phố bớt cháy, quán bớt độc quyền")]),
       ],
       [
-        card("x10_cl_mui_khoi", "Mùi khói năm xưa", (c, k) => `${cap(k.scar("nguoi") || "một người quen cũ")} ghé quán, nếm một miếng rồi buông thìa xuống, mắt đỏ hoe. Người đó nói đây đúng là vị của đêm căn bếp cũ nhà bạn bị cháy, năm bạn còn nhỏ, cái đêm mà ai cũng tưởng đã quên. ${k.scar("do") ? `Bạn chợt hiểu vì sao từ đó tới giờ mình vẫn giữ ${k.scar("do")}.` : "Bạn chợt hiểu vì sao mình chưa bao giờ sợ lửa."}`,
+        card("x10_cl_mui_khoi", "Mùi khói năm xưa", (c, k) => `${cap(k.scar("nguoi") || "một người quen cũ")} ghé quán, nếm một miếng rồi buông thìa xuống, mắt đỏ hoe. Người đó nói đây đúng là vị của đêm căn bếp cũ nhà bạn bị cháy, năm bạn còn nhỏ, cái đêm mà ai cũng tưởng đã quên. ${doTxt(k.scar("do"), "Bạn chợt hiểu vì sao ", "chưa bao giờ rời khỏi mình.", "Bạn chợt hiểu vì sao mình chưa bao giờ sợ lửa.")}`,
           [C("Đặt tên món theo đêm ấy", { flags: ["x10_ten_ky_niem"], counters: { x10_on: 1 }, happy: 3 }, "Món có câu chuyện, chuyện nhà thành chuyện phố"),
            C("Giữ kín, chỉ nấu riêng cho người đó", { flags: ["x10_giu_kin"], rel: 3 }, "Giữ được một điều riêng, mất một câu chuyện bán hàng")]),
       ],
