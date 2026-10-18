@@ -9,7 +9,7 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, pathOpen, season, weird } from "../kit.ts";
 
 type Names = (id: string) => string;
 
@@ -182,8 +182,8 @@ const X22 = weird("X22", "abs", ["luat", "ky", "danh"],
         card("x22_ket", (c) => (c.country === "VN" ? "Lễ mừng thọ của người chưa già" : "Tiệc sinh nhật của người chưa già"), (c, k) => `Hội người cao tuổi tổ chức ${c.country === "VN" ? "mừng thọ" : "tiệc sinh nhật"} cho bạn, bánh kem cắm ${c.age + 30} cây nến. ${cap(k.npc("can_bo"))} mang tới hai tờ giấy: một tờ xác nhận tuổi trên giấy, một tờ trả lại tuổi thật. Còn ${k.scar("no") || "món nợ cũ"} thì không phân biệt tuổi nào, vẫn đòi đúng hạn. ${cnt(c, "x22_cu") >= cnt(c, "x22_tre") ? "Bạn đã quen làm cụ." : "Bạn vẫn thấy mình chưa già."} ${k.gag()}`,
           (c) => {
             const out: Choice[] = [ending(L22_HUU, "Nhận tuổi trên giấy, về hưu hẳn", "Lương hưu đều đặn, đời chậm lại sớm")];
-            if (c.age >= 16 && c.age <= 45) out.push(ending(L22_MANG, "Làm cụ già nổi tiếng trên mạng", "Nổi tiếng, phải già trước ống kính"));
-            else if (c.age >= 18 && c.age <= 65) out.push(ending(L22_SACH, "Viết hồi ký người già trước tuổi", "Có danh, có sách, hết tiền hưu"));
+            if (pathOpen("influencer", c.age)) out.push(ending(L22_MANG, "Làm cụ già nổi tiếng trên mạng", "Nổi tiếng, phải già trước ống kính"));
+            else if (pathOpen("writer", c.age)) out.push(ending(L22_SACH, "Viết hồi ký người già trước tuổi", "Có danh, có sách, hết tiền hưu"));
             out.push(ending(L22_TRA, "Ký tờ trả lại tuổi thật", "Trẻ lại, trả mọi khoản theo tuổi trên giấy"));
             return out;
           }),
@@ -258,8 +258,8 @@ const X23 = weird("X23", "abs", ["danh", "ky"],
           (c) => {
             // politician 28–55 → mở 28–60; activist 18–60 → mở 18–65; còn lại: bán gối (tiền) và giải tán (thu nhập ×0.8)
             const career: Choice[] = [];
-            if (c.age >= 28 && c.age <= 60) career.push(ending(L23_CT, "Ra làm chính trị với khẩu hiệu Nghỉ", "Có ghế, hết giờ ngủ trưa"));
-            if (c.age >= 18 && c.age <= 65) career.push(ending(L23_DG, "Đi diễn thuyết về quyền được nghỉ", "Có tiếng, sống trên đường"));
+            if (pathOpen("politician", c.age)) career.push(ending(L23_CT, "Ra làm chính trị với khẩu hiệu Nghỉ", "Có ghế, hết giờ ngủ trưa"));
+            if (pathOpen("activist", c.age)) career.push(ending(L23_DG, "Đi diễn thuyết về quyền được nghỉ", "Có tiếng, sống trên đường"));
             const rest = [ending(L23_GOI, "Bán bản quyền chiếc gối", "Có tiền, mặt bạn in trên gối"), ending(L23_GIAI_TAN, "Giải tán hội, về ngủ thật", "Bình yên, thu nhập giảm")];
             return career.length >= 2 ? [...career, rest[1]!] : [...career, ...rest];
           }),
@@ -404,7 +404,7 @@ const X25 = weird("X25", "abs", ["tien", "ky"],
           const out: Choice[] = [strong ? ending(L25_GIAU, "Bán nốt đợt cuối cho cả thành phố", "Giàu to, cả đời mùi dưa")
             : ending(L25_VON, "Bán rẻ cho xưởng nước ép", "Lấy lại vốn, hết vương quốc")];
           out.push(ending(L25_TRANG, "Ôm dưa chờ giá lên thêm mùa nữa", "Có thể trúng lớn, dưa thì không chờ"));
-          if (c.age >= 12 && c.age <= 75) out.push(ending(L25_SAP, "Mở sạp dưa đầu chợ", "Có nghề tuổi già, có cả kẻ thù ở chợ"));
+          if (pathOpen("street_vendor", c.age)) out.push(ending(L25_SAP, "Mở sạp dưa đầu chợ", "Có nghề tuổi già, có cả kẻ thù ở chợ"));
           return out;
         }),
       ],
@@ -473,7 +473,7 @@ const X26 = weird("X26", "abs", ["danh", "dat", "ky"],
         card("x26_ket", "Ngày trò chơi được công nhận", (c, k) => `Hội đồng di sản công bố trò Sỏi Bắt Trăng được công nhận, kèm bộ luật ${cnt(c, "x26_luat") >= 4 ? "đủ từng điều" : "còn thiếu vài điều"} do bạn đọc. ${cnt(c, "x26_hoc_tro") >= 2 ? "Học trò của bạn chơi biểu diễn giữa sân." : `Giữa sân chỉ có bạn và ${k.npc("cu_lang_ben")}.`} ${c.flags.has("x26_ky_ban_quyen") ? "Công ty trò chơi muốn mua nốt phần còn lại." : "Công ty trò chơi vẫn gửi thư đều đặn."} Giữa buổi lễ, bạn nhớ ra ${k.scar("no") || "món nợ cũ"} vẫn chưa trả, như một điều luật bị bỏ sót. ${k.gag()}`,
           (c) => {
             const out: Choice[] = [];
-            if (c.age >= 14 && c.age <= 65) out.push(ending(L26_NGHE_NHAN, "Nhận làm nghệ nhân, mở sân dạy", "Có danh phận, buộc chân ở sân chơi"));
+            if (pathOpen("artisan", c.age)) out.push(ending(L26_NGHE_NHAN, "Nhận làm nghệ nhân, mở sân dạy", "Có danh phận, buộc chân ở sân chơi"));
             out.push(ending(L26_GIAI, "Nhận giải, in bộ luật thành sách", "Có tiền và tiếng, trò chơi vẫn của chung"));
             out.push(ending(L26_BAN, "Bán bản quyền cho công ty trò chơi", "Giàu lên, bị cả làng nói ra nói vào"));
             return out;
@@ -548,8 +548,8 @@ const X27 = weird("X27", "abs", ["danh", "ky"],
         card("x27_ket", "Lần hát thứ một nghìn", (c, k) => `Đêm nay là lần thứ một nghìn bạn hát bài cái bàn. ${cnt(c, "x27_danh") >= 4 ? "Cả sân hát to đến mức bạn không nghe được giọng mình." : "Sân vắng hơn mọi năm, nhưng ai còn ở lại đều thuộc lời."} ${c.flags.has("x27_song_ca") ? "Người đồng tác giả đứng hát cạnh bạn như mọi lần." : c.flags.has("x27_chia_quyen") ? "Một nửa tiền bản quyền đêm nay đã có chủ." : "Bạn hát một mình, như đêm đầu tiên."} Sau trận, ${k.npc("quan_ly")} đặt ba bản hợp đồng lên bàn, còn ${k.scar("no") || "món nợ cũ"} thì vẫn chờ một câu trả lời. ${k.gag()}`,
           (c) => {
             const out: Choice[] = [];
-            if (c.age >= 15 && c.age <= 45) out.push(ending(L27_CA_SI, "Ký làm ca sĩ thật", "Có nghề, bài cái bàn theo cả đời"));
-            else if (c.age >= 12 && c.age <= 55) out.push(ending(L27_DAN_GIAN, "Theo ông nhạc sĩ đi hát hội làng", "Hát bài khác, thu nhập ít đi"));
+            if (pathOpen("singer", c.age)) out.push(ending(L27_CA_SI, "Ký làm ca sĩ thật", "Có nghề, bài cái bàn theo cả đời"));
+            else if (pathOpen("folk_musician", c.age)) out.push(ending(L27_DAN_GIAN, "Theo ông nhạc sĩ đi hát hội làng", "Hát bài khác, thu nhập ít đi"));
             out.push(ending(L27_MOT_BAI, "Ký hợp đồng trọn đời một bài", "Tiền đều, giọng bị khóa"));
             out.push(ending(L27_BAN_DUT, "Bán đứt bài hát, giải nghệ", "Có một khoản lớn, không bao giờ được hát nữa"));
             return out;
@@ -631,7 +631,7 @@ const X28 = weird("X28", "abs", ["tinh", "ky", "dat"],
       [
         card("x28_ket", "Chung kết hội thi bí ngô", (c, k) => `Ngày chung kết, hai quả bí nằm cạnh nhau trên bàn cân, chênh nhau đúng một quả trứng gà. ${!wed28(c) ? `Quả bên kia là của ${gone28(c)}, bạn tự tay mang tới.` : cnt(c, "x28_cang") > cnt(c, "x28_hoa") ? `${cap(sp28(c, k.N))} không nhìn bạn.` : `${cap(sp28(c, k.N))} khẽ nắm tay bạn dưới gầm bàn.`} ${c.flags.has("x28_ke_hat") ? (wed28(c) ? "Hai quả bí cùng mọc từ một gói hạt, và cả hai người đều biết." : "Hai quả bí cùng mọc từ một gói hạt, như bạn từng kể.") : c.flags.has("x28_giu_hat") ? "Chỉ mình bạn biết hai quả bí cùng một gói hạt." : "Không ai nhắc tới gói hạt ngày cưới."} Còn ${k.scar("no") || "món nợ cũ"} thì vẫn nằm đó, như quả bí thứ ba không ai muốn cân. ${k.gag()}`,
           (c) => {
-            const agri = c.age >= 20 && c.age <= 60;
+            const agri = pathOpen("agritech", c.age);
             if (!wed28(c)) {
               const out: Choice[] = [ending(L28_CUP_MOT, "Thi bằng nửa gói hạt của người kia", "Có tiền thưởng, có một nỗi nhớ")];
               if (agri) out.push(ending(L28_TRAI_MOT, "Gộp hai nửa vườn, mở trại giống", "Thành nghề, mang tên cả hai người"));
@@ -783,7 +783,7 @@ const X30 = weird("X30", "abs", ["luat", "ky"],
           (c) => {
             const out: Choice[] = [ending(L30_DON, "Dọn lên thành phố cho xa Đại Tá", "Đổi chỗ ở, không đổi được kẻ thù"),
               ending(L30_MUA, "Mua lại Đại Tá làm ngỗng nhà", "Tốn một khoản lớn, có một kẻ thù trong nhà")];
-            if (c.age >= 22 && c.age <= 50) out.push(ending(L30_VET, "Đi học làm bác sĩ thú y", "Đổi nghề vì một con ngỗng"));
+            if (pathOpen("vet", c.age)) out.push(ending(L30_VET, "Đi học làm bác sĩ thú y", "Đổi nghề vì một con ngỗng"));
             return out;
           }),
       ],

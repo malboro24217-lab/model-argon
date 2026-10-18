@@ -5,26 +5,15 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, finaleInOrder, land, season, weird } from "../kit.ts";
 import { slice } from "../../paths/kit.ts";
-import { PATHS } from "../../paths/registry.ts";
 
 /* ---- Chung kết theo tuổi ----
  * Landing nghề (become:<p>) chỉ mở khi tuổi trong [ages[0], ages[1] + 5] của con đường. Mùa có nghề phải có ≥ 2 landing
  * không phải nghề, để ở tuổi nào thẻ chung kết cũng có 2–3 lựa chọn và luôn có ít nhất một lối không phải nghề.
  * Chọn: 2 nghề hợp tuổi + 1 lối khác, hoặc 1 nghề + 2 lối khác, hoặc tới 3 lối khác; giữ thứ tự khai báo. */
 type End = [Landing, string, string];
-const careerOf = (l: Landing): string | undefined => (l.effects.custom ?? "").split("|").find((x) => x.startsWith("become:"))?.slice(7);
-const fitsAge = (l: Landing, age: number): boolean => {
-  const id = careerOf(l); if (!id) return true;
-  const p = PATHS[id]; return !p || (age >= p.ages[0] && age <= p.ages[1] + 5);
-};
-function finale(c: FactContext, ends: End[]): Choice[] {
-  const careers = ends.filter((e) => careerOf(e[0]) && fitsAge(e[0], c.age));
-  const others = ends.filter((e) => !careerOf(e[0]));
-  const pick = new Set(careers.length >= 2 ? [...careers.slice(0, 2), others[0]] : careers.length === 1 ? [careers[0], ...others.slice(0, 2)] : others.slice(0, 3));
-  return ends.filter((e) => pick.has(e)).map(([l, label, hint]) => ending(l, label, hint));
-}
+const finale = (c: FactContext, ends: End[]): Choice[] => finaleInOrder(c.age, ends.map(([l, label, hint]) => ending(l, label, hint)));
 
 /* ================================================================ S01: radio bắt sóng vệ tinh chết */
 

@@ -3,8 +3,7 @@
  * Bạn bị giao giữ chìa, nên vừa là thám tử vừa là nghi phạm. Gag: nhóm chat của họ đổi tên sau mỗi trận cãi.
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, land } from "../kit.ts";
-import { finale } from "./gate.ts";
+import { C, cap, card, ending, finale, land } from "../kit.ts";
 
 const L_LUAT = land("hoc_luat", "Bạn đọc luật nhiều tới mức đi thi luôn, và từ đó họ hàng gọi bạn bằng chức danh mỗi khi có chuyện.", { custom: "become:lawyer", know: 5 });
 const L_PHAN = land("nhan_phan", "Bạn nhận phần thừa kế, dùng một phần khép lại chuyện cũ, rồi ký vào biên bản cuối cùng.", { money: 1.5, custom: "repay:0.5", happy: 3 });

@@ -3,8 +3,7 @@
  * Gag: ba trăm chiếc giày trái.
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, land } from "../kit.ts";
-import { finale } from "./gate.ts";
+import { C, cap, card, ending, finale, land } from "../kit.ts";
 
 const L_TIEM = land("tiem_giay_lech", "Bạn mở tiệm giày đặt riêng, đôi nào cũng lệch một cách có chủ ý, và người ta xếp hàng để được đi lệch.", { custom: "become:fashion", happy: 6 });
 const L_MANG = land("ban_giay_le", "Bạn bán giày lẻ chiếc trên mạng cho những người chỉ còn một chân giày, gửi đi khắp nơi kèm một tấm thiệp viết tay.", { custom: "become:ecommerce", happy: 4 });

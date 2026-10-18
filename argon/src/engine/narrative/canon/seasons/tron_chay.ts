@@ -3,8 +3,7 @@
  * Gag: cái tên giả "Lâm" mà chính bạn cứ quên.
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, land } from "../kit.ts";
-import { finale } from "./gate.ts";
+import { C, cap, card, ending, finale, land } from "../kit.ts";
 
 const L_XE = land("xe_chao_hop_phap", "Xe cháo khuya được cấp chỗ đứng hợp pháp, có số riêng, và tấm bảng ghi cả tên thật lẫn chữ “Lâm”.", { custom: "become:street_vendor", happy: 6 });
 const L_VE = land("ve_tra_no", "Bạn về lại chốn cũ bằng tên thật, trả sạch món nợ, và thấy nhẹ như vừa đặt ba lô xuống.", { money: -1, custom: "repay:1", happy: 8 });

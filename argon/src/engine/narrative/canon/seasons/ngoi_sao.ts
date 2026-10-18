@@ -3,8 +3,7 @@
  * Thu nhập ×3 suốt mùa, đổi lại không còn đời tư. Gag: cây chổi đi theo bạn tới mọi nơi.
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, land } from "../kit.ts";
-import { finale } from "./gate.ts";
+import { C, cap, card, ending, finale, land } from "../kit.ts";
 
 const L_MC = land("dan_chuong_trinh", "Bạn nhận dẫn một chương trình buổi tối. Cây chổi năm ấy được treo trên tường trường quay, như một tấm bằng.", { custom: "become:tv_host", happy: 5 });
 const L_HAI = land("dien_hai", "Bạn đứng trên sân khấu hài, kể chuyện về cây chổi bằng giọng của người đã chán nó, và khán giả cười to hơn bao giờ hết.", { custom: "become:comedian", happy: 6 });

@@ -7,7 +7,7 @@
  */
 import type { Choice, FactContext, Plant } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, pathOpen, season, weird } from "../kit.ts";
 
 const has = (c: FactContext, f: string): boolean => c.flags.has(f);
 const n = (c: FactContext, k: string): number => c.counters[k] ?? 0;
@@ -80,7 +80,7 @@ const s41: WeirdBranch = weird("S41", "sf", ["danh", "ky"],
             const ve = ending(S41_VE, "Mở quầy bán vé, có giờ có giấc", "Tiền đều, nhà thành nơi tham quan");
             const ban = ending(S41_BAN, "Bán nhà cho bảo tàng, dọn đi", "Có tiền và yên tĩnh, mất chỗ đã gắn bó");
             const out: Choice[] = has(c, "s41_gap_cu") || has(c, "s41_kin") ? [ban, ve] : [ve, ban];
-            if (c.age >= 16 && c.age <= 45) {
+            if (pathOpen("influencer", c.age)) {
               const danh = ending(S41_DANH, "Làm người kể chuyện của căn nhà", "Nổi tiếng thật, đời tư thành nghề");
               if (n(c, "s41_danh") >= 2) out.unshift(danh); else out.push(danh);
             }
@@ -152,7 +152,7 @@ const s42: WeirdBranch = weird("S42", "sf", ["tien", "dat", "ky"],
             const giau = ending(S42_GIAU, "Ký gia hạn, bán mưa thêm nhiều mùa", "Giàu lên, cơn hạn sau vẫn là lỗi của bạn");
             const kien = ending(S42_KIEN, "Ra tòa, nhận phần bồi thường", "Mất tiền và mất việc, đổi lại ngủ được");
             const out: Choice[] = n(c, "s42_ghet") >= 3 && !has(c, "s42_xin_loi") ? [kien, giau] : [giau, kien];
-            if (c.age >= 20 && c.age <= 60) out.push(ending(S42_NONG, "Trả máy, làm nông theo kiểu mới", "Bớt quyền, giữ được nghề và hàng xóm"));
+            if (pathOpen("agritech", c.age)) out.push(ending(S42_NONG, "Trả máy, làm nông theo kiểu mới", "Bớt quyền, giữ được nghề và hàng xóm"));
             return out;
           }),
       ],
@@ -224,7 +224,7 @@ const s43: WeirdBranch = weird("S43", "sf", ["danh", "ky"],
             const nha = ending(S43_NHA, "Mở nhà trọ cho mèo", "Vay thêm, nhưng ngày nào cũng có khách");
             const ban = ending(S43_BAN, "Bán bản quyền máy dịch", "Có tiền ngay, mất người bạn biết nói");
             const out: Choice[] = has(c, "s43_nghe_tai") || n(c, "s43_meo_gian") >= 2 ? [nha, ban] : [ban, nha];
-            if (c.age >= 20 && c.age <= 55) out.unshift(ending(S43_DAI, "Nhận chuyên mục, đọc tin mèo mỗi sáng", "Có nghề mới, cả đời gắn với tiếng meo"));
+            if (pathOpen("radio_voice", c.age)) out.unshift(ending(S43_DAI, "Nhận chuyên mục, đọc tin mèo mỗi sáng", "Có nghề mới, cả đời gắn với tiếng meo"));
             return out;
           }),
       ],
@@ -293,7 +293,7 @@ const s44: WeirdBranch = weird("S44", "sf", ["luat", "ky"],
           (c) => {
             const tin = n(c, "s44_thien") >= n(c, "s44_nghi") + 2;
             const hero: Choice[] = [ending(S44_THUONG, "Nhận huy chương và khoản thưởng", "Có tiền, có tiếng, rồi về sống như cũ")];
-            if (c.age >= 28 && c.age <= 60) hero.unshift(ending(S44_CHINH, "Nhận lời ra ứng cử hội đồng", "Có quyền, và cả thành phố soi từng bước"));
+            if (pathOpen("politician", c.age)) hero.unshift(ending(S44_CHINH, "Nhận lời ra ứng cử hội đồng", "Có quyền, và cả thành phố soi từng bước"));
             const di = ending(S44_DI, "Rời thành phố, làm lại ở nơi khác", "Thoát lời ra tiếng vào, mất chỗ quen");
             return tin ? [...hero, di] : [di, ...hero];
           }),
@@ -360,11 +360,11 @@ const s45: WeirdBranch = weird("S45", "sf", ["danh", "ky"],
       [
         card("s45_ket", "Đêm trước giờ phóng", (c, k) => `Đêm trước giờ phóng, điện thoại bạn có ba trăm tin nhắn. ${cap(k.scar("no") || "món nợ cũ")} vẫn ở đó, không bay theo ai cả. ${has(c, "s45_hua_o") ? "Lời hứa ở lại trên sóng được chiếu lại suốt buổi tối." : "Ngoài cửa, người ta đã dựng sẵn sân khấu tiễn đưa."}`,
           (c) => {
-            const out: Choice[] = [c.age >= 20 && c.age <= 50
+            const out: Choice[] = [pathOpen("explorer", c.age)
               ? ending(S45_DI, "Lên tàu, đi thật", "Không quay đầu, đời mới ở một nơi rất xa")
               : ending(S45_BAY, "Theo đoàn sang căn cứ phóng", "Đi xa thật, dù tàu chưa chắc bay")];
             out.push(ending(S45_RUT, "Rút tên, chịu phạt hợp đồng", "Ở lại với người thân, mang nhục nhiều năm"));
-            if (c.age >= 18 && c.age <= 50) out.push(ending(S45_HAI, "Rút tên, rồi diễn hài về chuyện đó", "Biến nhục thành nghề, không ai quên chuyện cũ"));
+            if (pathOpen("comedian", c.age)) out.push(ending(S45_HAI, "Rút tên, rồi diễn hài về chuyện đó", "Biến nhục thành nghề, không ai quên chuyện cũ"));
             return has(c, "s45_hua_o") ? out.reverse() : out;
           }),
       ],
@@ -499,7 +499,7 @@ const s47: WeirdBranch = weird("S47", "sf", ["tinh", "tien", "ky"],
           (c) => {
             const out: Choice[] = [ending(S47_CHUOC, "Chuộc nốt, bằng mọi giá", "Giữ ký ức, mất tiền tích cóp"),
               ending(S47_BAN, "Bán nốt quyền ký ức", "Có tiền đổi đời, mất những gì không mua lại được")];
-            if (c.age >= 18 && c.age <= 65) {
+            if (pathOpen("activist", c.age)) {
               const pt = ending(S47_PT, "Biến phiên đấu thành phong trào", "Không giàu, nhưng cả phố đứng sau bạn");
               if (n(c, "s47_pt") >= 2) out.unshift(pt); else out.push(pt);
             }
@@ -572,7 +572,7 @@ const s48: WeirdBranch = weird("S48", "sf", ["luat", "tinh", "ky"],
             const yen = c.has_job && !c.retired && c.age <= 65
               ? ending(S48_CUOI, "Luyện nụ cười đạt chuẩn, sống yên", "Lương tăng, mặt mình không còn là của mình")
               : ending(S48_QUE, "Dọn về thị trấn nhỏ ít camera", "Yên thân, nhưng phải xa mọi thứ quen thuộc");
-            if (c.age < 18 || c.age > 65) return has(c, "s48_nop_don_di") ? [di, yen] : [yen, di];
+            if (!pathOpen("activist", c.age)) return has(c, "s48_nop_don_di") ? [di, yen] : [yen, di];
             const pt = ending(S48_PT, "Đứng lên phát biểu, dẫn đầu phong trào", "Có thể đổi luật, chắc chắn mất yên ổn");
             return n(c, "s48_pt") >= 3 ? [pt, di, yen] : has(c, "s48_nop_don_di") ? [di, pt, yen] : [yen, pt, di];
           }),
@@ -644,7 +644,7 @@ const s49: WeirdBranch = weird("S49", "sf", ["than", "tien", "ky"],
               : ending(S49_GIAU, "Giữ con mắt, buôn tiếp", "Giàu thêm, ai cũng chỉ là một con số");
             const mu = ending(S49_MU, "Lên bàn mổ, chấp nhận mù giá", "Buôn chậm lại, nhìn người lại thấy người");
             const out: Choice[] = has(c, "s49_hen_mo") || has(c, "s49_hua_kham") ? [mu, giu] : [giu, mu];
-            if (c.age >= 22 && c.age <= 65) out.push(ending(S49_DAU_TU, "Đóng sạp, mở văn phòng đầu tư", "Bán con mắt mình theo giờ, giàu và lạnh"));
+            if (pathOpen("investor", c.age)) out.push(ending(S49_DAU_TU, "Đóng sạp, mở văn phòng đầu tư", "Bán con mắt mình theo giờ, giàu và lạnh"));
             return out;
           }),
       ],
@@ -712,7 +712,7 @@ const s50: WeirdBranch = weird("S50", "sf", ["luat", "tien", "ky"],
             const moi = ending(S50_TEN_MOI, "Ký tờ thứ hai: tên mới, không nợ", "Sạch nợ, mất nghề, làm lại từ đầu");
             const cu = ending(S50_TEN_CU, "Ký tờ đầu: lấy lại tên cũ", "Có lại đời mình, kèm cả nợ và tiền phạt");
             const out: Choice[] = n(c, "s50_ten_cu") > n(c, "s50_ten_moi") ? [cu, moi] : [moi, cu];
-            if (c.age >= 22 && c.age <= 55) out.push(ending(S50_GIUP, "Ký tờ thứ ba: giúp người bị xóa", "Có nghề mới, sống giữa những người không tên"));
+            if (pathOpen("social_worker", c.age)) out.push(ending(S50_GIUP, "Ký tờ thứ ba: giúp người bị xóa", "Có nghề mới, sống giữa những người không tên"));
             return out;
           }),
       ],

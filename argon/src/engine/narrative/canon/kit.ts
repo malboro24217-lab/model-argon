@@ -62,10 +62,55 @@
  */
 import type { Axis, Choice, Effect, FactContext, StoryletView } from "../types.ts";
 import { C, T } from "../paths/kit.ts";
+import { PATHS } from "../paths/registry.ts";
 import { addCustom, type BeatCard, type Landing, type SeasonDef, type SeasonKit } from "./Season.ts";
 import type { Slots, WeirdBranch } from "./Canon.ts";
 
 export { C, T };
+
+/* ---- Cổng tuổi của chung kết (addendum quy tắc 1; dùng chung cho 5 mùa thường và 100 nhánh kỳ dị) ----
+ * Host becomePath không kiểm tuổi, nên nội dung tự giữ: landing đổi nghề become:<p> chỉ mở khi
+ * PATHS[p].ages[0] ≤ tuổi ≤ ages[1] + 5, và mọi thẻ chung kết luôn còn ít nhất một landing không phải nghề.
+ * Bộ kiểm canon-content-test bắt cả hai (tuổi 8–90, có và chưa có vợ/chồng). */
+
+/** Con đường `p` mở ở tuổi này: PATHS[p].ages[0] ≤ tuổi ≤ ages[1] + 5. Con đường lạ → false. */
+export function pathOpen(p: string, age: number): boolean {
+  const d = PATHS[p];
+  return !!d && age >= d.ages[0] && age <= d.ages[1] + 5;
+}
+
+/** Id con đường đầu tiên trong custom "become:<p>" của effects (của lựa chọn hay landing), hoặc undefined. */
+export const careerOf = (e: Effect): string | undefined =>
+  (e.custom ?? "").split("|").find((p) => p.startsWith("become:"))?.slice("become:".length);
+
+/** Lựa chọn có become:<p> nằm trong khoảng tuổi cho phép (lựa chọn không đổi nghề, hay con đường lạ, luôn đúng). */
+export function careerOk(ch: Choice, age: number): boolean {
+  return (ch.effects.custom ?? "").split("|").filter((p) => p.startsWith("become:")).every((p) => {
+    const id = p.slice("become:".length);
+    return !PATHS[id] || pathOpen(id, age);
+  });
+}
+
+/**
+ * Lựa chọn của một thẻ chung kết: tối đa 2 lựa chọn nghề hợp tuổi đứng trước, rồi các lựa chọn không phải nghề
+ * theo thứ tự ưu tiên. `others` phải luôn có ≥ 2 phần tử (người gọi giữ), nên kết quả luôn có 2–`max` lựa chọn và
+ * ít nhất một lựa chọn không phải nghề.
+ */
+export function finale(age: number, careers: Choice[], others: Choice[], max = 3): Choice[] {
+  const cap = Math.max(2, Math.min(3, max));
+  const ok = careers.filter((ch) => careerOk(ch, age)).slice(0, cap - 1);
+  return [...ok, ...others].slice(0, cap);
+}
+
+/** Như finale() nhưng giữ nguyên thứ tự khai báo của `all` (nghề và không nghề xen nhau). */
+export function finaleInOrder(age: number, all: Choice[], max = 3): Choice[] {
+  const isCareer = (ch: Choice) => careerOf(ch.effects) !== undefined;
+  const pick = new Set(finale(age, all.filter(isCareer), all.filter((ch) => !isCareer(ch)), max));
+  return all.filter((ch) => pick.has(ch));
+}
+
+/** Các lựa chọn hợp tuổi theo thứ tự khai báo, tối đa `max` (không giới hạn số nghề). */
+export const openInOrder = (age: number, all: Choice[], max = 3): Choice[] => all.filter((ch) => careerOk(ch, age)).slice(0, max);
 
 type Txt = string | ((c: FactContext, k: SeasonKit) => string);
 const txt = (t: Txt, c: FactContext, k: SeasonKit): string => (typeof t === "string" ? t : t(c, k));

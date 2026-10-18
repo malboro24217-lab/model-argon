@@ -3,13 +3,10 @@
  */
 import type { WeirdBranch } from "../Canon.ts";
 import type { FactContext } from "../../types.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
-import { PATHS } from "../../paths/registry.ts";
+import { C, cap, card, ending, land, pathOpen, season, weird } from "../kit.ts";
 
 const has = (c: FactContext, f: string): boolean => c.flags.has(f);
 const cnt = (c: FactContext, k: string): number => c.counters[k] ?? 0;
-/** Landing `become:<p>` chỉ mở khi PATHS[p].ages[0] ≤ tuổi ≤ PATHS[p].ages[1] + 5 (addendum 1). */
-const can = (c: FactContext, p: string): boolean => { const d = PATHS[p]; return !!d && c.age >= d.ages[0] && c.age <= d.ages[1] + 5; };
 
 /* ================================================================== S21 Cuộc gọi từ chính bạn 10 năm sau */
 
@@ -208,9 +205,9 @@ const S23 = weird("S23", "sf", ["ky", "dat"],
       [
         card("s23_ket", "Trước giấc ngủ trăm năm", (c, k) => `${has(c, "s23_ghi_am") ? `Đoạn ghi âm của ${k.npc("giao_su")} đã được cả viện nghe.` : "Ngoài bạn, chưa ai nghe trọn một câu của cây."} ${cnt(c, "s23_danh") > 0 ? "Đoạn phim năm nào vẫn khiến khách lạ ghé vườn chụp ảnh." : "Đoạn phim năm nào đã chìm, vườn lại yên."} ${k.gag()} Cây già ${cnt(c, "s23_than") >= 2 ? "thả xuống tay bạn một hạt giống, quà cho người tử tế nhất với nó, rồi nói" : "nói"} nó sắp ngủ một giấc dài trăm năm, và trước khi ngủ muốn nhắc bạn ${k.scar("no") || "món nợ cũ"} vẫn chưa trả. "Ta không cho vay," nó nói. "Nhưng ta có thể cho cháu một con đường."`,
           (c) => {
-            const nghe = can(c, "agritech") ? ending(L23_AGRI, "Dựng trang trại nghe được tiếng cây", "Thành nghề, gắn đời với đất") : null;
-            const danh = can(c, "influencer") ? ending(L23_NOI, "Phát trực tiếp chuyện trò với cây", "Nổi tiếng nhanh, ồn ào mãi")
-              : can(c, "writer") ? ending(L23_SACH, "Viết lại mọi điều cây kể", "Chậm mà bền, cây thích được viết") : null;
+            const nghe = pathOpen("agritech", c.age) ? ending(L23_AGRI, "Dựng trang trại nghe được tiếng cây", "Thành nghề, gắn đời với đất") : null;
+            const danh = pathOpen("influencer", c.age) ? ending(L23_NOI, "Phát trực tiếp chuyện trò với cây", "Nổi tiếng nhanh, ồn ào mãi")
+              : pathOpen("writer", c.age) ? ending(L23_SACH, "Viết lại mọi điều cây kể", "Chậm mà bền, cây thích được viết") : null;
             const ban = ending(L23_BAN, "Bán giống cây cho viện nghiên cứu", "Có tiền ngay, vườn trở lại im lặng");
             const giu = ending(L23_GIU, "Mở vườn cho khách vào nghe cây", "Tiền vé đủ sống, vườn không còn của riêng");
             const out = [nghe, danh, ban].filter((x) => x !== null);
@@ -286,8 +283,8 @@ const S24 = weird("S24", "sf", ["ky", "luat"],
       [
         card("s24_ket", "Buổi họp báo cuối cùng", (c, k) => `${cnt(c, "s24_doan") > cnt(c, "s24_that") ? "Bạn đã để người ta tin quá lâu" : "Bạn đã nói thật quá nhiều lần"}, và giờ cả trăm máy quay chĩa vào bạn. Ai đó dưới khán phòng hét lên về ${k.scar("no") || "món nợ cũ của bạn"}: nếu biết trước tương lai, sao không trả cho xong? ${k.gag()}`,
           (c) => [
-            can(c, "tv_host") ? ending(L24_DANH, "Nhận lời dẫn chương trình truyền hình", "Danh lớn, đời lên sóng")
-              : can(c, "writer") ? ending(L24_SACH, "Viết hồi ký đặc vụ bất đắc dĩ", "Danh lớn mà yên, chữ thay lời đoán")
+            pathOpen("tv_host", c.age) ? ending(L24_DANH, "Nhận lời dẫn chương trình truyền hình", "Danh lớn, đời lên sóng")
+              : pathOpen("writer", c.age) ? ending(L24_SACH, "Viết hồi ký đặc vụ bất đắc dĩ", "Danh lớn mà yên, chữ thay lời đoán")
               : ending(L24_PHIM, "Bán câu chuyện cho hãng phim", "Giàu, nhân vật trên phim không giống bạn"),
             c.migrated ? ending(L24_TRUC_XUAT, "Nhận hết, chịu trục xuất", "Về nước cũ, không được quay lại")
               : ending(L24_PHAT, "Nhận hết, nộp phạt", "Mất tiền, được yên"),
@@ -361,7 +358,7 @@ const S25 = weird("S25", "sf", ["ky", "tien"],
           (c) => [
             ending(L25_GIAU, "Bán hết bí mật cho người trả giá cao nhất", "Giàu, và không bao giờ biết con tàu là gì"),
             ending(L25_BO_BIEN, "Bán thuyền, lên bờ sống", "Thoát khỏi bị theo dõi, mất cả biển"),
-            ...(can(c, "explorer") ? [ending(L25_THAM_HIEM, "Lái thuyền ra con tàu", "Thành nhà thám hiểm, đời hết yên")] : []),
+            ...(pathOpen("explorer", c.age) ? [ending(L25_THAM_HIEM, "Lái thuyền ra con tàu", "Thành nhà thám hiểm, đời hết yên")] : []),
           ]),
       ],
     ],
@@ -499,8 +496,8 @@ const S27 = weird("S27", "sf", ["ky", "than"],
       /* chung_ket */
       [
         card("s27_ket", "Ngày của chính bạn", (c, k) => `${cnt(c, "s27_im") > cnt(c, "s27_cuu") ? "Bạn đã im lặng nhiều hơn đã cứu." : cnt(c, "s27_im") === cnt(c, "s27_cuu") ? "Bạn đã cứu bao nhiêu lần thì cũng im lặng bấy nhiêu lần." : "Bạn đã cứu nhiều hơn đã im lặng."} Một sáng, thanh tiến trình trên ô ngày của chính bạn bắt đầu chạy nhanh. ${k.gag()} Bạn đặt điện thoại xuống. Trong đầu chỉ còn ${k.scar("no") || "món nợ cũ"} chưa trả, và những ngày bạn đã biết trước của người khác.`,
-          (c) => can(c, "aid_doctor") || can(c, "caregiver")
-            ? [can(c, "aid_doctor") ? ending(L27_Y, "Đi học lại để làm bác sĩ", "Biết trước để cứu, đời bận rộn") : ending(L27_CHAM, "Làm người chăm bệnh", "Ở bên người sắp đi, lương ít"),
+          (c) => pathOpen("aid_doctor", c.age) || pathOpen("caregiver", c.age)
+            ? [pathOpen("aid_doctor", c.age) ? ending(L27_Y, "Đi học lại để làm bác sĩ", "Biết trước để cứu, đời bận rộn") : ending(L27_CHAM, "Làm người chăm bệnh", "Ở bên người sắp đi, lương ít"),
                ending(L27_GHET, "Đi tới nơi không ai biết mặt", "Thoát tiếng thần chết, xa hết người quen"),
                ending(L27_XOA, "Đền tiền, xóa ứng dụng", "Mất tiền, được sống không biết trước")]
             : [ending(L27_XOA, "Đền tiền, xóa ứng dụng", "Mất tiền, được sống không biết trước"),
@@ -586,9 +583,9 @@ const S28 = weird("S28", "sf", ["ky"],
         card("s28_ket", "Ngày thứ ba trăm", (c, k) => `Sáng thứ Tư lần thứ ba trăm. ${k.gag()} ${cnt(c, "s28_luyen") >= 3 ? "Bạn làm trọn việc mình đã luyện suốt ba trăm ngày, nhẹ như thở." : "Bạn làm trọn việc mình đã luyện, run tay ở bước cuối nhưng không sai một li."} Rồi bạn chợt nhớ ${k.scar("no") || "món nợ cũ"} vẫn chưa trả, và nếu ngày mai tới thật thì nó cũng tới theo.`,
           (c) => {
             const sk = skill28(c);
-            const nghe = sk === "dan" ? (can(c, "folk_musician") ? ending(L28_DAN, "Đi diễn với bài đã đàn ba trăm lần", "Thành nghề, đời trên sân khấu") : null)
-              : sk === "may" ? (can(c, "inventor") ? ending(L28_MAY, "Đăng ký bản vẽ máy mới", "Thành nhà sáng chế, tiền chưa chắc") : null)
-              : (can(c, "restaurateur") ? ending(L28_BEP, "Mở quán với món đã nấu ba trăm lần", "Thành nghề, gắn đời với bếp") : null);
+            const nghe = sk === "dan" ? (pathOpen("folk_musician", c.age) ? ending(L28_DAN, "Đi diễn với bài đã đàn ba trăm lần", "Thành nghề, đời trên sân khấu") : null)
+              : sk === "may" ? (pathOpen("inventor", c.age) ? ending(L28_MAY, "Đăng ký bản vẽ máy mới", "Thành nhà sáng chế, tiền chưa chắc") : null)
+              : (pathOpen("restaurateur", c.age) ? ending(L28_BEP, "Mở quán với món đã nấu ba trăm lần", "Thành nghề, gắn đời với bếp") : null);
             const lop = ending(L28_LOP, "Mở lớp dạy lại kỹ năng ấy", "Có tiền, có học trò, không thành danh");
             const sau = c.has_job ? ending(L28_NHANH, "Quay lại việc đang làm, nhanh gấp đôi", "Thu nhập tăng, đời không đổi hướng")
               : nghe ? lop : ending(L28_LAM_THUE, "Nhận làm thuê đúng việc đã luyện", "Có tiền đều, không thành danh");
@@ -732,7 +729,7 @@ const S30 = weird("S30", "sf", ["ky", "tinh"],
           (c) => [
             c.married ? ending(L30_LY, "Nói thật, rồi ký giấy chia tay", "Hết dối nhau, hết chung nhà")
               : ending(L30_CUOI, "Nói thật một câu giữ đã lâu", "Có người ở lại, vì biết hết"),
-            ...(can(c, "journalist") ? [ending(L30_BAO, "Đi làm phóng viên thời nói thật", "Đúng thời, nguy hiểm")] : []),
+            ...(pathOpen("journalist", c.age) ? [ending(L30_BAO, "Đi làm phóng viên thời nói thật", "Đúng thời, nguy hiểm")] : []),
             c.has_job ? ending(L30_MAT_VIEC, "Nói thật với sếp lần cuối", "Mất việc, hết phải cười giả")
               : ending(L30_DI, "Nói thật lần cuối, rồi dọn đi", "Hết chuyện cũ, xa người quen"),
           ]),

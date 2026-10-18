@@ -6,14 +6,11 @@
 import type { Choice, FactContext, PlantKind } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { PATHS } from "../../paths/registry.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, finale as kitFinale, land, pathOpen, season, weird } from "../kit.ts";
 
 const f = (c: FactContext, x: string): boolean => c.flags.has(x);
 const n = (c: FactContext, x: string): number => c.counters[x] ?? 0;
 
-/** Con đường p mở ở tuổi này: PATHS[p].ages[0] ≤ tuổi ≤ ages[1] + 5. */
-const fits = (p: string, age: number): boolean => { const d = PATHS[p]; return !!d && age >= d.ages[0] && age <= d.ages[1] + 5; };
 /** Một lựa chọn chung kết; `path` = id con đường của landing nghề (bỏ trống với landing không phải nghề). */
 interface Opt { l: Landing; label: string; hint: string; path?: string }
 /**
@@ -21,9 +18,8 @@ interface Opt { l: Landing; label: string; hint: string; path?: string }
  * Mỗi nhánh khai báo ≥ 2 landing không phải nghề, nên ở tuổi nào cũng có ≥ 2 lựa chọn và ≥ 1 lối ra không phải nghề.
  */
 function finale(c: FactContext, opts: Opt[]): Choice[] {
-  const careers = opts.filter((o) => o.path !== undefined && fits(o.path, c.age)).slice(0, 2);
-  const others = opts.filter((o) => o.path === undefined).slice(0, 3 - careers.length);
-  return [...careers, ...others].map((o) => ending(o.l, o.label, o.hint));
+  const ch = (o: Opt) => ending(o.l, o.label, o.hint);
+  return kitFinale(c.age, opts.filter((o) => o.path !== undefined).map(ch), opts.filter((o) => o.path === undefined).map(ch));
 }
 
 /** Vật gài cụ thể (đúng khóa): còn trong c.plants, hoặc đã gài (cờ "plant:<loại>:<khóa>"). Trả khóa đầu tiên khớp. */
@@ -390,7 +386,7 @@ export const ABS_11: WeirdBranch[] = [
               const home = ending(X15_VE, "Về nước, nộp phạt", "Mất tiền, được về nhà");
               const stay = x15Legal(c) ? ending(X15_O_LAI, "Ở lại, chờ giấy tờ hợp pháp", "Đời mới ở xứ lạ, trả giá bằng nhiều năm")
                 : ending(X15_O_LAI, "Kháng cáo lần cuối để được ở lại", "Tốn hai năm thu nhập, chờ thêm nhiều năm", { effects: { ...X15_O_LAI.effects, money: -2 } });
-              const sail = fits("sailor", c.age) ? [ending(X15_THUYEN, "Xin làm thuyền viên trên con tàu ấy", "Có hộ chiếu, đời lênh đênh")] : [];
+              const sail = pathOpen("sailor", c.age) ? [ending(X15_THUYEN, "Xin làm thuyền viên trên con tàu ấy", "Có hộ chiếu, đời lênh đênh")] : [];
               return f(c, "x15_chap_nhan") ? [home, stay, ...sail] : [...sail, stay, home];
             }),
         ],

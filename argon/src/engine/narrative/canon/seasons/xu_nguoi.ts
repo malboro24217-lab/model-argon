@@ -3,8 +3,7 @@
  * Gag: câu cảm ơn đầu tiên bạn học bằng tiếng bản xứ hóa ra nghĩa là "Tôi là một cái ấm nước".
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, land } from "../kit.ts";
-import { finale } from "./gate.ts";
+import { C, cap, card, ending, finale, land } from "../kit.ts";
 
 const L_QUAN = land("quan_am_nuoc", "Bạn mở một quán ăn nhỏ ở xứ người, đặt tên là “Ấm nước”. Khách bản xứ không hiểu tại sao cái tên làm người nhập cư bật cười.", { custom: "become:restaurateur", happy: 6 });
 const L_VE = land("ve_nuoc", "Bạn về nước, mang theo một công thức, một biệt danh và một cách nhìn mới, rồi làm lại lần nữa ở quê nhà.", { custom: "return_home|become:returnee", happy: 4 });

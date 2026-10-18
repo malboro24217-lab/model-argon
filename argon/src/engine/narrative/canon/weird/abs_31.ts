@@ -7,8 +7,7 @@
  */
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
-import { PATHS } from "../../paths/registry.ts";
+import { C, cap, card, ending, land, pathOpen, season, weird } from "../kit.ts";
 
 const f = (c: FactContext, x: string): boolean => c.flags.has(x);
 const n = (c: FactContext, x: string): number => c.counters[x] ?? 0;
@@ -18,8 +17,6 @@ const pick = (...xs: (Choice | undefined)[]): Choice[] => xs.filter((x): x is Ch
 const momTrust = (c: FactContext, delta: number) => (c.cast.mother ? { trust: { npc: c.cast.mother, delta } } : {});
 /** 12345 → "12.345". */
 const dots = (x: number): string => String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-/** Cổng tuổi của landing nghề: ages[0] ≤ tuổi ≤ ages[1] + 5 (addendum quy tắc 1). */
-const canBe = (c: FactContext, path: string): boolean => { const a = PATHS[path]!.ages; return c.age >= a[0] && c.age <= a[1] + 5; };
 /** Tên NPC theo id, hoặc chữ dự phòng khi host không có tên ("", chính id, "ai đó"). */
 const nameOr = (N: (id: string) => string, id: string | undefined, dflt: string): string => {
   if (!id) return dflt; const v = N(id); return !v || v === id || v === "ai đó" ? dflt : v;
@@ -95,8 +92,8 @@ const X31 = weird("X31", "abs", ["than", "danh"],
       [
         card("x31_ket", "Mùa giải cuối của ba con lợn", (c, k) => `${cap(k.scar("no") || "món nợ cũ")} vẫn chưa trả xong, và sáng nay ba lời mời cùng đến một lúc. ${f(c, "x31_ban_do") ? "Cả vùng đã bắt đầu thì thầm về cặp dê, nên lời mời nào cũng kèm một ánh nhìn dò xét." : "Cả làng ra đứng ở cổng chờ nghe bạn chọn."} ${cap(k.npc("ong_bau"))} dắt theo con lợn già nhất, như một nhân chứng.`,
           (c) => pick(
-            canBe(c, "footballer") ? ending(L31_CAU_THU, "Ký hợp đồng chuyên nghiệp", "Chạy theo trái bóng thêm vài năm nữa")
-              : canBe(c, "coach") ? ending(L31_HLV, "Treo giày, nhận dẫn dắt đội làng", "Hết đá, bắt đầu hét bên đường biên") : undefined,
+            pathOpen("footballer", c.age) ? ending(L31_CAU_THU, "Ký hợp đồng chuyên nghiệp", "Chạy theo trái bóng thêm vài năm nữa")
+              : pathOpen("coach", c.age) ? ending(L31_HLV, "Treo giày, nhận dẫn dắt đội làng", "Hết đá, bắt đầu hét bên đường biên") : undefined,
             ending(L31_TRAI, "Giải nghệ, nuôi cả đàn lợn", "Giàu bằng chính giá chuyển nhượng của mình"),
             ending(L31_LEN_PHO, "Lên phố đá giải phong trào", "Đổi sân ruộng lấy sân cỏ nhân tạo và giờ tan ca"))),
       ],
@@ -170,7 +167,7 @@ const X32 = weird("X32", "abs", ["dat", "tien"],
           (c) => pick(
             ending(L32_CAO, "Hoàn thiện tầng cao nhất, cho thuê sân thượng", "Thắng cuộc đua, trả góp đến già"),
             ending(L32_PHA_SAN, "Bán nhà cho ông hàng xóm, trả nợ", "Thua một xăng-ti-mét, thoát cả núi nợ"),
-            canBe(c, "restaurateur") ? ending(L32_CAFE, "Bắc cầu nối hai sân thượng, mở quán chung", "Hết thù, thành chung vốn") : undefined)),
+            pathOpen("restaurateur", c.age) ? ending(L32_CAFE, "Bắc cầu nối hai sân thượng, mở quán chung", "Hết thù, thành chung vốn") : undefined)),
       ],
     ],
   }));
@@ -241,9 +238,9 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
       [
         card("x33_ket", "Lễ trao danh hiệu cuối cùng", (c, k) => `Ông đếm chữ đọc tổng kết: ${dots(9802 + 1000 * n(c, "x33_khong"))} chữ không. ${k.gag()} ${cap(k.scar("no") || "món nợ cũ")} vẫn chờ một câu trả lời từ nhiều năm nay. ${f(c, "x33_ban_chu") ? "Trên tấm bảng quảng cáo phía sau, gương mặt bạn đang nói \"có\"." : "Khán phòng im lặng chờ bạn nói chữ cuối cùng của mùa."} Có ba lời mời đang nằm trên bàn.`,
           (c) => pick(
-            canBe(c, "tv_host") ? ending(L33_MC, "Nhận làm MC chương trình hỏi đáp", "Lên sóng mỗi tối, nói không có lương") : undefined,
-            canBe(c, "referee") ? ending(L33_GIAM_KHAO, "Làm giám khảo chuyên nghiệp", "Nghề của người dám làm mất lòng")
-              : canBe(c, "writer") ? ending(L33_SACH, "Viết sách về một vạn chữ không", "Một chữ, ba trăm trang, cả đời") : undefined,
+            pathOpen("tv_host", c.age) ? ending(L33_MC, "Nhận làm MC chương trình hỏi đáp", "Lên sóng mỗi tối, nói không có lương") : undefined,
+            pathOpen("referee", c.age) ? ending(L33_GIAM_KHAO, "Làm giám khảo chuyên nghiệp", "Nghề của người dám làm mất lòng")
+              : pathOpen("writer", c.age) ? ending(L33_SACH, "Viết sách về một vạn chữ không", "Một chữ, ba trăm trang, cả đời") : undefined,
             !c.married ? ending(L33_CO, "Nói \"có\" với lời cầu hôn", "Mất kỷ lục, được một mái nhà") : undefined,
             ending(L33_TIEN, "Bán quyền chữ không của mình", "Giàu lên, chữ không không còn là của bạn"),
             ending(L33_DI, "Nói không với tất cả, dọn đi nơi khác", "Yên tĩnh, không còn ai đếm"))),
@@ -315,7 +312,7 @@ const X34 = weird("X34", "abs", ["tien", "danh"],
       [
         card("x34_ket", "Bộ sưu tập cuối mùa mưa", (c, k) => `${cap(k.scar("no") || "món nợ cũ")} vẫn chờ bạn từ hồi chưa ai biết trường phái Rách là gì. ${f(c, "x34_cong_nghiep") || f(c, "x34_ban_cong_thuc") ? "Giờ áo rách có ở mọi cửa hàng, và không cái nào mang tên bạn." : "Giờ mỗi vết rách trên áo của bạn đều có người nhận ra."} ${k.gag()}`,
           (c) => pick(
-            canBe(c, "fashion") ? ending(L34_NTK, "Mở xưởng thiết kế mang tên mình", "Thành nghề thật, vất vả thật") : undefined,
+            pathOpen("fashion", c.age) ? ending(L34_NTK, "Mở xưởng thiết kế mang tên mình", "Thành nghề thật, vất vả thật") : undefined,
             ending(L34_BAN, "Bán thương hiệu Rách", "Có nhà, có tiền, hết là nhà thiết kế"),
             ending(L34_DI, "Sang xứ mưa quanh năm mở xưởng", "Đất lạ, mưa nhiều, khách nhiều"))),
       ],
@@ -483,7 +480,7 @@ const X36 = weird("X36", "abs", ["mau", "tien"],
       [
         card("x36_ket", "Bến cuối của con thuyền", (c, k) => `${cap(k.scar("no") || "món nợ cũ")} vẫn neo ở trên bờ, cùng với những gì bạn bỏ lại. ${f(c, "x36_cuu_lu") ? "Cả xóm từng ngủ trên thuyền mùa lũ giờ đứng chật bến, chờ nghe bạn quyết." : "Trên bến, chỉ có ông lái đò và đàn vịt chờ nghe bạn quyết."} ${k.gag()} ${me36(c) ? "Mẹ ngồi ở mũi thuyền, hát rất chậm." : "Chiếc mũ thuyền trưởng của mẹ treo ở mũi thuyền, đung đưa theo sóng."}`,
           (c) => pick(
-            canBe(c, "restaurateur") ? ending(L36_QUAN, "Đăng ký quán karaoke nổi cho đàng hoàng", "Thành nghề, sống bằng tiếng hát của mẹ") : undefined,
+            pathOpen("restaurateur", c.age) ? ending(L36_QUAN, "Đăng ký quán karaoke nổi cho đàng hoàng", "Thành nghề, sống bằng tiếng hát của mẹ") : undefined,
             ending(L36_SONG, "Mua đứt con thuyền, sống hẳn trên sông", "Nhà là nước, nợ là thuyền"),
             ending(L36_LEN_BO, me36(c) ? "Bán thuyền, đưa mẹ lên phố" : "Bán thuyền, lên phố", "Có tiền, mất con sông"))),
       ],
@@ -553,7 +550,7 @@ const X37 = weird("X37", "abs", ["tien", "mau"],
       [
         card("x37_ket", "Chiếc bánh thứ một triệu", (c, k) => `${k.gag()} Cuối cùng bạn tự tay nướng nó, và giờ nó nằm trên khay, còn nóng. ${cap(k.scar("no") || "món nợ cũ")} của chính bạn vẫn chưa ai đòi, nhưng ai cũng biết. ${f(c, "x37_cai_chu") ? "Hội đồng nếm bánh đến đủ, vẫn còn giận chuyện chữ ngon." : "Hội đồng nếm bánh đến đủ, mặc áo đẹp nhất."} ${cap(k.npc("truong_ban"))} cầm tờ biên nhận cuối, chờ bạn quyết số phận của cái lò.`,
           (c) => pick(
-            canBe(c, "baker") ? ending(L37_THO, "Giữ lò, mở tiệm bánh gia truyền", "Thành nghề, thơm tay cả đời") : undefined,
+            pathOpen("baker", c.age) ? ending(L37_THO, "Giữ lò, mở tiệm bánh gia truyền", "Thành nghề, thơm tay cả đời") : undefined,
             ending(L37_XOA, "Giao chiếc cuối, xin làng xóa nợ", "Sạch nợ, có thêm một khoản"),
             ending(L37_BAN, "Bán công thức cho hãng bánh lớn", "Giàu, nhưng làng nhớ mãi"))),
       ],
@@ -625,9 +622,9 @@ const X38 = weird("X38", "abs", ["danh", "mau"],
       [
         card("x38_ket", "Lễ hạ cờ cuối năm học", (c, k) => `Lá cờ vẽ bằng bút sáp được hạ xuống lần cuối của năm học. ${cap(k.scar("no") || "món nợ cũ")} vẫn đi theo bạn ngoài cổng trường. ${n(c, "x38_uy_tin") >= 4 ? "Lũ trẻ xếp hàng, mỗi đứa trao bạn một tờ giấy khen tự vẽ." : "Lũ trẻ vẫy tay, vài đứa đã quên bạn là ai."} ${k.gag()} Ngoài cổng, cuộc đời người lớn đang chờ bạn quyết.`,
           (c) => pick(
-            canBe(c, "professor") ? ending(L38_GIAO, "Chuyển hẳn sang nghề dạy học", "Lương ít, sân trường là của bạn") : undefined,
-            canBe(c, "diplomat") ? ending(L38_NGOAI_GIAO, "Đi thi làm nhà ngoại giao thật", "Từ ba ô gạch ra cả thế giới")
-              : canBe(c, "writer") ? ending(L38_SACH, "Viết hồi ký đại sứ ba ô gạch", "Kể chuyện cả đời, sống bằng chữ") : undefined,
+            pathOpen("professor", c.age) ? ending(L38_GIAO, "Chuyển hẳn sang nghề dạy học", "Lương ít, sân trường là của bạn") : undefined,
+            pathOpen("diplomat", c.age) ? ending(L38_NGOAI_GIAO, "Đi thi làm nhà ngoại giao thật", "Từ ba ô gạch ra cả thế giới")
+              : pathOpen("writer", c.age) ? ending(L38_SACH, "Viết hồi ký đại sứ ba ô gạch", "Kể chuyện cả đời, sống bằng chữ") : undefined,
             ending(L38_GIAI, "Nhận giải thưởng, quay lại đời cũ", "Có tiền, sân trường chỉ còn là kỷ niệm"),
             ending(L38_CO_VAN, "Nghỉ hẳn, làm cố vấn trọn đời", "Ít tiền, nhiều tranh vẽ"))),
       ],
@@ -698,7 +695,7 @@ const X39 = weird("X39", "abs", ["ky", "dat"],
         card("x39_ket", "Lời chào cuối của con quạ", (c, k) => `${cap(k.scar("no") || "món nợ cũ")} vẫn còn đó, như hòn sỏi năm xưa trên bậc cửa. ${n(c, "x39_hoa") >= n(c, "x39_thu") ? "Sáng nay con quạ đặt lên bậc cửa một chiếc thìa, chiếc thìa đầu tiên nó từng lấy." : "Sáng nay con quạ đậu trên mái nhà, ngậm chiếc chìa khóa cuối cùng của bạn, chờ."} ${k.gag()}`,
           (c) => pick(
             ending(L39_HOA, "Ngồi xuống bậc cửa, làm hòa", "Nhận lại đồ, có một người bạn mỏ sứt"),
-            canBe(c, "environmentalist") ? ending(L39_BAO_TON, "Đi làm người bảo tồn chim", "Biến mối thù thành một nghề") : undefined,
+            pathOpen("environmentalist", c.age) ? ending(L39_BAO_TON, "Đi làm người bảo tồn chim", "Biến mối thù thành một nghề") : undefined,
             ending(L39_DOI, "Dọn lên thành phố cho xong", "Thoát được nó, hoặc không"))),
       ],
     ],
@@ -772,7 +769,7 @@ const X40 = weird("X40", "abs", ["than", "ky"],
       [
         card("x40_ket", "Lá thư cuối từ người kia", (c, k) => `Năm cuối, lá thư dài hơn mọi năm. Người kia viết rằng ${k.scar("no") || "món nợ cũ"} của bạn, người kia đã trả một nửa, phần còn lại để bạn tự quyết. ${n(c, "x40_thu") >= 3 ? "Cuối thư có một câu: \"Mình nghĩ mình là phần của bạn biết chơi.\"" : "Cuối thư có một câu: \"Mình không biết bạn có muốn gặp mình không.\""} ${k.gag()}`,
           (c) => pick(
-            canBe(c, "writer") ? ending(L40_THU, "In thư từ của hai người thành sách", "Đời hai người thành một cuốn sách") : undefined,
+            pathOpen("writer", c.age) ? ending(L40_THU, "In thư từ của hai người thành sách", "Đời hai người thành một cuốn sách") : undefined,
             !c.married ? ending(L40_CUOI, "Cưới người mà người kia đã quen", "Một tình yêu bắt đầu từ ngày bạn vắng mặt") : undefined,
             ending(L40_TRA, "Trả nốt món nợ của người kia", "Mất tiền, được yên"),
             ending(L40_DOI, "Chuyển đến căn hộ người kia đã chọn", "Sống theo lựa chọn của một người lạ quen thuộc"))),

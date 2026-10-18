@@ -7,7 +7,7 @@ import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
 import { PATHS } from "../../paths/registry.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, finale as kitFinale, land, season, weird } from "../kit.ts";
 
 const ac = (c: FactContext): string => (c.sex === "M" ? "anh" : "chị");
 const bm = (c: FactContext): string => (c.sex === "M" ? "bố" : "mẹ");
@@ -34,14 +34,14 @@ const wageEarner = (c: FactContext): boolean =>
 /** Một lựa chọn chung kết; `path` = id nghề trong PATHS khi landing là become:<path>. */
 interface Opt { l: Landing; label: string; hint: string; path?: string }
 const O = (l: Landing, label: string, hint: string, path?: string): Opt => (path ? { l, label, hint, path } : { l, label, hint });
-/** Cổng tuổi của landing nghề: ages[0] ≤ tuổi ≤ ages[1] + 5. */
-const pathOk = (c: FactContext, p: string): boolean => { const d = PATHS[p]; return !!d && c.age >= d.ages[0] && c.age <= d.ages[1] + 5; };
 /**
  * Lựa chọn chung kết: tối đa 2 landing nghề còn mở theo tuổi, rồi các landing không phải nghề (luôn mở, ≥ 2 cái)
  * cho đủ 3. Nhờ vậy ở mọi tuổi luôn có ≥ 2 lựa chọn và ≥ 1 landing không phải nghề.
  */
-const finale = (c: FactContext, careers: Opt[], rest: Opt[]): Choice[] =>
-  [...careers.filter((o) => !!o.path && pathOk(c, o.path)).slice(0, 2), ...rest].slice(0, 3).map((o) => ending(o.l, o.label, o.hint));
+const finale = (c: FactContext, careers: Opt[], rest: Opt[]): Choice[] => {
+  const ch = (o: Opt) => ending(o.l, o.label, o.hint);
+  return kitFinale(c.age, careers.filter((o) => !!o.path).map(ch), rest.map(ch));
+};
 
 /* ================================================================ X41: ngồi nhầm ghế giám đốc */
 

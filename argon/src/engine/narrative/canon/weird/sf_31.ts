@@ -8,8 +8,7 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { Landing, SeasonKit } from "../Season.ts";
 import type { WeirdBranch } from "../Canon.ts";
-import { PATHS } from "../../paths/registry.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, openInOrder, season, weird } from "../kit.ts";
 
 /** Bộ đếm của mùa (0 nếu chưa có). */
 const n = (c: FactContext, key: string): number => c.counters[key] ?? 0;
@@ -19,15 +18,10 @@ const nameOr = (N: (id: string) => string, id: string | undefined, dflt: string)
   const v = N(id);
   return !v || v === id || v === "ai đó" ? dflt : v;
 };
-/** Bước vào con đường `path` được không: tuổi trong [ages[0], ages[1] + 5]. */
-const can = (c: FactContext, path: string): boolean => {
-  const p = PATHS[path];
-  return !!p && c.age >= p.ages[0] && c.age <= p.ages[1] + 5;
-};
 interface Opt { l: Landing; label: string; hint: string; path?: string; ok?: (c: FactContext) => boolean }
-/** Lựa chọn chung kết: các lựa chọn khả thi theo thứ tự, tối đa 3. */
+/** Lựa chọn chung kết: các lựa chọn khả thi (cổng tuổi của nghề qua kit, cộng `ok`) theo thứ tự, tối đa 3. */
 const finale = (c: FactContext, opts: Opt[]): Choice[] =>
-  opts.filter((o) => (!o.path || can(c, o.path)) && (!o.ok || o.ok(c))).slice(0, 3).map((o) => ending(o.l, o.label, o.hint));
+  openInOrder(c.age, opts.filter((o) => !o.ok || o.ok(c)).map((o) => ending(o.l, o.label, o.hint)));
 
 /* ================================================================== S31 Người không sao */
 

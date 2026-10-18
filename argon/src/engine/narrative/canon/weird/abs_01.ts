@@ -7,11 +7,8 @@
  */
 import type { FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
-import { PATHS } from "../../paths/registry.ts";
+import { C, cap, card, ending, land, pathOpen, season, weird } from "../kit.ts";
 
-/** Landing nghề chỉ mở khi ages[0] ≤ tuổi ≤ ages[1] + 5 của con đường (addendum quy tắc 1). */
-const pathOk = (c: FactContext, id: string): boolean => { const p = PATHS[id]; return !!p && c.age >= p.ages[0] && c.age <= p.ages[1] + 5; };
 const has = (c: FactContext, ...fs: string[]): boolean => fs.some((f) => c.flags.has(f));
 const n = (c: FactContext, k: string): number => c.counters[k] ?? 0;
 /** Nông thôn: làm ruộng, xuất thân nghèo ở quê, hoặc có vườn. */
@@ -90,8 +87,8 @@ const X01 = weird("X01", "abs", ["danh", "dat"],
         card("x01_ket", "Ngày bầu lại", (c, k) => `Nhiệm kỳ hết, thôn bầu lại. ${n(c, "x01_long_dan") >= 3 ? "Lần này phiếu chia gần đôi, và ai cũng biết vì sao." : "Đốm dẫn trước bốn mươi phiếu mà chưa hứa điều gì."} ${cap(k.scar("no") || "lời hứa làm con đường ra đồng")} vẫn còn đó, chưa ai quên. ${k.gag()}`,
           (c) => {
             const thua = ending(L01_THUA, "Nhường ghế cho Đốm", "Mất chức, mất tiền vận động, được ngủ ngon");
-            if (pathOk(c, "official")) return [ending(L01_CAN_BO, "Nhận lời lên huyện làm cán bộ", "Thành người nhà nước, xa thôn"), thua];
-            if (pathOk(c, "politician")) return [ending(L01_DAI_BIEU, "Tự nộp đơn ra ứng cử đại biểu", "Lên cao hơn, lần này phải tự xin phiếu"), thua];
+            if (pathOpen("official", c.age)) return [ending(L01_CAN_BO, "Nhận lời lên huyện làm cán bộ", "Thành người nhà nước, xa thôn"), thua];
+            if (pathOpen("politician", c.age)) return [ending(L01_DAI_BIEU, "Tự nộp đơn ra ứng cử đại biểu", "Lên cao hơn, lần này phải tự xin phiếu"), thua];
             return [ending(L01_LEN_PHO, "Giao con dấu, lên phố sống tuổi già", "Rời thôn, mang theo chuyện kể cả đời"), thua];
           }),
       ],
@@ -214,8 +211,8 @@ const X03 = weird("X03", "abs", ["tinh", "danh"],
           (c) => {
             const ban = ending(L03_BAN, "Bán tên lễ hội cho tỉnh", "Có một khoản lớn, tên bạn rời khỏi tấm băng rôn");
             const giu = ending(L03_GIU, "Giữ lễ hội, mở quầy lưu niệm", "Thu nhập đều mỗi mùa, năm nào cũng phải cưới lại");
-            if (pathOk(c, "tv_host")) return [ending(L03_MC, "Nhận lời dẫn chương trình cho đài tỉnh", "Thành gương mặt quen của tỉnh, hết là cô dâu chú rể"), ban, giu];
-            if (pathOk(c, "tour_guide")) return [ending(L03_HDV, "Mở tour dẫn khách đi lại đám cưới", "Sống bằng chuyện của mình, kể mãi một câu chuyện"), ban, giu];
+            if (pathOpen("tv_host", c.age)) return [ending(L03_MC, "Nhận lời dẫn chương trình cho đài tỉnh", "Thành gương mặt quen của tỉnh, hết là cô dâu chú rể"), ban, giu];
+            if (pathOpen("tour_guide", c.age)) return [ending(L03_HDV, "Mở tour dẫn khách đi lại đám cưới", "Sống bằng chuyện của mình, kể mãi một câu chuyện"), ban, giu];
             return [ban, giu];
           }),
       ],
@@ -399,8 +396,8 @@ const X06 = weird("X06", "abs", ["danh"],
         card("x06_ket", "Câu thứ hai", (c, k) => `${n(c, "x06_uy_tin") >= 3 ? "Người ta vẫn tin bạn, dù biết bạn chỉ có một câu." : "Người ta bắt đầu hỏi bạn còn câu nào khác không."} ${cap(k.scar("no") || "lời hứa viết câu thứ hai")} vẫn treo đó như một tấm băng rôn chưa căng. Trên bàn có ba lá thư mời. ${k.gag()}`,
           (c) => {
             const im = ending(L06_IM, "Từ chối hết, về sống bình thường", "Thu nhập giảm, được làm người bình thường");
-            if (pathOk(c, "ad_creative") && pathOk(c, "tv_host")) return [ending(L06_QC, "Vào làm cho công ty quảng cáo", "Sống bằng chữ, phải nghĩ câu mới mỗi tuần"), ending(L06_MC, "Nhận dẫn chương trình truyền hình", "Lên hình mỗi tối, câu đùa thành nghề"), im];
-            if (pathOk(c, "ad_creative")) return [ending(L06_QC, "Vào làm cho công ty quảng cáo", "Sống bằng chữ, phải nghĩ câu mới mỗi tuần"), ending(L06_SACH, "In một cuốn sách mỏng", "Kiếm một khoản rồi thôi"), im];
+            if (pathOpen("ad_creative", c.age) && pathOpen("tv_host", c.age)) return [ending(L06_QC, "Vào làm cho công ty quảng cáo", "Sống bằng chữ, phải nghĩ câu mới mỗi tuần"), ending(L06_MC, "Nhận dẫn chương trình truyền hình", "Lên hình mỗi tối, câu đùa thành nghề"), im];
+            if (pathOpen("ad_creative", c.age)) return [ending(L06_QC, "Vào làm cho công ty quảng cáo", "Sống bằng chữ, phải nghĩ câu mới mỗi tuần"), ending(L06_SACH, "In một cuốn sách mỏng", "Kiếm một khoản rồi thôi"), im];
             return [ending(L06_SACH, "In một cuốn sách mỏng", "Kiếm một khoản rồi thôi"), im];
           }),
       ],
@@ -463,7 +460,7 @@ const X07 = weird("X07", "abs", ["danh", "tinh"],
           (c) => {
             const out = [ending(L07_GIA_HAN, "Ký gia hạn thêm một kỳ", "Giàu thêm, bàn ăn trống thêm"),
               ending(L07_MUA_LAI, "Mua lại khuôn mặt của mình", "Mất một khoản, được lại cái đầu và người nhà")];
-            if (pathOk(c, "actor")) out.push(ending(L07_DIEN_VIEN, "Nhận lời đóng phim", "Dùng khuôn mặt cho việc của mình"));
+            if (pathOpen("actor", c.age)) out.push(ending(L07_DIEN_VIEN, "Nhận lời đóng phim", "Dùng khuôn mặt cho việc của mình"));
             return out;
           }),
       ],
@@ -528,7 +525,7 @@ const X08 = weird("X08", "abs", ["mau", "dat"],
           (c) => {
             const o = [ending(L08_TRUONG_LANG, "Ở lại làm người phân xử của làng", "Có ruộng, có uy, không bao giờ được là mình"),
               ending(L08_BO_LANG, "Bỏ làng lên thành phố", "Hết làm cụ, mất cả làng")];
-            if (pathOk(c, "official")) o.unshift(ending(L08_CAN_BO, "Nhận làm cán bộ hòa giải của xã", "Có lương, có dấu, uy của cụ thành chức vụ"));
+            if (pathOpen("official", c.age)) o.unshift(ending(L08_CAN_BO, "Nhận làm cán bộ hòa giải của xã", "Có lương, có dấu, uy của cụ thành chức vụ"));
             return o;
           }),
       ],
@@ -593,7 +590,7 @@ const X09 = weird("X09", "abs", ["tien", "dat"],
           (c) => {
             const o = [ending(L09_BAN_GA, "Bán con gà cho nhà sưu tập", "Có một khoản lớn, sân nhà im lặng"),
               ending(L09_GIU_GA, "Giữ gà, trả tiền cho người thua", "Mất tiền, được ngủ yên và được làng thương")];
-            if (pathOk(c, "agritech")) o.unshift(ending(L09_TRAI_GA, "Mở trại gà cho đàng hoàng", "Thành nghề thật, hết chuyện tiên tri"));
+            if (pathOpen("agritech", c.age)) o.unshift(ending(L09_TRAI_GA, "Mở trại gà cho đàng hoàng", "Thành nghề thật, hết chuyện tiên tri"));
             return o;
           }),
       ],
@@ -657,8 +654,8 @@ const X10 = weird("X10", "abs", ["tien", "danh"],
           (c) => {
             const ban = ending(L10_BAN, "Bán công thức cho chuỗi quán", "Có một khoản lớn, món ăn thành của người khác");
             const truyen = ending(L10_TRUYEN, "Trao chảo cho cậu phụ bếp", "Nhận một khoản vừa, nghề đi tiếp bằng tay người khác");
-            if (pathOk(c, "restaurateur")) return [ending(L10_CHU_QUAN, "Đăng ký quán, làm chủ cho ra hồn", "Thành nghề thật, buộc chân với cái bếp"), ban, truyen];
-            if (pathOk(c, "street_vendor")) return [ending(L10_HANG_RONG, "Đẩy xe bếp đi khắp phố", "Nghề nhỏ, tự do, khói theo mình"), ban, truyen];
+            if (pathOpen("restaurateur", c.age)) return [ending(L10_CHU_QUAN, "Đăng ký quán, làm chủ cho ra hồn", "Thành nghề thật, buộc chân với cái bếp"), ban, truyen];
+            if (pathOpen("street_vendor", c.age)) return [ending(L10_HANG_RONG, "Đẩy xe bếp đi khắp phố", "Nghề nhỏ, tự do, khói theo mình"), ban, truyen];
             return [ban, truyen];
           }),
       ],
