@@ -251,9 +251,9 @@ Ràng buộc nội dung cho mọi nhánh: không người thật, tổ chức th
 - **Đợt A gồm:**
   - Pressure, Plants, Canon, Season, Scars;
   - 8 mầm (4 viết mới, 4 nâng từ Codex), 5 khung mùa thường (khoảng 15 thẻ mỗi khung);
-  - **20 nhánh kỳ dị** (10 khoa học viễn tưởng, 10 phi lý; chọn những nhánh mọc được từ nhiều bối cảnh nhất, mỗi nhánh một mùa ngắn khoảng 8 thẻ);
+  - **đủ 100 nhánh kỳ dị** (50 khoa học viễn tưởng, 50 phi lý; Tùng chốt 2026-10-18: làm xong cả 100 trước khi đăng đợt A). Mỗi nhánh là một mùa ngắn khoảng 8 thẻ theo 5 nhịp, tổng khoảng 800 thẻ;
   - ánh xạ áp lực và vật gài cho 200 thẻ Codex; nút Độ điên; phía host (banner, màu, Bản kia của bạn).
-- **Đợt B:** 16 mầm còn lại, 13 khung mùa, 80 nhánh kỳ dị còn lại.
+- **Đợt B:** 16 mầm còn lại, 13 khung mùa thường.
 - **Chuẩn**, đo bằng mô phỏng không giao diện trên 200 đời:
 
   | Chỉ số | Mục tiêu |
