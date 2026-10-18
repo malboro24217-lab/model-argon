@@ -255,9 +255,8 @@ ok(SEASON_STORYLETS.length === SEASONS.flatMap(compileSeason).length, "SEASON_ST
   ok(kFull.gag() === def.gag.lines[1 % def.gag.lines.length] && kFull.gag() === def.gag.lines[2 % def.gag.lines.length], "kit: gag lần lượt từ thứ tự thẻ");
 }
 
-/* gag đi lần lượt: thẻ gọi gag thứ k (theo thứ tự mùa, với cùng ctx) hiện lines[k % n] */
-{
-  const def = SEASONS.find((d) => d.id === "fixture")!;
+/* gag đi lần lượt: thẻ gọi gag thứ k (theo thứ tự mùa, với cùng ctx) hiện lines[k % n] — kiểm trên mọi mùa thường */
+for (const def of SEASONS) {
   const st = compileSeason(def);
   const c0 = randomCtx(createRng(7));
   const shown: number[] = [];
@@ -269,7 +268,7 @@ ok(SEASON_STORYLETS.length === SEASONS.flatMap(compileSeason).length, "SEASON_ST
     const text = s.build(c, () => "ai đó").text;
     def.gag.lines.forEach((l, i) => { if (text.includes(l)) shown.push(i); });
   }));
-  ok(shown.length >= 3 && shown.every((x, k) => x === k % def.gag.lines.length), `gag mùa mẫu theo thứ tự 0,1,2,… (thấy ${shown.join(",")})`);
+  ok(shown.length >= 3 && shown.every((x, k) => x === k % def.gag.lines.length), `gag mùa ${def.id} theo thứ tự 0,1,2,… (thấy ${shown.join(",")})`);
 }
 ok(landingOf({ custom: "become:singer|season_end:ca_si" }) === "ca_si" && landingOf({ custom: "season_end" }) === null && landingOf({}) === null, "landingOf đọc id landing");
 ok(land("x", "Dòng.", { money: 2 }).effects.custom === "season_end:x" && land("y", "Dòng.", { custom: "marry" }).effects.custom === "marry|season_end:y", "land thêm season_end:<id>");
