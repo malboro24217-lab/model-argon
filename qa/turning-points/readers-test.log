@@ -1,0 +1,2 @@
+{ readers: 18, listed: 18, missing: [], stale: [] }
+PASS readers-test

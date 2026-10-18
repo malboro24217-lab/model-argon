@@ -232,7 +232,7 @@ function fire(L, st, ctx) {
   const sc = sceneFromStorylet(L, st, ctx);
   let marks = [];
   if (st.causes) { try { marks = Argon.resolveCauses(L.lw.cz, st.causes(ctx) || []); } catch { marks = []; } }
-  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; sc.text += " " + causeLine(L, marks); }
+  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; }
   scene(L, sc);
 }
 
@@ -279,7 +279,7 @@ function microScene(L, ctx) {
   lw.history.push({ id: st.id, age: L.age });
   const sc = sceneFromStorylet(L, st, ctx); sc.micro = true;
   let marks = []; if (st.causes) { try { marks = Argon.resolveCauses(lw.cz, st.causes(ctx) || []); } catch { } }
-  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; sc.text += " " + causeLine(L, marks); }
+  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; }
   scene(L, sc); return true;
 }
 /* Sau mỗi lựa chọn, nếu năm nay còn ngân sách thì đưa tiếp một chuyện nhỏ */

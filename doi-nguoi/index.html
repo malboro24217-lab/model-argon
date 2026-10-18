@@ -1,4 +1,3 @@
-
 <title>Một Lần Chào Đời</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -246,7 +245,7 @@ h1,h2,h3,h4,p{margin:0}
 .e.choice .c{display:block;color:var(--pen);font-weight:500}
 .e.big{font-family:var(--f-story);font-size:16px;font-weight:600}
 .e.bad{color:var(--seal)}
-.e.good::before{content:"+ ";color:var(--good);font-weight:700}
+.e.good:not(.decade)::before{content:"+ ";color:var(--good);font-weight:700}
 .e.promise{color:var(--ochre)}
 .e.door{color:var(--seal);font-weight:500}
 .e.door .st{font-size:11.5px;font-weight:700;border:1.5px solid var(--seal);border-radius:2px;padding:0 5px;margin-right:8px;display:inline-block;transform:rotate(-2deg)}
@@ -343,6 +342,56 @@ details.panel>summary .label::after{content:" +";color:var(--muted);font-weight:
 details.panel[open]>summary .label::after{content:" −"}
 
 /* ===== Điện thoại ===== */
+/* ===== Giai đoạn 1: dán vào cuối <style> trong doi-nguoi/index.html (trước khối @media điện thoại) ===== */
+
+/* Dòng "↩ Vì năm…" trên tiêu đề thẻ */
+.because{display:flex;gap:8px;align-items:baseline;font-family:var(--f-story);font-style:italic;font-size:15px;color:var(--pen);margin:-4px 0 -6px;max-width:62ch}
+.because-mark{font-style:normal;font-weight:700;flex:none}
+.decision.micro .because{font-size:14px}
+
+/* Báo "X sẽ nhớ điều này." */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:50;max-width:min(92vw,520px);
+  background:var(--sheet);color:var(--pen);border:1px solid var(--rule);border-left:3px solid var(--pen);border-radius:3px;box-shadow:var(--shadow);
+  padding:9px 14px;font-family:var(--f-story);font-style:italic;font-size:15.5px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.toast.bad{color:var(--seal);border-left-color:var(--seal)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+html.playing .toast{bottom:calc(var(--dock-h,0px) + 12px + env(safe-area-inset-bottom,0px))}
+
+/* Thẻ thập kỷ trong nhật ký */
+.e.decade{list-style:none;display:flex;flex-direction:column;gap:8px;padding:10px 12px;margin:2px 0 4px;background:var(--inset);border-radius:3px;border-left:3px solid var(--print)}
+.e.decade.good{border-left-color:var(--good)} .e.decade.sober{border-left-color:var(--seal)}
+.e.decade .dk-t{font-family:var(--f-story);font-size:16.5px;font-weight:600;line-height:1.4}
+.e.decade .dk-bars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.dk-p{display:flex;flex-direction:column;gap:3px;min-width:0;font-size:12px;color:var(--muted)}
+.dk-p i{display:block;height:5px;border-radius:1px;background:linear-gradient(90deg,var(--muted) var(--a),var(--rule-soft) 0)}
+.dk-p.me i{background:linear-gradient(90deg,var(--pen) var(--a),var(--rule-soft) 0)} .dk-p.me b{color:var(--pen)}
+.dk-p.dead i{background:linear-gradient(90deg,var(--seal) var(--a),transparent 0)}
+.dk-p b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Màn kết v2 */
+.epitaph .lead{font-size:clamp(22px,3.2vw,28px);line-height:1.45;font-weight:600}
+.funeral ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.funeral .came li{border-left:2px solid var(--good);padding-left:12px}
+.funeral .away li{border-left:2px solid var(--seal);padding-left:12px;color:var(--muted)}
+.nearmiss{display:flex;flex-direction:column;gap:10px;align-items:flex-start;border-top:1.5px solid var(--print);padding-top:12px}
+.nearmiss .label{border:0;padding:0;color:var(--pen)}
+.nearmiss p{font-family:var(--f-story);font-size:19px;line-height:1.5;max-width:60ch}
+.end .acts .q{border:0;background:none;color:var(--muted);padding:10px 8px;min-height:44px}
+.more-end{gap:22px}
+.more-end>summary{padding:6px 0}
+
+/* Hộp thoại Tấm bia */
+body.modal-open{overflow:hidden}
+.tomb-modal{position:fixed;inset:0;z-index:60;background:color-mix(in oklab,var(--print) 55%,transparent);display:grid;place-items:center;
+  padding:max(12px,env(safe-area-inset-top,0px)) var(--gut-r) max(12px,env(safe-area-inset-bottom,0px)) var(--gut)}
+.tomb-sheet{background:var(--paper);border-radius:4px;box-shadow:var(--shadow);width:min(100%,460px);max-height:100%;display:flex;flex-direction:column;gap:10px;padding:14px}
+.tomb-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tomb-head h2{font-family:var(--f-story);font-weight:600;font-size:19px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tomb-frame{flex:1;min-height:0;display:grid;place-items:center}
+.tomb-img{display:block;max-width:100%;max-height:calc(100dvh - 170px);height:auto;border-radius:2px;box-shadow:0 0 0 1px var(--rule);-webkit-touch-callout:default;user-select:auto}
+.tomb-hint{font-size:14px;color:var(--print);text-align:center;font-weight:500}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
 @media (max-width:980px) and (min-width:821px){.board{grid-template-columns:220px minmax(0,1fr);}.board>aside:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:26px}}
 @media (max-width:820px){
   .intro{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:max(24px,env(safe-area-inset-top,0px))}
@@ -711,7 +760,7 @@ function stepYear(L){
   autoChain(L);
   if(L.replay&&L.replayActs&&L.alive){replayProactive(L);autoChain(L);replayUiOps(L)}
 }
-function autoChain(L){let g=0;while(L.pending&&L.auto&&g++<12){replayUiOps(L);const a=autoChoice(L);if(a&&typeof a==="object")applyAct(L,a.act,"scene",a.text,a.chon,a.seq);else resolve(L,a)}}
+function autoChain(L){let g=0;while(L.pending&&L.auto&&g++<12){replayUiOps(L);const a=autoChoice(L);if(a===null)break;if(a&&typeof a==="object")applyAct(L,a.act,"scene",a.text,a.chon,a.seq);else resolve(L,a)}}
 
 function applyFocus(L){switch(L.focus){
   case"study":addSt(L,"know",3);addSt(L,"happy",-1);break;
@@ -847,7 +896,7 @@ function updateHappiness(L){const c=L.c;let t=c.h*8+(L.st.rel-50)*.25+(L.st.heal
   L.st.happy=clamp(L.st.happy+(t-L.st.happy)*.3+nrm(L.r)*2,0,100)}
 
 /* ================= QUYẾT ĐỊNH ================= */
-function autoChoice(L){const p=L.pending;const g=argonGate(L);const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);if(L.script){const k=sceneKey(L,p);if(L.override&&L.override.key===k&&p.choices[L.override.index])return L.override.index;const sv=L.script[k];if(sv&&typeof sv==="object")return L.override&&L.override.removeKey===k?p.def:sv;if(sv!==undefined&&p.choices[sv])return sv}if(!ok.length)return p.def;const d=ok.includes(p.def)?p.def:ok[0];return L.ra()<.8?d:ok[Math.floor(L.ra()*ok.length)]}
+function autoChoice(L){const p=L.pending;const g=argonGate(L);const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);if(L.script){const k=sceneKey(L,p);if(L.override&&L.override.key===k&&p.choices[L.override.index])return L.override.index;const sv=L.script[k];if(sv&&typeof sv==="object")return L.override&&L.override.removeKey===k?p.def:sv;if(sv!==undefined&&p.choices[sv])return sv;if(L.scriptStrict){L.auto=false;return null}}if(!ok.length)return p.def;const d=ok.includes(p.def)?p.def:ok[0];return L.ra()<.8?d:ok[Math.floor(L.ra()*ok.length)]}
 function resolve(L,i){const p=L.pending;if(!p)return;L.pending=null;const r=L.r,c=L.c;const ch=p.choices[i];markChoice(L,p,i);if(ch&&ch.fx){try{ch.fx(L)}finally{L.curMark=null}livingFollowUp(L);settleDependent(L);return}
   try{resolveCore(L,p,i,r,c)}finally{L.curMark=null}livingFollowUp(L);settleDependent(L)}
 function resolveCore(L,p,i,r,c){
@@ -887,8 +936,8 @@ function stateLine(L){if(!L.alive)return`đã mất ở tuổi ${L.age} (${L.cau
   if(L.migrated)s+=`, sống ở ${L.c.n}`;return s}
 
 /* Bốn em bé sinh cùng giây: chạy trước toàn bộ cuộc đời, lưu dòng trạng thái từng tuổi */
-function simulatePeer(seed){const P=createLife(seed,{auto:true});const tl=[stateLine(P)];let guard=0;
-  while(P.alive&&guard++<130){stepYear(P);tl[P.age]=stateLine(P)}
+function simulatePeer(seed,onYear){const P=createLife(seed,{auto:true});const tl=[stateLine(P)];let guard=0;
+  while(P.alive&&guard++<130){stepYear(P);tl[P.age]=stateLine(P);if(onYear)onYear(P)}
   return{name:P.name,sex:P.sex,c:P.birthC,end:P.c,deathAge:P.age,cause:P.cause,tl,le:P.le}}
 </script>
 
@@ -22331,7 +22380,7 @@ function fire(L, st, ctx) {
   const sc = sceneFromStorylet(L, st, ctx);
   let marks = [];
   if (st.causes) { try { marks = Argon.resolveCauses(L.lw.cz, st.causes(ctx) || []); } catch { marks = []; } }
-  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; sc.text += " " + causeLine(L, marks); }
+  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; }
   scene(L, sc);
 }
 
@@ -22378,7 +22427,7 @@ function microScene(L, ctx) {
   lw.history.push({ id: st.id, age: L.age });
   const sc = sceneFromStorylet(L, st, ctx); sc.micro = true;
   let marks = []; if (st.causes) { try { marks = Argon.resolveCauses(lw.cz, st.causes(ctx) || []); } catch { } }
-  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; sc.text += " " + causeLine(L, marks); }
+  if (marks.length) { Argon.attachConsequence(marks, L.age, st.id, sc.title); sc.causes = marks; }
   scene(L, sc); return true;
 }
 /* Sau mỗi lựa chọn, nếu năm nay còn ngân sách thì đưa tiếp một chuyện nhỏ */
@@ -22539,8 +22588,8 @@ function diffVN(a, b, fromAge) {
   if (b.quadrant !== a.quadrant && b.quadrant) out.push(`là ${({ builder: "người kiến tạo", extractor: "người bòn rút", sleeper: "người ngủ quên", casualty: "người bị cuốn đi" })[b.quadrant]}`);
   return out;
 }
-function counterfactualVN(L) {
-  const cf = counterfactuals(L); if (!cf) return "";
+function counterfactualVN(L, pre) {
+  const cf = pre !== undefined ? pre : counterfactuals(L); if (!cf) return "";
   const rows = cf.alts.map(a => { const d = diffVN(cf.base, a.life, a.mark.age); return `<div class="c"><b>Năm ${a.mark.age} tuổi · ${esc(a.mark.title)}</b><span>${a.typedProactive ? `Bạn đã tự quyết "${esc(a.mark.choice)}". Nếu năm ${a.mark.age} tuổi bạn không làm việc đó: ` : `Bạn đã chọn "${esc(a.mark.choice)}". Nếu chọn "${esc(a.altLabel)}": `}${d.length ? d.join("; ") + "." : "cuộc đời gần như không đổi. Có những ngã rẽ chỉ là ngã rẽ trong đầu."}</span></div>`; });
   return `<div class="panel"><span class="label">Cuộc đời suýt có</span><p style="margin:0" class="muted">Cùng một hạt giống, cùng mọi lựa chọn khác, chỉ đổi một.</p>${rows.join("")}</div>`;
 }
@@ -23059,6 +23108,476 @@ async function storyTick(L, sample) {
 
 
 </script>
+<script id="phase1">
+/* ================= GIAI ĐOẠN 1: hệ quả nhìn thấy được, thẻ thập kỷ, màn kết v2, Tấm bia =================
+   Kế hoạch: argon/docs/superpowers/plans/2026-10-18-gay-cuon.md. Bản chuẩn bị và ảnh: scratchpad/ux/phase1/. */
+
+/* ================= HỆ QUẢ NHÌN THẤY ĐƯỢC (Giai đoạn 1) =================
+   Hai phần, đều chỉ là hiển thị: không rút rng, không đổi kết quả, chơi lại không bị ảnh hưởng.
+   1) Dòng "↩ Vì năm 22 tuổi bạn …" nằm TRÊN tiêu đề thẻ, thay cho câu nối vào cuối p.text.
+   2) Báo nhẹ "X sẽ nhớ điều này." sau một lựa chọn để lại ký ức, CHỈ KHI trong kho có thẻ về sau đọc lại đúng ký ức ấy.
+   Xem causality-line.md để biết chỗ dán. */
+
+/* ---------- 1. Dòng "Vì…" ---------- */
+/* Một câu ngắn từ dấu ấn gần nhất (marks đã sắp theo tuổi tăng dần). Không lặp tiêu đề cảnh; cắt câu chọn dài. */
+function becauseLine(L, marks) {
+  if (!marks || !marks.length) return "";
+  const m = marks[marks.length - 1];
+  const ch = String(m.choice || "").trim();
+  const what = ch ? `bạn đã chọn “${ch.length > 48 ? ch.slice(0, 47).replace(/\s+\S*$/, "") + "…" : ch}”` : "bạn để mọi chuyện trôi";
+  const more = marks.length > 1 ? `, và ${marks.length - 1} chuyện trước đó` : "";
+  const title = String(m.title || "").trim();
+  return `Vì năm ${m.age} tuổi ${what}${title ? ` (${title})` : ""}${more}.`;
+}
+/* Markup cho render() trong index.html, đặt ngay trước <h3 id="decT">. */
+function becauseHTML(L, p) {
+  if (!p.causes || !p.causes.length) return "";
+  return `<p class="because" title="${esc(causeLine(L, p.causes))}"><span class="because-mark" aria-hidden="true">↩</span>${esc(becauseLine(L, p.causes))}</p>`;
+}
+
+/* ---------- 2. "Họ sẽ nhớ điều này" ---------- */
+/* Kho thẻ đọc lại ý kiến/ký ức của một NPC, theo VAI của NPC đó (dữ liệu tĩnh, rút từ argon/src/engine/narrative/storylets.ts và micro.ts,
+   ngày 18/10/2026). Mỗi mục: vai → [id thẻ, dấu ý kiến mà thẻ phản ứng (+1 tốt, −1 xấu, 0 cả hai), tuổi người chơi tối thiểu, tối đa, chỉ một lần].
+   "any_nonfamily" = thẻ chọn bất kỳ người ngoài gia đình có ý kiến đủ mạnh (enemy_obstruct, ally_rescue, ally_deal, isolation…).
+   Khi thêm storylet có causes: prov.opinion(...) hoặc op(c, role(...)), thêm vào đây. Test đi kèm (causality-test.js) so bảng này với mã nguồn. */
+const MEM_READERS = {
+  neighbor:         [["well", 1, 18, 45, true], ["stag", 1, 20, 60, false], ["land", -1, 28, 60, true]],
+  childhood_friend: [["loan_friend", 1, 18, 55, false], ["m_friend_pitch", 1, 22, 55, false]],
+  partner:          [["shop_offer", 1, 22, 50, true], ["shop_end", 0, 18, 90, true]],
+  sibling:          [["estate", -1, 18, 99, true]],
+  child:            [["care", 1, 68, 99, true]],
+  creditor:         [["creditor_knock", -1, 20, 99, false]],
+  official:         [["bribe", -1, 26, 55, true], ["enemy_gate", -1, 25, 99, false]],
+  bully:            [["bully_rises", -1, 24, 36, true]],
+  any_nonfamily:    [["enemy_obstruct", -1, 22, 99, false], ["ally_rescue", 1, 20, 99, false], ["ally_deal", 1, 22, 62, false], ["isolation", -1, 22, 99, false]],
+  any:              [["m_reconcile", -1, 55, 90, false]]
+};
+const FAMILY_ROLES = new Set(["mother", "father", "sibling", "spouse", "child"]);
+
+/* Có thẻ nào về sau còn đọc lại ký ức (npcId, dấu weight) không? Xét vai, khoảng tuổi còn lại, thẻ "once" đã nổ chưa, NPC còn sống không. */
+function hasReader(L, npcId, weight) {
+  const m = L.lw && L.lw.cast.get(npcId); if (!m || !m.alive) return false;
+  const sign = Math.sign(weight), age = L.age, fired = new Set((L.lw.history || []).map(h => h.id));
+  const ok = ([id, s, lo, hi, once]) => (s === 0 || s === sign) && hi > age && !(once && fired.has(id));
+  for (const r of m.roles || [m.role]) if ((MEM_READERS[r] || []).some(ok)) return true;
+  if ((m.roles || [m.role]).every(r => !FAMILY_ROLES.has(r)) && MEM_READERS.any_nonfamily.some(ok)) return true;
+  if (sign < 0 && MEM_READERS.any.some(ok)) return true;
+  return false;
+}
+
+/* Gọi trong resolve() (index.html) quanh ch.fx(L): chụp ký ức trước, so sau, chọn một ký ức mới có người đọc lại. Tối đa 1 lần mỗi năm. */
+function memSnapshot(L) { const out = new Map(); if (L.lw) for (const [id, arr] of L.lw.mem.tokens) out.set(id, arr.length); return out; }
+function rememberToast(L, before) {
+  if (!L.lw || L.replay || (L.lw.toastAge === L.age)) return null;
+  let pick = null;
+  for (const [id, arr] of L.lw.mem.tokens) {
+    const n0 = before.get(id) || 0; if (arr.length <= n0) continue;
+    for (const t of arr.slice(n0)) if (Math.abs(t.weight) >= 0.2 && hasReader(L, id, t.weight) && (!pick || Math.abs(t.weight) > Math.abs(pick.t.weight))) pick = { id, t };
+  }
+  if (!pick) return null;
+  L.lw.toastAge = L.age;
+  const name = castName(L, pick.id);
+  return { npc: pick.id, text: `${name} sẽ nhớ điều này.`, sign: Math.sign(pick.t.weight) };
+}
+/* Hiện báo: một dòng mờ dưới thẻ vừa chọn (desktop) / trên ô Tôi muốn (điện thoại). aria-live để trình đọc màn hình đọc được. */
+function showToast(msg) {
+  let el = document.getElementById("toast");
+  if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); document.body.appendChild(el); }
+  el.textContent = msg.text; el.classList.toggle("bad", msg.sign < 0); el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+  clearTimeout(showToast.t); showToast.t = setTimeout(() => el.classList.remove("show"), 3200);
+}
+
+/* ================= THẺ THẬP KỶ (Giai đoạn 1) =================
+   Mỗi tròn chục tuổi (10, 20, …) một băng rôn trong nhật ký, KHÔNG dừng đồng hồ, không phải quyết định.
+   Một câu duy nhất, vui hoặc chùng xuống, kèm dải 5 thanh đời (bạn + 4 em bé cùng giây).
+   Chỉ đọc trạng thái, không rút rng: chơi lại không đổi. Xem decade.md.
+
+   Số liệu của em bé cùng giây ở mỗi mốc chục tuổi lấy bằng peerWithSnaps(seed): gọi simulatePeer(seed, onYear) với một móc chỉ đọc. */
+
+/* Phân phối chuẩn tích lũy (Abramowitz–Stegun 7.1.26, sai số < 1.5e-7). */
+function normCdf(z) { const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2), y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2); return z >= 0 ? (1 + y) / 2 : (1 - y) / 2; }
+
+/* Thu nhập của bạn (nếu có việc) hoặc của nhà bạn tính theo đầu người. */
+function ownIncome(L) { return L.income > 0 ? L.income : L.famIncome; }
+/* Phân vị thu nhập trong nước bạn: nghịch đảo đúng công thức incomeAt(c,p) của engine (log-normal theo Gini). 0..100. */
+function incomePct(L) {
+  const c = L.c, x = ownIncome(L); if (!(x > 0)) return 0;
+  const sig = Math.SQRT2 * probit((c.gi + 1) / 2), mean = c.g * 0.6;
+  return Math.max(1, Math.min(99, Math.round(100 * normCdf((Math.log(x / mean) + sig * sig / 2) / sig))));
+}
+/* Phân vị hạnh phúc so với người cùng tuổi trong trò chơi, đã trừ mức hài lòng chung của nước (c.h·8).
+   Bảng đo bằng tools/happy-stats.js trên 1.500 đời tự chơi (18/10/2026). Đo lại khi đổi updateHappiness. */
+const HAPPY_NORM = { 10: [5.7, 5], 20: [6, 10.8], 30: [13.5, 13.5], 40: [15, 15.4], 50: [9.8, 15.4], 60: [5.8, 16.7], 70: [-2.9, 15], 80: [0.5, 12.4], 90: [1.2, 10.5] };
+function happyPct(L) { const k = Math.min(90, Math.max(10, Math.round(L.age / 10) * 10)), [m, sd] = HAPPY_NORM[k]; return Math.max(1, Math.min(99, Math.round(100 * normCdf((L.st.happy - L.c.h * 8 - m) / sd)))); }
+
+/* Thay cho simulatePeer(...) trong birth(): giống hệt, thêm snap[10,20,…] để thẻ thập kỷ so được. Engine cũ (không có onYear) vẫn chạy, chỉ thiếu snap. */
+function peerWithSnaps(seed) {
+  const snap = {};
+  const p = simulatePeer(seed, P => { if (P.age % 10 === 0 && P.alive) snap[P.age] = { h: Math.round(P.st.happy), hp: happyPct(P), ip: incomePct(P) }; });
+  p.snap = snap; return p;
+}
+
+/* Dữ liệu một thẻ. Thứ tự ưu tiên của câu: có em bé mất trong thập kỷ → phân vị thu nhập rất cao/thấp → xếp hạng hạnh phúc trong 5 người → câu mặc định. */
+function decadeCard(L) {
+  const a = L.age, from = a - 10;
+  const me = { name: "Bạn", me: true, alive: true, h: Math.round(L.st.happy), hp: happyPct(L), ip: incomePct(L), country: L.c.n };
+  const peers = (G.peers || []).map(p => { const s = p.snap && p.snap[a]; const alive = p.deathAge > a || (p.deathAge === a && p.tl[a] != null);
+    return { name: p.name, country: p.c.n, alive, deathAge: p.deathAge, cause: p.cause, line: alive ? (p.tl[a] || "") : `mất năm ${p.deathAge} tuổi`, h: s ? s.h : null, hp: s ? s.hp : null, ip: s ? s.ip : null }; });
+  const died = peers.filter(p => !p.alive && p.deathAge > from && p.deathAge <= a);
+  const alive = peers.filter(p => p.alive);
+  let text, tone;
+  if (died.length) {
+    const d = died[0]; tone = "sober";
+    text = died.length > 1 ? `${died.map(x => x.name).join(" và ")} đã mất trong mười năm qua. Bạn còn đây.` : `${d.name} (${d.country}) mất năm ${d.deathAge} tuổi vì ${d.cause}. Bạn còn đây.`;
+  } else if (a >= 20 && me.ip >= 85) { tone = "good"; text = `${a} tuổi, ${L.income > 0 ? "bạn" : "nhà bạn"} kiếm nhiều hơn ${me.ip}% người ở ${L.c.n}.`; }
+  else if (a >= 20 && me.ip <= 15) { tone = "sober"; text = `${a} tuổi, ${L.income > 0 ? "bạn" : "nhà bạn"} nghèo hơn ${100 - me.ip}% người ở ${L.c.n}.`; }
+  else {
+    const withH = [me].concat(alive.filter(p => p.h != null));
+    if (withH.length >= 3) {
+      const rank = withH.slice().sort((x, y) => y.h - x.h).findIndex(x => x.me) + 1;
+      if (rank === 1) { tone = "good"; text = `Trong năm em bé chào đời cùng giây, ở tuổi ${a} bạn đang vui nhất.`; }
+      else if (rank === withH.length) { tone = "sober"; text = `Trong năm em bé chào đời cùng giây, ở tuổi ${a} bạn đang buồn nhất.`; }
+      else { const above = withH.slice().sort((x, y) => y.h - x.h)[rank - 2]; tone = "plain"; text = `${a} tuổi. Trong năm em bé cùng giây, bạn vui thứ ${rank}; ${above.name} (${above.country}) đứng ngay trên bạn.`; }
+    } else { tone = me.hp >= 60 ? "good" : me.hp <= 30 ? "sober" : "plain"; text = `${a} tuổi. Bạn vui hơn khoảng ${me.hp}% người cùng tuổi ở nơi như bạn.`; }
+  }
+  return { age: a, text, tone, me, peers };
+}
+
+/* Gọi trong render() sau stepYear (index.html). Lưu thẻ vào L.decades (chỉ giao diện dùng), không gọi log() để không đụng L.seen. */
+function decadeTick(L) {
+  if (!L.alive || L.age < 10 || L.age % 10 !== 0) return null;
+  L.decades = L.decades || {}; if (L.decades[L.age]) return null;
+  const card = decadeCard(L); L.decades[L.age] = card; return card;
+}
+
+/* Băng rôn trong nhật ký: chèn làm <li> đầu tiên của nhóm năm đó trong renderLog(). */
+function decadeHTML(card) {
+  const n = Math.max(90, card.age + 10);
+  const bar = p => `<span class="dk-p${p.me ? " me" : ""}${p.alive ? "" : " dead"}" title="${esc(p.name)}, ${esc(p.country)}: ${esc(p.me ? "bạn" : p.line)}"><i style="--a:${Math.round((p.alive ? card.age : p.deathAge) / n * 100)}%"></i><b>${esc(p.me ? "Bạn" : p.name.split(" ")[0])}</b></span>`;
+  return `<li class="e decade ${card.tone}"><span class="dk-t">${esc(card.text)}</span><span class="dk-bars" aria-hidden="true">${[card.me].concat(card.peers).map(bar).join("")}</span></li>`;
+}
+
+/* ================= TẤM BIA (Giai đoạn 1) =================
+   Ảnh dọc 1080×1920 để đăng Story. Vẽ trên <canvas>, hiện thành <img src=dataURL> trong hộp thoại để người chơi nhấn giữ mà lưu
+   (trang artifact chặn tải file). Giấy hồ sơ sáng, mực in xanh lục đậm, mực bút xanh cho những gì bạn làm, dấu đỏ cho cái chết.
+   Phụ thuộc (đã có trong trang): G, Argon, eulogyVN, LW, castName, fmtPPP (không dùng), rulerN.
+   Dùng ở ending(): nút #tombBtn gọi showTombstone(L, G.cf).
+
+   API
+     tombstoneData(L, cf)      → dữ liệu thuần (test được ở node)
+     nearMissOf(L, cf)         → { age, text, key, index | removeAct } | null   (dòng "Suýt nữa thì…", dùng chung với màn kết)
+     rememberedBy(L)           → { id, name, role, note, sign, weight } | null   (người nhớ bạn nhất)
+     tombstoneCanvas(L, cf)    → Promise<HTMLCanvasElement>
+     showTombstone(L, cf, btn) → mở hộp thoại; trả về Promise<void>
+*/
+const TOMB = {
+  W: 1080, H: 1920, X: 96,
+  ink: { paper: "#E3E8E1", sheet: "#EEF1EB", print: "#24302B", muted: "#56655D", rule: "#BAC6BC", soft: "#D3DBD3", pen: "#2343B0", seal: "#B8282B", good: "#2C7548" },
+  serif: "Literata", sans: '"Be Vietnam Pro"'
+};
+
+/* ---------- Dữ liệu ---------- */
+/* Câu văn bia đáng in: bỏ câu mở đầu chỉ lặp lại tên nước và số năm ("Bạn sống 64 năm ở Trung Quốc."), ưu tiên câu nói về người khác. */
+function epitaphLine(eul) {
+  const cands = [];
+  (eul || []).forEach((p, k) => {
+    const ss = String(p || "").replace(/\s+/g, " ").trim().split(/(?<=[.!?…])\s+(?=[A-ZÀ-ỸĐ"“])/);
+    ss.forEach((s, i) => { if (/\?$/.test(s)) { if (ss[i + 1]) cands.push({ s: s + " " + ss[i + 1], k, q: 1 }); } else cands.push({ s, k, q: 0 }); });
+  });
+  const stub = /^Bạn sống \d+ năm ở [^,.]+\.$/;
+  const score = c => (stub.test(c.s) ? -9 : 0) + (/nhớ|tin bạn|không bao giờ|trắng tay|khá lên|nhắc|đến cuối|ngồi vào bàn|đi qua/.test(c.s) ? 3 : 0) + (c.s.length >= 30 && c.s.length <= 160 ? 1 : -2) + c.q * 1.5;
+  const best = cands.sort((a, b) => score(b) - score(a))[0];
+  return best ? best.s.replace(/\s*\(năm bạn (\d+) tuổi\)/g, " năm bạn $1 tuổi") : "";
+}
+function firstSentence(s) { const t = String(s || "").replace(/\s+/g, " ").trim(); const m = t.match(/^(.+?[.!?…])(\s|$)/); return m ? m[1] : t; }
+
+/* Người nhớ bạn nhất: ký ức có |trọng số| lớn nhất còn sống trong sổ ký ức, ưu tiên người còn sống, có ghi chú cụ thể. */
+function rememberedBy(L) {
+  if (!L.lw || !L.lw.mem) return null;
+  let best = null;
+  for (const [id, arr] of L.lw.mem.tokens) {
+    const m = L.lw.cast.get(id); if (!m || m.absent) continue;
+    for (const t of arr) {
+      const score = Math.abs(t.weight) * (m.alive ? 1 : 0.6) * (t.note ? 1 : 0.7);
+      if (!best || score > best.score) best = { id, name: m.name, role: m.role, alive: m.alive, note: t.note || LW.TAG_VN[t.tag] || "", sign: Math.sign(t.weight), weight: t.weight, age: t.age, score };
+    }
+  }
+  if (!best || Math.abs(best.weight) < 0.12) return null;
+  best.note = best.note.replace(/\s*\(năm bạn \d+ tuổi\)\s*$/, "");
+  return best;
+}
+function rememberedLine(r) {
+  if (!r) return "";
+  const who = `${r.name} (${(LW.ROLE_VN[r.role] || r.role)})`;
+  return r.sign > 0 ? `${who}, vì ${r.note}.` : `${who}, vẫn chưa quên ${r.note}.`;
+}
+
+/* Dòng "Suýt nữa thì…": chọn nhánh khác biệt rõ nhất trong counterfactuals(L). cf có thể null (đời quá ngắn, không có ngã rẽ). */
+function nearMissOf(L, cf) {
+  if (!cf || !cf.alts || !cf.alts.length) return null;
+  const b = cf.base;
+  const scored = cf.alts.map(a => {
+    const s = a.life, dAge = s.age - b.age, dNet = s.net - b.net, dKids = s.kids - b.kids;
+    const rel = Math.abs(dNet) / Math.max(1000, Math.abs(b.net));
+    const w0 = Math.abs(dAge) * 3 + Math.min(10, rel * 4) + Math.abs(dKids) * 2 + (s.job !== b.job ? 2 : 0);
+    return { a, dAge, dNet, dKids, w: w0 * (a.mark.age < 12 ? 0.5 : 1) }; // ngã rẽ thời thơ ấu kém "sắc" hơn: ưu tiên ngã rẽ khi đã lớn
+  }).sort((x, y) => y.w - x.w);
+  const t = scored[0]; if (!t || t.w < 2) return null;
+  const a = t.a, s = a.life, age = a.mark.age;
+  const what = a.typedProactive ? `nếu không “${a.mark.choice}”` : `nếu chọn “${a.altLabel}”`;
+  let out;
+  if (Math.abs(t.dAge) >= 3) out = `bạn đã sống đến ${s.age} tuổi`;
+  else if (s.job !== b.job && s.job && s.job !== "không nghề") out = `bạn đã làm ${s.job}`;
+  else if (Math.abs(t.dKids) >= 1) out = `bạn đã có ${s.kids} con thay vì ${b.kids}`;
+  else out = t.dNet > 0 ? `bạn đã để lại nhiều hơn ${fmtPPP(t.dNet)}` : `bạn đã nghèo hơn ${fmtPPP(-t.dNet)}`;
+  const text = `Năm ${age} tuổi, ${what}, ${out}.`;
+  return a.typedProactive ? { age, text, key: a.mark.key, removeAct: (L.actLog || []).find(x => x.kind === "proactive" && x.key === a.mark.key)?.seq } : { age, text, key: a.mark.key, index: a.mark.alt_indices[0] };
+}
+
+function lifeCode(L) { return "CD-" + ((L.seed >>> 0).toString(36).toUpperCase()).padStart(7, "0"); }
+
+function tombstoneData(L, cf) {
+  const n = typeof rulerN === "function" ? rulerN(L) : Math.max(90, L.age + 1, L.le + 15);
+  const cells = [];
+  for (let i = 0; i < n; i++) { const m = L.map[i - 1]; cells.push(i === 0 ? { h: 50 } : m && m.end ? { end: true } : m ? { h: m.h } : null); }
+  const eul = typeof eulogyVN === "function" ? eulogyVN(L) : [];
+  const peers = (G.peers || []).map(p => ({ name: p.name, country: p.c.n, age: p.deathAge, cause: p.cause }));
+  const nm = nearMissOf(L, cf);
+  return {
+    name: L.name, birth: L.birthC.n, death: L.migrated ? L.c.n : null, age: L.age, cause: L.cause, le: L.le, n, cells,
+    epitaph: epitaphLine(eul) || firstSentence(eul && eul[0]), nearMiss: nm ? nm.text : "", remembered: rememberedLine(rememberedBy(L)),
+    peers, code: lifeCode(L), year: new Date().getFullYear(), stamp: L.wishDone === true ? "Đã thành" : L.wishDone === false ? "Dang dở" : "Khép sổ"
+  };
+}
+
+/* ---------- Vẽ ---------- */
+function _wrap(ctx, text, maxW, maxLines) {
+  const words = String(text).split(/\s+/).filter(Boolean), lines = []; let cur = "";
+  for (const w of words) { const t = cur ? cur + " " + w : w; if (ctx.measureText(t).width <= maxW || !cur) cur = t; else { lines.push(cur); cur = w; } }
+  if (cur) lines.push(cur);
+  if (maxLines && lines.length > maxLines) { const keep = lines.slice(0, maxLines); let last = keep[maxLines - 1]; while (last.length && ctx.measureText(last + "…").width > maxW) last = last.replace(/\s*\S+$/, ""); keep[maxLines - 1] = last + "…"; return keep; }
+  return lines;
+}
+function _mix(a, b, t) { const p = s => [1, 3, 5].map(i => parseInt(s.slice(i, i + 2), 16)); const A = p(a), B = p(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); }
+function _rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+
+async function _fontsReady(d) {
+  if (!document.fonts || !document.fonts.load) return;
+  const all = [d.name, d.epitaph, d.nearMiss, d.remembered, d.birth, d.cause, ...d.peers.map(p => p.name + p.country)].join(" ") + " 0123456789 Một Lần Chào Đời Suýt nữa Cùng giây ấy Người nhớ bạn nhất";
+  const T = TOMB.serif, S = TOMB.sans;
+  try {
+    await Promise.race([Promise.all([
+      document.fonts.load(`600 100px ${T}`, all), document.fonts.load(`italic 400 50px ${T}`, all), document.fonts.load(`400 40px ${T}`, all),
+      document.fonts.load(`400 36px ${S}`, all), document.fonts.load(`600 36px ${S}`, all), document.fonts.load(`700 30px ${S}`, all)
+    ]), new Promise(r => setTimeout(r, 4000))]);
+    await document.fonts.ready;
+  } catch (e) { /* vẽ bằng font dự phòng */ }
+}
+
+/* Bố cục co giãn: thử từ rộng rãi đến gọn nhất cho tới khi mọi thứ nằm trên vạch chân giấy. Mục tùy chọn bị bỏ theo thứ tự: người nhớ → dòng 3 của "suýt nữa". */
+const TOMB_PRESETS = [
+  { name: 112, cell: 30, rg: 8, epi: 52, epiLines: 3, body: 40, peer: 70, rem: true },
+  { name: 100, cell: 24, rg: 6, epi: 48, epiLines: 3, body: 38, peer: 62, rem: true },
+  { name: 92, cell: 20, rg: 5, epi: 44, epiLines: 3, body: 36, peer: 56, rem: true },
+  { name: 88, cell: 18, rg: 4, epi: 42, epiLines: 2, body: 34, peer: 54, rem: false }
+];
+async function tombstoneCanvas(L, cf) {
+  const d = tombstoneData(L, cf); await _fontsReady(d);
+  const cv = document.createElement("canvas"); cv.width = TOMB.W; cv.height = TOMB.H;
+  const c = cv.getContext("2d");
+  for (const P of TOMB_PRESETS) { const end = _drawTomb(c, d, L.seed, P); if (end <= TOMB.H - 200 || P === TOMB_PRESETS[TOMB_PRESETS.length - 1]) break; }
+  return cv;
+}
+function _drawTomb(c, d, seed, P) {
+  const { W, H, X, ink } = TOMB, T = TOMB.serif, S = TOMB.sans, CW = W - 2 * X;
+  c.textBaseline = "alphabetic"; c.textAlign = "left";
+  // Giấy: nền, hạt giấy cố định theo seed, khung kẻ đôi như sổ hộ tịch
+  c.fillStyle = ink.paper; c.fillRect(0, 0, W, H);
+  const r = _rng(seed ^ 0x51ab); c.fillStyle = "rgba(36,48,43,0.035)";
+  for (let i = 0; i < 9000; i++) c.fillRect(r() * W, r() * H, 1 + r() * 1.6, 1 + r() * 1.6);
+  c.strokeStyle = ink.print; c.lineWidth = 3; c.strokeRect(44, 44, W - 88, H - 88); c.lineWidth = 1; c.strokeRect(56, 56, W - 112, H - 112);
+
+  let y = 150;
+  c.font = `600 30px ${S}`; c.fillStyle = ink.muted; c.fillText("Trích lục một cuộc đời", X, y);
+  c.textAlign = "right"; c.font = `400 30px ${S}`; c.fillText(`số hồ sơ ${d.code}`, W - X, y); c.textAlign = "left";
+  y += 28; c.fillStyle = ink.print; c.fillRect(X, y, CW, 3);
+
+  // Tên: một dòng nếu được (≥ 76px), không thì hai dòng
+  y += 34;
+  let fs = P.name, nameLines;
+  c.font = `600 ${fs}px ${T}`;
+  while (fs > 76 && c.measureText(d.name).width > CW) { fs -= 4; c.font = `600 ${fs}px ${T}`; }
+  if (c.measureText(d.name).width <= CW) nameLines = [d.name];
+  else { fs = P.name; for (; fs >= 60; fs -= 6) { c.font = `600 ${fs}px ${T}`; nameLines = _wrap(c, d.name, CW); if (nameLines.length <= 2) break; } }
+  c.fillStyle = ink.pen; for (const ln of nameLines) { y += fs * 0.98; c.fillText(ln, X, y); }
+  y += 58; c.font = `400 ${P.body}px ${S}`; c.fillStyle = ink.print;
+  const life = `Sinh ở ${d.birth}${d.death ? `, mất ở ${d.death}` : ""}. Mất năm ${d.age} tuổi vì ${d.cause}.`;
+  for (const ln of _wrap(c, life, CW, 2)) { c.fillText(ln, X, y); y += P.body * 1.35; }
+
+  // Thước đời: mỗi hàng một thập kỷ, mỗi ô một năm
+  y += 18;
+  const rows = Math.ceil(d.n / 10), lab = 70, gap = 8, cw = (CW - lab - 9 * gap) / 10, ch = P.cell, rg = P.rg;
+  c.font = `400 ${Math.min(26, ch + 4)}px ${T}`;
+  for (let row = 0; row < rows; row++) {
+    const yy = y + row * (ch + rg);
+    c.fillStyle = ink.muted; c.textAlign = "right"; c.fillText(String(row * 10), X + lab - 18, yy + ch * 0.82); c.textAlign = "left";
+    for (let k = 0; k < 10; k++) {
+      const i = row * 10 + k; if (i >= d.n) break;
+      const xx = X + lab + k * (cw + gap), cell = d.cells[i];
+      if (cell && cell.end) c.fillStyle = ink.print;
+      else if (cell) c.fillStyle = _mix(ink.rule, ink.pen, Math.max(0.12, Math.min(1, (cell.h - 20) * 0.02)));
+      else c.fillStyle = ink.soft;
+      c.fillRect(xx, yy, cw, ch);
+      if (i === d.le) { c.strokeStyle = ink.seal; c.lineWidth = 4; c.strokeRect(xx + 2, yy + 2, cw - 4, ch - 4); }
+    }
+  }
+  y += rows * (ch + rg) + 4;
+  c.font = `400 26px ${S}`; c.fillStyle = ink.muted;
+  c.fillText(`Mỗi ô một năm, đậm là năm vui. Viền đỏ: tuổi thọ trung bình (${d.le}).`, X + lab, y + 24);
+  y += 64;
+
+  // Văn bia: một câu, in lớn
+  if (d.epitaph) {
+    c.font = `italic 400 ${P.epi}px ${T}`; const lines = _wrap(c, d.epitaph, CW - 44, P.epiLines);
+    c.fillStyle = ink.seal; c.font = `600 ${P.epi * 2.2}px ${T}`; c.fillText("“", X - 8, y + P.epi * 1.3);
+    c.font = `italic 400 ${P.epi}px ${T}`; c.fillStyle = ink.print; y += P.epi * 1.25;
+    for (const ln of lines) { c.fillText(ln, X + 44, y); y += P.epi * 1.36; }
+    y += 4;
+  }
+  const section = (label, color) => { c.fillStyle = ink.print; c.fillRect(X, y, CW, 2); y += 44; c.font = `700 30px ${S}`; c.fillStyle = color || ink.print; c.fillText(label, X, y); y += 10; };
+  if (d.nearMiss) {
+    section("Suýt nữa thì…", ink.pen);
+    c.font = `400 ${P.body}px ${T}`; c.fillStyle = ink.print; y += P.body * 1.1;
+    for (const ln of _wrap(c, d.nearMiss, CW, P.rem ? 3 : 2)) { c.fillText(ln, X, y); y += P.body * 1.35; }
+    y += 8;
+  }
+  // Bốn em bé cùng giây: thanh đời cùng thang với thước; đỏ chỉ cho em bé không qua tuổi 5
+  const people = [{ name: "Bạn", country: d.birth, age: d.age, me: true }].concat(d.peers);
+  section("Cùng giây ấy"); y += 14;
+  const maxA = Math.max(d.n, ...people.map(p => p.age + 1));
+  for (const p of people) {
+    c.font = `${p.me ? 700 : 600} 30px ${S}`; c.fillStyle = p.me ? ink.pen : ink.print; c.fillText(p.name, X, y + 26);
+    const nw = c.measureText(p.name).width; c.font = `400 28px ${S}`; c.fillStyle = ink.muted; c.fillText(`, ${p.country}`, X + nw, y + 26);
+    c.textAlign = "right"; c.font = `600 30px ${S}`; c.fillStyle = ink.print; c.fillText(`${p.age} tuổi`, W - X, y + 26); c.textAlign = "left";
+    const by = y + 38; c.fillStyle = ink.soft; c.fillRect(X, by, CW, 9);
+    c.fillStyle = p.me ? ink.pen : p.age < 5 ? ink.seal : ink.muted; c.fillRect(X, by, CW * Math.min(1, p.age / maxA), 9);
+    y += P.peer;
+  }
+  if (d.remembered && P.rem) {
+    y += 6; section("Người nhớ bạn nhất");
+    c.font = `400 ${P.body}px ${T}`; c.fillStyle = ink.print; y += P.body * 1.1;
+    for (const ln of _wrap(c, d.remembered, CW, 2)) { c.fillText(ln, X, y); y += P.body * 1.35; }
+  }
+  const end = y;
+  // Chân giấy: tên trò chơi, lời rào, con dấu bên phải
+  c.fillStyle = ink.print; c.fillRect(X, H - 190, CW, 2);
+  c.font = `600 42px ${T}`; c.fillStyle = ink.print; c.fillText("Một Lần Chào Đời", X, H - 122);
+  c.font = `400 25px ${S}`; c.fillStyle = ink.muted; c.fillText("Mô phỏng theo số liệu thật. Không phải người thật.", X, H - 82);
+  c.save(); c.translate(W - X - 78, H - 118); c.rotate(-0.21); c.globalAlpha = 0.85; c.strokeStyle = ink.seal; c.fillStyle = ink.seal;
+  c.lineWidth = 4; c.beginPath(); c.arc(0, 0, 70, 0, Math.PI * 2); c.stroke(); c.lineWidth = 2; c.beginPath(); c.arc(0, 0, 60, 0, Math.PI * 2); c.stroke();
+  c.textAlign = "center"; c.font = `700 24px ${S}`; c.fillText(d.stamp, 0, -2); c.font = `600 21px ${S}`; c.fillText(String(d.year), 0, 26); c.restore();
+  return end;
+}
+
+/* ---------- Hộp thoại ---------- */
+let _tombOpen = null;
+async function showTombstone(L, cf, trigger) {
+  if (_tombOpen) return;
+  const touch = matchMedia("(hover: none)").matches;
+  const box = document.createElement("div"); box.className = "tomb-modal"; box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-labelledby", "tombT");
+  box.innerHTML = `<div class="tomb-sheet"><div class="tomb-head"><h2 id="tombT">Tấm bia của ${esc(L.name)}</h2><button class="btn" id="tombClose">Đóng</button></div>
+    <div class="tomb-frame"><p class="note" id="tombWait">Đang khắc chữ…</p></div>
+    <p class="tomb-hint">${touch ? "Nhấn giữ ảnh để lưu vào máy, rồi đăng lên Story." : "Nhấp chuột phải vào ảnh, chọn “Lưu ảnh thành…” hoặc “Sao chép ảnh”."}</p></div>`;
+  document.body.appendChild(box); _tombOpen = box; document.body.classList.add("modal-open");
+  const close = () => { box.remove(); _tombOpen = null; document.body.classList.remove("modal-open"); document.removeEventListener("keydown", onKey, true); if (trigger) trigger.focus({ preventScroll: true }); };
+  const onKey = e => { if (e.key === "Escape") { e.preventDefault(); close(); } else if (e.key === "Tab") { e.preventDefault(); document.getElementById("tombClose").focus(); } };
+  document.addEventListener("keydown", onKey, true);
+  box.addEventListener("click", e => { if (e.target === box) close(); });
+  document.getElementById("tombClose").onclick = close; document.getElementById("tombClose").focus();
+  try {
+    const cv = await tombstoneCanvas(L, cf); if (!box.isConnected) return;
+    const img = new Image(); img.alt = `Tấm bia: ${L.name}, ${L.birthC.n}, ${L.age} tuổi`; img.src = cv.toDataURL("image/png"); img.className = "tomb-img";
+    const fr = box.querySelector(".tomb-frame"); fr.innerHTML = ""; fr.appendChild(img);
+    L.tombSaved = true; // để đo chỉ tiêu "≥ 15% số đời lưu tấm bia" khi chơi thử
+  } catch (e) { console.error(e); const w = document.getElementById("tombWait"); if (w) w.textContent = "Không vẽ được tấm bia trên trình duyệt này."; }
+}
+
+/* Ai đến đám tang: người còn sống có ý kiến ≥ 0,3 (đến) và người có ý kiến ≤ −0,3 hoặc không đến (vắng mặt). Mỗi người một câu từ ký ức mạnh nhất. */
+function funeralOf(L) {
+  if (!L.lw || !L.ar) return { came: [], away: [] };
+  const s = L.ar.state, rows = [];
+  for (const m of L.lw.cast.values()) {
+    if (!m.alive || m.absent) continue;
+    const op = Argon.opinionOf(s, L.lw.mem, m.id);
+    const sign = op >= 0 ? 1 : -1, t = Argon.strongestMemory(L.lw.mem, m.id, sign);
+    const note = t ? (t.note || LW.TAG_VN[t.tag] || "").replace(/\s*\(năm bạn \d+ tuổi\)\s*$/, "") : "";
+    rows.push({ id: m.id, name: m.name, years: L.age + m.age_offset, role: LW.ROLE_VN[m.role] || m.role, family: ["mother", "father", "sibling", "spouse", "child"].includes(m.role), op, note, age: t ? t.age : null });
+  }
+  const came = rows.filter(r => r.op >= 0.3).sort((a, b) => b.op - a.op).slice(0, 5);
+  const away = rows.filter(r => r.op <= -0.3).sort((a, b) => a.op - b.op).slice(0, 3);
+  return { came, away };
+}
+function funeralLine(r, came) {
+  r = { ...r, role: `${r.role}, ${r.years} tuổi` };
+  const when = r.age != null && !/năm (bạn )?\d+ tuổi/.test(r.note) ? ` năm bạn ${r.age} tuổi` : "";
+  if (r.note) return came ? `${r.name}, ${r.role}: nhớ ${r.note}${when}.` : `${r.name}, ${r.role}: chưa quên ${r.note}${when}.`;
+  return came ? `${r.name}, ${r.role}.` : `${r.name}, ${r.role}, không đến.`;
+}
+
+/* ================= THỬ LẠI TỪ NĂM N (Giai đoạn 1, dựa trên tua lại tất định của Giai đoạn 0) =================
+   resumeFrom(L, fork) → một đời MỚI đang sống, giống hệt L tới ngay trước lựa chọn fork.key; ở đó chọn fork.index
+   (hoặc bỏ việc gõ fork.removeAct), rồi dừng ngay khi hết kịch bản để người chơi chơi tiếp bằng tay. Trả null nếu không dựng được.
+   Cách làm: cắt L.choices tới lựa chọn rẽ, cắt actLog tới trước chỗ rẽ, tua lại với L.scriptStrict (hết kịch bản thì tắt tự chơi),
+   rồi gỡ mọi dấu "đang tua lại". Việc gõ (proactive) trong một năm luôn xảy ra SAU chuỗi quyết định của năm đó
+   (ô Tôi muốn khóa khi có tình huống chờ), nên việc gõ ở năm rẽ bị bỏ. */
+function resumeFrom(L, fork) {
+  if (!L || !L.lw || !fork || !fork.key) return null;
+  const ageOf = {}; for (const m of L.lw.cz.marks) if (m.key) ageOf[m.key] = m.age;
+  const forkAge = fork.age != null ? fork.age : ageOf[fork.key]; if (forkAge == null) return null;
+  const acts0 = L.actLog || [];
+  let choices, acts;
+  if (fork.removeAct != null) {
+    const rec = acts0.find(a => a.seq === fork.removeAct); if (!rec) return null;
+    choices = L.choices.filter(c => (ageOf[c.key] ?? 0) <= forkAge);
+    acts = acts0.filter(a => a.kind === "meta" || a.age < forkAge || (a.age === forkAge && (a.kind === "ai" || a.kind === "ui" || a.kind === "story" || (a.seq != null && a.seq < rec.seq))));
+  } else {
+    const idx = L.choices.findIndex(c => c.key === fork.key); if (idx < 0 || fork.index == null) return null;
+    choices = L.choices.slice(0, idx + 1);
+    const keys = new Set(choices.map(c => c.key));
+    acts = acts0.filter(a => a.kind === "meta" || a.age < forkAge || (a.age === forkAge && (a.kind === "ai" || a.kind === "story" || (a.kind === "ui" && a.at <= idx) || (a.kind === "scene" && keys.has(a.key)))));
+  }
+  acts = JSON.parse(JSON.stringify(acts));
+  const script = replayScript(choices, acts);
+  const focus = {}; for (const k in L.focusLog || {}) if (+k <= forkAge) focus[k] = L.focusLog[k];
+  const was = NAR.enabled; NAR.enabled = false;
+  let P;
+  try {
+    P = createLife(L.seed, { auto: true, script, override: fork.index != null ? { key: fork.key, index: fork.index } : null, focus, replayActs: acts });
+    P.replayActs = acts; P.scriptStrict = true;
+    let g = 0;
+    while (P.alive && P.auto && g++ < 130) {
+      stepYear(P);
+      if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; }
+      if (P.choices.length >= choices.length && P.age >= forkAge) break;
+    }
+  } finally { NAR.enabled = was; }
+  if (!P || !P.alive || P.age < forkAge) return null;
+  // Kiểm: các lựa chọn trước chỗ rẽ phải khớp nguyên bản (Giai đoạn 0 bảo đảm)
+  const n = choices.length - (fork.removeAct != null ? 0 : 1);
+  for (let i = 0; i < n; i++) if (!P.choices[i] || P.choices[i].key !== choices[i].key) return null;
+  // Gỡ dấu tua lại: từ đây là đời thật
+  P.auto = false; P.script = null; P.override = null; P.replay = false; P.scriptStrict = false; P.replayActs = null; P.replayDone = null; P.uiDone = null; P.scriptFocus = null;
+  P.actLog = acts; P.actSeq = acts.reduce((m, a) => Math.max(m, a.seq || 0), 0);
+  P.forkOf = { seed: L.seed, age: forkAge, from: L.age };
+  // Nhật ký trước chỗ rẽ lấy từ bản gốc (bản tua lại không ghi dòng "bạn chọn")
+  P.log = L.log.filter(e => e.age < forkAge).concat(P.log.filter(e => e.age >= forkAge));
+  P.seen = Object.assign({}, L.seen || {});
+  if (L.decades) { P.decades = {}; for (const k in L.decades) if (+k < forkAge) P.decades[k] = L.decades[k]; }
+  return P;
+}
+
+
+</script>
 <script id="money">
 /* ================= TIỀN BẠC (host) =================
    Của cải có tên, vay mua, mức sống, tiền gửi, bảo hiểm, cho người khác vay, mức chi cho bố mẹ và con.
@@ -23407,7 +23926,7 @@ function intro(){stop();leaveBoard();clearInterval(G.timerIv);const past=store.g
 
 /* ---------- Giấy khai sinh ---------- */
 function birth(){leaveBoard();const seed=(Math.random()*2**32)>>>0;const L=createLife(seed);G.life=L;
-  G.peers=[1,2,3].concat([4]).map(k=>simulatePeer((seed+k*7919)>>>0));
+  G.peers=[1,2,3,4].map(k=>peerWithSnaps((seed+k*7919)>>>0));
   const now=new Date();const nth=1+Math.floor(Math.random()*4);
   app.innerHTML=`<section class="cert" aria-labelledby="certName">
    <div class="doc">Giấy khai sinh</div>
@@ -23522,7 +24041,7 @@ function askQuit(){const d=document.getElementById("dec");d.innerHTML=`<div clas
 function start(){stop();G.last=performance.now();G.acc=0;const loop=t=>{G.timer=requestAnimationFrame(loop);const dt=t-G.last;G.last=t;const L=G.life;
   if(!L||G.paused||L.pending||!L.alive||G.acting||G.card)return;
   if(L.storyDue){if(!G.storyLoading){G.storyLoading=true;render();storyTick(L).finally(()=>{G.storyLoading=false;render()})}return}
-  if(narratorWaiting(L)){if(!G.waitShown){G.waitShown=true;render()}return}G.waitShown=false;G.acc+=dt*G.speed;if(G.acc>=G.yearMs){G.acc=0;stepYear(L);narratorPlan(L);render();if(!L.alive)setTimeout(ending,1400)}};G.timer=requestAnimationFrame(loop)}
+  if(narratorWaiting(L)){if(!G.waitShown){G.waitShown=true;render()}return}G.waitShown=false;G.acc+=dt*G.speed;if(G.acc>=G.yearMs){G.acc=0;stepYear(L);decadeTick(L);narratorPlan(L);render();if(!L.alive)setTimeout(ending,1400)}};G.timer=requestAnimationFrame(loop)}
 function stop(){if(G.timer)cancelAnimationFrame(G.timer);G.timer=null}
 
 /* ---- Ô "Tôi muốn…" ---- */
@@ -23619,15 +24138,14 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
     const nOk=states.filter(s=>s==="show").length;
     const timed=g.bw<50&&L.ar;
     dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
-     <h3 id="decT">${esc(p.title)}</h3><p class="txt" id="decTxt">${esc(p.text)}</p><button class="readmore" id="readmore" aria-controls="decTxt">Đọc hết</button>${m?matrixHtml(m):""}
+     ${becauseHTML(L,p)}<h3 id="decT">${esc(p.title)}</h3><p class="txt" id="decTxt">${esc(p.text)}</p><button class="readmore" id="readmore" aria-controls="decTxt">Đọc hết</button>${m?matrixHtml(m):""}
      ${p.npc&&L.ar&&L.ar.dd[key]?`<div class="signal">${esc(npcSignalVN(L,p.npc,key))}</div>`:""}
      ${canDD?`<div><button class="btn" id="dd" ${g.bw<ddCost?"disabled":""}>Thẩm định (−${ddCost} băng thông)</button> <span class="note">${g.bw<ddCost?"Không đủ băng thông để thẩm định.":"Làm rõ các con số và đọc tín hiệu của đối phương."}</span></div>`:""}
      ${p.tempt&&p.npc&&L.ar&&g.tier!=="autopilot"?temptationVN(L,p.npc,p.tempt.stake,p.tempt.roundsLeft):""}
-     ${p.causes&&p.causes.length?`<p class="cause">${esc(causeLine(L,p.causes))}</p>`:""}
      ${timed?`<div class="timer"><div class="row"><span><span class="full">Đầu óc đang căng: bạn </span>còn <span id="timerLeft">${Math.round(6+24*(g.bw/100))}</span> giây để nghĩ</span><span>hết giờ sẽ chọn ${timerPick(L,p,g)+1}</span></div><div class="track" title="Băng thông thấp: bạn không có nhiều thời gian để nghĩ"><i id="timerbar" style="width:100%"></i></div></div>`:""}
      <div class="choices">${p.choices.map((c,i)=>choiceHTML(L,p,c,i,states[i],g,yearly)).join("")}</div></article>`;
     if(G.acting)dec.querySelectorAll("[data-i]").forEach(b=>b.disabled=true);
-    dec.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(G.acting)return;clearInterval(G.timerIv);G.timerKey=null;resolve(L,+b.dataset.i);render()});
+    dec.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(G.acting)return;clearInterval(G.timerIv);G.timerKey=null;const mb=memSnapshot(L);resolve(L,+b.dataset.i);const t=rememberToast(L,mb);render();if(t)showToast(t)});
     const rm=document.getElementById("readmore");rm.onclick=()=>{const t=document.getElementById("decTxt");const o=t.classList.toggle("open");rm.textContent=o?"Thu gọn":"Đọc hết"};
     if(G.tabKey!==key){G.tabKey=key;setTab("nam")}
     if(fi!==null){const b=dec.querySelector(`[data-i="${fi}"]:not([disabled])`);if(b)b.focus({preventScroll:true})}
@@ -23649,8 +24167,9 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   if(G.measureDock)G.measureDock()}
 
 function renderLog(L){const ents=L.log.slice(-160).reverse();const groups=[];for(const e of ents){const last=groups[groups.length-1];if(last&&last.age===e.age)last.items.push(e);else groups.push({age:e.age,items:[e]})}
+  const dk=L.decades||{};for(const k in dk){const a=+k;if(!groups.some(g=>g.age===a)&&(!ents.length||a>=ents[ents.length-1].age)){groups.push({age:a,items:[]});groups.sort((x,y)=>y.age-x.age)}}
   const shown=groups.slice(0,G.logYears);
-  document.getElementById("log").innerHTML=shown.map(gp=>`<div class="yr"><h4>${gp.age}<small>tuổi</small></h4><ul>${gp.items.map(logItem).join("")}</ul></div>`).join("");
+  document.getElementById("log").innerHTML=shown.map(gp=>`<div class="yr"><h4>${gp.age}<small>tuổi</small></h4><ul>${dk[gp.age]?decadeHTML(dk[gp.age]):""}${gp.items.map(logItem).join("")}</ul></div>`).join("");
   const more=document.getElementById("logMore"),rest=groups.length-shown.length;more.hidden=rest<=0;if(rest>0)more.textContent=`Xem ${Math.min(10,rest)} năm trước`}
 function logItem(e){const t=String(e.text),tone=e.tone||"";
   if(/\bchoice\b/.test(tone)){const SEP=" — bạn chọn: ",k=t.indexOf(SEP);if(k>0)return`<li class="e choice"><span class="t">${esc(t.slice(0,k))}</span><span class="c">Bạn chọn: ${esc(t.slice(k+SEP.length))}</span></li>`}
@@ -23704,37 +24223,60 @@ function renderCodex(){const L=G.life,c=document.getElementById("codex");if(!c||
   document.getElementById("codexClose").onclick=()=>{c.hidden=true}}
 
 /* ---------- Kết thúc ---------- */
-function ending(){stop();leaveBoard();clearInterval(G.timerIv);const L=G.life;const meta=metaOnDeath(L);const kids=L.kids.filter(k=>k.alive).length;
-  const avgH=Math.round(L.map.filter(m=>!m.end).reduce((s,m)=>s+m.h,0)/Math.max(1,L.map.filter(m=>!m.end).length));
-  store.add({name:L.name,country:L.birthC.n,age:L.age,cause:L.cause,date:Date.now()});
-  const diff=L.age-L.le,n=rulerN(L);const safe=f=>{try{return f()}catch(e){console.error(e);return""}};
-  const bars=`<div class="peer me"><div class="pl" style="--a:${Math.round(L.age/n*100)}%"></div><span><b class="n">Bạn</b>, ${esc(L.birthC.n)} · sống ${L.age} năm</span></div>`+G.peers.map(p=>`<div class="peer${p.deathAge<L.age?" dead":""}"><div class="pl" style="--a:${Math.round(p.deathAge/n*100)}%"></div><span><b class="n">${esc(p.name)}</b>, ${esc(p.c.n)} · sống đến ${p.deathAge} tuổi, ${esc(p.cause)}. ${esc(p.tl[Math.max(0,p.deathAge-1)]||"")}</span></div>`).join("");
-  app.innerHTML=`<section class="end">
-   <div><p class="closed">Cuộc đời đã khép lại</p><h2>${esc(L.name)}, ${L.age} tuổi</h2></div>
-   <div class="ruler">${rulerHTML(L,"endmap")}</div>
-   <p class="summary">Sinh ra ở ${esc(L.birthC.n)}${L.migrated?`, mất ở ${esc(L.c.n)}`:""}. Qua đời vì ${esc(L.cause)}. ${diff>=0?`Sống lâu hơn tuổi thọ trung bình nơi sinh ${diff} năm.`:`Ít hơn tuổi thọ trung bình nơi sinh ${-diff} năm.`}</p>
-   <div class="acts"><button class="btn primary" id="again">Chào đời lần nữa</button><button class="btn" id="home">Về trang đầu</button></div>
-   <div class="epitaph"><span class="label">Văn bia</span>${eulogyVN(L).map(p=>`<p>${esc(p)}</p>`).join("")}<div id="epilogue" hidden></div></div>
-   <div class="facts">
-    <div><span class="k">Đi học</span><b>${L.school.years} năm</b><span class="note">${L.school.deg?"có bằng đại học":L.school.never?"chưa từng đến trường":"không học đại học"}</span></div>
-    <div><span class="k">Nghề</span><b class="word">${esc(L.job||"không có")}</b></div>
-    <div><span class="k">Gia đình</span><b>${L.kids.length} con</b><span class="note">${kids} còn sống${L.spouse?`, bạn đời ${esc(L.spouse)}`:""}</span></div>
-    <div><span class="k">Hạnh phúc trung bình</span><b>${avgH}/100</b></div>
-   </div>
+function ending(){
+  stop(); leaveBoard(); clearInterval(G.timerIv); { const t = document.getElementById("toast"); if (t) t.remove(); }
+  const L = G.life; const meta = metaOnDeath(L); const kids = L.kids.filter(k => k.alive).length;
+  const avgH = Math.round(L.map.filter(m => !m.end).reduce((s, m) => s + m.h, 0) / Math.max(1, L.map.filter(m => !m.end).length));
+  store.add({ name: L.name, country: L.birthC.n, age: L.age, cause: L.cause, date: Date.now() });
+  const diff = L.age - L.le, n = rulerN(L); const safe = f => { try { return f(); } catch (e) { console.error(e); return ""; } };
+  // Tính "suýt có" MỘT lần, dùng chung cho dòng suýt nữa, Tấm bia và phần chi tiết (trước đây counterfactualVN tự tính lại).
+  let cf = null; try { cf = counterfactuals(L); } catch (e) { console.error(e); }
+  G.cf = cf;
+  const nm = nearMissOf(L, cf), fu = funeralOf(L), eul = (() => { try { return eulogyVN(L) || []; } catch (e) { return []; } })();
+  const canFork = !!(nm && typeof resumeFrom === "function");
+  const bars = `<div class="peer me"><div class="pl" style="--a:${Math.round(L.age / n * 100)}%"></div><span><b class="n">Bạn</b>, ${esc(L.birthC.n)} · sống ${L.age} năm</span></div>` +
+    G.peers.map(p => `<div class="peer${p.deathAge < 5 ? " dead" : ""}"><div class="pl" style="--a:${Math.round(p.deathAge / n * 100)}%"></div><span><b class="n">${esc(p.name)}</b>, ${esc(p.c.n)} · sống đến ${p.deathAge} tuổi, ${esc(p.cause)}.</span></div>`).join("");
+  app.innerHTML = `<section class="end">
+   <div><p class="closed">Cuộc đời đã khép lại${L.forkOf ? ` · đời rẽ từ năm ${L.forkOf.age} tuổi` : ""}</p><h2>${esc(L.name)}, ${L.age} tuổi</h2>
+     <p class="summary">Sinh ra ở ${esc(L.birthC.n)}${L.migrated ? `, mất ở ${esc(L.c.n)}` : ""}. Qua đời vì ${esc(L.cause)}. ${diff >= 0 ? `Sống lâu hơn tuổi thọ trung bình nơi sinh ${diff} năm.` : `Ít hơn tuổi thọ trung bình nơi sinh ${-diff} năm.`}</p></div>
+   <div class="ruler">${rulerHTML(L, "endmap")}</div>
+
+   <div class="epitaph"><span class="label">Văn bia</span>${eul.length ? (() => { const lead = epitaphLine(eul) || firstSentence(eul[0]); const norm = s => s.replace(/\s*\(năm bạn (\d+) tuổi\)/g, " năm bạn $1 tuổi").replace(/\s+/g, " ").trim();
+       const rest = eul.map(p => norm(p).replace(lead, "").trim()).filter(Boolean); return `<p class="lead">${esc(lead)}</p>${rest.map(p => `<p>${esc(p)}</p>`).join("")}`; })() : ""}<div id="epilogue" hidden></div></div>
+
+   ${fu.came.length || fu.away.length ? `<div class="panel funeral"><span class="label">Ai đến đám tang</span>
+     ${fu.came.length ? `<ul class="came">${fu.came.map(r => `<li>${esc(funeralLine(r, true))}</li>`).join("")}</ul>` : `<p class="note">Không ai thân đến tiễn.</p>`}
+     ${fu.away.length ? `<p class="k">Vắng mặt</p><ul class="away">${fu.away.map(r => `<li>${esc(funeralLine(r, false))}</li>`).join("")}</ul>` : ""}</div>` : ""}
+
+   ${nm ? `<div class="nearmiss"><span class="label">Suýt nữa thì…</span><p>${esc(nm.text)}</p>
+     ${canFork ? `<button class="btn" id="forkBtn">Thử lại từ năm ${nm.age} tuổi</button><span class="note">Cùng hạt giống, cùng mọi năm trước đó. Lần này bạn chọn khác.</span>` : ""}</div>` : ""}
+
    <div class="panel"><span class="label">Bốn em bé sinh cùng giây với bạn</span><div class="peers">${bars}</div></div>
-   ${(()=>{const ps=playStyle(L);return`<div class="panel style"><span class="label">Phong cách chơi của bạn</span><h3>${esc(ps.name)}</h3><p>${esc(ps.desc)}</p>
-     <span class="note">hợp tác ${ps.t.coop>=0?"+":""}${ps.t.coop}, công bằng ${ps.t.fair>=0?"+":""}${ps.t.fair}, liều ${ps.t.risk>=0?"+":""}${ps.t.risk}, cứng rắn ${ps.t.bold>=0?"+":""}${ps.t.bold}; thắng ${ps.g.w}/${ps.g.n} ván có đối thủ</span></div>`})()}
-   ${safe(()=>counterfactualVN(L))}
-   ${safe(()=>causalityVN(L))}
-   ${safe(()=>{const t=typeof legacyVN==="function"?legacyVN(L):"";return t?`<div class="panel"><span class="label">Bạn để lại gì</span><p>${esc(t)}</p></div>`:""})}
-   ${safe(()=>topologyVN(L))}
-   <details class="panel"><summary><span class="label">Sổ tay lý thuyết trò chơi: ${Object.keys(L.codex||{}).length}/${Object.keys(CONCEPTS).length} trang</span></summary>${codexHtml(L)}</details>
-   <details class="panel"><summary><span class="label">Tiền kiếp</span></summary><p>Đây là kiếp thứ ${meta.lives}. Ký ức mang sang kiếp sau: ${meta.perks.map(id=>{const p=PERKS.find(x=>x.id===id);return p?`<b>${p.vi}</b> (${p.desc})`:id}).join(", ")||"chưa có"}.</p></details>
-   <div class="acts"><button class="btn primary" id="again2">Chào đời lần nữa</button><button class="btn" id="home2">Về trang đầu</button></div>
+
+   <div class="acts"><button class="btn primary" id="again">Chào đời lần nữa</button><button class="btn" id="tombBtn">Lưu tấm bia</button><button class="q" id="home">Về trang đầu</button></div>
+
+   <details class="panel more-end"><summary><span class="label">Sổ đời chi tiết</span></summary>
+     <div class="facts">
+      <div><span class="k">Đi học</span><b>${L.school.years} năm</b><span class="note">${L.school.deg ? "có bằng đại học" : L.school.never ? "chưa từng đến trường" : "không học đại học"}</span></div>
+      <div><span class="k">Nghề</span><b class="word">${esc(L.job || "không có")}</b></div>
+      <div><span class="k">Gia đình</span><b>${L.kids.length} con</b><span class="note">${kids} còn sống${L.spouse ? `, bạn đời ${esc(L.spouse)}` : ""}</span></div>
+      <div><span class="k">Hạnh phúc trung bình</span><b>${avgH}/100</b></div>
+     </div>
+     ${(() => { const ps = playStyle(L); return `<div class="panel style"><span class="label">Phong cách chơi của bạn</span><h3>${esc(ps.name)}</h3><p>${esc(ps.desc)}</p></div>`; })()}
+     ${safe(() => counterfactualVN(L, cf))}
+     ${safe(() => causalityVN(L))}
+     ${safe(() => { const t = typeof legacyVN === "function" ? legacyVN(L) : ""; return t ? `<div class="panel"><span class="label">Bạn để lại gì</span><p>${esc(t)}</p></div>` : ""; })}
+     ${safe(() => topologyVN(L))}
+     <div class="panel"><span class="label">Sổ tay lý thuyết trò chơi: ${Object.keys(L.codex || {}).length}/${Object.keys(CONCEPTS).length} trang</span>${codexHtml(L)}</div>
+     <div class="panel"><span class="label">Tiền kiếp</span><p>Đây là kiếp thứ ${meta.lives}. Ký ức mang sang kiếp sau: ${meta.perks.map(id => { const p = PERKS.find(x => x.id === id); return p ? `<b>${p.vi}</b> (${p.desc})` : id; }).join(", ") || "chưa có"}.</p></div>
+   </details>
    <p class="foot">Đây là mô phỏng dựa trên số liệu trung bình, không dự đoán cuộc đời của bất kỳ ai có thật.</p></section>`;
-  for(const id of["again","again2"])document.getElementById(id).onclick=birth;for(const id of["home","home2"])document.getElementById(id).onclick=intro;
-  scrollTo(0,0);
-  const ep=document.getElementById("epilogue");if(NAR.enabled&&NAR.status!=="off"&&NAR.sample){ep.hidden=false;narratorEpilogue(L,ep)}}
+  document.getElementById("again").onclick = birth; document.getElementById("home").onclick = intro;
+  const tb = document.getElementById("tombBtn"); tb.onclick = () => showTombstone(L, cf, tb);
+  const fb = document.getElementById("forkBtn"); if (fb) fb.onclick = () => { fb.disabled = true; fb.textContent = "Đang quay lại…"; setTimeout(() => { let P = null; try { P = resumeFrom(L, nm); } catch (e) { console.error(e); } if (!P) { fb.textContent = "Không quay lại được năm này"; return; } G.life = P; G.autoDecide = false; play(); }, 30); };
+  scrollTo(0, 0); document.getElementById("again").focus({ preventScroll: true });
+  const ep = document.getElementById("epilogue"); if (NAR.enabled && NAR.status !== "off" && NAR.sample) { ep.hidden = false; narratorEpilogue(L, ep); }
+}
 
 narratorInit();
 document.addEventListener("keydown",e=>{if(G.acting)return;if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;const n=parseInt(e.key,10);if(!n)return;const b=document.querySelector(`#dec [data-i="${n-1}"]:not([disabled])`);if(b){e.preventDefault();b.click()}});

@@ -5,7 +5,7 @@ Trang game: https://claude.ai/artifact/Smj8uxWFib5C34KjY714Sw
 
 ## Cấu trúc
 - `argon/`: engine bằng TypeScript, gồm kinh tế, của cải (`src/engine/economy/Holdings.ts`), băng thông, NPC, storylet, ô "Tôi muốn…" (Agency) và 96 con đường đời (`src/engine/narrative/paths/`).
-- `doi-nguoi/`: trang game. `index.html` là bản đã ghép, chính là bản đăng lên trang game. Mã host nằm trong `bridge.js`, `living.js`, `choice.js`, `narrator.js`, `story.js`, `agency.js`, `money.js`.
+- `doi-nguoi/`: trang game. `index.html` là bản đã ghép, chính là bản đăng lên trang game. Mã host nằm trong `bridge.js`, `living.js`, `choice.js`, `narrator.js`, `story.js`, `agency.js`, `money.js`, `phase1.js` (hệ quả nhìn thấy được, thẻ thập kỷ, màn kết v2, Tấm bia, thử lại từ năm N).
 - `argon/docs/superpowers/`: spec và kế hoạch của tính năng "Tôi muốn…".
 - `argon/docs/ledger/`: nhật ký quyết định, các lỗi đã sửa, các việc để sau.
 
@@ -23,6 +23,8 @@ node doi-nguoi/tests/path-test.js
 node doi-nguoi/tests/agency-host-test.js
 node doi-nguoi/tests/review-fixes-test.js
 node doi-nguoi/tests/money-test.js        # tiền: không NaN, tối đa 1 thẻ tiền/năm, mua-bán liên tục thì lỗ, chơi lại khớp
+node doi-nguoi/tests/readers-test.js      # bảng MEM_READERS (báo "X sẽ nhớ điều này") phải khớp mọi storylet đọc ý kiến NPC
+node doi-nguoi/tests/fork-test.js         # "Thử lại từ năm N": đời rẽ giống bản gốc trước chỗ rẽ, chơi tiếp được, tua lại khớp (khoảng 1,5 phút)
 node doi-nguoi/tests/replay-test.js       # tất định: 200 đời có sương mù, AI, tiền, perk; vẽ giao diện không đổi đời; tua lại khớp 100%; đời giả định giữ nguyên các năm trước (ledger 2026-10-18-tat-dinh)
 node doi-nguoi/tests/ui-agency-test.mjs   # cần playwright-core và Chromium; sửa đường dẫn import ở dòng 2 cho đúng máy
 node doi-nguoi/tests/ui-test.mjs
@@ -40,7 +42,7 @@ Spec: `argon/docs/superpowers/specs/2026-10-18-tien-bac-design.md`. Người ch�
 ## Tình trạng (18/10/2026)
 ### Kho 200 bước ngoặt (bản tích hợp cục bộ)
 
-Thêm 200 cảnh mở đầu chia đều điện ảnh/sitcom, hài vô lý, tiền và tình yêu; 600 cảnh hậu quả theo lựa chọn, mỗi cảnh có hai quyết định. Danh mục: `argon/docs/content/2026-10-18-200-buoc-ngoat.md`. Chi tiết tích hợp và giới hạn: `argon/docs/ledger/2026-10-18-200-turning-points.md`. Chạy toàn bộ kiểm tra headless và lưu log: `python tools/verify-turning-points.py`. Xuất lại danh mục: `node --experimental-strip-types tools/export-turning-catalog.mjs`. Bản này chưa được đăng lên Artifact.
+Thêm 200 cảnh mở đầu chia đều điện ảnh/sitcom, hài vô lý, tiền và tình yêu; 600 cảnh hậu quả theo lựa chọn, mỗi cảnh có hai quyết định. Đã ghép đợt 1 của Claude. **Giữ draft:** mỗi nhánh hiện chỉ có một thẻ tiếp nối, phép đo 232 lần đổi lựa chọn có trung vị 1,5625% thẻ tương lai khác đi; chưa đạt chuẩn chiều sâu/70% trong `argon/docs/fate/AUTHORING.md`. 17/17 kiểm tra headless qua không chứng minh đạt chuẩn kể chuyện. Danh mục: `argon/docs/content/2026-10-18-200-buoc-ngoat.md`. Chi tiết tích hợp và giới hạn: `argon/docs/ledger/2026-10-18-200-turning-points.md`. Chạy toàn bộ kiểm tra headless và lưu log: `python tools/verify-turning-points.py`. Đo mức khác biệt: `node tools/measure-turning-divergence.js doi-nguoi/tests/.head.js 60 4`. Xuất lại danh mục: `node --experimental-strip-types tools/export-turning-catalog.mjs`. Bản này chưa được đăng lên Artifact.
 
 - Lỗi 0, kẹt 0. Trung vị 110 quyết định mỗi đời. Lặp 4,96 lần mỗi đời. 2.315 tình huống, 96 con đường đời.
 - Việc để sau:
