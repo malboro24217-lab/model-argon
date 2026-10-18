@@ -392,6 +392,61 @@ body.modal-open{overflow:hidden}
 .tomb-hint{font-size:14px;color:var(--print);text-align:center;font-weight:500}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
 
+/* ===== Mùa (canon event): màu nhấn theo mùa đang chạy, banner, mùa trên thước đời, danh sách mùa ở màn kết =====
+   canon-ui.js đặt body[data-season] (id mùa, kỳ dị viết hoa kiểu w_S01), body[data-weird] (sf | abs), --season (màu gốc của mùa)
+   và --season-ink-l / --season-ink-d (màu chữ đã kéo tương phản ≥ 4,5 trên giấy sáng / tối). Màu gốc chỉ dùng cho vạch, nền nhạt. */
+body[data-season]{--season-ink:var(--season-ink-l,var(--season));--season-wash:color-mix(in oklab,var(--season) 8%,var(--sheet));--season-edge:color-mix(in oklab,var(--season) 40%,var(--rule))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body[data-season]{--season-ink:var(--season-ink-d,var(--season));--season-wash:color-mix(in oklab,var(--season) 14%,var(--sheet));--season-edge:color-mix(in oklab,var(--season) 45%,var(--rule))}}
+:root[data-theme="dark"] body[data-season]{--season-ink:var(--season-ink-d,var(--season));--season-wash:color-mix(in oklab,var(--season) 14%,var(--sheet));--season-edge:color-mix(in oklab,var(--season) 45%,var(--rule))}
+body[data-season] .sec>h2{border-bottom-color:color-mix(in oklab,var(--season-ink) 70%,var(--print))}
+body[data-season]:not(.tunnel) .decision:not(.micro):not(.actcard){border-top-color:var(--season)}
+.season-banner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 20px;align-items:baseline;margin:0 0 14px;padding:10px 16px 12px 16px;
+  background:var(--season-wash,var(--sheet));border:1px solid var(--season-edge,var(--rule));border-left:5px solid var(--season,var(--print));border-radius:3px}
+.season-banner.enter{animation:season-in .8s ease-out}
+@keyframes season-in{from{opacity:0;transform:translateY(-6px)}}
+.sb-head{display:flex;align-items:baseline;gap:6px 12px;min-width:0;flex-wrap:wrap}
+.sb-t{font-family:var(--f-story);font-weight:600;font-size:23px;line-height:1.2;min-width:0}
+.sb-n{font-family:var(--f-ui);font-size:14px;font-weight:700;color:var(--season-ink,var(--muted));margin-right:2px}
+.sb-kind{font-size:11.5px;font-weight:700;color:var(--season-ink);border:1.5px solid currentColor;border-radius:2px;padding:0 6px;white-space:nowrap;transform:rotate(-1.5deg)}
+.sb-meta{display:flex;gap:2px 14px;font-size:13px;color:var(--muted);white-space:nowrap;justify-self:end}
+.sb-yr{font-weight:600;color:var(--print)}
+.sb-beat{font-weight:600;color:var(--season-ink)}
+.sb-track{grid-column:1/-1;height:4px;margin-top:6px;border-radius:2px;overflow:hidden;position:relative;background:color-mix(in oklab,var(--season) 18%,var(--rule-soft))}
+.sb-track i{display:block;height:100%;background:var(--season);transition:width .4s}
+.cells i.ss::before{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--sc);border-radius:0 0 1px 1px}
+.cells i.ss.ahead::before{opacity:.38}
+@media (min-width:821px){.topbar{grid-template-columns:auto minmax(150px,1fr) auto auto}.menu{flex-wrap:wrap;justify-content:flex-end}}
+.menu .weird{display:flex;align-items:center;gap:6px;cursor:default}
+.menu .weird label{cursor:pointer}
+.menu .weird select{border:1px solid var(--rule);background:var(--sheet);color:var(--print);border-radius:4px;padding:3px 4px;font-size:13px;min-height:32px;cursor:pointer}
+.menu .weird select:disabled{opacity:.6;cursor:default}
+body[data-weird] .menu .weird select{border-color:var(--season)}
+.seasons-end .slist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.sm{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:2px 14px;align-items:baseline;padding:6px 0 6px 14px;border-left:5px solid var(--sc)}
+.sm-n{font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.sm-b{min-width:0;font-size:15.5px}
+.sm-b b{font-family:var(--f-story);font-weight:600;font-size:17px}
+.sm-k{font-size:12px;color:var(--muted);white-space:nowrap}
+.sm-a{display:flex;align-items:baseline;gap:10px;font-size:13.5px;color:var(--muted);white-space:nowrap;justify-self:end}
+.sm-st{font-size:11.5px;font-weight:700;border:1.5px solid currentColor;border-radius:2px;padding:0 6px;display:inline-block;transform:rotate(-2deg)}
+.sm-st.seal{color:var(--seal)} .sm-st.cut{color:var(--ochre)}
+.sm-l{grid-column:2/-1;font-family:var(--f-story);font-style:italic;font-size:14.5px;line-height:1.5;color:var(--muted);max-width:62ch}
+@media (max-width:820px){
+  .season-banner{margin:10px 0 0;padding:8px 12px 9px;gap:3px 12px;border-left-width:4px;align-items:center;grid-template-areas:"head head" "track meta"}
+  .sb-head{grid-area:head;flex-wrap:nowrap}
+  .sb-t{font-size:17.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sb-n{font-size:12.5px}
+  .sb-kind,.sb-beat{display:none}
+  .sb-meta{grid-area:meta;font-size:12.5px;gap:2px 10px}
+  .sb-track{grid-area:track;height:3px;margin-top:0}
+  body.pending .season-banner{padding:6px 12px 8px;margin-top:8px}
+  body.pending .sb-ages{display:none}
+  .cells i.ss::before{height:3px}
+  .menu .weird{justify-content:space-between}
+  .sm{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n a" "b b" "l l";gap:2px 10px;padding-left:12px}
+  .sm-n{grid-area:n} .sm-a{grid-area:a} .sm-b{grid-area:b} .sm-l{grid-area:l}
+}
+
 @media (max-width:980px) and (min-width:821px){.board{grid-template-columns:220px minmax(0,1fr);}.board>aside:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:26px}}
 @media (max-width:820px){
   .intro{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:max(24px,env(safe-area-inset-top,0px))}
@@ -498,6 +553,7 @@ body.modal-open{overflow:hidden}
 </style>
 
 <div class="wrap" id="app"></div>
+<script id="canonui"></script>
 
 <script id="engine">
 /* ================= DỮ LIỆU =================
@@ -38850,7 +38906,7 @@ const ICON_PLAY=`<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 0l9 6-9
 const ICON_LOCK=`<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M3 6V4a3 3 0 0 1 6 0v2h1.5v8h-9V6H3zm1.5 0h3V4a1.5 1.5 0 0 0-3 0v2z"/></svg>`;
 const LIFESTYLES=[["tan_tien","Tằn tiện"],["vua_phai","Vừa phải"],["thoai_mai","Thoải mái"],["pho_truong","Phô trương"]];
 const isPhone=()=>matchMedia("(max-width:820px)").matches;
-function leaveBoard(){document.body.classList.remove("tunnel","pending","playing");document.documentElement.classList.remove("playing");delete document.body.dataset.tab}
+function leaveBoard(){document.body.classList.remove("tunnel","pending","playing");document.documentElement.classList.remove("playing");delete document.body.dataset.tab;if(typeof seasonTheme==="function")seasonTheme(null)}
 
 /* ---------- Mở đầu ---------- */
 function intro(){stop();leaveBoard();clearInterval(G.timerIv);const past=store.get();const t0=performance.now();
@@ -38897,10 +38953,11 @@ function birth(){leaveBoard();const seed=(Math.random()*2**32)>>>0;const L=creat
 
 /* ---------- Thước đời ---------- */
 function rulerN(L){return L.alive?Math.max(90,L.age+10,L.le+15):Math.max(90,L.age+1,L.le+15)}
-function rulerCells(L){const n=rulerN(L),cells=[];
+function rulerCells(L){const n=rulerN(L),cells=[];const spans=typeof seasonSpans==="function"?seasonSpans(L):[];
   for(let i=0;i<n;i++){const m=L.map[i-1];let cls="",st="";
     if(i===0){cls="y";st="--h:50%"}else if(m&&m.end)cls="end";else if(m){cls="y";st=`--h:${Math.max(8,Math.min(100,Math.round((m.h-30)*1.6)))}%`}
     if(i===L.age&&L.alive)cls+=" now";if(i===L.le)cls+=" le";if(i%10===0&&i)cls+=" dec";
+    const sp=spans.find(x=>i>=x.from&&i<=(x.aheadTo||x.to));if(sp){cls+=i>sp.to?" ss ahead":" ss";st+=(st?";":"")+`--sc:${sp.color}`}
     cells.push(`<i class="${cls.trim()}"${st?` style="${st}"`:""} title="${i} tuổi"></i>`)}
   const ticks=Array.from({length:Math.ceil(n/10)},(_,k)=>`<span style="grid-column:span ${Math.min(10,n-k*10)}">${k*10}</span>`).join("");
   return{n,cells:cells.join(""),ticks}}
@@ -38923,10 +38980,12 @@ function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.story
         <button class="q" id="auto">Tự chơi: tắt</button>
         <button class="q" id="aiBtn">AI kể chuyện</button>
         <button class="q" id="codexBtn">Sổ tay</button>
+        <div class="q weird" id="weirdBox" role="group" aria-label="Độ điên" hidden></div>
         <button class="q" id="quit">Thoát</button>
       </nav>
     </div>
   </header>
+  <section class="season-banner" id="season-banner" hidden></section>
   <section class="ruler" aria-label="Thước đời, mỗi ô là một năm">
     <div class="ruler-head"><span class="k" id="rulerHead"></span>
       <span class="ruler-legend"><span><i class="sw"></i>nhạt: năm buồn, đậm: năm vui</span><span><i class="sw le"></i>tuổi thọ trung bình</span></span></div>
@@ -39054,6 +39113,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   document.getElementById("codexBtn").textContent=`Sổ tay (${Object.keys(L.codex||{}).length})`;
   const ab=document.getElementById("aiBtn");ab.textContent=NAR.status==="off"?"AI kể chuyện: không có":`AI kể chuyện: ${NAR.enabled?(NAR.status==="busy"?"đang viết…":"bật"):"tắt"}`;ab.classList.toggle("on",NAR.enabled&&NAR.status!=="off");ab.disabled=NAR.status==="off";renderCodex();
   document.getElementById("auto").textContent=`Tự chơi: ${G.autoDecide?"bật":"tắt"}`;document.getElementById("auto").classList.toggle("on",G.autoDecide);renderWant(L);
+  if(typeof seasonTheme==="function"){seasonTheme(L);seasonBanner(L);weirdMenu(L)}
   const pend=!!(L.pending||G.card);document.body.classList.toggle("pending",pend&&L.alive);
   // thước đời
   document.getElementById("rulerHead").innerHTML=`Năm thứ <b>${L.age}</b> trên tuổi thọ trung bình <b>${L.le}</b> ở ${esc(L.birthC?L.birthC.n:L.c.n)}`;
@@ -39190,6 +39250,7 @@ function ending(){
    <div><p class="closed">Cuộc đời đã khép lại${L.forkOf ? ` · đời rẽ từ năm ${L.forkOf.age} tuổi` : ""}</p><h2>${esc(L.name)}, ${L.age} tuổi</h2>
      <p class="summary">Sinh ra ở ${esc(L.birthC.n)}${L.migrated ? `, mất ở ${esc(L.c.n)}` : ""}. Qua đời vì ${esc(L.cause)}. ${diff >= 0 ? `Sống lâu hơn tuổi thọ trung bình nơi sinh ${diff} năm.` : `Ít hơn tuổi thọ trung bình nơi sinh ${-diff} năm.`}</p></div>
    <div class="ruler">${rulerHTML(L, "endmap")}</div>
+   ${safe(() => typeof seasonsEndHTML === "function" ? seasonsEndHTML(L) : "")}
 
    <div class="epitaph"><span class="label">Văn bia</span>${eul.length ? (() => { const lead = epitaphLine(eul) || firstSentence(eul[0]); const norm = s => s.replace(/\s*\(năm bạn (\d+) tuổi\)/g, " năm bạn $1 tuổi").replace(/\s+/g, " ").trim();
        const rest = eul.map(p => norm(p).replace(lead, "").trim()).filter(Boolean); return `<p class="lead">${esc(lead)}</p>${rest.map(p => `<p>${esc(p)}</p>`).join("")}`; })() : ""}<div id="epilogue" hidden></div></div>
