@@ -187,11 +187,15 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     ok(!!e3 && e3.doors.length === 3 && e3.doors.every((d) => d.season === "xu_nguoi"), "canon: cửa chung lùi về mùa thường chưa chơi đầu tiên");
     /* R14: không còn đường di cư thì không có cửa tới xu_nguoi (cửa mầm, cửa chung, cửa lùi) */
     const e4 = gen(base({ weird: 0, flags: allPlayed, can_migrate: false }), "tien", [debt], 5, [ONE]);
-    ok(!e4 || e4.doors.every((d) => d.season !== "xu_nguoi"), "canon R14: can_migrate false → không cửa xu_nguoi");
+    ok(e4 === null, "canon R14: 4 mùa thường đã chơi, không còn đường di cư → không dựng được 3 cửa (không lùi về xu_nguoi)");
+    let migDoor = 0;
     for (let i = 1; i <= 20; i++) {
-      const ev = gen(base({ weird: 0, can_migrate: false }), "tien", [debt], i);
-      ok(!ev || ev.doors.every((d) => d.season !== "xu_nguoi"), `canon R14: mầm + cửa chung không dẫn tới xu_nguoi (rng ${i})`);
+      const ev = gen(base({ weird: 0, can_migrate: false, owns: new Set(["house"]) }), "tien", [debt], i);
+      ok(!!ev && ev.doors.length === 3 && ev.doors.every((d) => d.season !== "xu_nguoi"), `canon R14: mầm + cửa chung không dẫn tới xu_nguoi (rng ${i})`);
+      const ev2 = gen(base({ weird: 0, can_migrate: true, owns: new Set(["house"]) }), "tien", [debt], i);
+      if (ev2?.doors.some((d) => d.season === "xu_nguoi")) migDoor++;
     }
+    ok(migDoor > 0, `canon R14: còn đường di cư thì cửa xu_nguoi vẫn mở (${migDoor}/20)`);
   }
   {
     const kinds = GENERIC_DOORS.map((d) => d.kind);

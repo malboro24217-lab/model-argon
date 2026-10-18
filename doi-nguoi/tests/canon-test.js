@@ -69,7 +69,7 @@ assert(p50 >= 120 && p50 <= 130, 'decisions p50 ' + p50 + ' in 120–130');
 // 3. Người phụ thuộc (trọng tâm 3): 12 tuổi vào lam_lai / xu_nguoi / tron_chay.
 for (const id of ['lam_lai', 'xu_nguoi', 'tron_chay']) {
   const P = grow(5501, 12, P => !!P.ar && P.ar.started);
-  assert(!canonFacts(P) || !factContext(P).independent, 'dependent');
+  assert.strictEqual(factContext(P).independent, false, id + ': dependent at 12');
   const hh0 = P.ar.hh, job0 = P.job, mig0 = P.migrated, city0 = P.lw.sflags.has('path_city'), c0 = P.c.id;
   enterSeason(P, id);
   assert.strictEqual(P.ar.hh, hh0, id + ': family fund unchanged');
@@ -78,7 +78,8 @@ for (const id of ['lam_lai', 'xu_nguoi', 'tron_chay']) {
   assert.strictEqual(P.lw.sflags.has('path_city'), city0, id + ': no move_city');
   // Landing có tiền/repay: không đụng quỹ chung.
   const land = def(id).landings.find(l => l.effects.money || /repay/.test(l.effects.custom || ''));
-  if (land) { const hh1 = P.ar.hh, mig1 = P.migrated; applyEffect(P, land.effects); settleDependent(P); assert(P.ar.hh >= hh1 - 1e-6, id + ': landing does not drain family fund'); assert.strictEqual(P.migrated, mig1, id + ': no migration at landing'); assert.strictEqual(P.lw.season, null, id + ': landed'); }
+  assert(land, id + ': has a landing with money or repay');
+  { const hh1 = P.ar.hh, mig1 = P.migrated; applyEffect(P, land.effects); settleDependent(P); assert(P.ar.hh >= hh1 - 1e-6, id + ': landing does not drain family fund'); assert.strictEqual(P.migrated, mig1, id + ': no migration at landing'); assert.strictEqual(P.lw.season, null, id + ': landed'); }
 }
 
 // 4. become:<p> ngoài khoảng tuổi chỉ để lại cờ tập tành (R15 mở rộng).
@@ -108,6 +109,79 @@ for (const id of ['lam_lai', 'xu_nguoi', 'tron_chay']) {
   applyEffect(P, { plant: { kind: 'object', key: 'dong_ho', label: 'chiếc đồng hồ của ông' } });
   assert(P.lw.plants.some(p => p.key === 'dong_ho' && p.age === P.age && p.weight === 1), 'plant recorded');
   assert(P.lw.sflags.has(Argon.plantFlag({ kind: 'object', key: 'dong_ho' })), 'plant flag'); }
+
+// 8. I1: hệ số thu nhập của mùa sống suốt mùa, kể cả khi thu nhập đặt lại giữa mùa (mất việc → việc mới, di cư).
+function takeCareer(P) { if (P.pending && P.pending.id === 'career') { const p = P.pending; P.pending = null; p.choices[p.def].fx(P); } }
+{ const pred = P => P.income > 0 && P.job && !P.retired && P.lw.season === null && !P.migrated;
+  const A = grow(4401, 34, pred), B = grow(4401, 34, pred);
+  assert.strictEqual(A.seed, B.seed); assert(near(A.income, B.income, 1e-9), 'twins');
+  enterSeason(A, 'ngoi_sao'); const m = A.lw.season.mult; assert.strictEqual(m, def('ngoi_sao').rules.income, 'mult = rules.income'); assert(m !== 1, 'ngoi_sao has an income factor');
+  for (const P of [A, B]) { customEffect(P, 'job_lose'); customEffect(P, 'job_new'); takeCareer(P); }
+  assert(B.income > 0 && A.job === B.job, 'same new job');
+  assert(near(A.income, B.income * m, 0.01), 'job taken mid-season carries the season factor: ' + A.income + ' vs ' + B.income + ' x ' + m);
+  exitSeason(A, 'cut'); assert(near(A.income, B.income, 0.01), 'exit restores the post-job base: ' + A.income + ' vs ' + B.income); }
+{ const pred = P => P.income > 0 && P.job && !P.retired && P.lw.season === null && !P.migrated && P.c.g < 15000;
+  const dest = COUNTRIES.filter(d => d.g > 40000)[0]; let done = false;
+  for (let s = 0; s < 40 && !done; s++) {
+    const A = grow(6600 + s * 17, 30, pred), B = grow(6600 + s * 17, 30, pred);
+    enterSeason(A, 'ngoi_sao'); const m = A.lw.season.mult;
+    for (const P of [A, B]) { resolveCore(P, { id: 'migrate', data: dest.id }, 0, P.r, P.c); takeCareer(P); }
+    if (!A.migrated || !B.migrated || !(B.income > 0)) continue; done = true;
+    assert(near(A.income, B.income * m, 0.01), 'job after migrating mid-season carries the factor');
+    exitSeason(A, 'cut'); assert(near(A.income, B.income, 0.01), 'exit after migrating restores base: ' + A.income + ' vs ' + B.income); }
+  assert(done, 'found a life that migrates'); }
+{ // Chưa có thu nhập lúc vào mùa thì hệ số vẫn được nhớ (không ép 1).
+  const P = grow(5501, 12, P => !!P.ar && P.ar.started); enterSeason(P, 'ngoi_sao');
+  assert.strictEqual(P.lw.season.mult, def('ngoi_sao').rules.income, 'mult kept even when income is 0 at entry'); }
+
+// 9. I2: bạn đời cưới bằng marry:<tên> mất thì bạn góa, −15 hạnh phúc, đúng một dòng tin.
+{ const roles = ['childhood_friend', 'neighbor', 'partner', 'rival'];
+  const P = grow(8801, 26, P => !P.married && [...P.lw.cast.values()].some(m => m.alive && roles.includes(m.role)));
+  const fr = [...P.lw.cast.values()].find(m => m.alive && roles.includes(m.role));
+  customEffect(P, 'marry:' + fr.name); assert.strictEqual(fr.role, 'spouse', 'primary role is spouse');
+  const happy = [], orig = addSt; addSt = function (L, k, v) { if (L === P && k === 'happy') happy.push(v); return orig(L, k, v); };
+  fr.health = -1e9; const age0 = P.age; try { stepYear(P); } finally { addSt = orig; }
+  assert(P.alive && P.age === age0 + 1, 'player survives the year');
+  assert(!fr.alive, 'spouse died'); assert(!P.married && P.widowed, 'widowed');
+  assert(happy.includes(-15), 'spouse death costs 15 happiness: ' + happy.join(','));
+  assert.strictEqual(P.log.filter(e => e.text.includes(fr.name) && /qua đời/.test(e.text)).length, 1, 'one death line'); }
+
+// 10. M2: marry:<tên> không bao giờ cưới người trong nhà; trùng tên thì ưu tiên người của mùa.
+{ const P = grow(8811, 27, P => !P.married && !!castRole(P, 'mother') && P.income > 0);
+  const mom = castRole(P, 'mother'); customEffect(P, 'marry:' + mom.name);
+  assert(!mom.roles.includes('spouse') && mom.role === 'mother', 'never marries a parent');
+  const Q = grow(8811, 27, P => !P.married && !!castRole(P, 'mother') && P.income > 0);
+  const other = [...Q.lw.cast.values()].find(m => m.alive && ['neighbor', 'partner', 'rival', 'childhood_friend'].includes(m.role));
+  enterSeason(Q, 'lam_lai'); const sid = Object.values(Q.lw.season.cast)[0]; const sm = Q.lw.cast.get(sid); sm.name = other.name;
+  customEffect(Q, 'marry:' + other.name); assert(sm.roles.includes('spouse') && !other.roles.includes('spouse'), 'season member preferred'); }
+
+// 11. M3: người mới của mùa có vai theo mùa: không là người phụ thuộc, không chiếm vai chuẩn trong ctx.cast.
+{ const kid = [...Argon.SEASONS, ...Argon.WEIRD.map(b => b.season)].find(d => (d.reset.cast || []).some(c => c.role === 'child'));
+  assert(kid, 'a season adds a child');
+  const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null);
+  enterSeason(P, kid.id); const ids = Object.values(P.lw.season.cast);
+  for (const id of ids) { const m = P.lw.cast.get(id); assert.strictEqual(m.role, 'season'); assert.strictEqual(m.dependent, false, 'not dependent'); }
+  const ctx = factContext(P); for (const r of ['mother', 'father', 'sibling', 'childhood_friend', 'bully', 'neighbor', 'first_boss', 'official', 'partner', 'creditor', 'mentor', 'rival', 'spouse', 'child']) assert(!ids.includes(ctx.cast[r]), 'season npc does not fill ctx.cast.' + r);
+  assert(!Argon.dependentCosts(P.lw.cast, P.age + 5, false).some(d => ids.includes(d.id)), 'no dependent cost'); }
+
+// 12. rules.yearly đúng một lần mỗi năm trong mùa.
+{ const d = Argon.WEIRD.map(b => b.season).find(s => s.rules.yearly && !s.reset.effects && !/custom/.test(JSON.stringify(s.rules.yearly)));
+  assert(d, 'a season with a plain yearly rule');
+  const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null);
+  enterSeason(P, d.id); let calls = 0, years = 0; const orig = canonApplyQuiet;
+  canonApplyQuiet = function (L, e) { if (L === P && e === d.rules.yearly) calls++; return orig(L, e); };
+  try { seasonYearly(P); assert.strictEqual(calls, 0, 'not in the entry year');
+    for (let k = 0; k < 6 && P.alive; k++) { const on = P.lw.season && P.lw.season.id === d.id; while (P.pending) resolve(P, autoChoice(P)); stepYear(P); if (on && P.alive) years++; seasonYearly(P); }
+  } finally { canonApplyQuiet = orig; }
+  assert(years > 0, 'season ran'); assert.strictEqual(calls, years, 'once per season year: ' + calls + ' vs ' + years); }
+
+// 13. R9: cùng nhịp thì thẻ khai báo trước ra trước.
+{ const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(P, 'lam_lai');
+  const ctx = factContext(P), all = seasonCards('lam_lai');
+  const want = all.filter(s => s.id.startsWith('ss_lam_lai_0_') && s.prerequisites(ctx)).map(s => s.id);
+  const got = []; for (let k = 0; k < 10; k++) { const st = nextSeasonCard(P); if (!st || !st.id.startsWith('ss_lam_lai_0_')) break; got.push(st.id); P.lw.history.push({ id: st.id, age: P.age }); }
+  assert(want.length >= 2, 'beat 0 has ≥ 2 cards'); assert.deepStrictEqual(got, want, 'declaration order: ' + got.join(','));
+  assert.strictEqual(P.lw.counters.season_beat, 1, 'beat advances when the beat runs out'); assert(P.lw.counters.season_next > P.age, 'next beat waits beatGap'); }
 
 // 7. Tua lại: history và tiền khớp trên 30 đời.
 let mism = 0;

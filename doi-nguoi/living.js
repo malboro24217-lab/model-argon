@@ -110,9 +110,11 @@ function becomePath(L, id) {
   L.lw.queue = L.lw.queue.filter(q => q.custom !== "job_new"); // "job_lose|become:x" = đổi đường, không tìm việc mới nữa
   // Thu nhập nền: đang đi một con đường nghề thì gỡ hệ số của con đường đó ra, không gỡ hệ số họ nghề (tránh hao hụt khi đổi đường nhiều lần).
   const fam = famOf(L); let base;
-  if (cur && L.lw.pathBase > 0) base = cur.incomeMult > 0 && L.income > 0 ? L.income / cur.incomeMult : L.lw.pathBase;
-  else base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4);
-  L.lw.pathBase = base;
+  // pathBase luôn lưu không kèm hệ số mùa; base đang dùng thì có (thu nhập trong mùa đã nhân hệ số).
+  const sm = seasonIncomeMult(L);
+  if (cur && L.lw.pathBase > 0) base = cur.incomeMult > 0 && L.income > 0 ? L.income / cur.incomeMult : L.lw.pathBase * sm;
+  else base = L.income > 0 ? L.income / ((FAM[fam] && FAM[fam].m) || 1) : incomeAt(L.c, L.incomePct || .4) * sm;
+  L.lw.pathBase = base / sm;
   if (d.fam && FAM[d.fam]) { for (const k in FAM) fl.delete("job_" + k); fl.add("job_" + d.fam); }
   L.job = d.title; L.lastJob = d.title; L.income = base * d.incomeMult; if (d.kind === "career") L.retired = false;
   log(L, `Bạn bước vào con đường ${d.vn}.`, "big");
@@ -121,7 +123,8 @@ function becomePath(L, id) {
 /** Cưới một người đã có trong dàn nhân vật (R20): thêm vai spouse cho chính người đó, không tạo NPC mới. */
 function marryMember(L, m) {
   for (const o of L.lw.cast.values()) if (o !== m && o.roles.includes("spouse")) { o.roles = o.roles.filter(r => r !== "spouse"); }
-  if (!m.roles.includes("spouse")) m.roles.push("spouse");
+  // Vai chính thành spouse: ageCast báo cái chết theo m.role, nên người này mất thì bạn góa như mọi bạn đời khác.
+  m.role = "spouse"; m.roles = m.roles.filter(r => r !== "season"); if (!m.roles.includes("spouse")) m.roles.push("spouse");
   L.married = true; L.spouse = m.name; L.flags.marriedAt = L.age; L.lw.counters.married_years = 0;
   const kind = { generous_tit_for_tat: "warm", grudger: "proud", opportunist: "restless", always_defect: "restless", tit_for_tat: "fair" }[m.true_archetype] || "fair";
   for (const k of ["warm", "proud", "restless", "fair"]) L.lw.sflags.delete("spouse_" + k); L.lw.sflags.add("spouse_" + kind);
@@ -146,7 +149,11 @@ function customEffect(L, c, npcId) {
     case "move_city": L.lw.sflags.add("path_city"); L.lw.sflags.add("left_home"); if (L.income > 0) L.income *= 1.15; addSt(L, "rel", -5); log(L, "Bạn chuyển lên thành phố.", "big"); break;
     case "study": L.lw.studying = true; if (L.income > 0) L.income *= 0.7; L.lw.queue.push({ at: L.age + 2, custom: "study_done" }); log(L, "Bạn đi học lại, vừa học vừa làm.", "big"); break;
     case "study_done": L.lw.studying = false; addSt(L, "know", 10); if (L.school.years >= 12) { L.school.deg = true; if (L.income > 0) L.income = L.income / 0.7 * 1.1; log(L, "Bạn lấy được tấm bằng.", "good big"); } else { L.school.years = Math.min(12, L.school.years + 2); if (L.income > 0) L.income /= 0.7; log(L, `Bạn học xong lớp ${L.school.years}.`, "good"); } break;
-    case "marry": { const m = arg && [...L.lw.cast.values()].find(x => x.alive && x.name === arg); // R20: cưới đúng người đang có tên đó
+    case "marry": { // R20: cưới đúng người đang có tên đó; ưu tiên người mới của mùa, không bao giờ là người trong nhà
+      const fam = new Set(["mother", "father", "sibling", "child", "spouse"]), sc = new Set(Object.values((L.lw.season && L.lw.season.cast) || {}));
+      const cands = arg ? [...L.lw.cast.values()].filter(x => x.alive && x.name === arg && !fam.has(x.role)) : [];
+      const m = cands.find(x => sc.has(x.id)) || cands[0];
+      if (arg && L.married && [...L.lw.cast.values()].some(x => x.alive && x.role === "spouse" && x.name === arg)) break;   // đã cưới chính người này
       if (m) marryMember(L, m); else resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex) }, 0, L.r, L.c); break; }
     case "have_child": bornChild(L); break;
     case "retire": { L.retired = true; const pen = L.c.g > 30000 ? .55 : L.c.g > 10000 ? .35 : .1; L.income *= pen; log(L, "Bạn nghỉ hưu sớm.", "big"); break; }
@@ -186,6 +193,12 @@ function memoryLine(L, id) {
   return "";
 }
 
+/** Hẹn không phải cảnh (study_done, job_new…) không chờ năm rảnh: áp mọi hẹn custom tới hạn. true nếu một hẹn mở cảnh. */
+function runDueCustoms(L) {
+  const q = L.lw.queue;
+  for (let qi = 0; qi < q.length;) { const it = q[qi]; if (it.at <= L.age && it.custom) { q.splice(qi, 1); customEffect(L, it.custom); if (L.pending) return true; } else qi++; }
+  return false;
+}
 /* ---- Một năm của mạng lưới sống. Gọi từ lifeEvents. Trả về true nếu đã đặt L.pending ---- */
 function livingYear(L) {
   livingInit(L);
@@ -197,7 +210,7 @@ function livingYear(L) {
   seasonYearly(L);   // luật năm của mùa: mỗi năm một lần, kể cả năm bận
   // 1. Dàn nhân vật già đi
   for (const ev of Argon.ageCast(lw.cast, L.age, rng, L.c.g < 8000)) {
-    const r = LW.ROLE_VN[ev.role];
+    const r = LW.ROLE_VN[ev.role] || (lw.cast.get(ev.id) || {}).label || "người quen";
     if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
       if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
     else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
@@ -217,7 +230,7 @@ function livingYear(L) {
   foreshadow(L);
   if (promiseDueScene(L)) return true;
   // Hẹn không phải cảnh (study_done, job_new…) không chờ năm rảnh: áp trước canon event / thẻ mùa.
-  for (let qi = 0; qi < lw.queue.length;) { const q = lw.queue[qi]; if (q.at <= L.age && q.custom) { lw.queue.splice(qi, 1); customEffect(L, q.custom); if (L.pending) return true; } else qi++; }
+  if (runDueCustoms(L)) return true;
   if (canonYear(L)) return true;
   // 4. Hẹn trước (dây cháy chậm có chủ đích)
   const ctx = factContext(L);
@@ -225,7 +238,7 @@ function livingYear(L) {
   for (let qi = 0; qi < lw.queue.length;) {
     const q = lw.queue[qi];
     if (q.at > L.age) { qi++; continue; }
-    if (q.custom) { lw.queue.splice(qi, 1); customEffect(L, q.custom); continue; }
+    if (q.custom) { qi++; continue; }   // hẹn custom đã chạy ở runDueCustoms (trước canonYear)
     const st = pools().major.find(x => x.id === q.storylet) || pools().micro.find(x => x.id === q.storylet);
     if (!st || lw.history.some(h => h.id === st.id) && st.once) { lw.queue.splice(qi, 1); continue; }
     if (!st.prerequisites(factContext(L))) { qi++; continue; }
