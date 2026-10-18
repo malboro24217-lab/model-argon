@@ -40,6 +40,9 @@ export function fits(d: Fork, c: FactContext): boolean {
   }
   return true;
 }
+/** Thẻ gốc đã nâng thành mầm canon event (spec §4, R16): khi mầm đã nổ (cờ canon_<mầm>) thì thẻ gốc không ra nữa. */
+export const ELEVATED_SEEDS: Record<string, string> = { tp_c05: 'nuoc_len', tp_c14: 've_xa', tp_c27: 'nam_cuoi', tp_c39: 'di_chuc' };
+const seedFired = (d: Fork, c: FactContext): boolean => !!ELEVATED_SEEDS[d.id] && c.flags.has('canon_' + ELEVATED_SEEDS[d.id]);
 function flavour(t: Tone, c: FactContext, npc?: string): Effect {
   const cost = c.age < 18 ? -0.01 : -0.03;
   const profiles: Record<Tone, Effect> = {
@@ -71,7 +74,7 @@ export function compileFork(d: Fork): Storylet[] {
     id: d.id, category: 'micro', urgency: 24, cooldownYears: 99, once: true, maxPerLife: 1, tension: 4,
     meta: { kind: d.gates.split(',').includes('money') ? 'money' : 'turning_point' },
     prerequisites: c => !c.flags.has(seen) && (c.counters.tp_seen ?? 0) < 50 && (c.counters.tp_open ?? 0) < 3 &&
-      c.age - (c.counters.tp_last_at ?? -9) >= 2 && slice(c, d.id, 0.55) && fits(d, c),
+      c.age - (c.counters.tp_last_at ?? -9) >= 2 && slice(c, d.id, 0.55) && fits(d, c) && !seedFired(d, c),
     specificity: () => 5,
     build: (c, N) => {
       const npc = actor(d,c), person = npc ? N(npc) : 'người quen';

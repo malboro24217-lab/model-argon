@@ -3,7 +3,8 @@ import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, pla
 import { randomCtx } from "./fuzz-ctx.ts";
 import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch } from "./engine/index.ts";
 import { FIXTURE_SEASON } from "./engine/narrative/canon/seasons/_fixture.ts";
-import { CANON_SEEDS, TURNING_CATALOG } from "./engine/index.ts";
+import { CANON_SEEDS, TURNING_CATALOG, TURNING_STORYLETS } from "./engine/index.ts";
+import { ELEVATED_SEEDS } from "./engine/narrative/turning/kit.ts";
 
 let fails = 0;
 const ok = (cond: boolean, msg: string) => { if (!cond) { fails++; console.log("FAIL " + msg); } };
@@ -350,6 +351,24 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
       ok(!texts[0]!.text.includes("Lần trước") && !texts[0]!.text.includes("Mấy năm trước") && !texts[0]!.text.includes("Lần nước lên trước"), `${sid}: chưa gặp thẻ gốc thì không gọi lại`);
     }
   }
+  /* thẻ gốc không ra nữa khi mầm nâng cấp của nó đã nổ (canon_<mầm>); cờ khác không đổi gì */
+  for (const [sid, card] of Object.entries(ELEVATED)) {
+    const root = TURNING_STORYLETS.find((x) => x.id === card)!;
+    let open = 0, sameOther = 0, n = 0;
+    for (let i = 0; i < 4000 && open < 20; i++) {
+      const c = randomCtx(r);
+      const base0 = root.prerequisites(c);
+      const other = Object.values(ELEVATED).find((x) => x !== card)!;
+      const otherSeed = Object.keys(ELEVATED).find((k) => ELEVATED[k] === other)!;
+      n++; if (root.prerequisites({ ...c, flags: new Set([...c.flags, "canon_" + otherSeed]) }) === base0) sameOther++;
+      if (!base0) continue;
+      open++;
+      ok(!root.prerequisites({ ...c, flags: new Set([...c.flags, "canon_" + sid]) }), `${card}: không ra khi canon_${sid} đã có`);
+    }
+    ok(open >= 5, `${card}: tìm được ctx mở thẻ gốc (có ${open})`);
+    ok(sameOther === n, `${card}: cờ canon của mầm khác không đổi prerequisites`);
+  }
+  ok(eq(ELEVATED_SEEDS, Object.fromEntries(Object.entries(ELEVATED).map(([k, v]) => [v, k]))), "ELEVATED_SEEDS khớp 4 mầm nâng cấp");
   /* cả kho: mọi trục thường, tuổi 8–72 → luôn dựng được biến cố */
   for (const ax of AXES) {
     if (ax === "ky") continue;
