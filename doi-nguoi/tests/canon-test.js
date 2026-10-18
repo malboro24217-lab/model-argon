@@ -58,12 +58,17 @@ assert(p50 >= 120 && p50 <= 130, 'decisions p50 ' + p50 + ' in 120–130');
   const base = P.income / (def('lam_lai').rules.income ?? 1);
   const L_BAN = def('lam_lai').landings.find(l => l.id === 'ban_y_tuong');
   const sv0 = P.savings; const yearlyBase = Math.max(300, base);
+  // Landing có repay:<x> (khép chuyện cũ): host trả min(nợ, x năm thu nhập) vào nợ, nên savings tăng thêm đúng phần đó.
+  const debtOf = () => P.ar.state.capitals.capitalAssets.debt, debt0 = debtOf();
+  const repayX = +((L_BAN.effects.custom || '').split('|').find(p => p.startsWith('repay:')) || 'repay:0').slice(6);
   applyEffect(P, L_BAN.effects);
   assert.strictEqual(P.lw.season, null, 'season ended');
   const last = P.lw.canon.seasons[P.lw.canon.seasons.length - 1];
   assert.strictEqual(last.reason, 'landing'); assert.strictEqual(last.landing, 'ban_y_tuong', 'landing id recorded');
   assert(near(P.income, base, 0.01), 'income multiplier removed');
-  assert(near(P.savings - sv0, yearlyBase * L_BAN.effects.money, 0.02), 'landing money computed on base income');
+  const repaid = debt0 - debtOf();
+  assert(near(repaid, Math.min(debt0, yearlyBase * repayX), 0.02), 'landing repay computed on base income: ' + repaid);
+  assert(near(P.savings - sv0, yearlyBase * L_BAN.effects.money + repaid, 0.02), 'landing money computed on base income');
 }
 
 // 3. Người phụ thuộc (trọng tâm 3): 12 tuổi vào lam_lai / xu_nguoi / tron_chay.

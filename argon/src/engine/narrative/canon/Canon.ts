@@ -52,15 +52,16 @@ const USED_PENALTY = 100;
 const ON_AXIS_BONUS = 50;
 /** 5 mùa thường theo thứ tự lùi về của cửa chung. */
 const NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"] as const;
-/** Mùa cần đã tự lập (bỏ đi, sang nước khác). */
-const NEEDS_INDEPENDENT = new Set<string>(["tron_chay", "xu_nguoi"]);
+/** Mùa cần đã tự lập (bỏ đi, sang nước khác, tự thuê phòng trọ làm lại từ số 0): người còn sống nhờ quỹ gia đình không vào được, kể cả qua cửa của mầm. */
+const NEEDS_INDEPENDENT = new Set<string>(["tron_chay", "xu_nguoi", "lam_lai"]);
 /** Cờ host đặt khi vào một mùa (R7: mùa đã chơi không mở lại trong đời này). */
 export const playedFlag = (seasonId: string): string => "season_played_" + seasonId;
 const played = (c: FactContext, season: string): boolean => c.flags.has(playedFlag(season));
 /** Mùa mà phần chính là di cư sang nước khác (R14): chỉ mở khi đời này còn đường di cư. */
 const EMIGRATION_SEASONS = new Set<string>(["xu_nguoi"]);
 /** Mùa còn mở được cho đời này: chưa chơi, và nếu là mùa di cư thì c.can_migrate. */
-const seasonOpen = (c: FactContext, season: string): boolean => !played(c, season) && (!EMIGRATION_SEASONS.has(season) || c.can_migrate);
+const seasonOpen = (c: FactContext, season: string): boolean => !played(c, season) && (!EMIGRATION_SEASONS.has(season) || c.can_migrate)
+  && (c.independent || !NEEDS_INDEPENDENT.has(season));
 const whoName = (s: Slots, N: Names, dflt: string): string => (s.who ? N(s.who) : dflt);
 
 /**

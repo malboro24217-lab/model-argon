@@ -3,12 +3,11 @@
  * Gag: ba trăm chiếc giày trái.
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, land } from "../kit.ts";
-import { finale } from "./gate.ts";
+import { C, cap, card, ending, finale, land, noOr } from "../kit.ts";
 
 const L_TIEM = land("tiem_giay_lech", "Bạn mở tiệm giày đặt riêng, đôi nào cũng lệch một cách có chủ ý, và người ta xếp hàng để được đi lệch.", { custom: "become:fashion", happy: 6 });
 const L_MANG = land("ban_giay_le", "Bạn bán giày lẻ chiếc trên mạng cho những người chỉ còn một chân giày, gửi đi khắp nơi kèm một tấm thiệp viết tay.", { custom: "become:ecommerce", happy: 4 });
-const L_BAN_Y = land("ban_y_tuong", "Một xưởng lớn mua lại cái tên “Giày lệch”. Lần đầu tiên từ số không, bạn có một khoản đủ để không phải bắt đầu lại nữa.", { money: 1.2, happy: 3 });
+const L_BAN_Y = land("ban_y_tuong", "Một xưởng lớn mua lại cái tên “Giày lệch”. Bạn khép xong chuyện cũ, và lần đầu tiên từ số không, còn một khoản đủ để không phải bắt đầu lại nữa.", { money: 1.2, custom: "repay:1", happy: 3 });
 
 const L_KHEP = land("khep_xuong", "Bạn khép xưởng, để chiếc giày trái cuối cùng lại trên bậu cửa, rồi chuyển về một thị trấn nhỏ yên tĩnh.", { custom: "move_city", happy: 4 });
 
@@ -82,7 +81,7 @@ export const LAM_LAI: SeasonDef = {
       card("ll_day_ban_phong", "Phòng trọ im lặng", (c, k) => `${has(c, "ll_gop_von") ? `${cap(k.npc("ban_phong"))} để lại một lá thư, nói không chịu nổi nữa, rồi mang theo một nửa tiền chung.` : `${cap(k.npc("ban_phong"))} chuyển đi, để lại cái máy may và một câu: “Phòng yên quá, tôi không ngủ được.”`} Đêm đầu tiên không có tiếng ngáy, bạn cũng không ngủ được. ${k.gag()}`,
         [C("Đi tìm người đó, nói cho ra nhẽ", { health: -2, flags: ["ll_tim_ban"], counters: { ll_ban: 1 } }, "Có thể lấy lại một người bạn, mất một tuần"),
          C("Để người ta đi, làm tiếp một mình", { happy: -3, flags: ["ll_de_di"], counters: { ll_cham: 1 } }, "Đỡ phiền, cô đơn hơn")]),
-      card("ll_day_so_khong", "Lần thứ hai ở số không", (c) => `Ba giờ sáng, bạn ngồi đếm lại: ${has(c, "ll_vay") ? "món nợ mới đã bằng một nửa món nợ cũ ngày trước" : "không nợ ai, nhưng cũng chẳng còn gì"}. Lần thứ hai trong đời bạn đứng ở số không, chỉ khác là lần này bạn biết số không trông như thế nào.`,
+      card("ll_day_so_khong", "Lần thứ hai ở số không", (c) => `Ba giờ sáng, bạn ngồi đếm lại: ${has(c, "ll_vay") ? "món nợ mới đã lớn bằng nửa những gì bạn từng mất" : c.debt > 0 ? "món nợ từ đời trước vẫn còn nguyên, còn túi thì chẳng còn gì" : "không nợ ai, nhưng cũng chẳng còn gì"}. Lần thứ hai trong đời bạn đứng ở số không, chỉ khác là lần này bạn biết số không trông như thế nào.`,
         (c, k) => [
           C(`Gọi cho ${k.npc("ba_phe_lieu")}`, { flags: ["ll_goi_ba"], counters: { ll_ba: 1 } }, "Có người chỉ đường, phải nghe giảng một buổi"),
           C("Viết lại kế hoạch từ dòng đầu tiên", { know: 3, flags: ["ll_ke_hoach"] }, "Rõ ràng hơn, chưa ai kiểm chứng"),
@@ -90,12 +89,12 @@ export const LAM_LAI: SeasonDef = {
     ],
     /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. fashion nhận tới 45, ecommerce tới 50 (PATHS) → mở tới 50 / 55. */
     [
-      card("ll_ket_tam_bien", "Tấm biển trước xưởng", (c, k) => `${(c.counters.ll_ba ?? 0) >= 2 ? `${cap(k.npc("ba_phe_lieu"))} cho bạn mượn khoảng sân sau vựa làm xưởng, không lấy tiền, chỉ đòi một đôi giày lệch.` : "Bạn thuê được một gian nhỏ ở cuối chợ, vừa đủ kê cái máy may."} Còn một chuyện của đời trước chưa khép: ${k.scar("no") || "món nợ cũ"}. Lần này, bạn có đủ thứ để chọn cách khép nó. ${k.gag()}`,
+      card("ll_ket_tam_bien", "Tấm biển trước xưởng", (c, k) => `${(c.counters.ll_ba ?? 0) >= 2 ? `${cap(k.npc("ba_phe_lieu"))} cho bạn mượn khoảng sân sau vựa làm xưởng, không lấy tiền, chỉ đòi một đôi giày lệch.` : "Bạn thuê được một gian nhỏ ở cuối chợ, vừa đủ kê cái máy may."} Còn một chuyện của đời trước chưa khép: ${noOr(c, k)}. Lần này, bạn có đủ thứ để chọn cách khép nó. ${k.gag()}`,
         (c) => finale(c.age,
           [ending(L_TIEM, "Treo biển, mở tiệm giày đặt riêng", (c.counters.ll_tieng ?? 0) >= 2 ? "Khách quen đã chờ sẵn, buộc chân ở một chỗ" : "Thành nghề, buộc chân ở một chỗ"),
            ending(L_MANG, "Bán giày lẻ chiếc trên mạng", "Bán khắp nơi, sống trong những thùng hàng")],
           [banY(c), khep]), (c) => c.age <= 50),
-      card("ll_ket_chiec_cuoi", "Chiếc giày trái cuối cùng", (c, k) => `Chỉ còn một chiếc giày trái trong số ba trăm chiếc. Bạn đặt nó lên bàn, cạnh tờ giấy ghi chuyện cũ chưa xong: ${k.scar("no") || "món nợ cũ"}. ${k.gag()}`,
+      card("ll_ket_chiec_cuoi", "Chiếc giày trái cuối cùng", (c, k) => `Chỉ còn một chiếc giày trái trong số ba trăm chiếc. Bạn đặt nó lên bàn, cạnh tờ giấy ghi chuyện cũ chưa xong: ${noOr(c, k)}. ${k.gag()}`,
         (c) => finale(c.age, [ending(L_MANG, "Bán nốt từng chiếc trên mạng", "Chậm rãi, vui, không bao giờ hết việc")], [banY(c), khep], 2)),
     ],
   ],

@@ -23,7 +23,7 @@ export const BEAT_VN: Record<BeatName, string> = { mo_man: "Mở màn", khoi_don
 export interface SeasonKit {
   /** Tên NPC theo id (như `names` của thẻ thường). */
   N: (id: string) => string;
-  /** Chữ của một trong 3 vết; "" khi đời này không có vết đó — thẻ phải tự có chữ dự phòng (`k.scar("no") || "món nợ cũ"`). */
+  /** Chữ của một trong 3 vết; "" khi đời này không có vết đó — thẻ phải tự có chữ dự phòng (vết "no": `noOr(c, k)` trong kit.ts). */
   scar: (k: "nguoi" | "do" | "no") => string;
   /** Tên người mới của mùa theo `NewCast.key`; chưa có tên thì trả `label`. */
   npc: (key: string) => string;

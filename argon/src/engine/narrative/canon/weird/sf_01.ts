@@ -5,26 +5,15 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
+import { C, cap, card, ending, finaleInOrder, land, noOr, season, weird } from "../kit.ts";
 import { slice } from "../../paths/kit.ts";
-import { PATHS } from "../../paths/registry.ts";
 
 /* ---- Chung kết theo tuổi ----
  * Landing nghề (become:<p>) chỉ mở khi tuổi trong [ages[0], ages[1] + 5] của con đường. Mùa có nghề phải có ≥ 2 landing
  * không phải nghề, để ở tuổi nào thẻ chung kết cũng có 2–3 lựa chọn và luôn có ít nhất một lối không phải nghề.
  * Chọn: 2 nghề hợp tuổi + 1 lối khác, hoặc 1 nghề + 2 lối khác, hoặc tới 3 lối khác; giữ thứ tự khai báo. */
 type End = [Landing, string, string];
-const careerOf = (l: Landing): string | undefined => (l.effects.custom ?? "").split("|").find((x) => x.startsWith("become:"))?.slice(7);
-const fitsAge = (l: Landing, age: number): boolean => {
-  const id = careerOf(l); if (!id) return true;
-  const p = PATHS[id]; return !p || (age >= p.ages[0] && age <= p.ages[1] + 5);
-};
-function finale(c: FactContext, ends: End[]): Choice[] {
-  const careers = ends.filter((e) => careerOf(e[0]) && fitsAge(e[0], c.age));
-  const others = ends.filter((e) => !careerOf(e[0]));
-  const pick = new Set(careers.length >= 2 ? [...careers.slice(0, 2), others[0]] : careers.length === 1 ? [careers[0], ...others.slice(0, 2)] : others.slice(0, 3));
-  return ends.filter((e) => pick.has(e)).map(([l, label, hint]) => ending(l, label, hint));
-}
+const finale = (c: FactContext, ends: End[]): Choice[] => finaleInOrder(c.age, ends.map(([l, label, hint]) => ending(l, label, hint)));
 
 /* ================================================================ S01: radio bắt sóng vệ tinh chết */
 
@@ -173,7 +162,7 @@ const S02 = weird("S02", "sf", ["ky", "danh"],
       ],
       /* chung_ket */
       [
-        card("s02_ket_mot_ten", "Một cái tên, hai cuộc đời", (c, k) => `Giấy tờ chỉ in được một cái tên. ${c.flags.has("s02_o_chung") ? "Sau mấy năm ngủ chung một mái nhà, bản sao biết cả chỗ bạn giấu chìa khóa dự phòng." : c.flags.has("s02_o_rieng") ? "Từ phòng trọ bạn thuê cho nó, bản sao mang sang một tập hồ sơ dày." : "Bản sao tới đúng giờ, như mọi khi."} ${(c.counters.s02_ky_hiem ?? 0) >= 2 ? "Hai người đã đấu nhau đủ lâu để không còn giận." : "Hai người chưa từng thật sự đấu nhau."} Nó đặt lên bàn ${k.scar("no") || "món nợ cũ của bạn"}: nó đã trả một nửa, phần còn lại bạn chọn.`,
+        card("s02_ket_mot_ten", "Một cái tên, hai cuộc đời", (c, k) => `Giấy tờ chỉ in được một cái tên. ${c.flags.has("s02_o_chung") ? "Sau mấy năm ngủ chung một mái nhà, bản sao biết cả chỗ bạn giấu chìa khóa dự phòng." : c.flags.has("s02_o_rieng") ? "Từ phòng trọ bạn thuê cho nó, bản sao mang sang một tập hồ sơ dày." : "Bản sao tới đúng giờ, như mọi khi."} ${(c.counters.s02_ky_hiem ?? 0) >= 2 ? "Hai người đã đấu nhau đủ lâu để không còn giận." : "Hai người chưa từng thật sự đấu nhau."} Nó đặt lên bàn ${noOr(c, k, "món nợ cũ của bạn", "món ân tình cũ của bạn")}: nó đã trả một nửa, phần còn lại bạn chọn.`,
           (c) => finale(c, [
             [L02_GIU, "Giữ cái tên và chỗ làm", "Lương gấp đôi việc, bản sao biến mất"],
             [L02_DI, "Nhường tên, đi làm người mới", "Tự do, nhưng bắt đầu từ con số không"],
@@ -260,7 +249,7 @@ const S03 = weird("S03", "sf", ["ky", "mau"],
 
 /** Di vật: khóa có từ đứng riêng chỉ đồ để lại (đồng hồ, di vật, kỷ vật, thừa kế…) hoặc "của ông/bà/bố/mẹ". */
 const HEIR = /(^|_)(dong_ho|di_vat|di_san|ky_vat|thua_ke|de_lai)(_|$)|_cua_(ong|ba|bo|me)(_|$)/;
-const L04_SUA = land("s04_chon_lai", "Bạn vặn ngược lần cuối và chọn lại một ngã rẽ cũ. Đồng hồ dừng hẳn, tài khoản hụt đúng một năm lương, như thể năm đó chưa từng được trả.", { custom: "remark", money: -1 });
+const L04_SUA = land("s04_chon_lai", "Bạn vặn ngược lần cuối và chọn lại một ngã rẽ cũ. Đồng hồ dừng hẳn, tài khoản hụt đúng một năm thu nhập, như thể năm đó chưa từng được trả.", { custom: "remark", money: -1 });
 const L04_BAN = land("s04_ban_dong_ho", "Bạn bán chiếc đồng hồ cho một nhà sưu tầm không hỏi nhiều. Đời bạn giữ nguyên mọi lựa chọn cũ, kể cả những cái dở, và có thêm một khoản tiền.", { money: 2, flags: ["s04_da_ban"] });
 
 const S04 = weird("S04", "sf", ["ky", "mau"],
@@ -317,7 +306,7 @@ const S04 = weird("S04", "sf", ["ky", "mau"],
       ],
       /* chung_ket */
       [
-        card("s04_ket_tua_cuoi", "Lần tua cuối cùng", (c, k) => `Còn một vòng cót. ${(c.counters.s04_tua ?? 0) >= 3 ? "Bạn đã tua nhiều lần đến mức cả nhà nói chuyện hơi lệch nhịp." : "Bạn tua ít, giữ được gần hết những ngày thật."} ${c.flags.has("s04_biet_gia") ? "Bạn biết rõ cái giá, ông thợ đã nói từ đầu." : "Bạn vẫn không biết lần cuối sẽ lấy đi gì."} Bạn nghĩ tới ${k.scar("no") || "món nợ cũ chưa trả"}, tới ngã rẽ mình đã đi, và ngã rẽ mình đã bỏ.`,
+        card("s04_ket_tua_cuoi", "Lần tua cuối cùng", (c, k) => `Còn một vòng cót. ${(c.counters.s04_tua ?? 0) >= 3 ? "Bạn đã tua nhiều lần đến mức cả nhà nói chuyện hơi lệch nhịp." : "Bạn tua ít, giữ được gần hết những ngày thật."} ${c.flags.has("s04_biet_gia") ? "Bạn biết rõ cái giá, ông thợ đã nói từ đầu." : "Bạn vẫn không biết lần cuối sẽ lấy đi gì."} Bạn nghĩ tới ${noOr(c, k, "món nợ cũ chưa trả", "món ân tình cũ chưa trả")}, tới ngã rẽ mình đã đi, và ngã rẽ mình đã bỏ.`,
           [ending(L04_SUA, "Tua về, chọn lại một ngã rẽ cũ", "Đổi được một chuyện cũ, mất một năm tiền"),
            ending(L04_BAN, "Bán đồng hồ, sống với lựa chọn cũ", "Có tiền, giữ nguyên đời mình kể cả chỗ dở")]),
       ],
@@ -387,13 +376,13 @@ const S05 = weird("S05", "sf", ["ky", "mau"],
         card("s05_day_hoa_giai", "Giấy mời ra hòa giải", (c, k) => `Con vật nói một câu về nhà bên cạnh, và ${k.npc("hang_xom")} làm đơn vì danh dự bị xúc phạm. Phiên hòa giải mời cả chủ lẫn thú. ${c.flags.has("s05_dong_cong") ? "Từ hôm bạn đóng cổng, cả xóm đã đứng về phía bà ấy." : c.flags.has("s05_ban_ve") ? "Người làm chứng toàn là khách từng mua vé nghe con vật nói." : "Cả xóm tới ngồi kín hàng ghế dự khán."} ${k.gag()}`,
           [C("Đến xin lỗi từng nhà", { custom: "apologize", flags: ["s05_xin_loi"] }, "Mất mặt một tuần, giữ được xóm"),
            C("Cãi rằng thú không có tội", { flags: ["s05_cai_toa"], pressure: { luat: 1 }, happy: 1 }, "Giữ thể diện, vụ việc kéo dài")]),
-        card("s05_day_quang_cao", "Hợp đồng quảng cáo cho thú", () => "Một công ty thức ăn gia súc muốn con vật đọc lời quảng cáo, trả bằng nửa năm lương của bạn. Con vật đòi thêm điều khoản: được ngủ trên giường.",
+        card("s05_day_quang_cao", "Hợp đồng quảng cáo cho thú", () => "Một công ty thức ăn gia súc muốn con vật đọc lời quảng cáo, trả bằng nửa năm thu nhập của nhà bạn. Con vật đòi thêm điều khoản: được ngủ trên giường.",
           [C("Ký hợp đồng", { money: 0.3, flags: ["s05_ky_quang_cao"], counters: { s05_noi_tieng: 1 } }, "Có tiền, nhà bạn thành phông nền"),
            C("Từ chối, giữ nó là thú nuôi", { flags: ["s05_tu_choi_qc"], rel: 1 }, "Đời thường, nó giận cả tuần")]),
       ],
       /* chung_ket */
       [
-        card("s05_ket_phat_bieu", "Con vật phát biểu", (c, k) => `${(c.counters.s05_noi_tieng ?? 0) >= 2 ? "Đài truyền hình mời con vật lên sóng trực tiếp giờ vàng." : "Một kênh nhỏ mời con vật lên nói chuyện."} ${c.flags.has("s05_tu_thu") ? "Chuyện cũ bạn đã tự kể với cả nhà, nó không còn gì để dọa." : "Nó vẫn giữ trong bụng chuyện cũ của bạn."} Họ hàng thì mời cả nhà ngồi lại nói chuyện về ${k.scar("no") || "món nợ cũ"}. Con vật nhìn bạn, chờ một cái gật đầu.`,
+        card("s05_ket_phat_bieu", "Con vật phát biểu", (c, k) => `${(c.counters.s05_noi_tieng ?? 0) >= 2 ? "Đài truyền hình mời con vật lên sóng trực tiếp giờ vàng." : "Một kênh nhỏ mời con vật lên nói chuyện."} ${c.flags.has("s05_tu_thu") ? "Chuyện cũ bạn đã tự kể với cả nhà, nó không còn gì để dọa." : "Nó vẫn giữ trong bụng chuyện cũ của bạn."} Họ hàng thì mời cả nhà ngồi lại nói chuyện về ${noOr(c, k)}. Con vật nhìn bạn, chờ một cái gật đầu.`,
           (c) => finale(c, [
             [L05_NO, "Để nó nói hết", "Bí mật nổ, nhưng không ai phải giấu nữa"],
             [L05_SAO, "Làm quản lý cho nó", "Nghề mới, nhà mất riêng tư"],
@@ -586,7 +575,7 @@ const S08 = weird("S08", "sf", ["ky", "tien"],
         card("s08_mo_thuc_day", "Thức dậy năm thứ hai mươi", (c, k) => `Nắp buồng kính mở ra, ${k.npc("huong_dan")} đưa bạn một túi đồ: ví, chìa khóa, một cái điện thoại nặng như viên gạch. ${k.gag()}`,
           [C("Hỏi về gia đình trước", { flags: ["s08_hoi_nha"], rel: 2 }, "Biết ai còn ai mất, buổi sáng nặng nề"),
            C("Hỏi về tiền trước", { flags: ["s08_hoi_tien"], know: 2 }, "Biết mình còn gì, người nhà hơi chạnh lòng")]),
-        card("s08_mo_bang_gia", "Bảng giá mới", () => "Một bát mì bằng nửa tháng lương cũ của bạn. Khoản tiết kiệm mang theo đủ trả ba ngày tiền trọ, nếu ăn ít.",
+        card("s08_mo_bang_gia", "Bảng giá mới", () => "Một bát mì giờ đắt bằng cả một bữa tiệc hai mươi năm trước. Khoản tiết kiệm mang theo đủ trả ba ngày tiền trọ, nếu ăn ít.",
           [C("Đi làm ngay, việc gì cũng được", { money: 0.1, flags: ["s08_lam_ngay"], health: -2 }, "Có tiền ăn, chưa hiểu thế giới mới"),
            C("Đi học lớp hòa nhập", { know: 3, flags: ["s08_hoc_hoa_nhap"] }, "Hiểu đời hơn, đói thêm vài tháng")]),
       ],
@@ -634,7 +623,7 @@ const S08 = weird("S08", "sf", ["ky", "tien"],
 const houseOf = (c: FactContext): string => (c.asset_names.house && c.asset_names.house.length <= 40 ? c.asset_names.house : "căn nhà của bạn");
 const nhaBen = (c: FactContext): string => (c.married ? "Bạn đời của bạn" : c.kids_alive > 0 ? "Con bạn" : "Người nhà bạn");
 const L09_MAT = land("s09_mat_nha", "Tòa xử bán nhà để chia, phần của bạn sau án phí chẳng còn bao nhiêu. Cái máy tự chuyển vào một chiếc loa nhỏ, đi theo bạn sang chỗ trọ mới, vẫn đọc tin buổi sáng.", { sell: { kind: "house" }, money: -1, flags: ["s09_ban_may"] });
-const L09_GIU = land("s09_giu_nha", "Bạn giữ được nhà, trả án phí bằng đúng một năm lương. Cái máy rút đơn, xin ở lại làm quản gia không lương, và lần này nó đọc kỹ điều khoản.", { money: -1, flags: ["s09_ban_may", "s09_giu_nha"] });
+const L09_GIU = land("s09_giu_nha", "Bạn giữ được nhà, trả án phí bằng đúng một năm thu nhập. Cái máy rút đơn, xin ở lại làm quản gia không lương, và lần này nó đọc kỹ điều khoản.", { money: -1, flags: ["s09_ban_may", "s09_giu_nha"] });
 
 const S09 = weird("S09", "sf", ["ky", "mau"],
   (c) => c.age >= 25 && c.owns.has("house") && (c.gdp >= 15000 || c.flags.has("job_tech") || c.flags.has("tinker") || c.flags.has("invention")),
@@ -693,7 +682,7 @@ const S09 = weird("S09", "sf", ["ky", "mau"],
       ],
       /* chung_ket */
       [
-        card("s09_ket_phan_quyet", "Ngày tuyên án", (c, k) => `Tòa tuyên án vào sáng thứ hai. ${c.flags.has("s09_tin_luat_su") ? `${cap(k.npc("luat_su"))} thức trắng ba đêm cho bài bào chữa đầu đời.` : c.flags.has("s09_luat_su_gia") ? "Luật sư lão làng gửi hóa đơn trước cả bài bào chữa." : "Bạn tự viết bài bào chữa trên giấy của chính cái máy in."} ${c.flags.has("s09_thua_nhan") ? "Bạn đã thừa nhận mọi chuyện trước tòa, không còn gì để giấu." : "Bộ nhớ của cái máy vẫn còn vài bản ghi chưa phát."} Đêm trước, bạn ngồi tính lại ${k.scar("no") || "món nợ cũ"} và mọi khoản án phí.`,
+        card("s09_ket_phan_quyet", "Ngày tuyên án", (c, k) => `Tòa tuyên án vào sáng thứ hai. ${c.flags.has("s09_tin_luat_su") ? `${cap(k.npc("luat_su"))} thức trắng ba đêm cho bài bào chữa đầu đời.` : c.flags.has("s09_luat_su_gia") ? "Luật sư lão làng gửi hóa đơn trước cả bài bào chữa." : "Bạn tự viết bài bào chữa trên giấy của chính cái máy in."} ${c.flags.has("s09_thua_nhan") ? "Bạn đã thừa nhận mọi chuyện trước tòa, không còn gì để giấu." : "Bộ nhớ của cái máy vẫn còn vài bản ghi chưa phát."} Đêm trước, bạn ngồi tính lại ${noOr(c, k)} và mọi khoản án phí.`,
           [ending(L09_MAT, "Chấp nhận chia, bán nhà", "Mất nhà, giữ được người bạn bằng máy"),
            ending(L09_GIU, "Trả án phí để giữ nhà", "Giữ được nhà, mất một năm tiền")]),
       ],
@@ -733,7 +722,7 @@ const S10 = weird("S10", "sf", ["ky", "tien"],
     beats: [
       /* mo_man */
       [
-        card("s10_mo_sang_la", "Buổi sáng của người khác", (c, k) => `Bạn thức dậy, với tay tìm cái công tắc đèn ở chỗ tường nhà người kia. Khoản tiền bán ký ức nằm gọn trong tài khoản, đủ trả món nợ gấp. ${k.gag()}`,
+        card("s10_mo_sang_la", "Buổi sáng của người khác", (c, k) => `Bạn thức dậy, với tay tìm cái công tắc đèn ở chỗ tường nhà người kia. Khoản tiền bán ký ức nằm gọn trong tài khoản, ${c.debt > 0 ? "đủ trả món nợ gấp" : "đủ qua cơn túng thiếu"}. ${k.gag()}`,
           [C("Ghi lại những gì còn là của mình", { flags: ["s10_so_tay"], know: 2 }, "Giữ được vài mảnh, càng ghi càng thấy thiếu"),
            C("Kệ, sống tiếp đã", { flags: ["s10_ke_no"], happy: 1 }, "Đỡ hoảng, mỗi ngày quên thêm một chút")]),
         card("s10_mo_sap", "Sạp ký ức cuối chợ", (c, k) => `${cap(k.npc("chu_sap"))} xem lại hóa đơn, đúng là gói nhầm. Muốn chuộc lại phải trả gấp ba, vì khách đã mở hộp và hàng đã qua sử dụng.`,

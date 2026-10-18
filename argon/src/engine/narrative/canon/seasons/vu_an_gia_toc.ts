@@ -3,11 +3,12 @@
  * Bạn bị giao giữ chìa, nên vừa là thám tử vừa là nghi phạm. Gag: nhóm chat của họ đổi tên sau mỗi trận cãi.
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, land } from "../kit.ts";
-import { finale } from "./gate.ts";
+import { C, cap, card, ending, finale, land, noOr } from "../kit.ts";
 
 const L_LUAT = land("hoc_luat", "Bạn đọc luật nhiều tới mức đi thi luôn, và từ đó họ hàng gọi bạn bằng chức danh mỗi khi có chuyện.", { custom: "become:lawyer", know: 5 });
-const L_PHAN = land("nhan_phan", "Bạn nhận phần thừa kế, dùng một phần khép lại chuyện cũ, rồi ký vào biên bản cuối cùng.", { money: 1.5, custom: "repay:0.5", happy: 3 });
+/** Phần thừa kế theo kết quả vụ án (phanOf): trọn khi thắng hay hòa, nhỏ khi tòa chia đôi hay chia đều. */
+const L_PHAN = land("nhan_phan", "Bạn nhận trọn phần thừa kế, dùng một phần khép lại chuyện cũ, rồi ký vào biên bản cuối cùng.", { money: 2, custom: "repay:1", happy: 3 });
+const L_PHAN_NHO = land("nhan_phan_nho", "Bạn nhận phần thừa kế nhỏ của mình, khép được một nửa chuyện cũ, rồi ký vào biên bản cuối cùng.", { money: 1, custom: "repay:0.5", happy: 1 });
 const L_RA_RIENG = land("ra_rieng", "Bạn rời cả họ, chuyển sang thành phố khác, chỉ giữ lại số điện thoại của một người.", { custom: "move_city", rel: -3 });
 
 const has = (c: { flags: Set<string> }, f: string) => c.flags.has(f);
@@ -31,8 +32,9 @@ const VERDICT: Record<ReturnType<typeof verdict>, (k: K) => string> = {
   nua: () => "Bằng chứng đủ để tòa nghi bản di chúc thứ hai, chưa đủ để gạt nó đi, nên căn nhà bị chia đôi.",
   deu: () => "Không ai có bằng chứng trọn vẹn, nên tòa chia đều cho ba mươi hai người. Phần của bạn bằng đúng một khung cửa sổ.",
 };
-/** Phần thừa kế có đủ khép vết nợ hay không, theo kết quả vụ án. */
-const phanHint = (c: Ctx) => (verdict(c) === "hoa" || verdict(c) === "thang" ? "Phần trọn vẹn, đủ khép chuyện cũ" : "Phần nhỏ, chỉ đủ khép một nửa chuyện cũ");
+/** Lựa chọn nhận phần thừa kế: landing và hint theo kết quả vụ án (phần trọn khi hòa hay thắng, phần nhỏ khi chia). */
+const phanOf = (c: Ctx, label: string) => (verdict(c) === "hoa" || verdict(c) === "thang"
+  ? ending(L_PHAN, label, "Phần trọn vẹn, đủ khép chuyện cũ") : ending(L_PHAN_NHO, label, "Phần nhỏ, chỉ đủ khép một nửa chuyện cũ"));
 
 export const VU_AN_GIA_TOC: SeasonDef = {
   id: "vu_an_gia_toc", vn: "Vụ án gia tộc", color: "#7a3b45", years: [8, 16],
@@ -51,7 +53,7 @@ export const VU_AN_GIA_TOC: SeasonDef = {
     "Nhóm chat của họ giờ tên là “Họ hàng ơi, bình tĩnh”. Không ai bình tĩnh.",
     "Nhóm chat của họ đổi về tên cũ “Đại gia đình yêu thương”. Lần này, hình như có người tin thật.",
   ] },
-  landings: [L_LUAT, L_PHAN, L_RA_RIENG],
+  landings: [L_LUAT, L_PHAN, L_PHAN_NHO, L_RA_RIENG],
   beats: [
     /* mo_man */
     [
@@ -109,16 +111,16 @@ export const VU_AN_GIA_TOC: SeasonDef = {
     /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. lawyer nhận tới 45 tuổi (PATHS) → chỉ mở khi ≤ 50. */
     [
       card("va_ket_toa", "Phiên tòa đông như đám cưới", (c, k) => `${verdict(c) === "hoa"
-          ? `Ngày hẹn xử, cả họ vẫn kéo tới tòa, chật như đám cưới. ${VERDICT.hoa(k)} Trên bậc thềm, anh ta vẫn kịp nhắc chuyện riêng của bạn, như một lời chào: ${k.scar("no") || "món nợ cũ"}.`
-          : `Ngày xử, phòng tòa chật như đám cưới. ${cap(k.npc("anh_ho"))} mở màn bằng chuyện riêng của bạn: ${k.scar("no") || "món nợ cũ"}, rồi nói người đang mang chuyện đó thì có lý do lấy giấy tờ nhà. ${has(c, "va_thue_ls") ? "Luật sư của bạn bẻ lại trong đúng hai câu." : has(c, "va_tu_hoc_luat") ? "Bạn tự đứng dậy, trích đúng điều luật đã thuộc lúc ba giờ sáng." : "Bạn đứng dậy, trong tay chỉ có sự thật."} ${VERDICT[verdict(c)](k)}`} ${k.gag()}`,
+          ? `Ngày hẹn xử, cả họ vẫn kéo tới tòa, chật như đám cưới. ${VERDICT.hoa(k)} Trên bậc thềm, anh ta vẫn kịp nhắc chuyện riêng của bạn, như một lời chào: ${noOr(c, k)}.`
+          : `Ngày xử, phòng tòa chật như đám cưới. ${cap(k.npc("anh_ho"))} mở màn bằng chuyện riêng của bạn: ${noOr(c, k)}, rồi nói người đang mang chuyện đó thì có lý do lấy giấy tờ nhà. ${has(c, "va_thue_ls") ? "Luật sư của bạn bẻ lại trong đúng hai câu." : has(c, "va_tu_hoc_luat") ? "Bạn tự đứng dậy, trích đúng điều luật đã thuộc lúc ba giờ sáng." : "Bạn đứng dậy, trong tay chỉ có sự thật."} ${VERDICT[verdict(c)](k)}`} ${k.gag()}`,
         // Ra riêng chỉ mở thêm khi đã đốt sổ hay giữ hòa khí (hoặc khi chưa đủ tuổi thi luật, để luôn có 2 lựa chọn).
         (c) => finale(c.age,
           [ending(L_LUAT, "Đi thi vào nghề luật, làm cho ra lẽ", "Bắt đầu một nghề mới, cả họ thành khách hàng")],
-          [ending(L_PHAN, "Nhận phần của mình, khép hồ sơ", phanHint(c)), ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về")],
+          [phanOf(c, "Nhận phần của mình, khép hồ sơ"), ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về")],
           has(c, "va_dot_so") || (c.counters.va_hoa ?? 0) >= 4 ? 3 : 2), (c) => c.age <= 50),
-      card("va_ket_hoa_giay", "Giàn hoa giấy mọc lại", (c, k) => `${VERDICT[verdict(c)](k)} Trong lá đơn năm ấy, chính chuyện riêng của bạn từng bị đem ra làm cớ buộc tội: ${k.scar("no") || "món nợ cũ"}. Giờ giàn hoa giấy trước căn nhà cũ đã đâm chồi lại, và bạn muốn khép chuyện đó cho xong. ${k.gag()}`,
+      card("va_ket_hoa_giay", "Giàn hoa giấy mọc lại", (c, k) => `${VERDICT[verdict(c)](k)} Trong lá đơn năm ấy, chính chuyện riêng của bạn từng bị đem ra làm cớ buộc tội: ${noOr(c, k)}. Giờ giàn hoa giấy trước căn nhà cũ đã đâm chồi lại, và bạn muốn khép chuyện đó cho xong. ${k.gag()}`,
         (c) => [
-          ending(L_PHAN, "Nhận phần thừa kế, trả dứt chuyện cũ", phanHint(c)),
+          phanOf(c, "Nhận phần thừa kế, trả dứt chuyện cũ"),
           ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về"),
         ]),
     ],

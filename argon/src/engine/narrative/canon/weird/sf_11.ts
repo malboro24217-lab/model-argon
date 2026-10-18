@@ -8,8 +8,7 @@
 import type { CastRole, FactContext } from "../../types.ts";
 import type { SeasonKit } from "../Season.ts";
 import type { Slots, WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, season, weird } from "../kit.ts";
-import { PATHS } from "../../paths/registry.ts";
+import { C, cap, card, ending, land, noOr, pathOpen, season, weird } from "../kit.ts";
 
 /* ---- helper ---- */
 /** Nối các phần câu, bỏ phần rỗng (không để lại khoảng trắng thừa). */
@@ -38,7 +37,7 @@ const urban = (c: FactContext): boolean =>
 /** Khoảng tuổi người lớn của nhánh (addendum 7): canon event có thể nổ từ 8 tuổi, cửa kỳ dị chỉ lọc bằng `when`. */
 const adult = (c: FactContext, hi: number, lo = 18): boolean => c.age >= lo && c.age <= hi;
 /** Vết nợ/lời hứa, hoặc chữ dự phòng đúng với đời này (addendum 9: không khẳng định có nợ khi không có). */
-const noOf = (c: FactContext, k: SeasonKit): string => k.scar("no") || (c.debt > 0 ? "khoản nợ đang gánh" : "một lời hứa cũ chưa giữ");
+const noOf = (c: FactContext, k: SeasonKit): string => noOr(c, k, "khoản nợ đang gánh", "một lời hứa cũ chưa giữ");
 /** Vết đồ/kỹ năng: có thể là đồ vật, con vật, kỹ năng, tài sản hay nghề, nên luôn gọi là "thứ … từ đời cũ" (addendum 8). */
 const doOf = (k: SeasonKit): string => k.scar("do") || "một kỷ niệm không tên";
 /** Có con chó: vật gài animal có khóa đúng "con_cho…", hoặc con chó hoang bế về chăm hồi nhỏ (cờ animal_friend) khi còn trẻ. */
@@ -46,11 +45,6 @@ const hasDog = (c: FactContext): boolean =>
   c.plants.some((p) => p.kind === "animal" && /^con_cho(_|$)/.test(p.key)) || (f(c, "animal_friend") && c.age >= 16 && c.age <= 25);
 /** Ứng viên của S14: luôn cùng một thực thể ở cửa, biến cố và mọi thẻ (không đọc nhãn vật gài, vì mầm có thể đã dùng). */
 const PET = "con chó nhà bạn";
-/** Cửa nghề `become:<p>` chỉ mở khi PATHS[p].ages[0] ≤ tuổi ≤ ages[1] + 5 (addendum 1). Thẻ chung kết luôn có thêm landing không phải nghề. */
-const canBe = (c: FactContext, p: string): boolean => {
-  const a = PATHS[p]?.ages;
-  return !!a && c.age >= a[0] && c.age <= a[1] + 5;
-};
 
 /* ================================================================== S11 — Thiên thạch rơi trúng ruộng */
 
@@ -209,7 +203,7 @@ const S12 = weird("S12", "sf", ["mau", "ky"],
       /* cu_lat */
       [
         card("s12_cl_nguoi_cu", "Người quen ở năm cũ", (c, k) => J(
-          `Bên kia cửa, bạn gặp một người giống hệt ${k.scar("nguoi") || "một người quen cũ"}: hóa ra là người nhà của họ, ở cái năm cả hai bạn còn chưa ra đời.`,
+          `Bên kia cửa, bạn gặp một người giống hệt ${k.scar("nguoi") || "một người quen cũ"}: hóa ra là người nhà của họ, ở cái năm bạn còn chưa ra đời.`,
           `Nghe bạn nhắc tới thứ bạn mang theo từ đời cũ, ${doOf(k)}, người đó hỏi bạn có nó từ đâu, vì "tôi cũng đang định có đúng thứ ấy".`,
           f(c, "s12_mach_vang") ? "Cùng lúc ấy, ở bên này, ảnh cưới của bố mẹ bạn đổi sang một chiếc áo đắt tiền hơn." : "Ở bên này, một tấm ảnh trong album nhà bạn bỗng có thêm một người đứng ở rìa."),
           [C("Kể thật mình là ai", { rel: 3, flags: ["s12_ke_that"], counters: { s12_doi: 1 } }, "Một mối quan hệ được viết lại"),
@@ -238,7 +232,7 @@ const S12 = weird("S12", "sf", ["mau", "ky"],
           (c) => [
             ending(L12_SO, "Gửi thư, dặn bố mẹ để dành", "Nhà có của để dành, bạn không biết đã đổi gì"),
             ending(L12_PHO, "Khuyên bố mẹ dọn sang thành phố khác", "Lớn lên ở chỗ khác, nhớ cả hai nơi"),
-            ...(canBe(c, "security_guard") ? [ending(L12_CUA, "Nhận chìa, ở lại trông cửa", "Thành người gác giữa hai năm")] : []),
+            ...(pathOpen("security_guard", c.age) ? [ending(L12_CUA, "Nhận chìa, ở lại trông cửa", "Thành người gác giữa hai năm")] : []),
           ]),
       ],
     ],
@@ -331,10 +325,10 @@ const S13 = weird("S13", "sf", ["mau", "danh"],
           f(c, "s13_day_tre") ? "Đứa trẻ trong họ ngồi ở góc phòng, mấp máy môi theo từng câu." : "Căn phòng im lặng, chỉ có tiếng máy ghi âm chạy.",
           "Viện nghiên cứu, nhà xuất bản và người trong họ đều đang chờ bạn chọn."),
           (c) => [
-            ...(canBe(c, "professor") ? [ending(L13_GIANG, "Nhận dạy ở khoa ngôn ngữ", "Thành nghề, ngày nào cũng nói thứ tiếng ấy")] : []),
-            ...(canBe(c, "writer") ? [ending(L13_VIET, "Viết sách bằng hai thứ tiếng", "Ít tiền, tiếng nói thành trang giấy")] : []),
+            ...(pathOpen("professor", c.age) ? [ending(L13_GIANG, "Nhận dạy ở khoa ngôn ngữ", "Thành nghề, ngày nào cũng nói thứ tiếng ấy")] : []),
+            ...(pathOpen("writer", c.age) ? [ending(L13_VIET, "Viết sách bằng hai thứ tiếng", "Ít tiền, tiếng nói thành trang giấy")] : []),
             ending(L13_QUY, "Bán bộ ghi âm, lập quỹ học tiếng", "Có tiền, tiếng thành tài liệu"),
-            ...(!canBe(c, "professor") || !canBe(c, "writer") ? [ending(L13_TRUYEN, "Dồn tiền dạy đứa trẻ trong họ", "Hết tiền để dành, còn một người nối tiếp")] : []),
+            ...(!pathOpen("professor", c.age) || !pathOpen("writer", c.age) ? [ending(L13_TRUYEN, "Dồn tiền dạy đứa trẻ trong họ", "Tốn một khoản lớn, còn một người nối tiếp")] : []),
           ]),
       ],
     ],
@@ -379,7 +373,7 @@ const S14 = weird("S14", "sf", ["danh", "ky"],
         card("s14_mo_quy", "Quỹ tranh cử", (c, k) => J(
           "Tài khoản chiến dịch có đúng số tiền bạn bỏ vào, cộng một túi hạt.",
           `${cap(k.npc("phong_vien"))} gọi tới xin phỏng vấn độc quyền, câu đầu tiên đã hỏi: "Ai thật sự đứng sau con vật này?"`),
-          [C("Bỏ tiền túi ra chạy chiến dịch", { money: -0.3, flags: ["s14_tien_tui"], counters: { s14_ung_ho: 1 } }, "Tốn tiền, không nợ ai"),
+          [C("Bỏ tiền túi ra chạy chiến dịch", { money: -0.3, flags: ["s14_tien_tui"], counters: { s14_ung_ho: 1 } }, "Tốn tiền, không phải mang ơn ai"),
            C("Nhận tài trợ của hãng thức ăn thú cưng", { money: 0.1, flags: ["s14_tai_tro"] }, "Có quỹ, ứng viên phải ăn theo hợp đồng")]),
       ],
       /* khoi_dong */
@@ -400,7 +394,7 @@ const S14 = weird("S14", "sf", ["danh", "ky"],
         card("s14_cl_pho", "Người muốn ghế phó", (c, k) => J(
           `${cap(k.scar("nguoi") || "một người quen cũ")} xuất hiện ở văn phòng chiến dịch, nhắc lại chuyện ${doOf(k)}, thứ bạn mang theo từ đời cũ, thứ năm xưa từng gắn hai người với nhau.`,
           `Người đó muốn đứng ra vận động cho ${PET}, với một điều kiện: được ngồi ghế phó.`),
-          [C("Nhận người đó, hứa ghế phó", { flags: ["s14_hua_ghe"], counters: { s14_ung_ho: 2 } }, "Thêm phiếu, thêm một món nợ"),
+          [C("Nhận người đó, hứa ghế phó", { flags: ["s14_hua_ghe"], counters: { s14_ung_ho: 2 } }, "Thêm phiếu, thêm một lời hứa phải giữ"),
            C("Từ chối, đi tiếp một mình", { rel: -2, flags: ["s14_doc_lap"] }, "Sạch sẽ, ít phiếu")]),
       ],
       /* day */
@@ -424,9 +418,9 @@ const S14 = weird("S14", "sf", ["danh", "ky"],
           `Còn bạn đứng đó với một danh bạ đầy số điện thoại và ${noOf(c, k)} vẫn chưa xong.`, k.gag()),
           (c) => {
             const jobs = [
-              ...(canBe(c, "politician") ? [ending(L14_CT, "Tự ra ứng cử kỳ sau", "Đổi đời, cả đời bị soi")] : []),
-              ...(canBe(c, "ad_creative") ? [ending(L14_TT, "Mở công ty làm chiến dịch", "Kiếm tiền từ nghề vừa học")] : []),
-              ...(canBe(c, "activist") ? [ending(L14_HD, "Đi vận động cho quyền vật nuôi", "Ít tiền, có lý tưởng")] : []),
+              ...(pathOpen("politician", c.age) ? [ending(L14_CT, "Tự ra ứng cử kỳ sau", "Đổi đời, cả đời bị soi")] : []),
+              ...(pathOpen("ad_creative", c.age) ? [ending(L14_TT, "Mở công ty làm chiến dịch", "Kiếm tiền từ nghề vừa học")] : []),
+              ...(pathOpen("activist", c.age) ? [ending(L14_HD, "Đi vận động cho quyền vật nuôi", "Ít tiền, có lý tưởng")] : []),
             ].slice(0, 2);
             const hk = ending(L14_HK, "Viết hồi ký chiến dịch", "Có tiền bản quyền, khép lại chuyện cũ");
             return jobs.length ? [...jobs, hk] : [hk, ending(L14_QUY, "Lập quỹ chăm vật nuôi già", "Mất một năm thu nhập, được nhiều cái vẫy đuôi")];
@@ -520,8 +514,8 @@ const S15 = weird("S15", "sf", ["dat", "luat"],
           "Cổng chính của vòm mở được đúng một khe.",
           `${cap(noOf(c, k))} vẫn chờ ở bên ngoài, nơi trời còn mưa.`, k.gag()),
           (c) => [
-            ...(canBe(c, "official") ? [ending(L15_QUAN, "Ở lại, nhận chức trong ban vận hành", "Có quyền, sống cả đời dưới kính")]
-              : canBe(c, "security_guard") ? [ending(L15_GAC, "Ở lại, nhận gác cổng vòm", "Yên ổn, biết mọi chuyện ra vào")] : []),
+            ...(pathOpen("official", c.age) ? [ending(L15_QUAN, "Ở lại, nhận chức trong ban vận hành", "Có quyền, sống cả đời dưới kính")]
+              : pathOpen("security_guard", c.age) ? [ending(L15_GAC, "Ở lại, nhận gác cổng vòm", "Yên ổn, biết mọi chuyện ra vào")] : []),
             ending(L15_RA, "Ra ngoài, dọn sang thành phố khác", "Có mưa, bắt đầu lại từ đầu"),
             ending(L15_XA, "Ra ngoài và đi hẳn sang nước khác", "Thật xa vòm, thật xa mọi thứ"),
           ]),
@@ -618,7 +612,7 @@ const S16 = weird("S16", "sf", ["tinh", "ky"],
               : n(c, "s16_mo_long") > 0 ? ending(L16_CUOI, "Cưới người quen ở công viên", "Có một gia đình, robot làm phù rể")
                 : ending(L16_CUOI, "Để robot làm mai, cưới người nó dẫn về", "Liều một phen, robot làm phù rể"),
             ending(L16_GIU, "Mua đứt robot, sống cùng nó", "Có người bầu bạn, ít người hiểu"),
-            ...(canBe(c, "shipper") ? [ending(L16_SHIP, "Cùng robot mở dịch vụ giao hàng", "Thành nghề, ngày nào cũng ra đường")] : []),
+            ...(pathOpen("shipper", c.age) ? [ending(L16_SHIP, "Cùng robot mở dịch vụ giao hàng", "Thành nghề, ngày nào cũng ra đường")] : []),
           ]),
       ],
     ],
@@ -641,7 +635,7 @@ const S17 = weird("S17", "sf", ["tien", "ky"],
     title: "Trúng một mẫu mặt trăng",
     text: J(`Tấm vé số mua nhầm ở ${s.noi || "đầu ngõ"} không trúng tiền: nó trúng một mẫu đất trên mặt trăng, có tọa độ, có bản đồ, có con dấu nổi.`,
       "Ba ngày sau, điện thoại bắt đầu reo.",
-      `Người đầu tiên trả ${c.has_job ? "gấp mười số tiền bạn kiếm cả năm" : "một con số bạn chưa từng thấy"} và nói rất chắc: "Không ai lên đó được, nên giá chỉ có lên."`),
+      `Người đầu tiên trả ${c.has_job ? "gấp mười số tiền bạn kiếm cả năm" : "gấp mười số tiền cả nhà bạn tiêu trong một năm"} và nói rất chắc: "Không ai lên đó được, nên giá chỉ có lên."`),
   }),
   season({
     id: "w_S17", vn: "Địa chủ mặt trăng", color: "#6c3fd1", years: [5, 10], weird: "sf",
@@ -685,7 +679,7 @@ const S17 = weird("S17", "sf", ["tien", "ky"],
       [
         card("s17_cl_nguoi_mua", "Người mua cuối cùng", (c, k) => J(
           `Một người mua lạ hẹn gặp ở một quán nhỏ, hóa ra là ${k.scar("nguoi") || "một người quen cũ"}.`,
-          `Người đó đưa một túi tiền và hứa kể hết sự thật về ${doOf(k)}, thứ bạn mang theo từ đời cũ, để đổi lấy nửa mẫu đất, vì "ít ra trên đó không ai đòi nợ được".`),
+          `Người đó đưa một túi tiền và hứa kể hết sự thật về ${doOf(k)}, thứ bạn mang theo từ đời cũ, để đổi lấy nửa mẫu đất, vì "ít ra trên đó không ai tìm được tôi".`),
           [C("Đổi nửa mẫu đất lấy sự thật ấy", { money: 0.3, happy: 3, flags: ["s17_doi_do"] }, "Biết chuyện cũ, mất nửa giấc mơ"),
            C("Không đổi, giữ trọn mẫu đất", { flags: ["s17_giu_tron"], counters: { s17_cuoc: 1 } }, "Cược tiếp, lỡ dịp làm lành")]),
       ],
@@ -704,10 +698,10 @@ const S17 = weird("S17", "sf", ["tien", "ky"],
       ],
       /* chung_ket */
       [
-        card("s17_ket", "Đêm trăng tròn", (c, k) => J(
+        card("s17_ket", "Hạn chót lúc nửa đêm", (c, k) => J(
           `Một công ty bay vũ trụ hỏi mua cả miệng hố làm bãi đáp, đúng lúc ${noOf(c, k)} đến hạn.`,
           f(c, "s17_cong_bo") ? "Họ nói biết rõ đó là miệng hố, chính vì thế mới cần." : "Họ không hỏi gì về mặt bằng.",
-          "Họ cho hai đường: bán đứt trước nửa đêm, hoặc góp đất vào dự án và bảo lãnh mọi khoản vay.", k.gag()),
+          "Họ cho hai đường: bán đứt trước nửa đêm, hoặc góp đất vào dự án và đứng tên bảo lãnh cho nó.", k.gag()),
           [ending(L17_BAN, "Bán đứt, lấy tiền mặt", "Giàu chắc, thôi làm địa chủ"),
            ending(L17_CUOC, "Góp đất, bảo lãnh dự án", "Thắng thì gấp năm, thua thì phá sản")]),
       ],
@@ -801,7 +795,7 @@ const S18 = weird("S18", "sf", ["tien", "luat"],
           f(c, "s18_gia_co") ? "Mái nhà gia cố rung lên nhưng không sập." : "Mái nhà kêu răng rắc dưới chân tàu.", k.gag()),
           (c) => [
             ending(L18_DO, "Ở lại, bán két đồ lạ", "Có của, sống cạnh những thứ không ai hiểu"),
-            canBe(c, "tour_guide") ? ending(L18_DU_LICH, "Mở nhà trọ cho khách tham quan", "Nổi tiếng, nhà không còn là nhà")
+            pathOpen("tour_guide", c.age) ? ending(L18_DU_LICH, "Mở nhà trọ cho khách tham quan", "Nổi tiếng, nhà không còn là nhà")
               : ending(L18_DIEU_TRA, "Ký biên bản, giao hết cho thanh tra", "Sạch tay, mất nhà và một khoản phạt"),
             ending(L18_DI, "Lên tàu đi cùng người thuê", "Bỏ lại tất cả, hạ cánh ở một nơi lạ"),
           ]),
@@ -811,7 +805,7 @@ const S18 = weird("S18", "sf", ["tien", "luat"],
 
 /* ================================================================== S19 — Não được sao lưu sau tai nạn */
 
-const L19_VE = land("ve_than_moi", "Bạn mở mắt bằng đôi mắt mới. Chân tay lóng ngóng như trẻ con, khoản nợ thân mới thì rất người lớn.", { money: -2, happy: 6 });
+const L19_VE = land("ve_than_moi", "Bạn mở mắt bằng đôi mắt mới. Chân tay lóng ngóng như trẻ con, hóa đơn thân mới thì rất người lớn.", { money: -2, happy: 6 });
 const L19_SO = land("o_lai_trong_may", "Bạn ở lại trong máy, không già thêm, về thăm nhà bằng một màn hình to hơn.", { custom: "longevity:20", income_mult: 0.6 });
 const L19_LAB = land("ve_lam_phong_thi_nghiem", "Bạn về thân mới và ở lại làm cho phòng thí nghiệm, viết phần mềm chép người.", { custom: "become:ai_engineer", money: -1 });
 
@@ -892,9 +886,9 @@ const S19 = weird("S19", "sf", ["than", "mau"],
           `Trước khi chép sang, máy hỏi lần cuối có mang theo ${noOf(c, k)} không, vì nó nằm chung một ô nhớ với tên mẹ bạn.`,
           n(c, "s19_than") >= n(c, "s19_so") ? "Bạn đã chờ ngày này từ lâu." : "Bạn không còn chắc mình muốn về.", k.gag()),
           (c) => [
-            ending(L19_VE, "Về lại thân thể", "Được ôm người nhà, gánh khoản nợ thân mới"),
+            ending(L19_VE, "Về lại thân thể", "Được ôm người nhà, trả một hóa đơn rất lớn"),
             ending(L19_SO, "Ở lại trong máy", "Không già, chỉ còn một màn hình"),
-            ...(canBe(c, "ai_engineer") ? [ending(L19_LAB, "Về thân mới, làm cho phòng thí nghiệm", "Thành nghề, ngày nào cũng gặp lại cái hộp nhôm")] : []),
+            ...(pathOpen("ai_engineer", c.age) ? [ending(L19_LAB, "Về thân mới, làm cho phòng thí nghiệm", "Thành nghề, ngày nào cũng gặp lại cái hộp nhôm")] : []),
           ]),
       ],
     ],
@@ -949,9 +943,9 @@ const S20 = weird("S20", "sf", ["tien", "than"],
           [C("Lập trang riêng, bán vé xem", { money: 0.3, flags: ["s20_ban_ve"], counters: { s20_dien: 1 } }, "Kiếm tiền từ sự tò mò, mất chỗ trốn"),
            C("Dọn đi chỗ khác", { money: -0.2, flags: ["s20_don_nha"], counters: { s20_nghien: 1 } }, "Yên hơn, tốn tiền")]),
         card("s20_kd_bac_si", "Chị bác sĩ của hãng", (c, k) => J(
-          `${cap(k.npc("bac_si"))} đến tận nhà với một bản hợp đồng mới: mỗi tháng lấy một ít máu để nghiên cứu, hãng trả tiền thuê nhà.`,
+          `${cap(k.npc("bac_si"))} đến tận nhà với một bản hợp đồng mới: mỗi tháng lấy một ít máu để nghiên cứu, hãng lo trọn tiền ăn ở của bạn.`,
           `Chị dặn nhỏ: "Có người khác uống cùng lô thuốc, nhưng chỉ bạn sáng."`),
-          [C("Ký, làm mẫu nghiên cứu", { money: 0.3, flags: ["s20_lam_mau"], counters: { s20_nghien: 1 } }, "Ổn định tiền nhà, thành con số trong báo cáo"),
+          [C("Ký, làm mẫu nghiên cứu", { money: 0.3, flags: ["s20_lam_mau"], counters: { s20_nghien: 1 } }, "Ổn định chuyện ăn ở, thành con số trong báo cáo"),
            C("Đòi đọc hết hồ sơ lô thuốc", { know: 3, flags: ["s20_doi_ho_so"], counters: { s20_nghien: 1 } }, "Biết sự thật, hãng bắt đầu dè chừng bạn")]),
       ],
       /* cu_lat */
@@ -986,8 +980,8 @@ const S20 = weird("S20", "sf", ["tien", "than"],
           n(c, "s20_dien") > n(c, "s20_nghien") ? "Khán giả quen đã thuộc từng màu da của bạn." : "Hồ sơ lô thuốc dày lên, có tên bạn ở trang đầu.", k.gag()),
           (c) => {
             const jobs = [
-              ...(canBe(c, "comedian") ? [ending(L20_DIEN, "Lên sân khấu, diễn bằng ánh sáng", "Thành nghề biểu diễn, sống về đêm")] : []),
-              ...(canBe(c, "scientist") ? [ending(L20_NGHIEN, "Vào phòng thí nghiệm làm nghiên cứu", "Đổi phía, hiểu chính mình")] : []),
+              ...(pathOpen("comedian", c.age) ? [ending(L20_DIEN, "Lên sân khấu, diễn bằng ánh sáng", "Thành nghề biểu diễn, sống về đêm")] : []),
+              ...(pathOpen("scientist", c.age) ? [ending(L20_NGHIEN, "Vào phòng thí nghiệm làm nghiên cứu", "Đổi phía, hiểu chính mình")] : []),
             ];
             const mau = ending(L20_MAU, "Bán quyền mẫu da cho hãng", "Có một khoản lớn, hết đặc biệt");
             return jobs.length ? [...jobs, mau] : [mau, ending(L20_BOI, "Cùng người chung lô kiện hãng", "Ít tiền hơn, đòi được lẽ phải")];
