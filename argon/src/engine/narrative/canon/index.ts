@@ -15,8 +15,9 @@ export type { DoorKind, Slots, SeedDoor, CanonSeed, WeirdBranch, ResolvedDoor, C
 import type { WeirdBranch as WeirdBranchT } from "./Canon.ts";
 /** Mầm canon event đã đăng ký (Task 6b: 8 mầm đợt A). */
 export { CANON_SEEDS } from "./seeds.ts";
-/** Nhánh kỳ dị đã đăng ký (các đợt kỳ dị điền). */
-export const WEIRD: WeirdBranchT[] = [];
+import { WEIRD_ALL } from "./weird/index.ts";
+/** Nhánh kỳ dị đã đăng ký: nối 10 đợt trong canon/weird/ (mỗi đợt sửa file của mình, không sửa ở đây). */
+export const WEIRD: WeirdBranchT[] = WEIRD_ALL;
 /** Mọi thẻ mùa (mùa thường và mùa của nhánh kỳ dị), host nối vào kho major (Task 7). */
 export const SEASON_STORYLETS = [...SEASONS, ...WEIRD.map((b) => b.season)].flatMap(compileSeasonFn);
 export { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TONE_PRESSURE, pressureFor, type CodexMap } from "./codexPlants.ts";

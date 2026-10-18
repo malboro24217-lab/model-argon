@@ -36,10 +36,34 @@
  *  - Gag: thẻ gọi k.gag() thứ k (theo thứ tự khai báo trong mùa) hiện lines[k % n], nên dòng 0 là lần đầu.
  *  - Câu (sau ". ") không được bắt đầu bằng chữ thường: vết/người mới đứng đầu câu thì bọc cap(...).
  *  - Mỗi thẻ 2–3 lựa chọn, ≥ 1 lựa chọn để lại dấu. Tiêu đề và nhãn ≤ 60 ký tự, hint ≤ 70.
+ *
+ * ---- Nhánh kỳ dị (Task 10–19) ----
+ * Mỗi đợt một file trong canon/weird/, export đúng một mảng tên theo file:
+ *   sf_01.ts → `export const SF_01: WeirdBranch[]`, sf_11.ts → SF_11, … abs_41.ts → ABS_41.
+ * canon/weird/index.ts nối 10 mảng thành WEIRD_ALL (= WEIRD trong canon/index.ts). Đợt mới chỉ sửa file của mình.
+ *
+ *   export const SF_01: WeirdBranch[] = [
+ *     weird("S05", "sf", ["ky", "mau"],
+ *       (c) => c.plants.some((p) => p.kind === "animal"),                          // "Mọc từ": chỉ trường có thật của FactContext
+ *       (s) => `Gắn chip phiên dịch cho ${s.what?.label ?? "con vật nhà bạn"}`,    // nhãn cửa ≤ 60 ký tự
+ *       (s, c, N) => ({ title: "Con vật biết nói", text: `… "…" …` }),              // 2–4 câu điện ảnh, có một câu thoại trong ngoặc kép
+ *       season({ id: "w_S05", vn: "Thú nói được", color: "#6b5bd6", years: [5, 9], weird: "sf",
+ *         rules: { flags: ["w_talking_pet"] }, reset: { cast: [ … 1–2 người … ] }, gag: { … ≥ 3 dòng … },
+ *         landings: [L_A, L_B], beats: [[…2], […2], […1], […2], […1]] })),
+ *   ];
+ *
+ * Quy tắc thêm cho nhánh kỳ dị (bộ kiểm bắt hết):
+ *  - id "S01".."S50" (kind "sf") hoặc "X01".."X50" (kind "abs"), duy nhất; season.id = "w_" + id; season.weird = kind.
+ *  - 7–10 thẻ, 1–2 người mới, years trong [5, 12]. Màu: sf thuộc dải xanh–tím (hue 200–290), abs thuộc dải vàng–cam (hue 25–60).
+ *  - `when(c, s)` không được ném lỗi; phải đúng ở ít nhất một bối cảnh fuzz. "Kỳ ≥ n" → `c.pressure.ky >= n`.
+ *  - `door` (≤ 60 ký tự) và `trigger` (title ≤ 60, text ≤ 600) luôn ra chữ trọn vẹn, kể cả khi s.who / s.what rỗng
+ *    và s.noi = "" (viết `s.noi || "nơi này"`). Text của trigger phải có một câu thoại trong ngoặc kép.
+ *  - Custom của host dùng được trong nội dung: `age_skip:<n>`, `longevity:<n>`, `remark`, `swap_other` (host làm ở Task 8).
  */
-import type { Choice, Effect, FactContext, StoryletView } from "../types.ts";
+import type { Axis, Choice, Effect, FactContext, StoryletView } from "../types.ts";
 import { C, T } from "../paths/kit.ts";
-import { addCustom, type BeatCard, type Landing, type SeasonKit } from "./Season.ts";
+import { addCustom, type BeatCard, type Landing, type SeasonDef, type SeasonKit } from "./Season.ts";
+import type { Slots, WeirdBranch } from "./Canon.ts";
 
 export { C, T };
 
@@ -66,3 +90,31 @@ export const land = (id: string, line: string, effects: Effect): Landing => ({ i
 /** Lựa chọn của thẻ chung kết: đáp xuống `l`. effects là nguyên effects của landing (đã có season_end:<id>). */
 export const ending = (l: Landing, label: string, hint?: string, extra: Partial<Choice> = {}): Choice =>
   C(label, l.effects, hint, extra);
+
+/* ---- Nhánh kỳ dị ---- */
+
+/** Đầu vào của season(): như SeasonDef nhưng `weird` bắt buộc, `rules` và `reset` có thể bỏ (mặc định {}). */
+export type WeirdSeasonInput = Omit<SeasonDef, "weird" | "rules" | "reset"> & {
+  weird: "sf" | "abs"; rules?: SeasonDef["rules"]; reset?: SeasonDef["reset"];
+};
+/**
+ * Mùa của một nhánh kỳ dị. Thuần: chỉ điền mặc định (rules = {}, reset = {}) và bắt buộc `weird` ở mức kiểu;
+ * mọi ràng buộc khác do canon-content-test kiểm (không ném lỗi lúc nạp module để bundle không bao giờ vỡ).
+ */
+export function season(def: WeirdSeasonInput): SeasonDef {
+  return { ...def, rules: def.rules ?? {}, reset: def.reset ?? {} };
+}
+
+type Names = (id: string) => string;
+/**
+ * Một nhánh kỳ dị (spec §7). Thứ tự tham số khớp bảng spec: id, loại, trục, "Mọc từ" (`when`), nhãn cửa, biến cố
+ * khi trục Kỳ tự nổ (`trigger`), mùa, gợi ý dưới nhãn cửa (bỏ thì generator sinh "Viễn tưởng|Phi lý: <tên mùa>").
+ */
+export function weird(id: string, kind: "sf" | "abs", axes: Axis[], when: (c: FactContext, s: Slots) => boolean,
+  door: (s: Slots, c: FactContext, N: Names) => string,
+  trigger: (s: Slots, c: FactContext, N: Names) => { title: string; text: string },
+  seasonDef: SeasonDef, hint?: string): WeirdBranch {
+  const b: WeirdBranch = { id, kind, axes, when, door, trigger, season: seasonDef };
+  if (hint !== undefined) b.hint = hint;
+  return b;
+}
