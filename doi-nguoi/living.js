@@ -3,6 +3,8 @@
    Mọi thay đổi thế giới đi qua applyEffect(); kịch bản chỉ là dữ liệu. */
 const POOL = { major: null, micro: null, generic: null };
 function pools() { if (!POOL.major) { const G = Argon.MICRO_GATES; const gated = Argon.MICRO.map(s => G[s.id] ? { ...s, prerequisites: c => s.prerequisites(c) && G[s.id](c) } : s); POOL.major = Argon.STORYLETS.concat(gated.filter(s => s.category !== "micro"), Argon.BRANCHES.filter(s => s.category !== "micro"), Argon.LIFE_VARIANTS || []); POOL.micro = gated.filter(s => s.category === "micro").concat(Argon.BRANCHES.filter(s => s.category === "micro"), Argon.BRANCHES2 || [], Argon.TEMPER_LIFE || [], Argon.TEMPER2_ECHO || [], (Argon.PATH_STORYLETS || []).filter(s => s.category === "micro")); POOL.major = POOL.major.concat((Argon.PATH_STORYLETS || []).filter(s => s.category !== "micro")); POOL.generic = gated.filter(s => s.category === "micro"); } return POOL; }
+let _moneyIds = null;
+function MONEY_IDS() { if (!_moneyIds) _moneyIds = new Set((Argon.PATH_STORYLETS || []).filter(s => s.meta && s.meta.kind === "money").map(s => s.id)); return _moneyIds; }
 function yearBudget(L) { const a = L.age; if (a < 6) return 0; if (a < 13) return 1; if (a < 18) return 2; if (a < 65) return 2 + (L.ar && L.ar.rng.next() < 0.35 ? 1 : 0); return 1; }
 const LW = {
   ROLE_VN: { mother: "mẹ", father: "cha", sibling: "anh/chị/em", childhood_friend: "bạn thân từ nhỏ", bully: "kẻ bắt nạt ngày xưa", neighbor: "hàng xóm", first_boss: "sếp đầu tiên", official: "cán bộ", partner: "đối tác", creditor: "chủ nợ", mentor: "người thầy", rival: "đối thủ", spouse: "bạn đời", child: "con" },
@@ -58,7 +60,8 @@ function factContext(L) {
     health: L.st.health, happy: L.st.happy, know: L.st.know, rel: L.st.rel, bandwidth: g.bw, bandwidth_locked: g.bw < 30, scarcity: !!g.scarcity, rat_race: g.ratRace,
     tier: g.tier, agency: g.agency, reputation: rep, allies: Object.values(opinion).filter(v => v >= 0.5).length, enemies: Object.values(opinion).filter(v => v <= -0.35).length,
     econ_phase: s.economic_phase, ill: !!L.ill, migrated: L.migrated, flags: L.lw.sflags, counters: L.lw.counters, cast: castMap, opinion, roles, hooks: hooksMap, last_move, doors: L.lw.cz.doors,
-    years_since_major: L.age - L.lw.st.last_major_age, tension: L.lw.st.tension, crises_survived: s.perception.crises_survived, traits: L.traits || { coop: 0, fair: 0, risk: 0, bold: 0 }
+    years_since_major: L.age - L.lw.st.last_major_age, tension: L.lw.st.tension, crises_survived: s.perception.crises_survived, traits: L.traits || { coop: 0, fair: 0, risk: 0, bold: 0 },
+    ...moneyFacts(L)
   };
 }
 
@@ -90,6 +93,7 @@ function applyEffect(L, e, npcId) {
   if (e.learn) learn(L, e.learn);
   if (e.tension) L.lw.st.tension = clamp(L.lw.st.tension + e.tension, 0, 100);
   if (e.role) { const m = L.lw.cast.get(e.role.npc); if (m && !m.roles.includes(e.role.add)) m.roles.push(e.role.add); }
+  if (e.buy || e.sell || e.lifestyle || e.deposit || e.withdraw || e.lend || e.give || e.insure || e.uninsure || e.support) moneyEffect(L, e, npcId);
   if (e.custom) customEffect(L, e.custom, npcId);
 }
 /** Bước vào một trong 96 con đường đời (registry trong engine). Con đường nghề thay nghề cũ; con đường "đời" (tị nạn, đi tu…) chồng lên. */
@@ -182,7 +186,7 @@ function livingYear(L) {
   }
   // 2. Người phụ thuộc: tiền chảy ra
   const deps = Argon.dependentCosts(lw.cast, L.age, L.c.g > 30000); const yearly = Math.max(300, householdIncome(L));
-  let depTotal = 0; for (const d of deps) depTotal += d.frac * yearly;
+  let depTotal = 0; for (const d of deps) depTotal += d.frac * supportMult(L, d.role) * yearly;
   if (depTotal > 0) { L.savings -= depTotal; if (L.age - lw.depLogged >= 3) { lw.depLogged = L.age; log(L, `Năm nay ${fmtPPP(depTotal)} đi cho ${deps.map(d => `${d.name} (${d.why})`).join(", ")}.`); } }
   // 3. Ký ức mờ dần, bí mật rò rỉ, ngòi nổ
   Argon.decayMemories(lw.mem);
@@ -249,7 +253,9 @@ function microScene(L, ctx) {
   ctx = ctx || factContext(L);
   const cnt = {}, last = {}; for (const h of lw.history) { cnt[h.id] = (cnt[h.id] || 0) + 1; last[h.id] = h.age; }
   // Ngân sách lặp: mỗi thẻ tối đa maxPerLife lần (mặc định 1), lần lặp phải cách lần trước ≥ 10 năm.
-  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.meta && s.meta.path ? (s.maxPerLife ?? 1) : 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10));
+  // Thẻ tiền: tối đa 1 thẻ mỗi năm (spec tiền bạc §13).
+  const moneyDone = lw.history.some(h => h.age === L.age && MONEY_IDS().has(h.id));
+  const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.meta && (s.meta.path || s.meta.kind === "money") ? (s.maxPerLife ?? 1) : 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10) && !(moneyDone && s.meta && s.meta.kind === "money"));
   // Chuyện mới trước: chỉ cho một thẻ quay lại khi không còn thẻ nào chưa gặp.
   const opts = { minUrgency: 0, history: lw.history, age: L.age };
   let st = Argon.selectStorylet(pool.filter(s => !cnt[s.id]), ctx, opts, L.ar.rng) || Argon.selectStorylet(pool, ctx, opts, L.ar.rng);

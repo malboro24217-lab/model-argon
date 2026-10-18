@@ -20,6 +20,8 @@ function bigActionOk(L, a) {
     case "co_con": { const fAge = L.sex === "F" ? x : x - 3; return !!L.married && fAge >= 18 && fAge <= 44; }
     case "nghi_huu": return x >= 50 && !L.retired && !!L.job;
     case "xin_loi": return true;
+    case "mua": case "ban": case "muc_song": case "gui_tiet_kiem": case "rut_tiet_kiem": case "bao_hiem": case "bo_bao_hiem": case "chu_cap": return x >= 18 && !!holdingsOf(L);
+    case "cho_vay": case "cho_tien": { const m = L.lw && L.lw.cast.get(a.id); return x >= 18 && !!holdingsOf(L) && !!m && m.alive; }
     case "theo_duong": { const d = Argon.PATHS[a.gia_tri]; return !!d && x >= d.ages[0] && x <= d.ages[1] + 5 && !fl.has("life_" + d.id); }
   }
   return false;
@@ -56,6 +58,7 @@ LUẬT:
 - Bạn không thể giết nhân vật trực tiếp; chỉ trừ sức khỏe.
 - Người cũ: dùng đúng "id" trong nguoi_than. Người mới: "moi": {"ten","vai"} (tối đa 1).
 - Chỉ dùng cờ trong co_cho_phep và việc lớn trong viec_lon_cho_phep. Muốn đổi nghề, đi nước ngoài, cưới, ly hôn, đi tu, thành ca sĩ… thì phải dùng viec_lon.
+- Việc dùng tiền có tên (mua/bán nhà, xe, đất, vàng; gửi/rút tiết kiệm; đổi mức sống; bảo hiểm; cho vay, cho tiền; chu cấp bố mẹ/con) PHẢI đi qua viec_lon (mua, ban, muc_song, gui_tiet_kiem, rut_tiet_kiem, bao_hiem, bo_bao_hiem, cho_vay, cho_tien, chu_cap), KHÔNG ghi vào chi_so.money. Đọc cua_cai: không đủ tien_mat_rong thì chỉ mua được nếu vay (vay=true) và ngân hàng chấp nhận; giá lấy quanh gia_dien_hinh_nam_thu_nhap. Mua thứ quá sức (vd siêu xe khi nghèo) → ket_qua "khong_lam_duoc". Chỉ bán món có trong cua_cai.tai_san. Việc tiền dùng trường riêng thay cho gia_tri, vd {"loai":"mua","tai_san":"house","ten":"căn hộ hai phòng","so":9,"vay":true} hoặc {"loai":"cho_vay","id":"cast_...","so":0.5,"nam":2}.
 - money tính theo SỐ NĂM thu nhập hộ (vd -0.3 = mất 3,6 tháng thu nhập). Dưới 12 tuổi: không tiền, không đổi lòng tin.
 - Nếu việc này sẽ còn chuyện về sau (mở quán, yêu ai đó, kiện tụng…), mở "chuyen" với hen_nam 1–5.
 - Nếu tinh_huong_dang_cho.la_chuyen_dang_do: trả "chuyen" {"ten","tom_tat","hen_nam"} nếu chuyện còn tiếp, hoặc "chuyen": null nếu cách xử lý này khép chuyện lại.
@@ -77,6 +80,7 @@ function actPacket(L, text) {
   if (L.pending) pk.tinh_huong_dang_cho = { tieu_de: L.pending.title, noi_dung: String(L.pending.text || "").slice(0, 500), nut: L.pending.choices.map(c => c.label), can_chon: !isFreeScene(L.pending), la_chuyen_dang_do: !!L.pending.story };
   pk.co_cho_phep = Argon.ALLOWED_FLAGS;
   pk.viec_lon_cho_phep = Argon.BIG_ACTIONS;
+  pk.cua_cai = moneyPacket(L);
   pk.con_duong = Argon.PATH_LIST.map(d => d.id + ": " + d.vn).join("; ");
   pk.cau_go = text;
   return pk;
@@ -110,7 +114,7 @@ function applyPeople(L, people) {
 }
 function applyBig(L, list) {
   for (const a of list || []) {
-    if (bigActionOk(L, a)) customEffect(L, bigActionToCustom(a));
+    if (bigActionOk(L, a)) { if (Argon.isMoneyAction(a)) { const e = Argon.moneyActionEffect(a); if (e) applyEffect(L, e); } else customEffect(L, bigActionToCustom(a)); }
     else log(L, `(Việc "${Argon.BIG_ACTIONS[a.loai].split(" —")[0]}" chưa thể xảy ra lúc này.)`);
   }
 }

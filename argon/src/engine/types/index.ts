@@ -16,6 +16,7 @@ import type { FiveCapitals, StressState, PerceptionState } from "./FiveCapitals.
 import type { NpcAgent } from "./AgentArchetype.ts";
 import type { SocialGraph } from "./SocialGraph.ts";
 import type { EconomicPhase } from "./SpawnVector.ts";
+import type { Holdings } from "../economy/Holdings.ts";
 
 /** The complete simulation state. Pure data; every engine function is `(state, ...) => state | delta`. */
 export interface WorldState {
@@ -29,6 +30,8 @@ export interface WorldState {
   npcs: Map<string, NpcAgent>;
   graph: SocialGraph;
   economic_phase: EconomicPhase;
+  /** Của cải có tên, vay mua, mức sống, bảo hiểm, cho vay (economy/Holdings.ts). */
+  holdings: Holdings;
   /** True once Bio-Energy hit 0 or age exceeded the hazard table. The runner stops. */
   dead: boolean;
 }

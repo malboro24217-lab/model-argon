@@ -106,3 +106,19 @@ export function news(id: string, ages: [number, number], p: number, when: (c: Fa
     specificity: () => (major ? 5 : 3), build, meta: { kind: "news" },
   };
 }
+
+/**
+ * Thẻ tiền (gói money_pack): chuyện dùng tiền chạm vào mọi đời, không thuộc con đường nào. p = tỉ lệ đời gặp thẻ này.
+ * Host cho tối đa 1 thẻ tiền mỗi năm. Thẻ gọi vary() được quay lại tối đa 2 lần trong đời.
+ */
+export function money(id: string, ages: [number, number], cooldown: number, p: number, when: (c: FactContext) => boolean, build: Build): Storylet {
+  return {
+    id, category: "micro", urgency: 22, cooldownYears: Math.max(6, cooldown), tension: 2, maxPerLife: repeatCap(build),
+    prerequisites: (c) => inAges(c, ages) && slice(c, "m:" + id, p) && when(c),
+    specificity: () => 5, build, meta: { kind: "money" },
+  };
+}
+
+/** Gắn một cờ vào MỌI lựa chọn của thẻ (vd "inherited_home": chuyện thừa kế nhà chỉ xảy ra một lần, dù qua thẻ nào hay qua host). */
+export const flagAll = (v: StoryletView, flag: string): StoryletView =>
+  ({ ...v, choices: v.choices.map((ch) => ({ ...ch, effects: { ...ch.effects, flags: [...(ch.effects.flags ?? []), flag] } })) });

@@ -4,12 +4,18 @@
  */
 import type { SecretTag } from "./types.ts";
 import { PATHS } from "./paths/registry.ts";
+import { ASSET_KINDS, LIFESTYLES, type AssetKind, type Lifestyle } from "../economy/Holdings.ts";
 
 export type ActOutcome = "thanh" | "nua_voi" | "hong" | "khong_lam_duoc";
-export type BigActionKind = "doi_nghe" | "mat_viec" | "vay" | "tra_no" | "co_cau_no" | "di_nuoc_ngoai" | "ve_que" | "chuyen_thanh_pho" | "di_hoc" | "ket_hon" | "ly_hon" | "co_con" | "nghi_huu" | "xin_loi" | "theo_duong";
+export type BigActionKind = "doi_nghe" | "mat_viec" | "vay" | "tra_no" | "co_cau_no" | "di_nuoc_ngoai" | "ve_que" | "chuyen_thanh_pho" | "di_hoc" | "ket_hon" | "ly_hon" | "co_con" | "nghi_huu" | "xin_loi" | "theo_duong"
+  | "mua" | "ban" | "muc_song" | "gui_tiet_kiem" | "rut_tiet_kiem" | "bao_hiem" | "bo_bao_hiem" | "cho_vay" | "cho_tien" | "chu_cap";
 export interface ActStats { money?: number; health?: number; happy?: number; know?: number; rel?: number; bw?: number; income_mult?: number; agency?: number }
 export interface ActPerson { id?: string; moi?: { ten: string; vai: string }; tin: number; nho: string; phan_ung: string }
-export interface BigAction { loai: BigActionKind; gia_tri?: string | number }
+export interface BigAction {
+  loai: BigActionKind; gia_tri?: string | number;
+  /* Việc tiền (spec 2026-10-18-tien-bac §7). so = số năm thu nhập. */
+  tai_san?: AssetKind; ten?: string; so?: number; vay?: boolean; id?: string; nam?: number; muc?: string; ai?: "parents" | "kids";
+}
 export interface ActSecret { loai: SecretTag; nang: number; fuse: number; ghi: string }
 export interface ActEffects { chi_so: ActStats; nguoi: ActPerson[]; co: string[]; bo_co: string[]; viec_lon: BigAction[]; thoi_quen: Record<string, number>; bi_mat: ActSecret | null }
 export interface ActResult extends ActEffects { ke: string; ket_qua: ActOutcome; chuyen: { ten: string; tom_tat: string; hen_nam: number } | null }
@@ -35,7 +41,15 @@ export const BIG_ACTIONS: Record<BigActionKind, string> = {
   di_nuoc_ngoai: "sang nước khác sống và làm việc", ve_que: "về lại quê / nước mình", chuyen_thanh_pho: "chuyển lên thành phố", di_hoc: "đi học lại",
   ket_hon: "kết hôn — gia_tri = tên người kia (nếu là người mới)", ly_hon: "ly hôn", co_con: "sinh con", nghi_huu: "nghỉ hưu", xin_loi: "đi xin lỗi những người mình làm tổn thương",
   theo_duong: "bước vào một con đường đời — gia_tri = id con đường",
+  mua: "mua một món — tai_san ∈ house|land|vehicle|shop|gold|stake, ten = tên món (vd \"căn hộ hai phòng\"), so = giá theo số năm thu nhập (dựa vào cua_cai.gia_dien_hinh_nam_thu_nhap), vay = true nếu vay ngân hàng; stake cần id người góp chung",
+  ban: "bán một món đang có — ten = tên món trong cua_cai.tai_san (hoặc tai_san = loại)",
+  muc_song: "đổi mức sống — muc ∈ tan_tien|vua_phai|thoai_mai|pho_truong",
+  gui_tiet_kiem: "gửi tiết kiệm — so = số năm thu nhập (≤5)", rut_tiet_kiem: "rút tiết kiệm — so = số năm thu nhập (≤5)",
+  bao_hiem: "mua bảo hiểm — muc ∈ health|property", bo_bao_hiem: "bỏ bảo hiểm — muc ∈ health|property",
+  cho_vay: "cho một người vay — id, so (≤3), nam = số năm hẹn trả", cho_tien: "cho/biếu một người tiền — id, so (≤3)",
+  chu_cap: "mức chi cho bố mẹ hoặc con — ai ∈ parents|kids, muc ∈ it|du|hau",
 };
+const MONEY_ACTIONS = new Set<BigActionKind>(["mua", "ban", "muc_song", "gui_tiet_kiem", "rut_tiet_kiem", "bao_hiem", "bo_bao_hiem", "cho_vay", "cho_tien", "chu_cap"]);
 
 const OUTCOMES = new Set<ActOutcome>(["thanh", "nua_voi", "hong", "khong_lam_duoc"]);
 const FAMILIES = new Set(["farm", "market", "driver", "build", "factory", "teach", "health", "office", "tech", "domestic"]);
@@ -81,6 +95,7 @@ function sanitizeEffects(o: Record<string, unknown>, castIds: ReadonlySet<string
     if (loai === "doi_nghe") { if (typeof a.gia_tri === "string" && FAMILIES.has(a.gia_tri)) viec_lon.push({ loai, gia_tri: a.gia_tri }); continue; }
     if (loai === "theo_duong") { if (typeof a.gia_tri === "string" && PATHS[a.gia_tri]) viec_lon.push({ loai, gia_tri: a.gia_tri }); continue; }
     if (loai === "vay" || loai === "tra_no") { if (child) continue; const v = num(a.gia_tri); if (v !== undefined && v > 0) viec_lon.push({ loai, gia_tri: Math.min(3, v) }); continue; }
+    if (MONEY_ACTIONS.has(loai)) { if (child) continue; const m = sanitizeMoneyAction(loai, a, castIds); if (m) viec_lon.push(m); continue; }
     if (loai === "ket_hon") { const ten = str(a.gia_tri, 30).replace(/[|:]/g, "").trim(); viec_lon.push(ten ? { loai, gia_tri: ten } : { loai }); continue; }
     viec_lon.push({ loai });
   }
@@ -94,6 +109,47 @@ function sanitizeEffects(o: Record<string, unknown>, castIds: ReadonlySet<string
   }
   return { chi_so, nguoi, co: flagList(o.co), bo_co: flagList(o.bo_co), viec_lon, thoi_quen, bi_mat };
 }
+
+/** Việc tiền: kiểm từng trường, sai là bỏ (không tự sửa con số). Giá mua để host kẹp vào khung thật của nước. */
+function sanitizeMoneyAction(loai: BigActionKind, a: Record<string, unknown>, castIds: ReadonlySet<string>): BigAction | null {
+  const so = num(a.so) ?? num(a.gia_tri);
+  const ten = str(a.ten, 40) || (typeof a.gia_tri === "string" ? str(a.gia_tri, 40) : "");
+  const muc = typeof a.muc === "string" ? a.muc : typeof a.gia_tri === "string" ? a.gia_tri : "";
+  const id = typeof a.id === "string" && castIds.has(a.id) ? a.id : undefined;
+  const ts = typeof a.tai_san === "string" && (ASSET_KINDS as readonly string[]).includes(a.tai_san) ? (a.tai_san as AssetKind) : undefined;
+  switch (loai) {
+    case "mua":
+      if (!ts || ts === "deposit" || so === undefined || !(so > 0 && so <= 40)) return null;
+      if (ts === "stake" && !id) return null;
+      return { loai, tai_san: ts, ten: ten || "", so, vay: a.vay === true, ...(id ? { id } : {}) };
+    case "ban": return ten || ts ? { loai, ...(ten ? { ten } : {}), ...(ts ? { tai_san: ts } : {}) } : null;
+    case "muc_song": return (LIFESTYLES as readonly string[]).includes(muc) ? { loai, muc: muc as Lifestyle } : null;
+    case "gui_tiet_kiem": case "rut_tiet_kiem": return so !== undefined && so > 0 ? { loai, so: Math.min(5, so) } : null;
+    case "bao_hiem": case "bo_bao_hiem": return muc === "health" || muc === "property" ? { loai, muc } : null;
+    case "cho_vay": return id && so !== undefined && so > 0 ? { loai, id, so: Math.min(3, so), nam: Math.round(clamp(num(a.nam) ?? 2, 1, 10)) } : null;
+    case "cho_tien": return id && so !== undefined && so > 0 ? { loai, id, so: Math.min(3, so) } : null;
+    case "chu_cap": return (a.ai === "parents" || a.ai === "kids") && (muc === "it" || muc === "du" || muc === "hau") ? { loai, ai: a.ai, muc } : null;
+    default: return null;
+  }
+}
+
+/** Việc tiền → hiệu ứng storylet (host áp như mọi thẻ). */
+export function moneyActionEffect(a: BigAction): import("./types.ts").Effect | null {
+  switch (a.loai) {
+    case "mua": return { buy: { kind: a.tai_san!, name: a.ten ?? "", price: a.so!, borrow: !!a.vay, ...(a.id ? { with_npc: a.id } : {}) } };
+    case "ban": return { sell: { ...(a.ten ? { name: a.ten } : {}), ...(a.tai_san ? { kind: a.tai_san } : {}) } };
+    case "muc_song": return { lifestyle: a.muc as Lifestyle };
+    case "gui_tiet_kiem": return { deposit: a.so! };
+    case "rut_tiet_kiem": return { withdraw: a.so! };
+    case "bao_hiem": return { insure: a.muc as "health" | "property" };
+    case "bo_bao_hiem": return { uninsure: a.muc as "health" | "property" };
+    case "cho_vay": return { lend: { npc: a.id!, amount: a.so!, years: a.nam ?? 2 } };
+    case "cho_tien": return { give: { npc: a.id!, amount: a.so! } };
+    case "chu_cap": return { support: { who: a.ai!, level: a.muc as "it" | "du" | "hau" } };
+    default: return null;
+  }
+}
+export function isMoneyAction(a: BigAction): boolean { return MONEY_ACTIONS.has(a.loai); }
 
 /** Làm sạch kết quả AI cho một việc gõ. null = không dùng được (thiếu lời kể hoặc kết quả). */
 export function sanitizeAct(raw: unknown, castIds: ReadonlySet<string>, age: number): ActResult | null {

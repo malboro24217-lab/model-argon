@@ -103,3 +103,42 @@ Mỗi thẻ là một chuyện của thời đại chạm vào đời: dịch b�
 
 - Ít nhất một lựa chọn nối vào một con đường bằng `become:<id>` khi hợp lý. Ví dụ: chiến tranh → `become:refugee` hoặc `become:soldier`; AI thay việc → `become:ai_engineer` hoặc `become:shipper`.
 - Không gắn năm dương lịch cụ thể ("năm 2020"). Viết sao cho chuyện có thể xảy ra ở bất kỳ thời điểm nào trong đời.
+
+---
+
+# Phụ lục: gói "thẻ tiền" (money_*.ts)
+
+Thẻ tiền không thuộc con đường nào. Chúng là những lúc một người phải **dùng tiền**: sống thế nào, mua gì, giúp ai, đặt cược vào đâu. Spec: `docs/superpowers/specs/2026-10-18-tien-bac-design.md`.
+
+## Dựng thẻ
+- Dùng helper `money(id, ages, cooldown, p, when, build)` trong `kit.ts`.
+  - `p`: tỉ lệ đời gặp thẻ (0.2–0.9). Thẻ phổ biến (mua xe, bạn hỏi vay) 0.6–0.9; thẻ hiếm (trúng giải tỏa, ngân hàng đổ) 0.15–0.35.
+  - `when(c)`: điều kiện hoàn cảnh. **Luôn kiểm tồn tại** của người (`role(c, …)`) và của tài sản (`c.owns.has(…)`) trước khi dùng.
+- Mọi lựa chọn dựng bằng `C(...)`, mọi thẻ bằng `T(...)`. Id có tiền tố riêng của file. Tiêu đề không trùng.
+- Tuổi: thẻ tiền chỉ dành cho người từ 18 tuổi trở lên.
+- Mỗi năm host chỉ cho **tối đa 1 thẻ tiền**, nên mỗi thẻ phải đáng giá.
+
+## Hiệu ứng tiền (ngoài các hiệu ứng ở mục 3)
+Tất cả số tiền tính bằng **số năm thu nhập hộ**, giống `money`.
+
+| Hiệu ứng | Nghĩa |
+|---|---|
+| `buy: { kind, name, price, borrow? , with_npc? }` | Mua một món có tên. `kind` ∈ house, land, vehicle, shop, gold, deposit, stake. `price` là số năm thu nhập; lấy theo `c.price_years.<kind>` nhân hệ số (vd `c.price_years.house * 0.8`). Vàng/góp vốn thì chọn số trực tiếp (0.1–2). `borrow: true` = vay ngân hàng phần thiếu. Engine kẹp giá vào khung thật của nước đó và có thể **từ chối** (không đủ tiền, ngân hàng không cho vay): khi đó host tự kể, bạn không cần lo. |
+| `sell: { kind?, name? }` | Bán món khớp tên, hoặc món đầu tiên của loại đó. Bán luôn lỗ phí. |
+| `lifestyle: "tan_tien" \| "vua_phai" \| "thoai_mai" \| "pho_truong"` | Đổi mức sống từ nay. |
+| `deposit: x`, `withdraw: x` | Gửi / rút tiết kiệm (0 < x ≤ 5). |
+| `lend: { npc, amount, years }` | Cho một người vay. Người đó tự quyết trả hay quỵt theo tính cách và lòng tin. |
+| `give: { npc, amount }` | Cho, biếu, không đòi. |
+| `insure: "health" \| "property"`, `uninsure: …` | Mua / bỏ bảo hiểm. |
+| `support: { who: "parents" \| "kids", level: "it" \| "du" \| "hau" }` | Mức chi cho bố mẹ hoặc con. |
+
+## Bối cảnh `c` đọc thêm
+`owns` (Set loại tài sản), `asset_names` (loại → tên món), `assets_value`, `loans`, `loan_burden` (tiền góp / thu nhập), `deposit`, `lifestyle`, `lifestyle_years`, `insured` (Set), `owed_to_me`, `debtors_overdue` (id người đang nợ quá hạn), `home_owner`, `support`, `price_years` (giá điển hình theo số năm thu nhập của người chơi: house, land, vehicle, shop).
+
+## Quy tắc riêng
+1. Tiền luôn đổi lấy một thứ khác: chỗ ở, thể diện, quan hệ, sự yên tâm, thời gian. Viết `hint` nói rõ đổi gì lấy gì, vd "Có nhà, gánh 20 năm góp".
+2. Một thẻ không bao giờ ép mua: luôn có lựa chọn không chi.
+3. Chuyện cho vay, góp vốn phải có người cụ thể (`role(c, …)`), và nên để lại `memory`/`trust`.
+4. Lừa đảo tài chính, đa cấp, hụi vỡ: chỉ kể hậu quả, không tả cách làm.
+5. Văn bản phải đúng ở mọi nước. Chi tiết Việt Nam (hụi, sổ đỏ, vàng SJC… — không dùng tên thương hiệu thật, nói "vàng miếng") chỉ khi `c.country === "VN"`.
+6. Kiểm gói: `node --experimental-strip-types src/check-pack.ts src/engine/narrative/paths/<file>.ts --money` và `scripts/tsc-pack.sh src/engine/narrative/paths/<file>.ts`.

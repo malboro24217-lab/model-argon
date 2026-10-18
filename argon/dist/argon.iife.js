@@ -21,6 +21,7 @@ var Argon = (() => {
     ALLOWED_FLAGS: () => ALLOWED_FLAGS,
     ALL_ARCHETYPES: () => ALL_ARCHETYPES,
     ARCHETYPE_PRIOR: () => ARCHETYPE_PRIOR,
+    ASSET_KINDS: () => ASSET_KINDS,
     BANDWIDTH_LOCK_LEVEL: () => BANDWIDTH_LOCK_LEVEL,
     BIG_ACTIONS: () => BIG_ACTIONS,
     BRANCHES: () => BRANCHES,
@@ -30,6 +31,10 @@ var Argon = (() => {
     DOORS: () => DOORS,
     EMPTY_DELTA: () => EMPTY_DELTA,
     GOSSIP_DEFECT_TRUST: () => GOSSIP_DEFECT_TRUST,
+    HAIRCUT: () => HAIRCUT,
+    LIFESTYLES: () => LIFESTYLES,
+    LIFESTYLE_MULT: () => LIFESTYLE_MULT,
+    LIFESTYLE_VN: () => LIFESTYLE_VN,
     LIFE_VARIANTS: () => LIFE_VARIANTS,
     MAX_STORIES_PER_YEAR: () => MAX_STORIES_PER_YEAR,
     MAX_STORY_STAGES: () => MAX_STORY_STAGES,
@@ -48,6 +53,7 @@ var Argon = (() => {
     TEMPER_LIFE: () => TEMPER_LIFE,
     TICKS_PER_YEAR: () => TICKS_PER_YEAR,
     VIGNETTES: () => VIGNETTES,
+    addAsset: () => addAsset,
     addCastMember: () => addCastMember,
     addMark: () => addMark,
     addMemory: () => addMemory,
@@ -57,13 +63,16 @@ var Argon = (() => {
     ageingCapLoss: () => ageingCapLoss,
     agencyDriftDelta: () => agencyDriftDelta,
     allianceCount: () => allianceCount,
+    annuity: () => annuity,
     applyDelta: () => applyDelta,
     arbitragePayoff: () => arbitragePayoff,
     attachConsequence: () => attachConsequence,
     awaken: () => awaken,
     bandwidthRegenDelta: () => bandwidthRegenDelta,
+    basePrice: () => basePrice,
     beliefAbout: () => beliefAbout,
     bioEnergyDelta: () => bioEnergyDelta,
+    buyAsset: () => buyAsset,
     bwCost: () => bwCost,
     byRole: () => byRole,
     cellPayoff: () => cellPayoff,
@@ -77,6 +86,7 @@ var Argon = (() => {
     createCast: () => createCast,
     createCausality: () => createCausality,
     createGraph: () => createGraph,
+    createHoldings: () => createHoldings,
     createMemory: () => createMemory,
     createRng: () => createRng,
     createStoryteller: () => createStoryteller,
@@ -84,7 +94,10 @@ var Argon = (() => {
     dealChoices: () => dealChoices,
     decayMemories: () => decayMemories,
     decide: () => decide,
+    defaultName: () => defaultName,
     dependentCosts: () => dependentCosts,
+    deposit: () => deposit,
+    depositRate: () => depositRate,
     detectCrisis: () => detectCrisis,
     doorOpen: () => doorOpen,
     dueStories: () => dueStories,
@@ -93,36 +106,55 @@ var Argon = (() => {
     eligible: () => eligible,
     expectedCapital: () => expectedCapital,
     financialEntropyDelta: () => financialEntropyDelta,
+    findAsset: () => findAsset,
     fuseCheck: () => fuseCheck,
     getEdge: () => getEdge,
     groupIndex: () => groupIndex,
+    hasPolicy: () => hasPolicy,
+    healthPayout: () => healthPayout,
+    holdingsYear: () => holdingsYear,
     hooks: () => hooks,
+    housePriceToIncome: () => housePriceToIncome,
+    illiquidValue: () => illiquidValue,
     initialCapitals: () => initialCapitals,
     isBandwidthLocked: () => isBandwidthLocked,
+    isMoneyAction: () => isMoneyAction,
     isNashCell: () => isNashCell,
     leakSecrets: () => leakSecrets,
+    lend: () => lend,
     lifeShock: () => lifeShock,
     lifeTopology: () => lifeTopology,
     lifestyleSpend: () => lifestyleSpend,
+    lifestyleYear: () => lifestyleYear,
+    loanService: () => loanService,
+    loanTerms: () => loanTerms,
+    loanTotal: () => loanTotal,
     macroShock: () => macroShock,
     makeNpc: () => makeNpc,
     markById: () => markById,
     memoriesOf: () => memoriesOf,
     mergeDeltas: () => mergeDeltas,
+    moneyActionEffect: () => moneyActionEffect,
     mortalityQuarter: () => mortalityQuarter,
+    netWorth: () => netWorth,
     nextStress: () => nextStress,
     npcDecide: () => npcDecide,
     onFired: () => onFired,
     opinionOf: () => opinionOf,
+    owedToMe: () => owedToMe,
     phaseFor: () => phaseFor,
     pivotalMarks: () => pivotalMarks,
+    policyTerms: () => policyTerms,
     predictedCoopProb: () => predictedCoopProb,
     pressure: () => pressure,
+    priceBounds: () => priceBounds,
     propagate: () => propagate,
     prov: () => prov,
     purchaseDelta: () => purchaseDelta,
+    quoteBuy: () => quoteBuy,
     ratRace: () => ratRace,
     rawAccuracy: () => rawAccuracy,
+    repayChance: () => repayChance,
     repeatCap: () => repeatCap,
     reputationOf: () => reputationOf,
     resolveCauses: () => resolveCauses,
@@ -130,8 +162,10 @@ var Argon = (() => {
     sanitizeAct: () => sanitizeAct,
     sanitizeStoryScene: () => sanitizeStoryScene,
     scarcityTax: () => scarcityTax,
+    seizeForDebt: () => seizeForDebt,
     selectStorylet: () => selectStorylet,
     selectVignette: () => selectVignette,
+    sellAsset: () => sellAsset,
     setEdge: () => setEdge,
     severEdge: () => severEdge,
     snapshot: () => snapshot,
@@ -144,7 +178,8 @@ var Argon = (() => {
     tick: () => tick,
     tickChoices: () => tickChoices,
     tierOf: () => tierOf,
-    trustToward: () => trustToward
+    trustToward: () => trustToward,
+    withdraw: () => withdraw
   });
 
   // src/engine/types/FiveCapitals.ts
@@ -646,13 +681,241 @@ var Argon = (() => {
     return { choices, info };
   }
 
+  // src/engine/economy/Holdings.ts
+  var ASSET_KINDS = ["house", "land", "vehicle", "shop", "gold", "deposit", "stake"], LIFESTYLES = ["tan_tien", "vua_phai", "thoai_mai", "pho_truong"];
+  function createHoldings() {
+    return { assets: [], lifestyle: "thoai_mai", lifestyle_since: 0, receivables: [], policies: [], support: { parents: "du", kids: "du" }, next_id: 1, closed: [] };
+  }
+  var LIFESTYLE_MULT = Object.freeze({ tan_tien: 0.35, vua_phai: 0.7, thoai_mai: 1, pho_truong: 1.5 }), LIFESTYLE_VN = Object.freeze({ tan_tien: "t\u1EB1n ti\u1EC7n", vua_phai: "v\u1EEBa ph\u1EA3i", thoai_mai: "tho\u1EA3i m\xE1i", pho_truong: "ph\xF4 tr\u01B0\u01A1ng" });
+  function lifestyleYear(l, yearsIn, inst) {
+    switch (l) {
+      case "tan_tien":
+        return { happy: yearsIn >= 6 ? -3 : -1.5, rel: -1, reputation_trust: 0 };
+      case "vua_phai":
+        return { happy: -0.5, rel: 0, reputation_trust: 0 };
+      case "thoai_mai":
+        return { happy: 0, rel: 0, reputation_trust: 0 };
+      case "pho_truong":
+        return { happy: 2, rel: 0.5, reputation_trust: 0.02 * (1 - inst) };
+    }
+  }
+  function housePriceToIncome(gdp) {
+    return 6 + 14 * clamp((Math.log10(6e4) - Math.log10(Math.max(500, gdp))) / 0.9, 0, 1.5);
+  }
+  var RURAL_HOUSE = 0.35;
+  function basePrice(kind, m) {
+    let house = housePriceToIncome(m.gdp) * m.median_yearly * (m.urban ? 1 : RURAL_HOUSE);
+    switch (kind) {
+      case "house":
+        return house;
+      case "land":
+        return 0.4 * house;
+      case "shop":
+        return 0.5 * house;
+      // Xe: nước nghèo thường là xe máy (≈ 0,3 năm thu nhập trung vị), nước giàu là ô tô cũ (≈ 0,5).
+      case "vehicle":
+        return m.median_yearly * (m.gdp < 8e3 ? 0.3 : m.gdp < 3e4 ? 0.4 : 0.5);
+      default:
+        return 0;
+    }
+  }
+  function priceBounds(kind, m) {
+    let b = basePrice(kind, m);
+    switch (kind) {
+      case "house":
+        return [0.25 * b, 2.5 * b];
+      case "land":
+        return [0.1 * b, 3 * b];
+      case "shop":
+        return [0.2 * b, 3 * b];
+      case "vehicle":
+        return [0.15 * b, 8 * b];
+      default:
+        return [1, Number.POSITIVE_INFINITY];
+    }
+  }
+  var HAIRCUT = Object.freeze({ house: 0.08, land: 0.08, vehicle: 0.15, shop: 0.25, gold: 0.03, deposit: 0, stake: 0.4 }), UPKEEP = Object.freeze({ house: 0.01, land: 2e-3, vehicle: 0.06, shop: 0.02, gold: 0, deposit: 0, stake: 0 }), YIELD = Object.freeze({ house: 0, land: 0, vehicle: 0, shop: 0.07, gold: 0, deposit: 0, stake: 0 }), DRIFT = Object.freeze({
+    house: { boom: 0.06, stagnation: 0.01, crisis: -0.08 },
+    land: { boom: 0.08, stagnation: 0.01, crisis: -0.12 },
+    shop: { boom: 0.04, stagnation: 0, crisis: -0.12 },
+    vehicle: { boom: -0.12, stagnation: -0.12, crisis: -0.14 },
+    gold: { boom: -0.02, stagnation: 0.02, crisis: 0.1 },
+    deposit: { boom: 0, stagnation: 0, crisis: 0 },
+    stake: { boom: 0, stagnation: 0, crisis: 0 }
+  }), VOL = Object.freeze({ house: 0.04, land: 0.08, shop: 0.06, vehicle: 0.02, gold: 0.12, deposit: 0, stake: 0 });
+  function loanTerms(m) {
+    let t = clamp(m.institutional_trust, 0, 1);
+    return { rate: m.interest_rate * 0.65, years: t >= 0.5 ? 20 : t >= 0.3 ? 15 : 10, min_down: clamp(0.5 - 0.375 * (t - 0.1), 0.2, 0.5) };
+  }
+  function annuity(principal, rate, years) {
+    return principal <= 0 || years <= 0 ? 0 : rate <= 0 ? principal / years : principal * rate / (1 - Math.pow(1 + rate, -years));
+  }
+  function loanService(h2) {
+    let s = 0;
+    for (let a of h2.assets) a.loan > 0 && (s += annuity(a.loan, a.loan_rate, a.loan_years_left));
+    return s;
+  }
+  function loanTotal(h2) {
+    let s = 0;
+    for (let a of h2.assets) s += a.loan;
+    return s;
+  }
+  function quoteBuy(h2, r, m, cash2, yearly) {
+    let [lo, hi] = priceBounds(r.kind, m);
+    if (!(r.price > 0) || !Number.isFinite(r.price)) return { ok: !1, reason: "gia_khong_hop_le", price: 0, down: 0, loan: 0, payment: 0, clamped: !1 };
+    let price = clamp(r.price, lo, hi), clamped = Math.abs(price - r.price) > 1e-6 * Math.max(1, r.price), financeable = r.kind === "house" || r.kind === "land" || r.kind === "shop" || r.kind === "vehicle", t = loanTerms(m);
+    if (!r.borrow || !financeable)
+      return cash2 >= price ? { ok: !0, reason: "", price, down: price, loan: 0, payment: 0, clamped } : { ok: !1, reason: "khong_du_tien", price, down: price, loan: 0, payment: 0, clamped };
+    let down = Math.max(price * t.min_down, Math.min(price, cash2 - 0.25 * yearly));
+    if (cash2 < price * t.min_down) return { ok: !1, reason: "khong_du_tien", price, down: price * t.min_down, loan: 0, payment: 0, clamped };
+    let loan = Math.max(0, price - down), payment = annuity(loan, t.rate, t.years);
+    return loanService(h2) + payment > 0.4 * Math.max(1, yearly) ? { ok: !1, reason: "ngan_hang_tu_choi", price, down, loan, payment, clamped } : { ok: !0, reason: "", price, down, loan, payment, clamped };
+  }
+  function buyAsset(h2, r, q, m, age) {
+    let t = loanTerms(m), value = q.price * (1 - HAIRCUT[r.kind] / 2), asset = {
+      id: `as_${h2.next_id++}`,
+      kind: r.kind,
+      name: r.name.slice(0, 40) || defaultName(r.kind),
+      value,
+      cost: q.price,
+      bought_age: age,
+      loan: q.loan,
+      loan_rate: q.loan > 0 ? t.rate : 0,
+      loan_years_left: q.loan > 0 ? t.years : 0,
+      missed: 0,
+      origin: "bought",
+      ...r.co_owner ? { co_owner: r.co_owner } : {}
+    };
+    return h2.assets.push(asset), { asset, cash: -q.down };
+  }
+  function addAsset(h2, kind, name, value, age, origin) {
+    let asset = { id: `as_${h2.next_id++}`, kind, name: name.slice(0, 40) || defaultName(kind), value: Math.max(0, value), cost: 0, bought_age: age, loan: 0, loan_rate: 0, loan_years_left: 0, missed: 0, origin };
+    return h2.assets.push(asset), asset;
+  }
+  function defaultName(k) {
+    return { house: "c\u0103n nh\xE0", land: "m\u1EA3nh \u0111\u1EA5t", vehicle: "chi\u1EBFc xe", shop: "c\u1EEDa h\xE0ng", gold: "s\u1ED1 v\xE0ng", deposit: "s\u1ED5 ti\u1EBFt ki\u1EC7m", stake: "ph\u1EA7n v\u1ED1n g\xF3p" }[k];
+  }
+  function sellAsset(h2, id, age, how = "sold") {
+    let i = h2.assets.findIndex((a2) => a2.id === id);
+    if (i < 0) return null;
+    let a = h2.assets[i], gross = how === "lost" ? 0 : a.value * (1 - HAIRCUT[a.kind] * (how === "seized" ? 2 : 1)), cash2 = gross - a.loan;
+    return h2.assets.splice(i, 1), h2.closed.push({ name: a.name, kind: a.kind, cost: a.cost, got: gross, age, how }), { asset: a, cash: cash2 };
+  }
+  function findAsset(h2, q) {
+    let n11 = (q.name ?? "").trim().toLowerCase();
+    if (n11) {
+      let hit = h2.assets.find((a) => a.name.toLowerCase() === n11) ?? h2.assets.find((a) => a.name.toLowerCase().includes(n11) || n11.includes(a.name.toLowerCase()));
+      if (hit) return hit;
+    }
+    if (q.kind) return h2.assets.find((a) => a.kind === q.kind);
+  }
+  function depositRate(m) {
+    return Math.max(0, m.interest_rate * 0.6 - m.inflation_rate);
+  }
+  function deposit(h2, amount, age) {
+    if (!(amount > 0)) return { cash: 0 };
+    let d = h2.assets.find((a) => a.kind === "deposit");
+    return d ? d.value += amount : h2.assets.push({ id: `as_${h2.next_id++}`, kind: "deposit", name: "s\u1ED5 ti\u1EBFt ki\u1EC7m", value: amount, cost: amount, bought_age: age, loan: 0, loan_rate: 0, loan_years_left: 0, missed: 0, origin: "bought" }), { cash: -amount };
+  }
+  function withdraw(h2, amount) {
+    let d = h2.assets.find((a) => a.kind === "deposit");
+    if (!d || !(amount > 0)) return { cash: 0 };
+    let take = Math.min(d.value, amount);
+    return d.value -= take, d.value < 1 && h2.assets.splice(h2.assets.indexOf(d), 1), { cash: take };
+  }
+  function policyTerms(kind, m, yearly, insuredValue) {
+    let cover = clamp(0.3 + 0.5 * m.institutional_trust, 0.3, 0.8);
+    return kind === "health" ? { premium: 0.03 * Math.max(yearly, 0.5 * m.median_yearly), cover } : { premium: 6e-3 * insuredValue, cover };
+  }
+  function hasPolicy(h2, k) {
+    return h2.policies.some((p) => p.kind === k);
+  }
+  function holdingsYear(h2, m, phase, cash2, yearly, age, rng) {
+    let rep = { revalued: [], rent: 0, upkeep: 0, interest: 0, premiums: 0, loan_paid: 0, foreclosed: [], disasters: [], bank_failed: 0, cash: 0 };
+    if (!h2.assets.length && !h2.policies.length) return rep;
+    for (let a of h2.assets) {
+      if (a.kind === "deposit" || a.kind === "stake") continue;
+      let before = a.value;
+      a.value = Math.max(0, a.value * (1 + DRIFT[a.kind][phase] + VOL[a.kind] * rng.normal())), Math.abs(a.value - before) >= 0.1 * Math.max(1, before) && rep.revalued.push({ id: a.id, name: a.name, before, after: a.value });
+    }
+    let dep = h2.assets.find((a) => a.kind === "deposit");
+    if (dep) {
+      if (phase === "crisis" && rng.chance(0.03 * (1 - m.institutional_trust))) {
+        let lost = dep.value * 0.5;
+        dep.value -= lost, rep.bank_failed = lost;
+      }
+      let i = dep.value * depositRate(m);
+      dep.value += i, rep.interest = i;
+    }
+    for (let a of h2.assets)
+      rep.rent += a.value * YIELD[a.kind], rep.upkeep += a.value * UPKEEP[a.kind];
+    let physical = h2.assets.filter((a) => a.kind === "house" || a.kind === "shop" || a.kind === "vehicle"), propValue = physical.reduce((s, a) => s + a.value, 0);
+    for (let p of h2.policies) rep.premiums += policyTerms(p.kind, m, yearly, propValue).premium;
+    for (let a of physical) {
+      if (!rng.chance(a.kind === "vehicle" ? 0.02 : 0.01)) continue;
+      let loss = a.value * (a.kind === "vehicle" ? 0.6 : 0.35), paid = hasPolicy(h2, "property") ? loss * policyTerms("property", m, yearly, propValue).cover : 0;
+      a.value -= loss, rep.disasters.push({ name: a.name, loss, paid });
+    }
+    let net = rep.rent - rep.upkeep - rep.premiums + rep.disasters.reduce((s, d) => s + d.paid, 0), avail = cash2 + net;
+    for (let a of [...h2.assets]) {
+      if (a.loan <= 0) continue;
+      let pay = annuity(a.loan, a.loan_rate, a.loan_years_left);
+      if (avail >= pay) {
+        let interest = a.loan * a.loan_rate;
+        a.loan = Math.max(0, a.loan - (pay - interest)), a.loan_years_left = Math.max(0, a.loan_years_left - 1), a.missed = 0, a.loan_years_left === 0 && (a.loan = 0), avail -= pay, net -= pay, rep.loan_paid += pay;
+      } else if (a.missed += 1, a.loan += a.loan * a.loan_rate, a.missed >= 2) {
+        let s = sellAsset(h2, a.id, age, "seized");
+        net += s.cash, avail += s.cash, rep.foreclosed.push({ name: a.name, cash: s.cash });
+      }
+    }
+    return rep.cash = net, rep;
+  }
+  function healthPayout(h2, m, bill) {
+    return hasPolicy(h2, "health") && bill > 0 ? bill * clamp(0.3 + 0.5 * m.institutional_trust, 0.3, 0.8) : 0;
+  }
+  var SEIZE_ORDER = ["deposit", "stake", "gold", "vehicle", "shop", "land", "house"];
+  function seizeForDebt(h2, need, age) {
+    let seized = [], raised = 0;
+    for (let k of SEIZE_ORDER)
+      for (let a of h2.assets.filter((x) => x.kind === k)) {
+        if (raised >= need) return { seized, raised };
+        let s = sellAsset(h2, a.id, age, "seized");
+        raised += s.cash, seized.push(s.asset);
+      }
+    return { seized, raised };
+  }
+  function repayChance(arch, opinion, inst, playerDefected, sizeVsTheirIncome) {
+    let p = { tit_for_tat: 0.65, generous_tit_for_tat: 0.7, grudger: 0.7, opportunist: 0.3, always_defect: 0.1 }[arch];
+    return playerDefected && (arch === "grudger" || arch === "tit_for_tat") && (p = 0.2), p += 0.15 * clamp(opinion, -1, 1) + 0.3 * (inst - 0.5) - 0.12 * Math.max(0, sizeVsTheirIncome - 0.5), clamp(p, 0.03, 0.97);
+  }
+  function lend(h2, npc, amount, age, years) {
+    let rec = { npc, amount, lent_age: age, due_age: age + Math.max(1, Math.round(years)), repaid: 0, closed: !1 };
+    return h2.receivables.push(rec), { cash: -amount, rec };
+  }
+  function owedToMe(h2) {
+    let s = 0;
+    for (let r of h2.receivables) r.closed || (s += r.amount - r.repaid);
+    return s;
+  }
+  function netWorth(h2) {
+    let assets = 0, deposit2 = 0;
+    for (let a of h2.assets)
+      a.kind === "deposit" ? deposit2 += a.value : assets += a.value;
+    return { assets, loans: loanTotal(h2), deposit: deposit2, owed_to_me: owedToMe(h2) };
+  }
+  function illiquidValue(h2) {
+    let s = 0;
+    for (let a of h2.assets) a.kind !== "deposit" && (s += a.value);
+    return s;
+  }
+
   // src/engine/core/TickManager.ts
   function purchaseDelta(price) {
     return price <= 0 ? {} : { liquid: -price * 0.5, debt: price * 0.5, illiquid: price * 0.85 };
   }
   function lifestyleSpend(s, income, frugal) {
-    let dop = s.spawn.biology.baseline_dopamine_sensitivity, surplus = Math.max(0, income - s.spawn.macro.survival_cost_quarterly);
-    return dop * 0.9 * surplus * (frugal ? 0.35 : 1);
+    let dop = s.spawn.biology.baseline_dopamine_sensitivity, surplus = Math.max(0, income - s.spawn.macro.survival_cost_quarterly), mult = frugal ? 0.35 : LIFESTYLE_MULT[s.holdings?.lifestyle ?? "thoai_mai"];
+    return dop * 0.9 * surplus * mult;
   }
   function createWorld(spawn) {
     let rng = createRng(spawn.seed), graph = createGraph(), state = {
@@ -665,6 +928,7 @@ var Argon = (() => {
       npcs: /* @__PURE__ */ new Map(),
       graph,
       economic_phase: spawn.macro.economic_phase,
+      holdings: createHoldings(),
       dead: !1
     };
     return state.perception.phase = state.capitals.agency >= 0.3 ? "phase_change" : "autopilot", { state, rng };
@@ -3611,7 +3875,7 @@ var Argon = (() => {
   ];
 
   // src/engine/narrative/paths/registry.ts
-  var P = (id, vn12, group2, fam, title, incomeMult, ages, talent2, kind = "career") => ({ id, vn: vn12, group: group2, fam, title, incomeMult, ages, talent: talent2, kind }), PATH_GROUPS = {
+  var P = (id, vn16, group2, fam, title, incomeMult, ages, talent2, kind = "career") => ({ id, vn: vn16, group: group2, fam, title, incomeMult, ages, talent: talent2, kind }), PATH_GROUPS = {
     arts: "Ngh\u1EC7 thu\u1EADt & gi\u1EA3i tr\xED",
     media: "Truy\u1EC1n th\xF4ng & m\u1EA1ng",
     sport: "Th\u1EC3 thao",
@@ -3839,6 +4103,21 @@ var Argon = (() => {
       meta: { kind: "news" }
     };
   }
+  function money(id, ages, cooldown, p, when, build) {
+    return {
+      id,
+      category: "micro",
+      urgency: 22,
+      cooldownYears: Math.max(6, cooldown),
+      tension: 2,
+      maxPerLife: repeatCap(build),
+      prerequisites: (c) => inAges(c, ages) && slice(c, "m:" + id, p) && when(c),
+      specificity: () => 5,
+      build,
+      meta: { kind: "money" }
+    };
+  }
+  var flagAll = (v, flag) => ({ ...v, choices: v.choices.map((ch) => ({ ...ch, effects: { ...ch.effects, flags: [...ch.effects.flags ?? [], flag] } })) });
 
   // src/engine/narrative/paths/singer.ts
   var P2 = "singer", SINGER = [
@@ -8972,8 +9251,8 @@ var Argon = (() => {
       C6("T\u1EEB ch\u1ED1i, h\u1EB9n \u0111o\xE0n l\u1EA7n sau", { counters: { doors_seen: 1 }, happy: -2, flags: ["missed_expedition"] }, "Gi\u1EEF vi\u1EC7c, t\u1EF1 h\u1ECFi m\xE3i n\u1EBFu \u0111\xE3 \u0111i")
     ], 0)),
     door(CL, "lnu_d_porter", [18, 40], (c) => c.poor_country || c.farmer, (c) => {
-      let vn12 = c.country === "VN";
-      return T4("G\xF9i h\xE0ng cho \u0111o\xE0n leo n\xFAi", `${vn12 ? "B\u1EA3n c\u1EE7a b\u1EA1n \u1EDF ch\xE2n d\xE3y n\xFAi cao nh\u1EA5t v\xF9ng." : "L\xE0ng c\u1EE7a b\u1EA1n n\u1EB1m d\u01B0\u1EDBi ch\xE2n m\u1ED9t d\xE3y n\xFAi tuy\u1EBFt."} M\u1ED7i m\xF9a, c\xE1c \u0111o\xE0n leo n\xFAi t\u1EEB xa \u0111\u1EBFn thu\xEA ng\u01B0\u1EDDi g\xF9i h\xE0ng l\xEAn tr\u1EA1i: hai m\u01B0\u01A1i l\u0103m c\xE2n m\u1ED7i chuy\u1EBFn, c\u1EA3 m\xF9a b\u1EB1ng ba th\xE1ng l\xE0m ru\u1ED9ng. Ng\u01B0\u1EDDi gi\xE0 trong ${vn12 ? "b\u1EA3n" : "l\xE0ng"} n\xF3i n\xFAi cho ti\u1EC1n, n\xFAi c\u0169ng l\u1EA5y ng\u01B0\u1EDDi.`, [
+      let vn16 = c.country === "VN";
+      return T4("G\xF9i h\xE0ng cho \u0111o\xE0n leo n\xFAi", `${vn16 ? "B\u1EA3n c\u1EE7a b\u1EA1n \u1EDF ch\xE2n d\xE3y n\xFAi cao nh\u1EA5t v\xF9ng." : "L\xE0ng c\u1EE7a b\u1EA1n n\u1EB1m d\u01B0\u1EDBi ch\xE2n m\u1ED9t d\xE3y n\xFAi tuy\u1EBFt."} M\u1ED7i m\xF9a, c\xE1c \u0111o\xE0n leo n\xFAi t\u1EEB xa \u0111\u1EBFn thu\xEA ng\u01B0\u1EDDi g\xF9i h\xE0ng l\xEAn tr\u1EA1i: hai m\u01B0\u01A1i l\u0103m c\xE2n m\u1ED7i chuy\u1EBFn, c\u1EA3 m\xF9a b\u1EB1ng ba th\xE1ng l\xE0m ru\u1ED9ng. Ng\u01B0\u1EDDi gi\xE0 trong ${vn16 ? "b\u1EA3n" : "l\xE0ng"} n\xF3i n\xFAi cho ti\u1EC1n, n\xFAi c\u0169ng l\u1EA5y ng\u01B0\u1EDDi.`, [
         C6("\u0110i g\xF9i h\xE0ng m\xF9a n\xE0y", { ...become(CL), counters: { doors_seen: 1 }, money: 0.2, health: -3, flags: ["porter_start"] }, "Ti\u1EC1n kh\xE1, hi\u1EC3m nguy th\u1EADt"),
         C6("\u1EDE nh\xE0 l\xE0m ru\u1ED9ng", { counters: { doors_seen: 1 }, rel: 1 }, "An to\xE0n, ngh\xE8o nh\u01B0 c\u0169")
       ], 0);
@@ -10109,16 +10388,16 @@ var Argon = (() => {
     }),
     /* ---------- mạch truyện ---------- */
     beat(SC, 1, 1, (c) => {
-      let tr3 = f4(c, "scm_trapped");
-      return T4("X\u1EA5p gi\u1EA5y in s\u1EB5n", `${tr3 ? "Ng\u01B0\u1EDDi qu\u1EA3n l\xFD n\xF3i ai kh\xF4ng \u0111\u1EA1t ch\u1EC9 ti\xEAu th\xEC n\u1EE3 th\xEAm ti\u1EC1n v\xE9, r\u1ED3i nh\xECn b\u1EA1n r\u1EA5t l\xE2u." : "Tr\u01B0\u1EDFng nh\xF3m \u0111\u01B0a b\u1EA1n m\u1ED9t x\u1EA5p gi\u1EA5y in s\u1EB5n, b\u1EA3o \u0111\u1ECDc thu\u1ED9c tr\u01B0\u1EDBc t\u1ED1i."} Ng\u01B0\u1EDDi \u0111\u1EA7u ti\xEAn b\u1EA1n g\u1ECDi l\xE0 m\u1ED9t b\xE0 gi\xE1o v\u1EC1 h\u01B0u. B\xE0 k\u1EC3 m\xE3i v\u1EC1 \u0111\u1EE9a ch\xE1u \u0111ang \u0111i h\u1ECDc xa, r\u1ED3i h\u1ECFi b\u1EA1n \u0111\xE3 \u0103n c\u01A1m ch\u01B0a.`, [
-        C6("L\xE0m \u0111\xFAng nh\u01B0 gi\u1EA5y in s\u1EB5n", { counters: step(c, SC, { scm_victims: 1 }), ...tr3 ? {} : { money: $(c, 0.1) }, happy: -5, secret: { tag: "DEFRAUDED_FRIEND", severity: 0.5, fuse_years: [3, 12], note: "l\u1EEBa ti\u1EC1n d\u01B0\u1EE1ng gi\xE0 c\u1EE7a m\u1ED9t b\xE0 gi\xE1o v\u1EC1 h\u01B0u" } }, tr3 ? "B\u1EDBt n\u1EE3, kh\u1ECFi b\u1ECB ph\u1EA1t; b\xE0 \u1EA5y m\u1EA5t ti\u1EC1n d\u01B0\u1EE1ng gi\xE0" : "C\xF3 ti\u1EC1n ngay; b\xE0 \u1EA5y m\u1EA5t ti\u1EC1n d\u01B0\u1EE1ng gi\xE0"),
-        C6("C\u1ED1 t\xECnh l\xE0m h\u1ECFng cu\u1ED9c g\u1ECDi", { counters: step(c, SC), flags: ["scm_saboteur"], health: tr3 ? -6 : -1, ...tr3 ? {} : { money: $(c, -0.02) } }, tr3 ? "B\xE0 \u1EA5y gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n, b\u1EA1n b\u1ECB ph\u1EA1t" : "B\xE0 \u1EA5y gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n, c\u1EA3 nh\xF3m b\u1EAFt \u0111\u1EA7u nghi b\u1EA1n"),
+      let tr5 = f4(c, "scm_trapped");
+      return T4("X\u1EA5p gi\u1EA5y in s\u1EB5n", `${tr5 ? "Ng\u01B0\u1EDDi qu\u1EA3n l\xFD n\xF3i ai kh\xF4ng \u0111\u1EA1t ch\u1EC9 ti\xEAu th\xEC n\u1EE3 th\xEAm ti\u1EC1n v\xE9, r\u1ED3i nh\xECn b\u1EA1n r\u1EA5t l\xE2u." : "Tr\u01B0\u1EDFng nh\xF3m \u0111\u01B0a b\u1EA1n m\u1ED9t x\u1EA5p gi\u1EA5y in s\u1EB5n, b\u1EA3o \u0111\u1ECDc thu\u1ED9c tr\u01B0\u1EDBc t\u1ED1i."} Ng\u01B0\u1EDDi \u0111\u1EA7u ti\xEAn b\u1EA1n g\u1ECDi l\xE0 m\u1ED9t b\xE0 gi\xE1o v\u1EC1 h\u01B0u. B\xE0 k\u1EC3 m\xE3i v\u1EC1 \u0111\u1EE9a ch\xE1u \u0111ang \u0111i h\u1ECDc xa, r\u1ED3i h\u1ECFi b\u1EA1n \u0111\xE3 \u0103n c\u01A1m ch\u01B0a.`, [
+        C6("L\xE0m \u0111\xFAng nh\u01B0 gi\u1EA5y in s\u1EB5n", { counters: step(c, SC, { scm_victims: 1 }), ...tr5 ? {} : { money: $(c, 0.1) }, happy: -5, secret: { tag: "DEFRAUDED_FRIEND", severity: 0.5, fuse_years: [3, 12], note: "l\u1EEBa ti\u1EC1n d\u01B0\u1EE1ng gi\xE0 c\u1EE7a m\u1ED9t b\xE0 gi\xE1o v\u1EC1 h\u01B0u" } }, tr5 ? "B\u1EDBt n\u1EE3, kh\u1ECFi b\u1ECB ph\u1EA1t; b\xE0 \u1EA5y m\u1EA5t ti\u1EC1n d\u01B0\u1EE1ng gi\xE0" : "C\xF3 ti\u1EC1n ngay; b\xE0 \u1EA5y m\u1EA5t ti\u1EC1n d\u01B0\u1EE1ng gi\xE0"),
+        C6("C\u1ED1 t\xECnh l\xE0m h\u1ECFng cu\u1ED9c g\u1ECDi", { counters: step(c, SC), flags: ["scm_saboteur"], health: tr5 ? -6 : -1, ...tr5 ? {} : { money: $(c, -0.02) } }, tr5 ? "B\xE0 \u1EA5y gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n, b\u1EA1n b\u1ECB ph\u1EA1t" : "B\xE0 \u1EA5y gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n, c\u1EA3 nh\xF3m b\u1EAFt \u0111\u1EA7u nghi b\u1EA1n"),
         C6("N\xF3i kh\u1EBD v\u1EDBi b\xE0: h\xE3y c\xFAp m\xE1y, \u0111\u1EEBng tin ai", { counters: step(c, SC), agency: 0.02, gamble: { p: 0.6, win: { flags: ["scm_warned"], log: "B\xE0 im l\u1EB7ng m\u1ED9t l\xFAc r\u1ED3i c\xFAp m\xE1y. Kh\xF4ng ai nghe th\u1EA5y b\u1EA1n." }, lose: { health: -8, flags: ["scm_warned", "scm_marked"], log: "Ng\u01B0\u1EDDi qu\u1EA3n l\xFD \u0111\u1EE9ng ngay sau l\u01B0ng b\u1EA1n. B\u1EA1n b\u1ECB ph\u1EA1t su\u1ED1t m\u1ED9t tu\u1EA7n." } } }, "C\u1EE9u m\u1ED9t ng\u01B0\u1EDDi, c\xF3 th\u1EC3 tr\u1EA3 gi\xE1 b\u1EB1ng ch\xEDnh m\xECnh", { tier: "sovereign" })
       ], 0);
     }),
     beat(SC, 2, 3, (c) => {
-      let tr3 = f4(c, "scm_trapped");
-      return T4("Chi\u1EBFc gh\u1EBF t\u1ED5 tr\u01B0\u1EDFng", `${tr3 ? "Ba n\u0103m trong khu, b\u1EA1n thu\u1ED9c m\u1ECDi lu\u1EADt l\u1EC7 kh\xF4ng ai n\xF3i ra." : "Nh\xF3m c\u1EE7a b\u1EA1n \u0111\xE3 chuy\u1EC3n sang m\u1ED9t c\u0103n h\u1ED9 l\u1EDBn h\u01A1n."} S\u1ED1 li\u1EC7u c\u1EE7a b\u1EA1n \u0111\u1EE9ng \u0111\u1EA7u b\u1EA3ng. H\u1ECD mu\u1ED1n b\u1EA1n l\xE0m t\u1ED5 tr\u01B0\u1EDFng: \xEDt g\u1ECDi \u0111i\u1EC7n h\u01A1n, k\xE8m ng\u01B0\u1EDDi m\u1EDBi${tr3 ? ", nh\u1EEFng ng\u01B0\u1EDDi v\u1EEBa \u0111\u1EBFn, s\u1EE3 h\xE3i nh\u01B0 b\u1EA1n ng\xE0y \u0111\u1EA7u" : ""}.`, [
+      let tr5 = f4(c, "scm_trapped");
+      return T4("Chi\u1EBFc gh\u1EBF t\u1ED5 tr\u01B0\u1EDFng", `${tr5 ? "Ba n\u0103m trong khu, b\u1EA1n thu\u1ED9c m\u1ECDi lu\u1EADt l\u1EC7 kh\xF4ng ai n\xF3i ra." : "Nh\xF3m c\u1EE7a b\u1EA1n \u0111\xE3 chuy\u1EC3n sang m\u1ED9t c\u0103n h\u1ED9 l\u1EDBn h\u01A1n."} S\u1ED1 li\u1EC7u c\u1EE7a b\u1EA1n \u0111\u1EE9ng \u0111\u1EA7u b\u1EA3ng. H\u1ECD mu\u1ED1n b\u1EA1n l\xE0m t\u1ED5 tr\u01B0\u1EDFng: \xEDt g\u1ECDi \u0111i\u1EC7n h\u01A1n, k\xE8m ng\u01B0\u1EDDi m\u1EDBi${tr5 ? ", nh\u1EEFng ng\u01B0\u1EDDi v\u1EEBa \u0111\u1EBFn, s\u1EE3 h\xE3i nh\u01B0 b\u1EA1n ng\xE0y \u0111\u1EA7u" : ""}.`, [
         C6("Nh\u1EADn gh\u1EBF t\u1ED5 tr\u01B0\u1EDFng", { counters: step(c, SC, { scm_victims: 3 }), income_mult: 1.6, flags: ["scm_lead"], secret: { tag: "DEFRAUDED_FRIEND", severity: 0.6, fuse_years: [3, 12], note: "c\u1EA7m \u0111\u1EA7u m\u1ED9t t\u1ED5 g\u1ECDi \u0111i\u1EC7n l\u1EEBa \u0111\u1EA3o" } }, "\xCDt ph\u1EA3i g\u1ECDi, tay d\xEDnh s\xE2u h\u01A1n"),
         C6("T\u1EEB ch\u1ED1i, ng\u1ED3i l\u1EA1i b\xE0n c\u0169", { counters: step(c, SC, { scm_victims: 1 }), happy: -2 }, "Gi\u1EEF kho\u1EA3ng c\xE1ch, kh\xF4ng ai che ch\u1EDF b\u1EA1n"),
         C6("Nh\u1EADn, r\u1ED3i l\xE9n gi\xFAp ng\u01B0\u1EDDi m\u1EDBi li\xEAn l\u1EA1c v\u1EC1 nh\xE0", { counters: step(c, SC, { scm_victims: 1 }), income_mult: 1.2, flags: ["scm_lead", "scm_inside_help"], agency: 0.03, gamble: { p: 0.65, win: { flags: ["scm_saved_three"], log: "Ba ng\u01B0\u1EDDi m\u1EDBi g\u1EEDi \u0111\u01B0\u1EE3c tin v\u1EC1 nh\xE0 m\xE0 kh\xF4ng ai hay." }, lose: { health: -10, unflags: ["scm_lead"], log: "M\u1ED9t ng\u01B0\u1EDDi m\u1EDBi b\u1ECB tra h\u1ECFi v\xE0 n\xF3i ra t\xEAn b\u1EA1n. B\u1EA1n m\u1EA5t gh\u1EBF, v\xE0 b\u1ECB ph\u1EA1t n\u1EB7ng." } } }, "\u0110\u1EE9ng gi\u1EEFa hai ph\xEDa, sai m\u1ED9t b\u01B0\u1EDBc l\xE0 h\u1EBFt", { tier: "sovereign" })
@@ -10162,10 +10441,10 @@ var Argon = (() => {
       C6("N\xF3i th\u1EADt v\u1EDBi ch\u1ECB r\u1EB1ng \u0111\xE2y l\xE0 l\u1EEBa \u0111\u1EA3o", { agency: 0.02, gamble: { p: 0.55, win: { flags: ["scm_confessed"], log: "Ch\u1ECB im l\u1EB7ng r\u1EA5t l\xE2u, r\u1ED3i g\u1EEDi l\u1EA1i hai ch\u1EEF: c\u1EA3m \u01A1n." }, lose: { health: -8, flags: ["scm_marked"], log: "Tin nh\u1EAFn b\u1ECB ki\u1EC3m tra. B\u1EA1n b\u1ECB ph\u1EA1t n\u1EB7ng." } } }, "\u0110\xFAng v\u1EDBi ch\u1ECB \u1EA5y, nguy hi\u1EC3m cho b\u1EA1n", { tier: "sovereign" })
     ], 0)),
     daily(SC, "scm_newbie", [18, 60], 8, (c) => {
-      let tr3 = f4(c, "scm_trapped");
-      return T4("Ng\u01B0\u1EDDi m\u1EDBi \u0111\u1EBFn", tr3 ? vary4("scmn", c.age, ["M\u1ED9t c\xF4 g\xE1i m\u01B0\u1EDDi ch\xEDn tu\u1ED5i v\u1EEBa \u0111\u1EBFn, kh\xF3c c\u1EA3 \u0111\xEAm \u1EDF gi\u01B0\u1EDDng b\xEAn. C\xF4 \u1EA5y c\u0169ng tin v\xE0o m\u1ED9t tin tuy\u1EC3n d\u1EE5ng nh\u01B0 b\u1EA1n.", "M\u1ED9t c\u1EADu trai t\u1EEB v\xF9ng qu\xEA ngh\xE8o v\u1EEBa \u0111\u1EBFn, h\u1ECFi b\u1EA1n khi n\xE0o th\xEC \u0111\u01B0\u1EE3c l\xE0m vi\u1EC7c 'ch\u0103m s\xF3c kh\xE1ch h\xE0ng' th\u1EADt."]) : "Nh\xF3m v\u1EEBa nh\u1EADn th\xEAm m\u1ED9t c\u1EADu m\u01B0\u1EDDi ch\xEDn tu\u1ED5i, m\u1EDBi h\u1ECDc xong. C\u1EADu \u1EA5y h\u1ECFi b\u1EA1n, r\u1EA5t kh\u1EBD: l\xE0m vi\u1EC7c n\xE0y c\xF3 b\u1ECB b\u1EAFt kh\xF4ng?", [
+      let tr5 = f4(c, "scm_trapped");
+      return T4("Ng\u01B0\u1EDDi m\u1EDBi \u0111\u1EBFn", tr5 ? vary4("scmn", c.age, ["M\u1ED9t c\xF4 g\xE1i m\u01B0\u1EDDi ch\xEDn tu\u1ED5i v\u1EEBa \u0111\u1EBFn, kh\xF3c c\u1EA3 \u0111\xEAm \u1EDF gi\u01B0\u1EDDng b\xEAn. C\xF4 \u1EA5y c\u0169ng tin v\xE0o m\u1ED9t tin tuy\u1EC3n d\u1EE5ng nh\u01B0 b\u1EA1n.", "M\u1ED9t c\u1EADu trai t\u1EEB v\xF9ng qu\xEA ngh\xE8o v\u1EEBa \u0111\u1EBFn, h\u1ECFi b\u1EA1n khi n\xE0o th\xEC \u0111\u01B0\u1EE3c l\xE0m vi\u1EC7c 'ch\u0103m s\xF3c kh\xE1ch h\xE0ng' th\u1EADt."]) : "Nh\xF3m v\u1EEBa nh\u1EADn th\xEAm m\u1ED9t c\u1EADu m\u01B0\u1EDDi ch\xEDn tu\u1ED5i, m\u1EDBi h\u1ECDc xong. C\u1EADu \u1EA5y h\u1ECFi b\u1EA1n, r\u1EA5t kh\u1EBD: l\xE0m vi\u1EC7c n\xE0y c\xF3 b\u1ECB b\u1EAFt kh\xF4ng?", [
         C6("D\u1EA1y ng\u01B0\u1EDDi \u0111\xF3 lu\u1EADt ng\u1EA7m \u0111\u1EC3 s\u1ED1ng s\xF3t", { counters: { scm_victims: 1 }, flags: ["scm_mentor"] }, "Gi\xFAp ng\u01B0\u1EDDi \u0111\xF3 \u0111\u1EE1 kh\u1ED5, c\u0169ng l\xE0 d\u1EA1y h\u1ECD l\u1EEBa"),
-        C6(tr3 ? "Gi\xFAp ng\u01B0\u1EDDi \u0111\xF3 g\u1EEDi tin v\u1EC1 nh\xE0" : "N\xF3i th\u1EADt, khuy\xEAn c\u1EADu \u1EA5y v\u1EC1 ngay", { agency: 0.02, gamble: { p: 0.5, win: { flags: ["scm_inside_help"], log: tr3 ? "Tin nh\u1EAFn \u0111\u1EBFn \u0111\u01B0\u1EE3c nh\xE0. Hai th\xE1ng sau, ng\u01B0\u1EDDi \u0111\xF3 \u0111\u01B0\u1EE3c chu\u1ED9c v\u1EC1." : "C\u1EADu \u1EA5y v\u1EC1 qu\xEA ngay t\u1ED1i \u0111\xF3, kh\xF4ng ch\xE0o ai." }, lose: { health: -6, flags: ["scm_marked"], log: tr3 ? "Tin nh\u1EAFn b\u1ECB ph\xE1t hi\u1EC7n. C\u1EA3 hai b\u1ECB ph\u1EA1t." : "C\u1EADu \u1EA5y k\u1EC3 l\u1EA1i v\u1EDBi tr\u01B0\u1EDFng nh\xF3m. T\u1EEB \u0111\xF3 b\u1EA1n b\u1ECB \u0111\u1EC3 m\u1EAFt." } } }, "C\xF3 th\u1EC3 c\u1EE9u m\u1ED9t ng\u01B0\u1EDDi, c\xF3 th\u1EC3 h\u1EA1i c\u1EA3 hai", { tier: "sovereign" }),
+        C6(tr5 ? "Gi\xFAp ng\u01B0\u1EDDi \u0111\xF3 g\u1EEDi tin v\u1EC1 nh\xE0" : "N\xF3i th\u1EADt, khuy\xEAn c\u1EADu \u1EA5y v\u1EC1 ngay", { agency: 0.02, gamble: { p: 0.5, win: { flags: ["scm_inside_help"], log: tr5 ? "Tin nh\u1EAFn \u0111\u1EBFn \u0111\u01B0\u1EE3c nh\xE0. Hai th\xE1ng sau, ng\u01B0\u1EDDi \u0111\xF3 \u0111\u01B0\u1EE3c chu\u1ED9c v\u1EC1." : "C\u1EADu \u1EA5y v\u1EC1 qu\xEA ngay t\u1ED1i \u0111\xF3, kh\xF4ng ch\xE0o ai." }, lose: { health: -6, flags: ["scm_marked"], log: tr5 ? "Tin nh\u1EAFn b\u1ECB ph\xE1t hi\u1EC7n. C\u1EA3 hai b\u1ECB ph\u1EA1t." : "C\u1EADu \u1EA5y k\u1EC3 l\u1EA1i v\u1EDBi tr\u01B0\u1EDFng nh\xF3m. T\u1EEB \u0111\xF3 b\u1EA1n b\u1ECB \u0111\u1EC3 m\u1EAFt." } } }, "C\xF3 th\u1EC3 c\u1EE9u m\u1ED9t ng\u01B0\u1EDDi, c\xF3 th\u1EC3 h\u1EA1i c\u1EA3 hai", { tier: "sovereign" }),
         C6("Kh\xF4ng d\xEDnh v\xE0o", { happy: -3 })
       ], 0);
     }),
@@ -10207,10 +10486,10 @@ var Argon = (() => {
       C6("Nh\u1EAFn \u1EA9n danh cho c\xF4 \u1EA5y nh\u1EEFng g\xEC b\u1EA1n bi\u1EBFt", { agency: 0.02, gamble: { p: 0.6, win: { flags: ["scm_tipped"], log: "C\xF4 \u1EA5y chuy\u1EC3n tin nh\u1EAFn cho c\u1EA3nh s\xE1t. M\u1ED9t lo\u1EA1t t\xE0i kho\u1EA3n b\u1ECB kh\xF3a." }, lose: { flags: ["scm_on_file"], log: "Tin nh\u1EAFn b\u1ECB l\u1EA7n ng\u01B0\u1EE3c l\u1EA1i, \u0111\u1EBFn t\u1EADn m\xE1y c\u1EE7a b\u1EA1n." } } }, "Gi\xFAp ng\u01B0\u1EDDi v\xF4 can, \u0111\u1EC3 l\u1EA1i d\u1EA5u v\u1EBFt", { tier: "awakened" })
     ], 1)),
     daily(SC, "scm_lobby", [18, 60], 9, (c) => {
-      let tr3 = f4(c, "scm_trapped");
-      return T4("Ng\u01B0\u1EDDi \u0111\u1EE9ng ch\u1EDD ngo\xE0i c\u1ED5ng", tr3 ? "Qua khe c\u1EEDa s\u1ED5, b\u1EA1n th\u1EA5y m\u1ED9t nh\xF3m ng\u01B0\u1EDDi c\u1EA7m \u1EA3nh ng\u01B0\u1EDDi th\xE2n \u0111\u1EE9ng ngo\xE0i c\u1ED5ng khu, \u0111\xF2i g\u1EB7p. Trong m\u1ED9t t\u1EA5m \u1EA3nh l\xE0 g\u01B0\u01A1ng m\u1EB7t m\u1ED9t ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng n\xF3i chuy\u1EC7n qua \u0111i\u1EC7n tho\u1EA1i." : "M\u1ED9t ng\u01B0\u1EDDi \u0111\xE0n \xF4ng ng\u1ED3i ch\u1EDD d\u01B0\u1EDBi s\u1EA3nh t\xF2a nh\xE0 su\u1ED1t ba ng\xE0y, tay c\u1EA7m \u1EA3nh v\u1EE3. B\xE0 \u1EA5y m\u1EA5t h\u1EBFt ti\u1EC1n ti\u1EBFt ki\u1EC7m sau m\u1ED9t cu\u1ED9c g\u1ECDi t\u1EEB ch\xEDnh c\u0103n h\u1ED9 c\u1EE7a nh\xF3m b\u1EA1n.", [
+      let tr5 = f4(c, "scm_trapped");
+      return T4("Ng\u01B0\u1EDDi \u0111\u1EE9ng ch\u1EDD ngo\xE0i c\u1ED5ng", tr5 ? "Qua khe c\u1EEDa s\u1ED5, b\u1EA1n th\u1EA5y m\u1ED9t nh\xF3m ng\u01B0\u1EDDi c\u1EA7m \u1EA3nh ng\u01B0\u1EDDi th\xE2n \u0111\u1EE9ng ngo\xE0i c\u1ED5ng khu, \u0111\xF2i g\u1EB7p. Trong m\u1ED9t t\u1EA5m \u1EA3nh l\xE0 g\u01B0\u01A1ng m\u1EB7t m\u1ED9t ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng n\xF3i chuy\u1EC7n qua \u0111i\u1EC7n tho\u1EA1i." : "M\u1ED9t ng\u01B0\u1EDDi \u0111\xE0n \xF4ng ng\u1ED3i ch\u1EDD d\u01B0\u1EDBi s\u1EA3nh t\xF2a nh\xE0 su\u1ED1t ba ng\xE0y, tay c\u1EA7m \u1EA3nh v\u1EE3. B\xE0 \u1EA5y m\u1EA5t h\u1EBFt ti\u1EC1n ti\u1EBFt ki\u1EC7m sau m\u1ED9t cu\u1ED9c g\u1ECDi t\u1EEB ch\xEDnh c\u0103n h\u1ED9 c\u1EE7a nh\xF3m b\u1EA1n.", [
         C6("Tr\xE1nh m\u1EB7t, \u0111i l\u1ED1i kh\xE1c", { happy: -3, counters: { scm_guilt: 1 } }, "Kh\xF4ng ai bi\u1EBFt, k\u1EC3 c\u1EA3 b\u1EA1n s\u1EBD c\u1ED1 qu\xEAn"),
-        C6(tr3 ? "N\xE9m qua c\u1EEDa s\u1ED5 m\u1EA9u gi\u1EA5y ghi nh\u1EEFng g\xEC b\u1EA1n bi\u1EBFt" : "Xu\u1ED1ng g\u1EB7p, tr\u1EA3 l\u1EA1i ph\u1EA7n ti\u1EC1n m\xECnh \u0111\xE3 nh\u1EADn", { agency: 0.02, ...tr3 ? {} : { money: -0.2 }, gamble: { p: 0.5, win: { flags: ["scm_faced_victim"], log: tr3 ? "M\u1ED9t ng\u01B0\u1EDDi nh\u1EB7t \u0111\u01B0\u1EE3c m\u1EA9u gi\u1EA5y v\xE0 \u0111\u01B0a cho c\u1EA3nh s\xE1t." : "\xD4ng \u1EA5y nh\u1EADn ti\u1EC1n, kh\xF4ng n\xF3i m\u1ED9t l\u1EDDi, r\u1ED3i \u0111i." }, lose: { flags: ["scm_faced_victim", "scm_on_file"], log: tr3 ? "B\u1EA3o v\u1EC7 th\u1EA5y b\u1EA1n \u1EDF c\u1EEDa s\u1ED5. B\u1EA1n b\u1ECB chuy\u1EC3n sang ph\xF2ng kh\xE1c." : "\xD4ng \u1EA5y ch\u1EE5p \u1EA3nh b\u1EA1n v\xE0 n\u1ED9p cho c\xF4ng an." } } }, "\u0110\u1ED1i di\u1EC7n m\u1ED9t ph\u1EA7n s\u1EF1 th\u1EADt, \u0111\u1EC3 l\u1ED9 m\xECnh", { tier: "sovereign" }),
+        C6(tr5 ? "N\xE9m qua c\u1EEDa s\u1ED5 m\u1EA9u gi\u1EA5y ghi nh\u1EEFng g\xEC b\u1EA1n bi\u1EBFt" : "Xu\u1ED1ng g\u1EB7p, tr\u1EA3 l\u1EA1i ph\u1EA7n ti\u1EC1n m\xECnh \u0111\xE3 nh\u1EADn", { agency: 0.02, ...tr5 ? {} : { money: -0.2 }, gamble: { p: 0.5, win: { flags: ["scm_faced_victim"], log: tr5 ? "M\u1ED9t ng\u01B0\u1EDDi nh\u1EB7t \u0111\u01B0\u1EE3c m\u1EA9u gi\u1EA5y v\xE0 \u0111\u01B0a cho c\u1EA3nh s\xE1t." : "\xD4ng \u1EA5y nh\u1EADn ti\u1EC1n, kh\xF4ng n\xF3i m\u1ED9t l\u1EDDi, r\u1ED3i \u0111i." }, lose: { flags: ["scm_faced_victim", "scm_on_file"], log: tr5 ? "B\u1EA3o v\u1EC7 th\u1EA5y b\u1EA1n \u1EDF c\u1EEDa s\u1ED5. B\u1EA1n b\u1ECB chuy\u1EC3n sang ph\xF2ng kh\xE1c." : "\xD4ng \u1EA5y ch\u1EE5p \u1EA3nh b\u1EA1n v\xE0 n\u1ED9p cho c\xF4ng an." } } }, "\u0110\u1ED1i di\u1EC7n m\u1ED9t ph\u1EA7n s\u1EF1 th\u1EADt, \u0111\u1EC3 l\u1ED9 m\xECnh", { tier: "sovereign" }),
         C6("B\xE1o cho tr\u01B0\u1EDFng nh\xF3m", { counters: { scm_victims: 1 }, happy: -6, flags: ["scm_reported_victim"] }, "Nh\xF3m y\xEAn chuy\u1EC7n, b\u1EA1n kh\xF4ng bi\u1EBFt ng\u01B0\u1EDDi kia ra sao")
       ], 0);
     }),
@@ -10435,8 +10714,8 @@ var Argon = (() => {
     ], 0), (c) => c.age >= 45),
     /* ---------- chuyện thường ngày ---------- */
     daily(SU, "sur_envelope", [26, 65], 10, (c) => {
-      let vn12 = c.country === "VN";
-      return T4(vn12 ? "Phong b\xEC trong t\xFAi \xE1o" : "M\xF3n qu\xE0 \u0111\u1EC3 chen l\u1ECBch m\u1ED5", vn12 ? 'Tr\u01B0\u1EDBc gi\u1EDD m\u1ED5, ng\u01B0\u1EDDi nh\xE0 b\u1EC7nh nh\xE2n nh\xE9t m\u1ED9t phong b\xEC v\xE0o t\xFAi \xE1o blouse c\u1EE7a b\u1EA1n: "Ch\xFAt l\xF2ng th\xE0nh, b\xE1c s\u0129 c\u1EA7m cho nh\xE0 em y\xEAn t\xE2m." Ngo\xE0i h\xE0nh lang c\xF2n s\xE1u gia \u0111\xECnh kh\xE1c \u0111ang ch\u1EDD.' : "Ng\u01B0\u1EDDi nh\xE0 m\u1ED9t b\u1EC7nh nh\xE2n gi\xE0u g\u1EEDi \u0111\u1EBFn ph\xF2ng l\xE0m vi\u1EC7c c\u1EE7a b\u1EA1n m\u1ED9t chi\u1EBFc \u0111\u1ED3ng h\u1ED3 \u0111\u1EAFt ti\u1EC1n, k\xE8m l\u1EDDi nh\u1EDD x\u1EBFp l\u1ECBch m\u1ED5 s\u1EDBm h\u01A1n ba tu\u1EA7n. Danh s\xE1ch ch\u1EDD c\xF2n b\u1ED1n m\u01B0\u01A1i ng\u01B0\u1EDDi.", [
+      let vn16 = c.country === "VN";
+      return T4(vn16 ? "Phong b\xEC trong t\xFAi \xE1o" : "M\xF3n qu\xE0 \u0111\u1EC3 chen l\u1ECBch m\u1ED5", vn16 ? 'Tr\u01B0\u1EDBc gi\u1EDD m\u1ED5, ng\u01B0\u1EDDi nh\xE0 b\u1EC7nh nh\xE2n nh\xE9t m\u1ED9t phong b\xEC v\xE0o t\xFAi \xE1o blouse c\u1EE7a b\u1EA1n: "Ch\xFAt l\xF2ng th\xE0nh, b\xE1c s\u0129 c\u1EA7m cho nh\xE0 em y\xEAn t\xE2m." Ngo\xE0i h\xE0nh lang c\xF2n s\xE1u gia \u0111\xECnh kh\xE1c \u0111ang ch\u1EDD.' : "Ng\u01B0\u1EDDi nh\xE0 m\u1ED9t b\u1EC7nh nh\xE2n gi\xE0u g\u1EEDi \u0111\u1EBFn ph\xF2ng l\xE0m vi\u1EC7c c\u1EE7a b\u1EA1n m\u1ED9t chi\u1EBFc \u0111\u1ED3ng h\u1ED3 \u0111\u1EAFt ti\u1EC1n, k\xE8m l\u1EDDi nh\u1EDD x\u1EBFp l\u1ECBch m\u1ED5 s\u1EDBm h\u01A1n ba tu\u1EA7n. Danh s\xE1ch ch\u1EDD c\xF2n b\u1ED1n m\u01B0\u01A1i ng\u01B0\u1EDDi.", [
         C6("Tr\u1EA3 l\u1EA1i, m\u1ED5 nh\u01B0 m\u1ECDi ca", { counters: { honest: 1 }, rel: -1 }, "S\u1EA1ch s\u1EBD, ng\u01B0\u1EDDi nh\xE0 lo l\u1EAFng h\u01A1n"),
         C6("Nh\u1EADn cho h\u1ECD y\xEAn l\xF2ng", { money: 0.04, counters: { honest: -1 }, flags: ["took_gifts"] }, "Th\xEAm ti\u1EC1n, d\u1EA7n th\xE0nh th\xF3i quen"),
         C6("Nh\u1EADn, chuy\u1EC3n h\u1EBFt v\xE0o qu\u1EF9 b\u1EC7nh nh\xE2n ngh\xE8o", { flags: ["poor_fund"], rel: 2, bw: -2 }, "Kh\xF4ng gi\u1EEF \u0111\u1ED3ng n\xE0o, ph\u1EA3i gi\u1EA3i th\xEDch v\u1EDBi m\u1ECDi ng\u01B0\u1EDDi", { tier: "awakened" })
@@ -10684,8 +10963,8 @@ var Argon = (() => {
     ], 0), (c) => c.age >= 42),
     /* ---------- chuyện thường ngày ---------- */
     daily(AR, "kts_client_taste", [24, 65], 9, (c) => {
-      let vn12 = c.country === "VN";
-      return T4(vn12 ? "L\u1EDDi th\u1EA7y phong th\u1EE7y" : "C\u0103n nh\xE0 trong t\u1EA1p ch\xED", vn12 ? "Ch\u1EE7 nh\xE0 mang \u0111\u1EBFn l\u1EDDi th\u1EA7y phong th\u1EE7y: c\u1EEDa ch\xEDnh ph\u1EA3i l\u1EC7ch sang tr\xE1i m\u1ED9t m\xE9t, c\u1EA7u thang kh\xF4ng \u0111\u01B0\u1EE3c nh\xECn ra c\u1ED5ng. M\u1ECDi th\u1EE9 b\u1EA1n t\xEDnh v\u1EC1 gi\xF3 v\xE0 \xE1nh s\xE1ng \u0111\u1ED5 v\u1EE1." : "Ch\u1EE7 nh\xE0 mang \u0111\u1EBFn m\u1ED9t trang t\u1EA1p ch\xED: h\u1ECD mu\u1ED1n c\u0103n nh\xE0 gi\u1ED1ng h\u1EC7t bi\u1EC7t th\u1EF1 trong \u1EA3nh, d\xF9 m\u1EA3nh \u0111\u1EA5t ch\u1EC9 b\u1EB1ng m\u1ED9t ph\u1EA7n ba v\xE0 quay ng\u01B0\u1EE3c h\u01B0\u1EDBng n\u1EAFng.", [
+      let vn16 = c.country === "VN";
+      return T4(vn16 ? "L\u1EDDi th\u1EA7y phong th\u1EE7y" : "C\u0103n nh\xE0 trong t\u1EA1p ch\xED", vn16 ? "Ch\u1EE7 nh\xE0 mang \u0111\u1EBFn l\u1EDDi th\u1EA7y phong th\u1EE7y: c\u1EEDa ch\xEDnh ph\u1EA3i l\u1EC7ch sang tr\xE1i m\u1ED9t m\xE9t, c\u1EA7u thang kh\xF4ng \u0111\u01B0\u1EE3c nh\xECn ra c\u1ED5ng. M\u1ECDi th\u1EE9 b\u1EA1n t\xEDnh v\u1EC1 gi\xF3 v\xE0 \xE1nh s\xE1ng \u0111\u1ED5 v\u1EE1." : "Ch\u1EE7 nh\xE0 mang \u0111\u1EBFn m\u1ED9t trang t\u1EA1p ch\xED: h\u1ECD mu\u1ED1n c\u0103n nh\xE0 gi\u1ED1ng h\u1EC7t bi\u1EC7t th\u1EF1 trong \u1EA3nh, d\xF9 m\u1EA3nh \u0111\u1EA5t ch\u1EC9 b\u1EB1ng m\u1ED9t ph\u1EA7n ba v\xE0 quay ng\u01B0\u1EE3c h\u01B0\u1EDBng n\u1EAFng.", [
         C6("L\xE0m theo, kh\xE1ch l\xE0 vua", { money: 0.04, counters: { kts_name: -1 } }, "Ti\u1EC1n d\u1EC5, c\xF4ng tr\xECnh kh\xF4ng c\xF2n l\xE0 c\u1EE7a b\u1EA1n"),
         C6("T\xECm ph\u01B0\u01A1ng \xE1n v\u1EEBa \xFD h\u1ECD, v\u1EEBa \u0111\xFAng gi\xF3 n\u1EAFng", { bw: -4, counters: { kts_name: 1 } }, "Th\xEAm hai tu\u1EA7n v\u1EBD l\u1EA1i, c\u1EA3 hai c\xF9ng \u0111\u01B0\u1EE3c", { tier: "awakened" }),
         C6("Tr\u1EA3 l\u1EA1i h\u1EE3p \u0111\u1ED3ng", { money: -0.03, happy: 1, flags: ["picky_architect"] }, "Gi\u1EEF chu\u1EA9n c\u1EE7a m\xECnh, m\u1EA5t kh\xE1ch")
@@ -11239,8 +11518,8 @@ var Argon = (() => {
         C6("Xin l\xE0m tr\u1EE3 gi\u1EA3ng, b\u1EAFt \u0111\u1EA7u l\u1EA1i", { counters: step(c, PF), income_mult: 0.6, happy: -2, flags: ["prf_rebuild"] }, "Ngh\xE8o v\xE0 x\u1EA5u h\u1ED5, \u0111\u01B0\u1EE3c \u1EDF l\u1EA1i ngh\u1EC1"),
         C6('Vi\u1EBFt th\u01B0 c\xF4ng khai v\u1EC1 "x\u01B0\u1EDFng" b\xE0i b\xE1o, \u0111\u1EC1 xu\u1EA5t lu\u1EADt m\u1EDBi', { counters: step(c, PF), custom: "apologize", agency: 0.03, rel: 3, flags: ["prf_whistle"] }, "M\u1EA5t n\u1ED1t b\u1EA1n b\xE8 trong ngh\u1EC1, c\xF3 th\u1EC3 \u0111\u1ED5i lu\u1EADt", { tier: "sovereign" })
       ], 1);
-      let papers = c.counters.prf_papers ?? 0, students = c.counters.prf_students ?? 0, vn12 = c.country === "VN", pWin = Math.max(0.1, Math.min(0.85, 0.3 + 0.1 * papers + 0.05 * students + (f4(c, "prf_council") ? 0.1 : 0) - (f4(c, "prf_reformer") ? 0.1 : 0) - (f4(c, "prf_owned_up") ? 0.15 : 0)));
-      return T4(vn12 ? "H\u1ED9i \u0111\u1ED3ng x\xE9t ph\xF3 gi\xE1o s\u01B0" : "H\u1ED9i \u0111\u1ED3ng x\xE9t bi\xEAn ch\u1EBF su\u1ED1t \u0111\u1EDDi", `H\u1ED3 s\u01A1 x\xE9t ${vn12 ? "ch\u1EE9c danh ph\xF3 gi\xE1o s\u01B0" : "bi\xEAn ch\u1EBF su\u1ED1t \u0111\u1EDDi"} c\u1EE7a b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u01B0a ra h\u1ED9i \u0111\u1ED3ng th\xE1ng sau. ${papers >= 3 ? "H\u1ED3 s\u01A1 d\xE0y, \u0111\u1EE7 b\xE0i b\xE1o." : "H\u1ED3 s\u01A1 m\u1ECFng h\u01A1n nh\u1EEFng ng\u01B0\u1EDDi c\xF9ng \u0111\u1EE3t."}${students >= 3 ? " Th\u01B0 gi\u1EDBi thi\u1EC7u c\u1EE7a h\u1ECDc tr\xF2 c\u0169 x\u1EBFp th\xE0nh m\u1ED9t ch\u1ED3ng." : ""}${f4(c, "prf_reformer") ? " V\xE0i ng\u01B0\u1EDDi trong h\u1ED9i \u0111\u1ED3ng ch\u01B0a qu\xEAn v\u1EE5 b\u1EA1n \u0111\u1EE9ng v\u1EC1 ph\xEDa sinh vi\xEAn." : ""}${f4(c, "prf_owned_up") ? " V\u1EE5 r\xFAt b\xE0i n\u0103m n\xE0o v\u1EABn n\u1EB1m trong h\u1ED3 s\u01A1." : ""} M\u1ED9t ng\u01B0\u1EDDi quen n\xF3i c\xF3 c\xE1ch "lo" cho ch\u1EAFc.`, [
+      let papers = c.counters.prf_papers ?? 0, students = c.counters.prf_students ?? 0, vn16 = c.country === "VN", pWin = Math.max(0.1, Math.min(0.85, 0.3 + 0.1 * papers + 0.05 * students + (f4(c, "prf_council") ? 0.1 : 0) - (f4(c, "prf_reformer") ? 0.1 : 0) - (f4(c, "prf_owned_up") ? 0.15 : 0)));
+      return T4(vn16 ? "H\u1ED9i \u0111\u1ED3ng x\xE9t ph\xF3 gi\xE1o s\u01B0" : "H\u1ED9i \u0111\u1ED3ng x\xE9t bi\xEAn ch\u1EBF su\u1ED1t \u0111\u1EDDi", `H\u1ED3 s\u01A1 x\xE9t ${vn16 ? "ch\u1EE9c danh ph\xF3 gi\xE1o s\u01B0" : "bi\xEAn ch\u1EBF su\u1ED1t \u0111\u1EDDi"} c\u1EE7a b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u01B0a ra h\u1ED9i \u0111\u1ED3ng th\xE1ng sau. ${papers >= 3 ? "H\u1ED3 s\u01A1 d\xE0y, \u0111\u1EE7 b\xE0i b\xE1o." : "H\u1ED3 s\u01A1 m\u1ECFng h\u01A1n nh\u1EEFng ng\u01B0\u1EDDi c\xF9ng \u0111\u1EE3t."}${students >= 3 ? " Th\u01B0 gi\u1EDBi thi\u1EC7u c\u1EE7a h\u1ECDc tr\xF2 c\u0169 x\u1EBFp th\xE0nh m\u1ED9t ch\u1ED3ng." : ""}${f4(c, "prf_reformer") ? " V\xE0i ng\u01B0\u1EDDi trong h\u1ED9i \u0111\u1ED3ng ch\u01B0a qu\xEAn v\u1EE5 b\u1EA1n \u0111\u1EE9ng v\u1EC1 ph\xEDa sinh vi\xEAn." : ""}${f4(c, "prf_owned_up") ? " V\u1EE5 r\xFAt b\xE0i n\u0103m n\xE0o v\u1EABn n\u1EB1m trong h\u1ED3 s\u01A1." : ""} M\u1ED9t ng\u01B0\u1EDDi quen n\xF3i c\xF3 c\xE1ch "lo" cho ch\u1EAFc.`, [
         C6("N\u1ED9p h\u1ED3 s\u01A1, kh\xF4ng lo l\xF3t", { counters: step(c, PF), gamble: { p: pWin, win: { income_mult: 1.3, happy: 5, flags: ["prf_tenure"], log: "H\u1ED9i \u0111\u1ED3ng b\u1ECF phi\u1EBFu thu\u1EADn. L\u1EA7n \u0111\u1EA7u ti\xEAn b\u1EA1n th\u1EA5y m\xECnh \u0111\u1EE9ng v\u1EEFng." }, lose: { happy: -5, log: "Thi\u1EBFu hai phi\u1EBFu. Ng\u01B0\u1EDDi ta b\u1EA3o n\u0103m sau th\u1EED l\u1EA1i." } } }, "C\xF4ng b\u1EB1ng, c\xF3 th\u1EC3 tr\u01B0\u1EE3t"),
         C6("Lo l\xF3t cho ch\u1EAFc", { counters: step(c, PF), money: -0.3, income_mult: 1.3, flags: ["prf_tenure"], secret: { tag: "PAID_BRIBE", severity: 0.4, fuse_years: [2, 10], note: "lo l\xF3t h\u1ED9i \u0111\u1ED3ng x\xE9t ch\u1EE9c danh" } }, "Ch\u1EAFc ch\u1EAFn, mang theo m\u1ED9t b\xED m\u1EADt"),
         C6("Nh\u1EADn gh\u1EBF tr\u01B0\u1EDFng khoa thay v\xEC ch\u1EE9c danh", { counters: step(c, PF), income_mult: 1.2, bw: -5, flags: ["prf_dean"] }, "Quy\u1EC1n trong tay, xa l\u1EDBp h\u1ECDc"),
@@ -12861,11 +13140,11 @@ var Argon = (() => {
       ], 1, { npc: r });
     }, (c) => !!role6(c, "rival")),
     daily(PN, "pnt_tradition", [20, 60], 99, (c) => {
-      let vn12 = c.country === "VN";
-      return T4("Ch\u1EA5t li\u1EC7u c\u1EE7a ng\u01B0\u1EDDi x\u01B0a", vn12 ? "M\u1ED9t ngh\u1EC7 nh\xE2n s\u01A1n m\xE0i ngo\xE0i b\u1EA3y m\u01B0\u01A1i tu\u1ED5i \u0111\u1EC1 ngh\u1ECB d\u1EA1y b\u1EA1n ngh\u1EC1: hai n\u0103m, m\xE0i tay t\u1EEBng l\u1EDBp s\u01A1n, kh\xF4ng \u0111\u01B0\u1EE3c b\xE1n b\u1EE9c n\xE0o tr\u01B0\u1EDBc khi \xF4ng cho ph\xE9p." : "M\u1ED9t ngh\u1EC7 nh\xE2n gi\xE0 v\u1EBD b\u1EB1ng m\xE0u t\u1EF1 nghi\u1EC1n t\u1EEB \u0111\u1EA5t v\xE0 \u0111\xE1 \u0111\u1EC1 ngh\u1ECB nh\u1EADn b\u1EA1n l\xE0m h\u1ECDc tr\xF2: hai n\u0103m, kh\xF4ng \u0111\u01B0\u1EE3c b\xE1n b\u1EE9c n\xE0o tr\u01B0\u1EDBc khi b\xE0 cho ph\xE9p.", [
+      let vn16 = c.country === "VN";
+      return T4("Ch\u1EA5t li\u1EC7u c\u1EE7a ng\u01B0\u1EDDi x\u01B0a", vn16 ? "M\u1ED9t ngh\u1EC7 nh\xE2n s\u01A1n m\xE0i ngo\xE0i b\u1EA3y m\u01B0\u01A1i tu\u1ED5i \u0111\u1EC1 ngh\u1ECB d\u1EA1y b\u1EA1n ngh\u1EC1: hai n\u0103m, m\xE0i tay t\u1EEBng l\u1EDBp s\u01A1n, kh\xF4ng \u0111\u01B0\u1EE3c b\xE1n b\u1EE9c n\xE0o tr\u01B0\u1EDBc khi \xF4ng cho ph\xE9p." : "M\u1ED9t ngh\u1EC7 nh\xE2n gi\xE0 v\u1EBD b\u1EB1ng m\xE0u t\u1EF1 nghi\u1EC1n t\u1EEB \u0111\u1EA5t v\xE0 \u0111\xE1 \u0111\u1EC1 ngh\u1ECB nh\u1EADn b\u1EA1n l\xE0m h\u1ECDc tr\xF2: hai n\u0103m, kh\xF4ng \u0111\u01B0\u1EE3c b\xE1n b\u1EE9c n\xE0o tr\u01B0\u1EDBc khi b\xE0 cho ph\xE9p.", [
         C6("Theo h\u1ECDc hai n\u0103m", { income_mult: 0.85, know: 4, flags: ["pnt_tradition"] }, "Ngh\xE8o hai n\u0103m, c\xF3 tay ngh\u1EC1 hi\u1EBFm"),
         C6("C\u1EA3m \u01A1n, gi\u1EEF l\u1ED1i v\u1EBD hi\u1EC7n t\u1EA1i", { money: 0.03 }),
-        C6("H\u1ECDc bu\u1ED5i t\u1ED1i, quay phim ghi l\u1EA1i ngh\u1EC1", { bw: -4, gamble: { p: 0.5, win: { counters: { pnt_name: 1 }, flags: ["pnt_tradition", "pnt_recorded_craft"], log: "B\u1ED9 phim ng\u1EAFn v\u1EC1 ngh\u1EC1 \u0111\u01B0\u1EE3c tr\u01B0\u1EDDng m\u1EF9 thu\u1EADt d\xF9ng l\xE0m t\xE0i li\u1EC7u." }, lose: { log: vn12 ? "\xD4ng kh\xF4ng th\xEDch m\xE1y quay, ch\u1EC9 d\u1EA1y b\u1EA1n v\xE0i bu\u1ED5i." : "B\xE0 kh\xF4ng th\xEDch m\xE1y quay, ch\u1EC9 d\u1EA1y b\u1EA1n v\xE0i bu\u1ED5i." } } }, "H\u1ECDc \xEDt h\u01A1n, gi\u1EEF ngh\u1EC1 cho nhi\u1EC1u ng\u01B0\u1EDDi", { tier: "sovereign" })
+        C6("H\u1ECDc bu\u1ED5i t\u1ED1i, quay phim ghi l\u1EA1i ngh\u1EC1", { bw: -4, gamble: { p: 0.5, win: { counters: { pnt_name: 1 }, flags: ["pnt_tradition", "pnt_recorded_craft"], log: "B\u1ED9 phim ng\u1EAFn v\u1EC1 ngh\u1EC1 \u0111\u01B0\u1EE3c tr\u01B0\u1EDDng m\u1EF9 thu\u1EADt d\xF9ng l\xE0m t\xE0i li\u1EC7u." }, lose: { log: vn16 ? "\xD4ng kh\xF4ng th\xEDch m\xE1y quay, ch\u1EC9 d\u1EA1y b\u1EA1n v\xE0i bu\u1ED5i." : "B\xE0 kh\xF4ng th\xEDch m\xE1y quay, ch\u1EC9 d\u1EA1y b\u1EA1n v\xE0i bu\u1ED5i." } } }, "H\u1ECDc \xEDt h\u01A1n, gi\u1EEF ngh\u1EC1 cho nhi\u1EC1u ng\u01B0\u1EDDi", { tier: "sovereign" })
       ], 0);
     }),
     daily(PN, "pnt_collector", [25, 80], 99, () => T4("Mua c\u1EA3 x\u01B0\u1EDFng m\u1ED9t l\u1EA7n", "M\u1ED9t nh\xE0 \u0111\u1EA7u t\u01B0 tranh \u0111\u1EC1 ngh\u1ECB mua to\xE0n b\u1ED9 b\u1ED1n m\u01B0\u01A1i b\u1EE9c trong x\u01B0\u1EDFng, gi\xE1 b\u1EB1ng ba n\u0103m thu nh\u1EADp, v\u1EDBi \u0111i\u1EC1u ki\u1EC7n n\u0103m n\u0103m t\u1EDBi ch\u1EC9 \xF4ng \u0111\u01B0\u1EE3c b\xE1n tranh c\u1EE7a b\u1EA1n.", [
@@ -13522,11 +13801,11 @@ var Argon = (() => {
     }, (c) => c.age >= 18),
     beat(KO, 5, 6, (c, N) => {
       if (f4(c, "kol_kids_content")) {
-        let k = role6(c, "child"), tr3 = (d) => k ? { trust: { npc: k, delta: d } } : {};
+        let k = role6(c, "child"), tr5 = (d) => k ? { trust: { npc: k, delta: d } } : {};
         return T4("Con nh\u1EDD x\xF3a video", `${k ? N(k) : "\u0110\u1EE9a con"} t\u1EEBng xu\u1EA5t hi\u1EC7n trong h\xE0ng tr\u0103m video c\u1EE7a b\u1EA1n gi\u1EDD \u0111\xE3 l\u1EDBn, g\u1EEDi b\u1EA1n m\u1ED9t danh s\xE1ch \u0111\u01B0\u1EDDng d\u1EABn v\xE0 nh\u1EDD x\xF3a h\u1EBFt. \u1EDE tr\u01B0\u1EDDng m\u1EDBi, b\u1EA1n b\xE8 v\u1EABn g\u1EEDi cho nhau \u0111o\u1EA1n n\xF3 kh\xF3c l\xFAc ba tu\u1ED5i.`, [
-          C6("X\xF3a h\u1EBFt, k\u1EC3 c\u1EA3 nh\u1EEFng video ki\u1EBFm nhi\u1EC1u nh\u1EA5t", { counters: step(c, KO), income_mult: 0.85, happy: 2, flags: ["kol_deleted_kids"], ...tr3(0.3) }, "M\u1EA5t thu nh\u1EADp c\u0169, tr\u1EA3 con m\u1ED9t ph\u1EA7n tu\u1ED5i th\u01A1"),
-          C6("X\xF3a v\xE0i c\xE1i, gi\u1EEF nh\u1EEFng c\xE1i d\u1EC5 th\u01B0\u01A1ng", { counters: step(c, KO), ...tr3(-0.2) }, "Gi\u1EEF ti\u1EC1n, con th\u1EA5y m\xECnh kh\xF4ng \u0111\u01B0\u1EE3c nghe"),
-          C6("X\xF3a h\u1EBFt v\xE0 n\xF3i c\xF4ng khai v\u1EC1 c\xE1i gi\xE1 \u1EA5y", { counters: step(c, KO, { kol_trust: 2 }), agency: 0.02, flags: ["kol_spoke_out"], ...tr3(0.2) }, "B\u1ECB ch\u1EC9 tr\xEDch, gi\xFAp \u0111\u01B0\u1EE3c nh\u1EEFng \u0111\u1EE9a tr\u1EBB kh\xE1c", { tier: "sovereign" })
+          C6("X\xF3a h\u1EBFt, k\u1EC3 c\u1EA3 nh\u1EEFng video ki\u1EBFm nhi\u1EC1u nh\u1EA5t", { counters: step(c, KO), income_mult: 0.85, happy: 2, flags: ["kol_deleted_kids"], ...tr5(0.3) }, "M\u1EA5t thu nh\u1EADp c\u0169, tr\u1EA3 con m\u1ED9t ph\u1EA7n tu\u1ED5i th\u01A1"),
+          C6("X\xF3a v\xE0i c\xE1i, gi\u1EEF nh\u1EEFng c\xE1i d\u1EC5 th\u01B0\u01A1ng", { counters: step(c, KO), ...tr5(-0.2) }, "Gi\u1EEF ti\u1EC1n, con th\u1EA5y m\xECnh kh\xF4ng \u0111\u01B0\u1EE3c nghe"),
+          C6("X\xF3a h\u1EBFt v\xE0 n\xF3i c\xF4ng khai v\u1EC1 c\xE1i gi\xE1 \u1EA5y", { counters: step(c, KO, { kol_trust: 2 }), agency: 0.02, flags: ["kol_spoke_out"], ...tr5(0.2) }, "B\u1ECB ch\u1EC9 tr\xEDch, gi\xFAp \u0111\u01B0\u1EE3c nh\u1EEFng \u0111\u1EE9a tr\u1EBB kh\xE1c", { tier: "sovereign" })
         ], 0, k ? { npc: k } : {});
       }
       return T4("C\xE2u h\u1ECFi c\u1EE7a ng\u01B0\u1EDDi vi\u1EBFt lu\u1EADn v\u0103n", `M\u1ED9t sinh vi\xEAn vi\u1EBFt lu\u1EADn v\u0103n v\u1EC1 th\u1EDDi c\u1EE7a nh\u1EEFng ng\u01B0\u1EDDi c\xF3 \u1EA3nh h\u01B0\u1EDFng tr\xEAn m\u1EA1ng xin ph\u1ECFng v\u1EA5n b\u1EA1n.${f4(c, "kol_sold_name") ? " T\xEAn b\u1EA1n v\u1EABn in tr\xEAn bao b\xEC c\u1EE7a m\u1ED9t t\u1EADp \u0111o\xE0n, d\xF9 b\u1EA1n kh\xF4ng c\xF2n d\xF9ng s\u1EA3n ph\u1EA9m \u1EA5y." : ""} C\xE2u h\u1ECFi cu\u1ED1i: \u201CNg\xE0y \u1EA5y b\u1EA1n c\xF3 tin nh\u1EEFng g\xEC m\xECnh n\xF3i kh\xF4ng?\u201D`, [
@@ -18242,6 +18521,652 @@ var Argon = (() => {
     })
   ];
 
+  // src/engine/narrative/paths/money_life.ts
+  var vn12 = (c) => c.country === "VN", parent3 = (c) => role6(c, "mother") ?? role6(c, "father"), PACK_MONEY_LIFE = [
+    /* ---------- lương đầu ---------- */
+    money("ml_first_pay", [18, 27], 99, 0.8, (c) => c.has_job, (c, N) => {
+      let p = parent3(c);
+      return T4("Th\xE1ng l\u01B0\u01A1ng \u0111\u1EA7u ti\xEAn", `Th\xE1ng l\u01B0\u01A1ng \u0111\u1EA7u ti\xEAn v\xE0o t\xE0i kho\u1EA3n l\xFAc ch\xEDn gi\u1EDD s\xE1ng.${vn12(c) ? " M\u1EB9 nh\u1EAFn nh\u1EDB \u0111\u1EC3 m\u1ED9t phong b\xEC bi\u1EBFu \xF4ng b\xE0." : " C\u1EA3 nh\xF3m \u0111\u1ED3ng nghi\u1EC7p r\u1EE7 \u0111i \u0103n m\u1EEBng t\u1ED1i nay."} C\u0103n ph\xF2ng thu\xEA c\u1EE7a b\u1EA1n v\u1EABn ch\u1EC9 c\xF3 m\u1ED9t c\xE1i qu\u1EA1t v\xE0 t\u1EA5m n\u1EC7m m\u1ECFng.`, [
+        C6("S\u1EAFm s\u1EEDa cho ra d\xE1ng ng\u01B0\u1EDDi \u0111i l\xE0m", { lifestyle: "thoai_mai", money: -0.04, happy: 4 }, "S\u1ED1ng d\u1EC5 ch\u1ECBu ngay, kh\xF3 b\u1EAFt \u0111\u1EA7u \u0111\u1EC3 d\xE0nh"),
+        C6("S\u1ED1ng nh\u01B0 sinh vi\xEAn, g\u1EEDi ti\u1EBFt ki\u1EC7m \u0111\u1EC1u", { lifestyle: "tan_tien", deposit: 0.05, happy: -2, counters: { ml_frugal: 1 } }, "C\xF3 v\u1ED1n s\u1EDBm, b\u1ECF qua v\xE0i ni\u1EC1m vui tu\u1ED5i tr\u1EBB"),
+        ...p ? [C6(`Bi\u1EBFu ${N(p)} tr\u1ECDn th\xE1ng l\u01B0\u01A1ng \u0111\u1EA7u`, { give: { npc: p, amount: 0.06 }, trust: { npc: p, delta: 0.2 } }, "B\u1ED1 m\u1EB9 n\u1EDF m\xE0y n\u1EDF m\u1EB7t, b\u1EA1n tr\u1EAFng tay th\xE1ng n\xE0y")] : [],
+        C6("Ch\u01B0a \u0111\u1ED5i g\xEC, c\u1EE9 ti\xEAu d\u1EA7n", { happy: 1 }, "Kh\xF4ng ph\u1EA3i ngh\u0129, ti\u1EC1n tr\xF4i \u0111i l\xFAc n\xE0o kh\xF4ng bi\u1EBFt")
+      ], p ? 3 : 2);
+    }),
+    /* ---------- tăng lương ---------- */
+    money("ml_raise", [24, 58], 10, 0.6, (c) => c.has_job && !c.broke, (c) => {
+      let up = c.lifestyle === "thoai_mai" || c.lifestyle === "pho_truong" ? "pho_truong" : "thoai_mai";
+      return T4("L\u01B0\u01A1ng t\u0103ng m\u1ED9t b\u1EADc", vary4("mlr", c.age, [
+        "B\u1EA1n \u0111\u01B0\u1EE3c l\xEAn tr\u01B0\u1EDFng nh\xF3m, l\u01B0\u01A1ng t\u0103ng ba ph\u1EA7n m\u01B0\u1EDDi. Ch\u01B0a h\u1EBFt tu\u1EA7n, c\u1EA3 ph\xF2ng \u0111\xE3 h\u1ECFi bao gi\u1EDD b\u1EA1n \u0111\u1ED5i xe.",
+        "Cu\u1ED1i n\u0103m b\u1EA1n \u0111\u01B0\u1EE3c th\u01B0\u1EDFng v\xE0 t\u0103ng l\u01B0\u01A1ng. Ng\u01B0\u1EDDi c\xF9ng \u0111\u1EE3t v\u1EDBi b\u1EA1n \u0111\xE3 k\u1ECBp chuy\u1EC3n sang c\u0103n h\u1ED9 c\xF3 h\u1ED3 b\u01A1i tr\xEAn t\u1EA7ng th\u01B0\u1EE3ng.",
+        "M\u1ED9t ch\u1ED7 l\xE0m m\u1EDBi tr\u1EA3 b\u1EA1n cao h\u01A1n h\u1EB3n. Th\xE1ng \u0111\u1EA7u, b\u1EA1n th\u1EA5y trong v\xED c\xF3 m\u1ED9t kho\u1EA3ng tr\u1ED1ng \u0111ang ch\u1EDD \u0111\u01B0\u1EE3c l\u1EA5p."
+      ]), [
+        C6("N\xE2ng m\u1EE9c s\u1ED1ng theo l\u01B0\u01A1ng m\u1EDBi", { lifestyle: up, happy: 4 }, "S\u1ED1ng s\u01B0\u1EDBng h\u01A1n, t\u1EEB nay l\u01B0\u01A1ng ph\u1EA3i lu\xF4n cao th\u1EBF"),
+        C6("Gi\u1EEF n\u1EBFp c\u0169, g\u1EEDi h\u1EBFt ph\u1EA7n t\u0103ng", { deposit: 0.15, counters: { ml_frugal: 1 }, rel: -1 }, "C\u1EE7a \u0111\u1EC3 d\xE0nh d\xE0y l\xEAn, ng\u01B0\u1EDDi quanh b\u1EA1n th\u1EA5y b\u1EA1n keo"),
+        C6("\u0110\u1ED5i ph\u1EA7n t\u0103ng l\u1EA5y th\u1EDDi gian: xin l\xE0m b\u1ED1n ng\xE0y", { income_mult: 0.88, bw: 6, happy: 4, flags: ["four_day_week"] }, "\xCDt ti\u1EC1n h\u01A1n, c\xF3 l\u1EA1i nh\u1EEFng bu\u1ED5i chi\u1EC1u", { tier: "awakened" }),
+        C6("Kh\xF4ng \u0111\u1ED5i g\xEC, \u0111\u1EC3 xem \u0111\xE3", {}, "Kh\xF4ng quy\u1EBFt, ti\u1EC1n t\u0103ng t\u1EF1 t\xECm ch\u1ED7 \u0111\u1EC3 ti\xEAu")
+      ], 3);
+    }),
+    /* ---------- vợ chồng mới cưới ---------- */
+    money("ml_couple", [20, 50], 99, 0.7, (c) => c.married && !!role6(c, "spouse") && (c.counters.married_years ?? 0) <= 3, (c, N) => {
+      let s = role6(c, "spouse");
+      return T4("Hai c\xE1ch ti\xEAu ti\u1EC1n chung m\u1ED9t nh\xE0", `Ba th\xE1ng sau \u0111\xE1m c\u01B0\u1EDBi, ${N(s)} mua m\u1ED9t b\u1ED9 n\u1ED3i \u0111\u1EAFt b\u1EB1ng n\u1EEDa th\xE1ng l\u01B0\u01A1ng m\xE0 kh\xF4ng h\u1ECFi b\u1EA1n. B\u1EA1n th\xEC quen ghi t\u1EEBng kho\u1EA3n ti\u1EC1n ch\u1EE3 v\xE0o m\u1ED9t cu\u1ED1n s\u1ED5 nh\u1ECF. T\u1ED1i nay c\u1EA3 hai ng\u1ED3i nh\xECn cu\u1ED1n s\u1ED5, kh\xF4ng ai n\xF3i tr\u01B0\u1EDBc.`, [
+        C6(`Chi\u1EC1u theo c\xE1ch s\u1ED1ng c\u1EE7a ${N(s)}`, { lifestyle: "thoai_mai", trust: { npc: s, delta: 0.15 } }, "Nh\xE0 vui v\u1EBB, ti\u1EC1n \u0111\u1EC3 d\xE0nh m\u1ECFng \u0111i"),
+        C6("Gi\u1EEF n\u1EBFp t\u1EB1n ti\u1EC7n, b\u1EAFt ghi s\u1ED5 chung", { lifestyle: "tan_tien", trust: { npc: s, delta: -0.15 }, happy: -2 }, "Ti\u1EC1n ch\u1EAFc, kh\xF4ng kh\xED trong nh\xE0 c\u0103ng"),
+        C6("Chia ba qu\u1EF9: qu\u1EF9 chung v\xE0 qu\u1EF9 ri\xEAng m\u1ED7i ng\u01B0\u1EDDi", { lifestyle: "vua_phai", trust: { npc: s, delta: 0.1 }, flags: ["split_budget"], agency: 0.02 }, "M\u1ED7i ng\u01B0\u1EDDi t\u1EF1 do m\u1ED9t ph\u1EA7n, th\xE1ng n\xE0o c\u0169ng ph\u1EA3i ng\u1ED3i t\xEDnh", { tier: "sovereign" }),
+        C6("L\u1EDD \u0111i, kh\xF4ng n\xF3i chuy\u1EC7n ti\u1EC1n", { bw: -3, happy: -1 }, "Y\xEAn h\xF4m nay, chuy\u1EC7n ti\u1EC1n d\u1ED3n l\u1EA1i v\u1EC1 sau")
+      ], 2, { npc: s });
+    }),
+    /* ---------- con so bì với bạn ---------- */
+    money("ml_kid_compare", [32, 62], 8, 0.6, (c) => c.kids_teen > 0 && !!role6(c, "child"), (c, N) => {
+      let k = role6(c, "child");
+      return T4("Con so v\u1EDBi b\u1EA1n c\xF9ng l\u1EDBp", vary4("mlk", c.age, [
+        `${N(k)} v\u1EC1 nh\xE0, k\u1EC3 c\u1EA3 l\u1EDBp ch\u1EC9 c\xF2n m\xECnh d\xF9ng chi\u1EBFc \u0111i\u1EC7n tho\u1EA1i c\u0169 m\xE0n h\xECnh n\u1EE9t. Chi\u1EBFc m\u1EDBi \u0111\u1EAFt b\u1EB1ng hai tu\u1EA7n l\u01B0\u01A1ng c\u1EE7a b\u1EA1n.`,
+        `${N(k)} xin ti\u1EC1n mua \u0111\xF4i gi\xE0y gi\u1ED1ng c\u1EA3 nh\xF3m b\u1EA1n, gi\xE1 g\u1EA5p b\u1ED1n \u0111\xF4i \u0111ang \u0111i. Con b\u1EA3o kh\xF4ng c\xF3 th\xEC b\u1ECB tr\xEAu l\xE0 qu\xEA m\xF9a.`
+      ]), [
+        C6("Mua ngay cho con", { give: { npc: k, amount: 0.04 }, trust: { npc: k, delta: 0.15 } }, "Con h\xE3nh di\u1EC7n h\xF4m nay, quen \u0111\xF2i l\xE0 c\xF3"),
+        C6("B\u1EA3o con t\u1EF1 \u0111\u1EC3 d\xE0nh, b\u1EA1n b\xF9 m\u1ED9t n\u1EEDa", { give: { npc: k, amount: 0.02 }, trust: { npc: k, delta: 0.05 }, flags: ["kid_saves"], promise: { to: k, what: "b\xF9 m\u1ED9t n\u1EEDa khi con \u0111\u1EC3 d\xE0nh \u0111\u1EE7", years: 1 } }, "Con ph\u1EA3i ch\u1EDD, h\u1ECDc \u0111\u01B0\u1EE3c gi\xE1 c\u1EE7a \u0111\u1ED3ng ti\u1EC1n", { tier: "awakened" }),
+        C6("T\u0103ng ti\u1EC1n ti\xEAu cho con t\u1EEB nay", { support: { who: "kids", level: "hau" }, trust: { npc: k, delta: 0.1 } }, "Con kh\xF4ng thua b\u1EA1n, nh\xE0 g\xE1nh th\xEAm m\u1ED7i th\xE1ng"),
+        C6("Kh\xF4ng mua, n\xF3i th\u1EADt ho\xE0n c\u1EA3nh nh\xE0", { trust: { npc: k, delta: -0.1 } }, "Gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n, con c\xF3 th\u1EC3 ng\u1EA1i v\u1EDBi b\u1EA1n b\xE8")
+      ], 1, { npc: k });
+    }),
+    /* ---------- họ hàng chê sống keo ---------- */
+    money("ml_kin_frugal", [22, 75], 8, 0.6, (c) => c.lifestyle === "tan_tien" && c.lifestyle_years >= 3, (c) => T4("B\u1ECB ch\xEA s\u1ED1ng nh\u01B0 ng\u01B0\u1EDDi ngh\xE8o", vary4("mlj", c.age, vn12(c) ? [
+      '\u0110\xE1m gi\u1ED7 \xF4ng n\u1ED9i, b\xE0 c\xF4 nh\xECn chi\u1EBFc \xE1o s\u1EDDn c\u1ED5 c\u1EE7a b\u1EA1n r\u1ED3i n\xF3i to cho c\u1EA3 m\xE2m nghe: "L\xE0m ra ti\u1EC1n m\xE0 s\u1ED1ng nh\u01B0 \u0111i xin." M\u1EA5y \u0111\u1EE9a em h\u1ECD c\xFAi xu\u1ED1ng c\u01B0\u1EDDi.',
+      "M\u1ED3ng hai T\u1EBFt, c\u1EA3 h\u1ECD khoe xe, khoe nh\xE0. \u0110\u1EBFn l\u01B0\u1EE3t b\u1EA1n, ai c\u0169ng nh\xECn chi\u1EBFc xe m\xE1y m\u01B0\u1EDDi hai n\u0103m tu\u1ED5i d\u1EF1ng ngo\xE0i c\u1ED5ng."
+    ] : [
+      "\u1EDE \u0111\xE1m c\u01B0\u1EDBi m\u1ED9t ng\u01B0\u1EDDi h\u1ECD h\xE0ng, d\xEC b\u1EA1n h\u1ECFi tr\u01B0\u1EDBc c\u1EA3 b\xE0n sao b\u1EA1n v\u1EABn m\u1EB7c b\u1ED9 vest t\u1EEB m\u01B0\u1EDDi n\u0103m tr\u01B0\u1EDBc. Kh\xF4ng ai c\u01B0\u1EDDi th\xE0nh ti\u1EBFng.",
+      'Em h\u1ECD gh\xE9 ch\u01A1i, m\u1EDF t\u1EE7 l\u1EA1nh nh\xE0 b\u1EA1n ra r\u1ED3i h\u1ECFi nh\u1ECF: "Anh ch\u1ECB \u0111ang kh\xF3 kh\u0103n \xE0?" Trong t\u1EE7 c\xF3 \u0111\xFAng m\u1ED9t khay tr\u1EE9ng v\xE0 h\u0169 d\u01B0a.'
+    ]), [
+      C6("N\u1EDBi ra m\u1ED9t ch\xFAt cho \u0111\u1EE1 \u0111i\u1EC1u ti\u1EBFng", { lifestyle: "vua_phai", rel: 4 }, "H\u1ECD h\xE0ng vui l\xF2ng, t\u1ED1c \u0111\u1ED9 \u0111\u1EC3 d\xE0nh ch\u1EADm l\u1EA1i"),
+      C6("K\u1EC7 h\u1ECD, gi\u1EEF n\u1EBFp s\u1ED1ng c\u1EE7a m\xECnh", { counters: { ml_frugal: 1 }, rel: -3, happy: -1 }, "Ti\u1EC1n v\u1EABn d\u1ED3n l\xEAn, ti\u1EBFng keo ki\u1EC7t \u0111i theo"),
+      C6(vn12(c) ? "G\xF3p h\u1EB3n m\u1ED9t kho\u1EA3n l\u1EDBn cho vi\u1EC7c h\u1ECD" : "M\u1EDDi c\u1EA3 nh\xE0 m\u1ED9t b\u1EEFa th\u1EADt t\u01B0\u01A1m", { money: -0.05, rel: 5, flags: ["kin_giver"] }, "Mua l\u1EA1i th\u1EC3 di\u1EC7n m\u1ED9t l\u1EA7n, r\u1ED3i s\u1ED1ng ti\u1EBFp nh\u01B0 c\u0169")
+    ], 1)),
+    /* ---------- về quê / họp lớp khoe mẽ ---------- */
+    money("ml_show_off", [24, 60], 8, 0.55, () => !0, (c) => T4(vn12(c) ? "T\u1EBFt v\u1EC1 qu\xEA b\u1EB1ng g\xEC" : "Cu\u1ED9c g\u1EB7p l\u1EA1i sau nhi\u1EC1u n\u0103m", vn12(c) ? vary4("mls", c.age, [
+      'T\u1EBFt n\xE0y b\u1EA1n v\u1EC1 qu\xEA. Th\u1EB1ng b\u1EA1n c\xF9ng x\xF3m n\u0103m x\u01B0a gi\u1EDD \u0111i xe m\u1EDBi, ph\xE1t l\xEC x\xEC cho c\u1EA3 \u0111\xE1m tr\u1EBB b\u1EB1ng ti\u1EC1n m\u1EDBi c\u1EE9ng. M\u1EB9 b\u1EA1n kh\u1EBD h\u1ECFi: "N\u0103m nay con l\u1EA1i v\u1EC1 b\u1EB1ng xe kh\xE1ch \xE0?"',
+      "C\u1EADn T\u1EBFt, nh\xF3m b\u1EA1n c\u1EA5p ba h\u1EB9n h\u1ECDp m\u1EB7t \u1EDF nh\xE0 h\xE0ng to nh\u1EA5t huy\u1EC7n. Ai c\u0169ng h\u1ECFi nhau l\u01B0\u01A1ng bao nhi\xEAu, nh\xE0 m\u1EA5y t\u1EA7ng. B\u1EA1n v\u1EABn c\xF2n hai k\u1EF3 tr\u1EA3 g\xF3p chi\u1EBFc m\xE1y t\xEDnh."
+    ]) : vary4("mls", c.age, [
+      "H\u1ECDp l\u1EDBp m\u01B0\u1EDDi n\u0103m. Nh\xF3m chat b\xE0n nhau thu\xEA nh\xE0 h\xE0ng sang nh\u1EA5t th\xE0nh ph\u1ED1, ai c\u0169ng \u0111\u0103ng \u1EA3nh xe, nh\xE0, chuy\u1EBFn \u0111i. B\u1EA1n v\u1EABn c\xF2n hai k\u1EF3 tr\u1EA3 g\xF3p chi\u1EBFc m\xE1y t\xEDnh.",
+      "M\u1ED9t ng\u01B0\u1EDDi b\u1EA1n c\u0169 c\u01B0\u1EDBi \u1EDF khu ngh\u1EC9 d\u01B0\u1EE1ng ven bi\u1EC3n, kh\xE1ch m\u1EDDi \u0111i xe ri\xEAng v\xE0 \u1EDF ba \u0111\xEAm. Ph\xF2ng r\u1EBB nh\u1EA5t \u0111\u1EAFt b\u1EB1ng n\u1EEDa th\xE1ng l\u01B0\u01A1ng c\u1EE7a b\u1EA1n."
+    ]), [
+      C6("Ch\u01A1i l\u1EDBn cho b\u1EB1ng ng\u01B0\u1EDDi", { lifestyle: "pho_truong", money: -0.08, rel: 3, counters: { ml_face: 1 } }, "\u0110\u01B0\u1EE3c n\u1EC3 m\u1ED9t m\xF9a, chi ti\xEAu ph\xECnh ra m\xE3i"),
+      C6("Thu\xEA \u0111\u1ED3, m\u01B0\u1EE3n xe cho m\u1ED9t d\u1ECBp", { money: -0.03, gamble: {
+        p: 0.6,
+        win: { counters: { ml_face: 1 }, log: "Kh\xF4ng ai nh\u1EADn ra. B\u1EA1n tr\u1EA3 \u0111\u1ED3 h\xF4m sau, th\u1EA5y nh\u1EB9 c\u1EA3 ng\u01B0\u1EDDi." },
+        lose: { rel: -3, flags: ["caught_bluffing"], log: "Ch\u1EE7 xe g\u1ECDi \u0111i\u1EC7n \u0111\xF2i xe ngay gi\u1EEFa ti\u1EC7c. C\u1EA3 b\xE0n nghe th\u1EA5y." }
+      } }, "R\u1EBB, nh\u01B0ng c\xF3 th\u1EC3 v\u1EE1 chuy\u1EC7n tr\u01B0\u1EDBc m\u1EB7t m\u1ECDi ng\u01B0\u1EDDi"),
+      C6("\u0110\u1EBFn nh\u01B0 m\xECnh v\u1ED1n th\u1EBF", { happy: 1, counters: { ml_frugal: 1 } }, "Kh\xF4ng t\u1ED1n g\xEC, ch\u1ECBu v\xE0i \xE1nh nh\xECn")
+    ], 2)),
+    /* ---------- nợ ép cắt chi ---------- */
+    money("ml_cutback", [22, 65], 8, 0.75, (c) => c.rat_race || c.loan_burden > 0.3 || c.broke, (c) => {
+      let car = c.owns.has("vehicle") ? c.asset_names.vehicle ?? "chi\u1EBFc xe" : void 0;
+      return T4("M\u01B0\u1EDDi hai ng\xE0y ti\u1EC1n", "Th\xE1ng n\xE0y, tr\u1EA3 g\xF3p v\xE0 ti\u1EC1n nh\xE0 xong, t\xE0i kho\u1EA3n c\xF2n \u0111\xFAng \u0111\u1EE7 cho m\u01B0\u1EDDi hai ng\xE0y. B\u1EA1n ng\u1ED3i d\xF2 t\u1EEBng d\xF2ng sao k\xEA: c\xE0 ph\xEA m\u1ED7i s\xE1ng, ba g\xF3i xem phim, m\u1ED9t th\u1EBB ph\xF2ng t\u1EADp ch\u01B0a b\u01B0\u1EDBc ch\xE2n v\xE0o l\u1EA7n n\xE0o.", [
+        C6("C\u1EAFt v\u1EC1 t\u1EB1n ti\u1EC7n, b\u1ECF m\u1ECDi kho\u1EA3n th\u1EEBa", { lifestyle: "tan_tien", happy: -4, bw: 2 }, "Th\u1EDF \u0111\u01B0\u1EE3c v\u1EC1 ti\u1EC1n, \u0111\u1EDDi b\u1EDBt m\xE0u"),
+        ...car ? [C6(`B\xE1n ${car}, \u0111i xe bu\xFDt`, { sell: { kind: "vehicle" }, bw: -2 }, "C\xF3 ti\u1EC1n m\u1EB7t ngay, m\u1EA5t ti\u1EC7n l\u1EE3i m\u1ED7i ng\xE0y")] : [],
+        C6("Xin ng\xE2n h\xE0ng gi\xE3n n\u1EE3", { custom: "restructure", bw: 3 }, "G\xF3p nh\u1EB9 \u0111i, t\u1ED5ng ti\u1EC1n l\xE3i k\xE9o d\xE0i th\xEAm"),
+        C6("Gi\u1EEF nguy\xEAn, vay th\xEAm cho qua th\xE1ng", { custom: "borrow:0.1", happy: 1 }, "Kh\xF4ng \u0111\u1ED5i g\xEC h\xF4m nay, n\u1EE3 d\xE0y th\xEAm")
+      ], 0);
+    }),
+    /* ---------- về hưu ---------- */
+    money("ml_retire", [58, 85], 99, 0.7, (c) => c.retired || c.age >= 60, (c) => {
+      let house = c.home_owner && c.owns.has("house");
+      return T4("Nh\u1EEFng c\xE1i phong b\xEC tu\u1ED5i h\u01B0u", "Th\xE1ng \u0111\u1EA7u ti\xEAn kh\xF4ng c\xF2n phi\u1EBFu l\u01B0\u01A1ng. B\u1EA1n chia ti\u1EC1n h\u01B0u v\xE0 ti\u1EC1n \u0111\u1EC3 d\xE0nh th\xE0nh nh\u1EEFng c\xE1i phong b\xEC: ti\u1EC1n ch\u1EE3, ti\u1EC1n thu\u1ED1c, ti\u1EC1n \u0111\xE1m hi\u1EBFu h\u1EC9. C\xF2n l\u1EA1i m\u1ED9t c\xE1i phong b\xEC tr\u1ED1ng, ch\u01B0a bi\u1EBFt \u0111\u1EC1 ch\u1EEF g\xEC.", [
+        C6("S\u1ED1ng t\u1EB1n ti\u1EC7n cho ti\u1EC1n \u0111\u1EE7 \u0111\u1EBFn cu\u1ED1i", { lifestyle: "tan_tien", happy: -2, counters: { ml_frugal: 1 } }, "Y\xEAn t\xE2m kh\xF4ng h\u1EBFt ti\u1EC1n, tu\u1ED5i gi\xE0 \xEDt ni\u1EC1m vui"),
+        C6("S\u1ED1ng v\u1EEBa ph\u1EA3i, m\u1ED7i n\u0103m m\u1ED9t chuy\u1EBFn \u0111i xa", { lifestyle: "vua_phai", happy: 4, flags: ["retire_travel"] }, "Tu\u1ED5i gi\xE0 c\xF3 chuy\u1EC7n \u0111\u1EC3 k\u1EC3, qu\u1EF9 hao nhanh h\u01A1n"),
+        ...house ? [C6("B\xE1n nh\xE0 l\u1EDBn, d\u1ECDn v\u1EC1 ch\u1ED7 nh\u1ECF h\u01A1n", { sell: { kind: "house" }, happy: -3, bw: 3, flags: ["downsized"] }, "R\u1EE7ng r\u1EC9nh ti\u1EC1n, r\u1EDDi c\u0103n nh\xE0 nhi\u1EC1u k\u1EF7 ni\u1EC7m", { tier: "awakened" })] : [],
+        C6("Kh\xF4ng t\xEDnh g\xEC, \u0111\u1EC3 \u0111\xE2u hay \u0111\xF3", {}, "Kh\xF4ng m\u1EA5t c\xF4ng, c\xF3 th\u1EC3 h\u1EE5t ti\u1EC1n l\xFAc \u1ED1m \u0111au")
+      ], 1);
+    }),
+    /* ---------- tiền từ trên trời ---------- */
+    money("ml_windfall", [20, 78], 10, 0.4, () => !0, (c, N) => {
+      let g = parent3(c) ?? role6(c, "sibling");
+      return T4("M\u1ED9t kho\u1EA3n ti\u1EC1n kh\xF4ng ng\u1EDD", vary4("mlw", c.age, [
+        "C\xF4ng ty chia m\u1ED9t kho\u1EA3n th\u01B0\u1EDFng b\u1EA5t ng\u1EDD, b\u1EB1ng n\u1EEDa n\u0103m thu nh\u1EADp c\u1EE7a c\u1EA3 nh\xE0. Tin nh\u1EAFn ng\xE2n h\xE0ng \u0111\u1EBFn l\xFAc b\u1EA1n \u0111ang ch\u1EDD \u0111\xE8n \u0111\u1ECF.",
+        "M\u1ED9t ng\u01B0\u1EDDi b\xE0 con xa qua \u0111\u1EDDi, \u0111\u1EC3 l\u1EA1i cho b\u1EA1n m\u1ED9t kho\u1EA3n ti\u1EC1n trong di ch\xFAc. B\u1EA1n m\u1EDBi g\u1EB7p ng\u01B0\u1EDDi \u1EA5y \u0111\xFAng hai l\u1EA7n.",
+        "T\u1EDD v\xE9 s\u1ED1 mua cho vui \u1EDF qu\xE1n n\u01B0\u1EDBc tr\xFAng gi\u1EA3i ba. Ng\u01B0\u1EDDi b\xE1n v\xE9 \u0111\xF2i b\u1EA1n khao c\u1EA3 d\xE3y ph\u1ED1."
+      ]), [
+        C6("Ti\xEAu cho \u0111\xE3: s\u1EEDa nh\xE0, \u0111i ch\u01A1i, s\u1EAFm \u0111\u1ED3", { money: 0.2, happy: 6, lifestyle: "thoai_mai" }, "Vui ngay, m\u1EE9c s\u1ED1ng m\u1EDBi \u1EDF l\u1EA1i l\xE2u h\u01A1n kho\u1EA3n ti\u1EC1n"),
+        C6("G\u1EEDi ti\u1EBFt ki\u1EC7m g\u1EA7n h\u1EBFt", { money: 0.5, deposit: 0.4, counters: { ml_frugal: 1 } }, "Th\xEAm m\u1ED9t l\u1EDBp \u0111\u1EC7m, kh\xF4ng ai bi\u1EBFt b\u1EA1n v\u1EEBa c\xF3 ti\u1EC1n"),
+        ...g ? [C6(`Chia m\u1ED9t n\u1EEDa cho ${N(g)}`, { money: 0.5, give: { npc: g, amount: 0.25 }, trust: { npc: g, delta: 0.2 } }, "Nh\xE0 \u1EA5m l\xF2ng, l\u1EA7n sau ai c\u0169ng nh\u1EDB b\u1EA1n c\xF3 ti\u1EC1n")] : [],
+        C6("\u0110\u1EC3 y\xEAn trong t\xE0i kho\u1EA3n, ch\u01B0a \u0111\u1ED9ng", { money: 0.5 }, "Linh ho\u1EA1t, d\u1EC5 ti\xEAu m\xF2n l\xFAc n\xE0o kh\xF4ng hay")
+      ], 1);
+    }),
+    /* ---------- tằn tiện lâu năm ---------- */
+    money("ml_long_frugal", [25, 78], 99, 0.6, (c) => c.lifestyle === "tan_tien" && c.lifestyle_years >= 5, (c) => {
+      let paid = c.rich || c.deposit > c.income;
+      return T4(paid ? "\u0110\u1EE7 ti\u1EC1n m\xE0 v\u1EABn \u0111\u1EBFm t\u1EEBng \u0111\u1ED3ng" : "N\u0103m n\u0103m th\u1EAFt l\u01B0ng bu\u1ED9c b\u1EE5ng", paid ? `${c.lifestyle_years} n\u0103m s\u1ED1ng t\u1EB1n ti\u1EC7n, kho\u1EA3n \u0111\u1EC3 d\xE0nh c\u1EE7a b\u1EA1n \u0111\xE3 \u0111\u1EE7 s\u1ED1ng v\xE0i n\u0103m kh\xF4ng c\u1EA7n \u0111i l\xE0m. V\u1EADy m\xE0 s\xE1ng nay b\u1EA1n v\u1EABn \u0111\u1EE9ng m\u01B0\u1EDDi ph\xFAt tr\u01B0\u1EDBc qu\u1EA7y, ch\u1ECDn gi\u1EEFa hai h\u1ED9p s\u1EEFa ch\xEAnh nhau v\xE0i \u0111\u1ED3ng.` : `${c.lifestyle_years} n\u0103m c\u1EAFt t\u1EEBng kho\u1EA3n chi m\xE0 ti\u1EC1n \u0111\u1EC3 d\xE0nh v\u1EABn m\u1ECFng. Tu\u1EA7n n\xE0y b\u1EA1n c\xE1u v\u1EDBi c\u1EA3 ng\u01B0\u1EDDi b\xE1n rau v\xEC m\u1ED9t b\xF3 h\xE0nh, r\u1ED3i ng\u1ED3i m\u1ED9t m\xECnh r\u1EA5t l\xE2u trong b\u1EBFp.`, [
+        C6("N\u1EDBi ra m\u1ED9t b\u1EADc, s\u1ED1ng cho b\xE2y gi\u1EDD", { lifestyle: "vua_phai", happy: 6 }, "Nh\u1EB9 ng\u01B0\u1EDDi, t\u1ED1c \u0111\u1ED9 \u0111\u1EC3 d\xE0nh ch\u1EADm h\u1EB3n"),
+        C6("Gi\u1EEF n\u1EBFp, nh\u01B0ng m\u1ED7i n\u0103m \u0111\u1EC3 ri\xEAng m\u1ED9t kho\u1EA3n vui", { money: -0.03, happy: 4, flags: ["fun_budget"], counters: { ml_frugal: 1 } }, "V\u1EABn \u0111\u1EC3 d\xE0nh, c\xF3 ch\u1ED7 th\u1EDF, ph\u1EA3i t\u1EF1 gi\u1EEF k\u1EF7 lu\u1EADt", { tier: "awakened" }),
+        C6("Ti\u1EBFp t\u1EE5c t\u1EB1n ti\u1EC7n, nh\u1EAFm m\u1ED1c l\u1EDBn h\u01A1n", { deposit: 0.1, happy: -4, health: -1, counters: { ml_frugal: 1 } }, "M\u1ED1c m\u1EDBi g\u1EA7n h\u01A1n, ng\u01B0\u1EDDi m\u1EC7t th\xEAm")
+      ], paid ? 0 : 1);
+    })
+  ];
+
+  // src/engine/narrative/paths/money_people.ts
+  var vn13 = (c) => c.country === "VN", parentOf2 = (c) => role6(c, "mother") ?? role6(c, "father"), PACK_MONEY_PEOPLE = [
+    /* 1. Bạn cũ hỏi vay làm ăn */
+    money("mp_friend_biz", [22, 60], 8, 0.7, (c) => !!role6(c, "childhood_friend"), (c, N) => {
+      let fr = role6(c, "childhood_friend"), what = vary4("mpfb", c.age, [
+        vn13(c) ? "m\u1EDF m\u1ED9t qu\xE1n c\u01A1m v\u0103n ph\xF2ng g\u1EA7n khu c\xF4ng nghi\u1EC7p" : "m\u1EDF m\u1ED9t qu\xE1n \u0103n tr\u01B0a g\u1EA7n khu v\u0103n ph\xF2ng",
+        "mua l\u1EA1i m\u1ED9t x\u01B0\u1EDFng s\u1EEDa xe \u0111ang \u1EBF",
+        "nh\u1EADp m\u1ED9t l\xF4 h\xE0ng b\xE1n tr\xEAn m\u1EA1ng tr\u01B0\u1EDBc m\xF9a l\u1EC5"
+      ]);
+      return T4("B\u1EA1n c\u0169 h\u1ECFi vay l\xE0m \u0103n", `${N(fr)}, b\u1EA1n ch\u01A1i t\u1EEB h\u1ED3i nh\u1ECF, g\u1ECDi \u0111i\u1EC7n l\xFAc m\u01B0\u1EDDi gi\u1EDD \u0111\xEAm. C\u1EADu \u1EA5y mu\u1ED1n ${what} v\xE0 c\xF2n thi\u1EBFu m\u1ED9t kho\u1EA3n b\u1EB1ng kho\u1EA3ng b\u1ED1n th\xE1ng thu nh\u1EADp c\u1EE7a b\u1EA1n. C\u1EADu \u1EA5y h\u1EE9a hai n\u0103m tr\u1EA3 \u0111\u1EE7.`, [
+        C6("Cho vay \u0111\u1EE7, h\u1EB9n hai n\u0103m", { lend: { npc: fr, amount: 0.35, years: 2 }, memory: { npc: fr, tag: "HELPED_IN_CRISIS", weight: 0.3, note: `kho\u1EA3n vay m\u1EDF qu\xE1n n\u0103m b\u1EA1n ${c.age} tu\u1ED5i` } }, "Gi\u1EEF t\xECnh b\u1EA1n, c\u01B0\u1EE3c b\u1ED1n th\xE1ng thu nh\u1EADp"),
+        C6("Cho vay, vi\u1EBFt gi\u1EA5y c\xF3 ng\u01B0\u1EDDi l\xE0m ch\u1EE9ng", { lend: { npc: fr, amount: 0.35, years: 2 }, flags: ["mp_paper_loan"], trust: { npc: fr, delta: -0.05 }, memory: { npc: fr, tag: "WIN_WIN_DEAL", weight: 0.2, note: "gi\u1EA5y vay ti\u1EC1n c\xF3 ng\u01B0\u1EDDi l\xE0m ch\u1EE9ng" } }, "R\xF5 r\xE0ng, b\u1EA1n c\u0169 h\u01A1i ch\u1EA1nh l\xF2ng", { tier: "awakened" }),
+        C6("Cho h\u1EB3n m\u1ED9t kho\u1EA3n nh\u1ECF, kh\xF4ng \u0111\xF2i", { give: { npc: fr, amount: 0.05 }, trust: { npc: fr, delta: 0.05 }, counters: { mp_gave: 1 } }, "M\u1EA5t \xEDt, kh\xF4ng lo b\u1ECB qu\u1EF5t, ch\u01B0a \u0111\u1EE7 gi\xFAp"),
+        C6("T\u1EEB ch\u1ED1i, n\xF3i th\u1EADt l\xE0 kh\xF4ng c\xF3", { memory: { npc: fr, tag: "REFUSED_HELP", weight: -0.25, note: "cu\u1ED9c g\u1ECDi h\u1ECFi vay m\u1EDF qu\xE1n b\u1ECB t\u1EEB ch\u1ED1i" } }, "Gi\u1EEF ti\u1EC1n, t\xECnh b\u1EA1n ngu\u1ED9i \u0111i")
+      ], 1, { npc: fr });
+    }),
+    /* 2. Đám cưới anh chị em thiếu tiền */
+    money("mp_sib_wedding", [18, 50], 10, 0.55, (c) => !!role6(c, "sibling"), (c, N) => {
+      let s = role6(c, "sibling");
+      return T4(`\u0110\xE1m c\u01B0\u1EDBi c\u1EE7a ${N(s)}`, `${N(s)} s\u1EAFp c\u01B0\u1EDBi, nh\xE0 b\xEAn kia \u0111\xE3 \u0111\u1EB7t ${vn13(c) ? "b\u1ED1n m\u01B0\u01A1i m\xE2m c\u1ED7" : "ti\u1EC7c cho m\u1ED9t tr\u0103m kh\xE1ch"}. C\xF2n thi\u1EBFu m\u1ED9t kho\u1EA3n c\u1EE1 hai th\xE1ng thu nh\u1EADp c\u1EE7a b\u1EA1n, v\xE0 ${N(s)} ng\u1EA1i kh\xF4ng d\xE1m n\xF3i v\u1EDBi b\u1ED1 m\u1EB9.`, [
+        C6("\u0110\u1EE1 tr\u1ECDn kho\u1EA3n thi\u1EBFu, coi nh\u01B0 qu\xE0 c\u01B0\u1EDBi", { give: { npc: s, amount: 0.15 }, memory: { npc: s, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "kho\u1EA3n ti\u1EC1n \u0111\u1EE1 \u0111\xE1m c\u01B0\u1EDBi" }, counters: { mp_gave: 1 } }, "M\u1EA5t hai th\xE1ng thu nh\u1EADp, \u0111\u01B0\u1EE3c m\u1ED9t ng\u01B0\u1EDDi nh\u1EDB \u01A1n"),
+        C6("Cho vay, c\u01B0\u1EDBi xong tr\u1EA3 d\u1EA7n", { lend: { npc: s, amount: 0.15, years: 2 }, trust: { npc: s, delta: 0.05 } }, "C\xF3 th\u1EC3 l\u1EA5y l\u1EA1i, c\xF3 th\u1EC3 th\xE0nh chuy\u1EC7n nh\xE0"),
+        C6("M\u1EEBng m\u1ED9t phong b\xEC nh\u01B0 kh\xE1ch th\u01B0\u1EDDng", { give: { npc: s, amount: 0.03 }, trust: { npc: s, delta: -0.05 } }, "\u0110\xFAng l\u1EC5, kh\xF4ng g\xE1nh th\xEAm"),
+        C6("Khuy\xEAn l\xE0m \u0111\xE1m nh\u1ECF h\u01A1n, kh\xF4ng g\xF3p th\xEAm", { trust: { npc: s, delta: -0.1 }, happy: -1 }, "Gi\u1EEF ti\u1EC1n, m\u1EA5t l\xF2ng ng\xE0y vui")
+      ], 0, { npc: s });
+    }),
+    /* 3. Con nợ quá hạn */
+    money("mp_debtor", [20, 85], 6, 0.85, (c) => c.debtors_overdue.length > 0, (c, N) => {
+      let d = c.debtors_overdue[0];
+      return T4("M\xF3n n\u1EE3 qu\xE1 h\u1EA1n", `\u0110\xE3 qu\xE1 h\u1EB9n h\u01A1n m\u1ED9t n\u0103m. ${N(d)} v\u1EABn \u0111\u0103ng \u1EA3nh \u0111i \u0103n ti\u1EC7m, nh\u01B0ng h\u1EC5 b\u1EA1n nh\u1EAFc \u0111\u1EBFn ti\u1EC1n th\xEC b\u1EA3o "th\xE1ng sau". B\u1EA1n c\xF2n gi\u1EEF tin nh\u1EAFn h\u1EB9n tr\u1EA3 ng\xE0y m\xF9ng n\u0103m.`, [
+        C6("X\xF3a n\u1EE3, coi nh\u01B0 \u0111\xE3 cho", { flags: ["mp_forgave_debt"], memory: { npc: d, tag: "HELPED_IN_CRISIS", weight: 0.35, note: "m\xF3n n\u1EE3 \u0111\u01B0\u1EE3c x\xF3a kh\xF4ng \u0111i\u1EC1u ki\u1EC7n" }, happy: 1 }, "M\u1EA5t ti\u1EC1n, \u0111\u01B0\u1EE3c m\u1ED9t ng\u01B0\u1EDDi mang \u01A1n"),
+        C6("\u0110\u1EBFn t\u1EADn nh\xE0 \u0111\xF2i, n\xF3i cho c\u1EA3 x\xF3m bi\u1EBFt", { flags: ["mp_pressed_debt"], memory: { npc: d, tag: "HUMILIATED_ME", weight: -0.35, note: "b\u1ECB \u0111\xF2i n\u1EE3 tr\u01B0\u1EDBc m\u1EB7t h\xE0ng x\xF3m" }, gamble: { p: 0.45, win: { money: 0.08, log: `${N(d)} gom \u0111\u01B0\u1EE3c m\u1ED9t ph\u1EA7n tr\u1EA3 b\u1EA1n, r\u1ED3i kh\xF4ng bao gi\u1EDD nh\xECn m\u1EB7t b\u1EA1n n\u1EEFa.` }, lose: { rel: -2, log: `${N(d)} kh\xF4ng c\xF3 g\xEC \u0111\u1EC3 tr\u1EA3. Ng\u01B0\u1EDDi ta ch\u1EC9 nh\u1EDB b\u1EA1n l\xE0m \u1EA7m.` } } }, "C\xF3 th\u1EC3 l\u1EA5y l\u1EA1i m\u1ED9t \xEDt, m\u1EA5t h\u1EB3n ng\u01B0\u1EDDi"),
+        C6("Gi\u1EEF chi\u1EBFc xe c\u1EE7a h\u1ECD \u0111\u1EC3 tr\u1EEB n\u1EE3", { money: 0.06, flags: ["mp_pressed_debt"], memory: { npc: d, tag: "TOOK_MY_LAND", weight: -0.3, note: "chi\u1EBFc xe b\u1ECB gi\u1EEF l\u1EA1i \u0111\u1EC3 tr\u1EEB n\u1EE3" } }, "L\u1EA5y l\u1EA1i \u0111\u01B0\u1EE3c ch\xFAt \xEDt, th\xE0nh k\u1EBB th\xF9"),
+        C6("Ng\u1ED3i xu\u1ED1ng, gi\xE3n h\u1EA1n, tr\u1EA3 theo th\xE1ng", { flags: ["mp_paper_loan"], trust: { npc: d, delta: 0.15 }, promise: { to: d, what: "gi\u1EEF l\u1ECBch tr\u1EA3 n\u1EE3 theo th\xE1ng", years: 2 }, bw: -2 }, "Ch\u1EADm nh\u01B0ng c\xF3 \u0111\u01B0\u1EDDng v\u1EC1, c\u1EA3 hai gi\u1EEF m\u1EB7t", { tier: "sovereign" })
+      ], 0, { npc: d });
+    }),
+    /* 4. Bố mẹ ốm nặng */
+    money("mp_parent_sick", [22, 70], 6, 0.8, (c) => c.parent_sick && !!parentOf2(c), (c, N) => {
+      let p = parentOf2(c), sib = role6(c, "sibling"), opts = [
+        C6("Lo h\u1EBFt, ch\u1EEFa \u1EDF ch\u1ED7 t\u1ED1t nh\u1EA5t", { support: { who: "parents", level: "hau" }, money: -0.3, trust: { npc: p, delta: 0.25 }, memory: { npc: p, tag: "HELPED_IN_CRISIS", weight: 0.3, note: "\u0111\u1EE3t n\u1EB1m vi\u1EC7n \u0111\u01B0\u1EE3c con lo tr\u1ECDn" } }, "M\u1EA5t g\u1EA7n b\u1ED1n th\xE1ng thu nh\u1EADp, b\u1ED1 m\u1EB9 y\xEAn l\xF2ng"),
+        C6("Lo ph\u1EA7n \u0111\u1EE7, ch\u1EEFa theo b\u1EA3o hi\u1EC3m", { support: { who: "parents", level: "du" }, money: -0.1, trust: { npc: p, delta: 0.1 } }, "V\u1EEBa s\u1EE9c, c\xF3 l\xFAc ph\u1EA3i ch\u1EDD \u0111\u1EE3i"),
+        C6("G\u1EEDi m\u1ED9t \xEDt, b\u1EA3o t\u1EF1 xoay", { support: { who: "parents", level: "it" }, trust: { npc: p, delta: -0.25 }, close_doors: ["family_table"] }, "Gi\u1EEF ti\u1EC1n, m\u1EA5t ch\u1ED7 ng\u1ED3i trong m\xE2m c\u01A1m nh\xE0")
+      ];
+      return sib && opts.splice(2, 0, C6(`H\u1ECDp v\u1EDBi ${N(sib)}, chia \u0111\u1EC1u v\xE0 ghi s\u1ED5 chung`, { support: { who: "parents", level: "du" }, money: -0.08, flags: ["mp_family_rule"], trust: { npc: sib, delta: 0.1 } }, "G\xE1nh nh\u1EB9 h\u01A1n, ph\u1EA3i b\xE0n b\u1EA1c t\u1EEBng kho\u1EA3n", { tier: "sovereign" })), T4("T\u1EDD gi\u1EA5y b\xE1o vi\u1EC7n ph\xED", `${N(p)} n\u1EB1m vi\u1EC7n tu\u1EA7n th\u1EE9 hai. B\xE1c s\u0129 n\xF3i c\u1EA7n m\u1ED9t \u0111\u1EE3t \u0111i\u1EC1u tr\u1ECB d\xE0i, v\xE0 t\u1EDD gi\u1EA5y b\xE1o vi\u1EC7n ph\xED \u0111\u1EA7u ti\xEAn \u0111\xE3 b\u1EB1ng n\u1EEDa th\xE1ng l\u01B0\u01A1ng c\u1EE7a b\u1EA1n. ${N(p)} c\u1EE9 d\u1EB7n \u0111\u1EEBng t\u1ED1n ti\u1EC1n.`, opts, 1, { npc: p });
+    }),
+    /* 5. Tiền hằng tháng cho bố mẹ già */
+    money("mp_parent_allowance", [28, 70], 10, 0.7, (c) => c.parent_old && c.parents_alive > 0 && !!parentOf2(c), (c, N) => {
+      let p = parentOf2(c), text = vary4("mppa", c.age, [
+        `${N(p)} \u0111\xE3 th\xF4i l\xE0m, s\u1ED1ng b\u1EB1ng m\u1ED9t kho\u1EA3n l\u01B0\u01A1ng h\u01B0u \xEDt \u1ECFi. B\u1EA1n \u0111\u1EC3 \xFD t\u1EE7 l\u1EA1nh nh\xE0 ${N(p)} ch\u1EC9 c\xF2n hai qu\u1EA3 tr\u1EE9ng v\xE0 n\u1EEDa m\u1EDB rau.`,
+        `${N(p)} kh\xF4ng bao gi\u1EDD xin. Nh\u01B0ng l\u1EA7n v\u1EC1 th\u0103m v\u1EEBa r\u1ED3i, b\u1EA1n th\u1EA5y ${N(p)} v\xE1 l\u1EA1i chi\u1EBFc \xE1o kho\xE1c \u0111\xE3 m\u1EB7c m\u01B0\u1EDDi n\u0103m.`
+      ]);
+      return T4("Kho\u1EA3n ti\u1EC1n m\u1ED7i th\xE1ng", text, [
+        C6("G\u1EEDi \u0111\u1EC1u m\u1ED7i th\xE1ng, \u0111\u1EE7 s\u1ED1ng tho\u1EA3i m\xE1i", { support: { who: "parents", level: "hau" }, trust: { npc: p, delta: 0.2 }, memory: { npc: p, tag: "KEPT_PROMISE", weight: 0.2, note: "kho\u1EA3n ti\u1EC1n \u0111\u1EC1u \u0111\u1EB7n m\u1ED7i th\xE1ng" } }, "B\u1EDBt ti\u1EBFt ki\u1EC7m c\u1EE7a m\xECnh, b\u1ED1 m\u1EB9 kh\u1ECFi lo"),
+        C6("G\u1EEDi v\u1EEBa \u0111\u1EE7 ti\u1EC1n ch\u1EE3 v\xE0 thu\u1ED1c", { support: { who: "parents", level: "du" }, trust: { npc: p, delta: 0.08 } }, "C\xE2n b\u1EB1ng, kh\xF4ng d\u01B0 d\u1EA3 cho ai"),
+        C6("Ch\u1EC9 bi\u1EBFu d\u1ECBp l\u1EC5 t\u1EBFt", { support: { who: "parents", level: "it" }, trust: { npc: p, delta: -0.1 } }, "Gi\u1EEF ti\u1EC1n cho nh\xE0 m\xECnh, b\u1ED1 m\u1EB9 ch\u1EADt v\u1EADt")
+      ], 1, { npc: p });
+    }),
+    /* 6. Con muốn đi học xa */
+    money("mp_child_study", [35, 65], 10, 0.6, (c) => c.kids_teen > 0 && !!role6(c, "child"), (c, N) => {
+      let k = role6(c, "child"), opts = [
+        C6("Chu c\u1EA5p \u0111\u1EE7 cho con \u0111i h\u1ECDc xa", { support: { who: "kids", level: "hau" }, trust: { npc: k, delta: 0.25 }, memory: { npc: k, tag: "HELPED_IN_CRISIS", weight: 0.25, note: "b\u1ED1n n\u0103m h\u1ECDc xa nh\xE0 \u0111\u01B0\u1EE3c chu c\u1EA5p" } }, "G\xE1nh n\u1EB7ng b\u1ED1n n\u0103m, con c\xF3 c\u01A1 h\u1ED9i"),
+        C6("Vay ng\xE2n h\xE0ng cho con \u0111i", { custom: "borrow:0.6", support: { who: "kids", level: "hau" }, trust: { npc: k, delta: 0.25 } }, "Con \u0111\u01B0\u1EE3c \u0111i, nh\xE0 g\xE1nh n\u1EE3 nhi\u1EC1u n\u0103m"),
+        C6("Cho \u0111i n\u1EBFu con t\u1EF1 l\xE0m th\xEAm m\u1ED9t n\u1EEDa", { support: { who: "kids", level: "du" }, promise: { to: k, what: "g\u1EEDi \u0111\u1EC1u n\u1EEDa ti\u1EC1n h\u1ECDc cho con", years: 4 }, trust: { npc: k, delta: 0.1 } }, "Nh\u1EB9 g\xE1nh, con v\u1EEBa h\u1ECDc v\u1EEBa l\xE0m, d\u1EC5 \u0111u\u1ED1i", { tier: "awakened" }),
+        C6("B\u1EA3o con h\u1ECDc tr\u01B0\u1EDDng g\u1EA7n nh\xE0", { support: { who: "kids", level: "it" }, trust: { npc: k, delta: -0.2 } }, "Gi\u1EEF ti\u1EC1n, con mang theo n\u1ED7i ti\u1EBFc")
+      ];
+      if (c.owns.has("land") || c.owns.has("vehicle")) {
+        let kind = c.owns.has("land") ? "land" : "vehicle";
+        opts[1] = C6(`B\xE1n ${c.asset_names[kind] ?? (kind === "land" ? "m\u1EA3nh \u0111\u1EA5t" : "chi\u1EBFc xe")} l\u1EA5y ti\u1EC1n h\u1ECDc`, { sell: { kind }, support: { who: "kids", level: "hau" }, trust: { npc: k, delta: 0.25 } }, "M\u1EA5t m\u1ED9t m\xF3n c\u1EE7a c\u1EA3i, con kh\xF4ng mang n\u1EE3");
+      }
+      return T4(`${N(k)} \u0111\u1ED7 tr\u01B0\u1EDDng \u1EDF xa`, `${N(k)} \u0111\u1ED7 v\xE0o m\u1ED9t tr\u01B0\u1EDDng \u0111\u1EA1i h\u1ECDc \u1EDF th\xE0nh ph\u1ED1 l\u1EDBn, c\xE1ch nh\xE0 m\u1ED9t ng\xE0y \u0111\u01B0\u1EDDng. H\u1ECDc ph\xED, ti\u1EC1n tr\u1ECD v\xE0 \u0103n u\u1ED1ng m\u1ED7i n\u0103m ng\u1ED1n g\u1EA7n m\u1ED9t ph\u1EA7n ba thu nh\u1EADp nh\xE0 m\xECnh. T\u1EDD gi\u1EA5y b\xE1o nh\u1EADp h\u1ECDc d\xE1n tr\xEAn t\u1EE7 l\u1EA1nh.`, opts, 2, { npc: k });
+    }),
+    /* 7. Bạn đời lén cho nhà mình vay */
+    money("mp_spouse_family", [24, 70], 10, 0.5, (c) => c.married && !!role6(c, "spouse"), (c, N) => {
+      let sp2 = role6(c, "spouse");
+      return T4("Kho\u1EA3n ti\u1EC1n r\xFAt l\u1EB7ng l\u1EBD", `Ki\u1EC3m l\u1EA1i s\u1ED5 ti\u1EBFt ki\u1EC7m, b\u1EA1n th\u1EA5y thi\u1EBFu m\u1ED9t kho\u1EA3n c\u1EE1 hai th\xE1ng thu nh\u1EADp. H\u1ECFi ra, ${N(sp2)} \u0111\xE3 l\xE9n \u0111\u01B0a cho em ru\u1ED9t m\xECnh vay \u0111\u1EC3 tr\u1EA3 n\u1EE3, kh\xF4ng n\xF3i v\u1EDBi b\u1EA1n c\xE2u n\xE0o.`, [
+        C6("L\xE0m to chuy\u1EC7n, \u0111\xF2i l\u1EA5y l\u1EA1i ngay", { trust: { npc: sp2, delta: -0.25 }, memory: { npc: sp2, tag: "HUMILIATED_ME", weight: -0.2, note: "tr\u1EADn c\xE3i v\u1EC1 kho\u1EA3n ti\u1EC1n \u0111\u01B0a cho em" }, gamble: { p: 0.5, win: { money: 0.1, log: "Em c\u1EE7a b\u1EA1n \u0111\u1EDDi gom ti\u1EC1n tr\u1EA3 l\u1EA1i sau ba th\xE1ng, kh\xF4ng n\xF3i m\u1ED9t l\u1EDDi." }, lose: { rel: -2, log: "Ti\u1EC1n kh\xF4ng v\u1EC1, ch\u1EC9 c\xF2n kho\u1EA3ng l\u1EA1nh gi\u1EEFa hai nh\xE0." } } }, "C\xF3 th\u1EC3 l\u1EA5y l\u1EA1i ti\u1EC1n, s\u1EE9t m\u1EBB hai nh\xE0"),
+        C6("Nh\u1EAFm m\u1EAFt cho qua", { trust: { npc: sp2, delta: 0.05 }, happy: -3 }, "\xCAm nh\xE0, m\u1EA5t ti\u1EC1n v\xE0 m\u1ED9t ch\xFAt tin"),
+        C6("\u0110\u1EB7t lu\u1EADt chung: kho\u1EA3n l\u1EDBn ph\u1EA3i b\xE0n tr\u01B0\u1EDBc", { flags: ["mp_family_rule"], trust: { npc: sp2, delta: 0.1 }, promise: { to: sp2, what: "b\xE0n nhau tr\u01B0\u1EDBc m\u1ECDi kho\u1EA3n chi l\u1EDBn", years: 3 }, bw: -2 }, "Cu\u1ED9c n\xF3i chuy\u1EC7n kh\xF3, sau \u0111\xF3 r\xF5 r\xE0ng h\u01A1n", { tier: "sovereign" })
+      ], 2, { npc: sp2 });
+    }),
+    /* 8. Góp tiền đám hàng xóm */
+    money("mp_neighbor_funeral", [20, 85], 8, 0.65, (c) => !!role6(c, "neighbor"), (c, N) => {
+      let nb = role6(c, "neighbor"), text = vary4("mpnf", c.age, [
+        vn13(c) ? `Nh\xE0 ${N(nb)} c\xF3 tang. T\u1ED5 d\xE2n ph\u1ED1 \u0111i t\u1EEBng nh\xE0, c\u1EA7m cu\u1ED1n s\u1ED5 ghi t\xEAn ai g\xF3p bao nhi\xEAu, \u0111\xE3 c\xF3 hai m\u01B0\u01A1i h\u1ED9 k\xFD.` : `Nh\xE0 ${N(nb)} c\xF3 tang. H\xE0ng x\xF3m chuy\u1EC1n nhau m\u1ED9t t\u1EDD danh s\xE1ch g\xF3p ti\u1EC1n lo h\u1EADu s\u1EF1, \u0111\xE3 c\xF3 hai m\u01B0\u01A1i h\u1ED9 k\xFD t\xEAn.`,
+        `C\u01A1n b\xE3o l\xE0m s\u1EADp m\xE1i b\u1EBFp nh\xE0 ${N(nb)}. M\u1EA5y nh\xE0 trong khu r\u1EE7 nhau g\xF3p ti\u1EC1n mua t\xF4n, m\u1ED7i nh\xE0 m\u1ED9t \xEDt.`
+      ]);
+      return T4("Cu\u1ED1n s\u1ED5 g\xF3p ti\u1EC1n", text, [
+        C6("G\xF3p m\u1ED9t kho\u1EA3n t\u1EED t\u1EBF, sang ph\u1EE5 m\u1ED9t bu\u1ED5i", { give: { npc: nb, amount: 0.04 }, rel: 2, memory: { npc: nb, tag: "STOOD_UP_FOR_ME", weight: 0.2, note: "bu\u1ED5i sang ph\u1EE5 l\xFAc nh\xE0 c\xF3 chuy\u1EC7n" }, counters: { mp_gave: 1 } }, "T\u1ED1n ti\u1EC1n v\xE0 m\u1ED9t ng\xE0y, c\xF3 h\xE0ng x\xF3m th\u1EADt"),
+        C6("G\xF3p b\u1EB1ng m\u1EE9c m\u1ECDi ng\u01B0\u1EDDi", { give: { npc: nb, amount: 0.015 }, trust: { npc: nb, delta: 0.03 } }, "\u0110\xFAng l\u1EC7, kh\xF4ng h\u01A1n"),
+        C6("Kh\xF4ng g\xF3p", { trust: { npc: nb, delta: -0.1 }, rel: -1 }, "Gi\u1EEF ti\u1EC1n, t\xEAn b\u1EA1n tr\u1ED1ng trong s\u1ED5")
+      ], 1, { npc: nb });
+    }),
+    /* 9. Đứng tên bảo lãnh */
+    money("mp_cosign", [22, 65], 12, 0.45, (c) => !!(role6(c, "partner") ?? role6(c, "childhood_friend")), (c, N) => {
+      let fr = role6(c, "partner") ?? role6(c, "childhood_friend"), cr = role6(c, "creditor");
+      return T4("Ch\u1EEF k\xFD b\u1EA3o l\xE3nh", `${N(fr)} vay ${cr ? `ch\u1ED7 ${N(cr)}` : "ng\xE2n h\xE0ng"} \u0111\u1EC3 m\u1EDF r\u1ED9ng l\xE0m \u0103n, nh\u01B0ng b\xEAn cho vay \u0111\xF2i m\u1ED9t ng\u01B0\u1EDDi \u0111\u1EE9ng t\xEAn b\u1EA3o l\xE3nh. T\u1EDD gi\u1EA5y ch\u1EC9 c\u1EA7n m\u1ED9t ch\u1EEF k\xFD c\u1EE7a b\u1EA1n. N\u1EBFu ${N(fr)} kh\xF4ng tr\u1EA3, kho\u1EA3n n\u1EE3 c\u1EE1 m\u1ED9t n\u0103m thu nh\u1EADp s\u1EBD th\xE0nh c\u1EE7a b\u1EA1n.`, [
+        C6("K\xFD", { flags: ["mp_cosigned"], trust: { npc: fr, delta: 0.15 }, gamble: { p: 0.6, win: { memory: { npc: fr, tag: "HELPED_IN_CRISIS", weight: 0.35, note: "ch\u1EEF k\xFD b\u1EA3o l\xE3nh kho\u1EA3n vay \u0111\u1EA7u ti\xEAn" }, log: `${N(fr)} tr\u1EA3 \u0111\u1EE7 \u0111\xFAng h\u1EA1n v\xE0 mang \u0111\u1EBFn m\u1ED9t gi\u1ECF qu\xE0.` }, lose: { money: -0.6, memory: { npc: fr, tag: "CHEATED_ME", weight: -0.4, note: "kho\u1EA3n n\u1EE3 b\u1EA3o l\xE3nh r\u01A1i l\xEAn \u0111\u1EA7u" }, log: `L\xE0m \u0103n \u0111\u1ED5. B\xEAn cho vay g\u1ECDi cho b\u1EA1n, kh\xF4ng g\u1ECDi cho ${N(fr)}.` } } }, "Gi\u1EEF b\u1EA1n, c\xF3 th\u1EC3 g\xE1nh n\u1EE3 m\u1ED9t n\u0103m"),
+        C6("Ch\u1EC9 b\u1EA3o l\xE3nh m\u1ED9t ph\u1EA7n, c\xF3 t\xE0i s\u1EA3n \u0111\u1ED1i \u1EE9ng", { flags: ["mp_cosigned", "mp_paper_loan"], trust: { npc: fr, delta: 0.05 }, gamble: { p: 0.65, win: { log: "Kho\u1EA3n vay tr\xF3t l\u1ECDt. Ph\u1EA7n b\u1EA1n \u0111\u1EE9ng t\xEAn \u0111\u01B0\u1EE3c x\xF3a kh\u1ECFi s\u1ED5." }, lose: { money: -0.2, log: "L\xE0m \u0103n \u0111\u1ED5, nh\u01B0ng ph\u1EA7n b\u1EA1n g\xE1nh c\xF3 gi\u1EDBi h\u1EA1n." } } }, "R\u1EE7i ro c\xF3 tr\u1EA7n, b\u1EA1n th\u1EA5y b\u1ECB d\xE8 ch\u1EEBng", { tier: "awakened" }),
+        C6("Kh\xF4ng k\xFD", { memory: { npc: fr, tag: "REFUSED_HELP", weight: -0.2, note: "ch\u1EEF k\xFD b\u1EA3o l\xE3nh kh\xF4ng ch\u1ECBu k\xFD" } }, "An to\xE0n, b\u1EA1n ph\u1EA3i \u0111i t\xECm ng\u01B0\u1EDDi kh\xE1c")
+      ], 2, { npc: fr });
+    }),
+    /* 10. Người thầy gặp nạn */
+    money("mp_mentor", [25, 75], 10, 0.45, (c) => !!role6(c, "mentor"), (c, N) => {
+      let m = role6(c, "mentor");
+      return T4("Ng\u01B0\u1EDDi th\u1EA7y c\u0169 g\u1EB7p n\u1EA1n", `${N(m)}, ng\u01B0\u1EDDi d\u1EA1y b\u1EA1n nh\u1EEFng \u0111i\u1EC1u \u0111\u1EA7u ti\xEAn trong ngh\u1EC1, v\u1EEBa m\u1EA5t vi\u1EC7c \u1EDF tu\u1ED5i g\u1EA7n s\xE1u m\u01B0\u01A1i, l\u1EA1i \u0111ang n\u1EE3 ti\u1EC1n thu\xEA nh\xE0 ba th\xE1ng. \xD4ng \u1EA5y g\u1ECDi h\u1ECFi th\u0103m b\u1EA1n, ng\u1EADp ng\u1EEBng m\xE3i m\u1EDBi n\xF3i ra.`, [
+        C6("Tr\u1EA3 h\u1ED9 ti\u1EC1n nh\xE0, kh\xF4ng nh\u1EAFc l\u1EA1i", { give: { npc: m, amount: 0.08 }, memory: { npc: m, tag: "HELPED_IN_CRISIS", weight: 0.35, note: "ba th\xE1ng ti\u1EC1n nh\xE0 \u0111\u01B0\u1EE3c tr\u1EA3 h\u1ED9" }, counters: { mp_gave: 1 } }, "M\u1EA5t m\u1ED9t th\xE1ng thu nh\u1EADp, tr\u1EA3 \u0111\u01B0\u1EE3c \xE2n"),
+        C6("Cho vay, h\u1EB9n khi c\xF3 vi\u1EC7c th\xEC tr\u1EA3", { lend: { npc: m, amount: 0.08, years: 2 }, trust: { npc: m, delta: 0.1 } }, "Gi\xFAp \u0111\u01B0\u1EE3c, nh\u01B0ng th\u1EA7y mang n\u1EB7ng kho\u1EA3n n\u1EE3"),
+        C6("Gi\u1EDBi thi\u1EC7u th\u1EA7y v\xE0i l\u1EDBp d\u1EA1y th\xEAm", { trust: { npc: m, delta: 0.15 }, bw: -2, rel: 1 }, "Kh\xF4ng t\u1ED1n ti\u1EC1n, t\u1ED1n c\xF4ng, th\u1EA7y gi\u1EEF \u0111\u01B0\u1EE3c m\u1EB7t", { tier: "awakened" }),
+        C6("H\u1ECFi th\u0103m, kh\xF4ng nh\u1EAFc chuy\u1EC7n ti\u1EC1n", { memory: { npc: m, tag: "REFUSED_HELP", weight: -0.15, note: "cu\u1ED9c g\u1ECDi ng\u1EADp ng\u1EEBng kh\xF4ng ai nghe ra" } }, "Gi\u1EEF ti\u1EC1n, th\u1EA7y hi\u1EC3u \xFD")
+      ], 0, { npc: m });
+    }),
+    /* 11. Con lớn cứ xin tiền */
+    money("mp_adult_child", [45, 85], 8, 0.55, (c) => c.kids_alive > 0 && !!role6(c, "child"), (c, N) => {
+      let k = role6(c, "child"), text = vary4("mpac", c.age, [
+        `${N(k)} \u0111\xE3 ngo\xE0i hai m\u01B0\u01A1i l\u0103m, \u0111\u1ED5i vi\u1EC7c l\u1EA7n th\u1EE9 t\u01B0 trong hai n\u0103m. Th\xE1ng n\xE0y l\u1EA1i nh\u1EAFn xin ti\u1EC1n, l\u1EA7n n\xE0y \u0111\u1EC3 tr\u1EA3 th\u1EBB t\xEDn d\u1EE5ng.`,
+        `${N(k)} \u0111\xE3 c\xF3 vi\u1EC7c, nh\u01B0ng cu\u1ED1i th\xE1ng n\xE0o c\u0169ng nh\u1EAFn "m\u1EB9 \u01A1i, b\u1ED1 \u01A1i, cho con \u1EE9ng m\u1ED9t \xEDt". B\u1EA1n \u0111\u1EBFm \u0111\u01B0\u1EE3c m\u01B0\u1EDDi m\u1ED9t tin nh\u1EAFn nh\u01B0 th\u1EBF trong n\u0103m.`
+      ]);
+      return T4("Tin nh\u1EAFn cu\u1ED1i th\xE1ng", text, [
+        C6("Chuy\u1EC3n ti\u1EC1n, con m\xECnh m\xE0", { give: { npc: k, amount: 0.06 }, support: { who: "kids", level: "hau" }, trust: { npc: k, delta: 0.1 } }, "Con d\u1EC5 th\u1EDF, th\xF3i quen \u1EDF l\u1EA1i"),
+        C6("Cho vay, ghi s\u1ED5, con t\u1EF1 tr\u1EA3", { lend: { npc: k, amount: 0.06, years: 1 }, support: { who: "kids", level: "du" }, flags: ["mp_paper_loan"] }, "Con h\u1ECDc c\xE1ch gi\u1EEF l\u1EDDi, c\xF3 th\u1EC3 gi\u1EADn", { tier: "awakened" }),
+        C6("Ng\u1ED3i c\xF9ng con l\u1EADp ng\xE2n s\xE1ch, kh\xF4ng chuy\u1EC3n", { support: { who: "kids", level: "it" }, promise: { to: k, what: "m\u1ED7i th\xE1ng ng\u1ED3i xem l\u1EA1i chi ti\xEAu c\xF9ng con", years: 1 }, bw: -2 }, "T\u1ED1n th\u1EDDi gian, con c\xF3 th\u1EC3 t\u1EF1 \u0111\u1EE9ng"),
+        C6("T\u1EEB ch\u1ED1i th\u1EB3ng", { support: { who: "kids", level: "it" }, trust: { npc: k, delta: -0.2 } }, "Gi\u1EEF ti\u1EC1n, con th\u1EA5y b\u1ECB b\u1ECF m\u1EB7c")
+      ], 2, { npc: k });
+    }),
+    /* 12. Đối thủ sa cơ */
+    money("mp_rival_ruined", [25, 80], 12, 0.4, (c) => !!role6(c, "rival"), (c, N) => {
+      let r = role6(c, "rival");
+      return T4("\u0110\u1ED1i th\u1EE7 sa c\u01A1", `${N(r)}, ng\u01B0\u1EDDi t\u1EEBng gi\xE0nh m\u1EA5t c\u1EE7a b\u1EA1n m\u1ED9t c\u01A1 h\u1ED9i l\u1EDBn v\xE0 k\u1EC3 kh\u1EAFp n\u01A1i, gi\u1EDD ph\xE1 s\u1EA3n. Ng\u1ED3i tr\u01B0\u1EDBc m\u1EB7t b\u1EA1n trong qu\xE1n n\u01B0\u1EDBc, ${N(r)} xin vay m\u1ED9t kho\u1EA3n \u0111\u1EC3 gi\u1EEF l\u1EA1i c\xE1i c\u1EEDa h\xE0ng cu\u1ED1i c\xF9ng.`, [
+        C6("Cho vay, kh\xF4ng nh\u1EAFc chuy\u1EC7n c\u0169", { lend: { npc: r, amount: 0.25, years: 3 }, memory: { npc: r, tag: "HELPED_IN_CRISIS", weight: 0.4, note: "kho\u1EA3n vay l\xFAc ph\xE1 s\u1EA3n t\u1EEB ng\u01B0\u1EDDi m\xECnh t\u1EEBng ch\u01A1i x\u1EA5u" } }, "C\xF3 th\u1EC3 m\u1EA5t ti\u1EC1n, c\xF3 th\u1EC3 \u0111\u1ED5i k\u1EBB th\xF9 th\xE0nh b\u1EA1n"),
+        C6("G\xF3p v\u1ED1n v\xE0o c\u1EEDa h\xE0ng, c\xF9ng l\xE0m ch\u1EE7", { buy: { kind: "stake", name: `ph\u1EA7n v\u1ED1n trong c\u1EEDa h\xE0ng c\u1EE7a ${N(r)}`, price: 0.3, with_npc: r }, memory: { npc: r, tag: "WIN_WIN_DEAL", weight: 0.3, note: "g\xF3p v\u1ED1n gi\u1EEF l\u1EA1i c\u1EEDa h\xE0ng" } }, "Th\xE0nh ng\u01B0\u1EDDi c\xF9ng thuy\u1EC1n, l\u1EDDi l\u1ED7 chia \u0111\xF4i", { tier: "sovereign" }),
+        C6("T\u1EEB ch\u1ED1i, nh\u1EAFc l\u1EA1i chuy\u1EC7n c\u0169", { memory: { npc: r, tag: "HUMILIATED_ME", weight: -0.3, note: "l\u1EA7n xin vay b\u1ECB nh\u1EAFc l\u1EA1i chuy\u1EC7n c\u0169" }, happy: 2 }, "H\u1EA3 gi\u1EADn m\u1ED9t l\xFAc, m\u1ED1i th\xF9 d\xE0i th\xEAm"),
+        C6("L\u1ECBch s\u1EF1 t\u1EEB ch\u1ED1i", { trust: { npc: r, delta: -0.05 } }, "Kh\xF4ng m\u1EA5t g\xEC, kh\xF4ng \u0111\u01B0\u1EE3c g\xEC")
+      ], 3, { npc: r });
+    }),
+    /* 13. Gửi tiền về nhà từ nước ngoài */
+    money("mp_remit", [20, 70], 8, 0.75, (c) => c.migrated && !!(parentOf2(c) ?? role6(c, "sibling")), (c, N) => {
+      let home = parentOf2(c) ?? role6(c, "sibling"), sib = role6(c, "sibling"), opts = [
+        C6("G\u1EEDi m\u1ED9t n\u1EEDa l\u01B0\u01A1ng v\u1EC1 nh\xE0", { give: { npc: home, amount: 0.3 }, ...parentOf2(c) ? { support: { who: "parents", level: "hau" } } : {}, trust: { npc: home, delta: 0.2 }, counters: { mp_gave: 1 }, happy: -2 }, "\u1EDE nh\xE0 \u0111\u1ED5i \u0111\u1EDDi, b\u1EA1n s\u1ED1ng ch\u1EADt ch\u1ED9i n\u01A1i x\u1EE9 ng\u01B0\u1EDDi"),
+        C6("G\u1EEDi kho\u1EA3n c\u1ED1 \u0111\u1ECBnh nh\u1ECF, gi\u1EEF ph\u1EA7n c\xF2n l\u1EA1i", { give: { npc: home, amount: 0.08 }, ...parentOf2(c) ? { support: { who: "parents", level: "du" } } : {}, trust: { npc: home, delta: 0.05 } }, "C\xE2n b\u1EB1ng, \u1EDF nh\xE0 c\xF3 ng\u01B0\u1EDDi tr\xE1ch \xEDt"),
+        C6("Ch\u01B0a g\u1EEDi, t\xEDch v\u1ED1n cho m\xECnh tr\u01B0\u1EDBc", { trust: { npc: home, delta: -0.2 }, memory: { npc: home, tag: "REFUSED_HELP", weight: -0.15, note: "nh\u1EEFng th\xE1ng kh\xF4ng c\xF3 ti\u1EC1n g\u1EEDi v\u1EC1" } }, "C\xF3 v\u1ED1n nhanh, \u1EDF nh\xE0 ngh\u0129 b\u1EA1n \u0111\xE3 qu\xEAn")
+      ];
+      return sib && sib !== home && opts.splice(2, 0, C6(`G\u1EEDi qua ${N(sib)}, d\u1EB7n \u0111\u1EC3 d\xE0nh x\xE2y nh\xE0`, { lend: { npc: sib, amount: 0.2, years: 3 }, flags: ["mp_paper_loan"], trust: { npc: sib, delta: 0.05 } }, "Ti\u1EC1n c\xF3 m\u1EE5c \u0111\xEDch, ph\u1EA3i tin ng\u01B0\u1EDDi gi\u1EEF h\u1ED9", { tier: "awakened" })), T4("Ti\u1EC1n g\u1EEDi v\u1EC1 nh\xE0", `N\u01A1i b\u1EA1n \u0111ang s\u1ED1ng, m\u1ED9t th\xE1ng l\u01B0\u01A1ng b\u1EB1ng n\u1EEDa n\u0103m l\u01B0\u01A1ng \u1EDF qu\xEA. ${N(home)} g\u1ECDi video, ph\xEDa sau l\xE0 b\u1EE9c t\u01B0\u1EDDng n\u1EE9t v\xE0 c\xE1i m\xE1i d\u1ED9t ch\u01B0a s\u1EEDa. Kh\xF4ng ai h\u1ECFi xin, nh\u01B0ng ai c\u0169ng bi\u1EBFt.`, opts, 1, { npc: home });
+    }),
+    /* 14. Chia thừa kế giữa anh chị em */
+    money("mp_inherit", [25, 85], 99, 0.6, (c) => f4(c, "parent_died") && c.parents_alive === 0 && !!role6(c, "sibling") && !f4(c, "inherited_home"), (c, N) => flagAll((() => {
+      let s = role6(c, "sibling");
+      return T4("Chia ph\u1EA7n c\u1EE7a b\u1ED1 m\u1EB9", `Sau \u0111\xE1m, m\u1EA5y anh ch\u1ECB em ng\u1ED3i quanh ${vn13(c) ? "chi\u1EBFc t\u1EE7 th\u1EDD" : "chi\u1EBFc b\xE0n \u0103n c\u0169"}. B\u1ED1 m\u1EB9 \u0111\u1EC3 l\u1EA1i c\u0103n nh\xE0 v\xE0 m\u1ED9t \xEDt ti\u1EC1n ti\u1EBFt ki\u1EC7m, kh\xF4ng c\xF3 gi\u1EA5y t\u1EDD chia. ${N(s)} l\xE0 ng\u01B0\u1EDDi ch\u0103m b\u1ED1 m\u1EB9 nh\u1EEFng n\u0103m cu\u1ED1i, v\xE0 \u0111\xE3 \u1EDF lu\xF4n trong nh\xE0.`, [
+        C6("Chia \u0111\u1EC1u, b\xE1n nh\xE0 l\u1EA5y ti\u1EC1n", { money: 0.4, trust: { npc: s, delta: -0.2 }, memory: { npc: s, tag: "TOOK_MY_LAND", weight: -0.25, note: "c\u0103n nh\xE0 b\u1ED1 m\u1EB9 b\u1ECB b\xE1n \u0111\u1EC3 chia" } }, "C\xF3 ti\u1EC1n, ng\u01B0\u1EDDi ch\u0103m b\u1ED1 m\u1EB9 m\u1EA5t ch\u1ED7 \u1EDF"),
+        C6(`Nh\u01B0\u1EDDng ph\u1EA7n m\xECnh cho ${N(s)}`, { trust: { npc: s, delta: 0.3 }, memory: { npc: s, tag: "HELPED_IN_CRISIS", weight: 0.35, note: "ph\u1EA7n th\u1EEBa k\u1EBF \u0111\u01B0\u1EE3c nh\u01B0\u1EDDng l\u1EA1i" }, close_doors: ["inheritance"] }, "M\u1EA5t ph\u1EA7n c\u1EE7a m\xECnh, gi\u1EEF \u0111\u01B0\u1EE3c anh ch\u1ECB em"),
+        C6("Gi\u1EEF nh\xE0 l\xE0m nh\xE0 chung, ai c\u0169ng c\xF3 quy\u1EC1n v\u1EC1", { flags: ["mp_lineage_house"], trust: { npc: s, delta: 0.15 }, promise: { to: s, what: "g\xF3p ti\u1EC1n s\u1EEDa nh\xE0 chung m\u1ED7i n\u0103m", years: 5 } }, "Kh\xF4ng ai l\u1EA5y ti\u1EC1n, gi\u1EEF \u0111\u01B0\u1EE3c ch\u1ED7 \u0111\u1EC3 v\u1EC1", { tier: "sovereign" }),
+        C6("\u0110\xF2i ph\u1EA7n l\u1EDBn h\u01A1n v\xEC \u0111\xE3 g\u1EEDi ti\u1EC1n nhi\u1EC1u nh\u1EA5t", { money: 0.6, memory: { npc: s, tag: "BETRAYED_PARTNERSHIP", weight: -0.45, note: "tr\u1EADn chia th\u1EEBa k\u1EBF sau \u0111\xE1m tang" }, close_doors: ["family_table"] }, "Nhi\u1EC1u ti\u1EC1n nh\u1EA5t, m\u1EA5t m\xE2m c\u01A1m nh\xE0")
+      ], 2, { npc: s });
+    })(), "inherited_home"))
+  ];
+
+  // src/engine/narrative/paths/money_invest.ts
+  var vn14 = (c) => c.country === "VN", yrs = (c, cu) => Math.min(5, Math.max(0.05, Math.round(cu / Math.max(1, c.income) * 100) / 100)), mem4 = (npc, tag, weight, note) => npc ? { memory: { npc, tag, weight, note } } : {}, tr3 = (npc, delta) => npc ? { trust: { npc, delta } } : {}, PACK_MONEY_INVEST = [
+    /* ---------- 1. sổ tiết kiệm đầu tiên ---------- */
+    money("mi_first_account", [18, 35], 99, 0.6, (c) => !c.owns.has("deposit") && !c.broke, (c) => T4(
+      "Cu\u1ED1n s\u1ED5 ti\u1EBFt ki\u1EC7m \u0111\u1EA7u ti\xEAn",
+      `Ti\u1EC1n b\u1EA1n d\xE0nh d\u1EE5m \u0111ang n\u1EB1m trong m\u1ED9t ${vn14(c) ? "h\u1ED9p b\xE1nh c\u0169 d\u01B0\u1EDBi g\u1EA7m gi\u01B0\u1EDDng" : "phong b\xEC k\u1EB9p trong t\u1EE7 qu\u1EA7n \xE1o"}, \u0111\u1EBFm l\u1EA1i \u0111\u01B0\u1EE3c \u0111\xFAng ${c.poor_country ? "b\u1ED1n th\xE1ng" : "ba th\xE1ng"} l\u01B0\u01A1ng. Nh\xE2n vi\xEAn ng\xE2n h\xE0ng g\u1EA7n ch\u1ED7 l\xE0m n\xF3i g\u1EEDi k\u1EF3 h\u1EA1n m\u1ED9t n\u0103m th\xEC c\xF3 l\xE3i, nh\u01B0ng r\xFAt tr\u01B0\u1EDBc h\u1EA1n s\u1EBD m\u1EA5t ph\u1EA7n l\xE3i.`,
+      [
+        C6("M\u1EDF s\u1ED5, g\u1EEDi g\u1EA7n h\u1EBFt", { deposit: 0.25, counters: { save: 1 }, flags: ["mi_saver"] }, "C\xF3 l\xE3i v\xE0 \u0111\u1EE1 ti\xEAu v\u1EB7t, c\u1EA7n g\u1EA5p th\xEC m\u1EA5t l\xE3i"),
+        C6("G\u1EEDi m\u1ED9t n\u1EEDa, gi\u1EEF m\u1ED9t n\u1EEDa \u1EDF nh\xE0", { deposit: 0.12, counters: { save: 1 } }, "V\u1EEBa c\xF3 l\xE3i v\u1EEBa c\xF3 ti\u1EC1n ngay, l\xE3i \xEDt h\u01A1n"),
+        C6("C\u1EE9 \u0111\u1EC3 trong nh\xE0 cho ti\u1EC7n", { counters: { cash_home: 1 }, gamble: { p: 0.85, win: { log: "H\u1ED9p ti\u1EC1n v\u1EABn n\u1EB1m y\xEAn ch\u1ED7 c\u0169, ch\u1EC9 v\u01A1i d\u1EA7n qua nh\u1EEFng l\u1EA7n ti\xEAu v\u1EB7t." }, lose: { money: -0.1, happy: -4, log: "M\u1ED9t h\xF4m \u0111i l\xE0m v\u1EC1, c\u1EEDa b\u1ECB c\u1EA1y. H\u1ED9p ti\u1EC1n kh\xF4ng c\xF2n." } } }, "Ti\u1EC7n l\u1EA5y, kh\xF4ng l\xE3i, c\xF3 th\u1EC3 m\u1EA5t tr\u1ED9m")
+      ],
+      0
+    )),
+    /* ---------- 2. vàng lúc khủng hoảng ---------- */
+    money("mi_gold_crisis", [22, 80], 8, 0.4, (c) => c.econ_phase === "crisis" && !c.broke, (c) => T4(
+      "H\xE0ng ng\u01B0\u1EDDi tr\u01B0\u1EDBc ti\u1EC7m v\xE0ng",
+      vary4("mi_gold", c.age, [
+        `Kinh t\u1EBF lao d\u1ED1c, ng\u01B0\u1EDDi ta x\u1EBFp h\xE0ng tr\u01B0\u1EDBc ${vn14(c) ? "ti\u1EC7m v\xE0ng \u0111\u1EA7u ch\u1EE3" : "c\u1EEDa h\xE0ng kim lo\u1EA1i qu\xFD"} t\u1EEB s\xE1u gi\u1EDD s\xE1ng. Gi\xE1 v\xE0ng t\u0103ng ba phi\xEAn li\u1EC1n, b\u1EA3ng gi\xE1 thay s\u1ED1 li\xEAn t\u1EE5c.`,
+        '\u0110\u1ED3ng ti\u1EC1n m\u1EA5t gi\xE1 t\u1EEBng tu\u1EA7n. M\u1ED9t ng\u01B0\u1EDDi quen khoe v\u1EEBa \u0111\u1ED5i h\u1EBFt ti\u1EC1n l\u01B0\u01A1ng ra v\xE0ng, "\u0111\u1EC3 \u0111\xF3 kh\xF4ng bao gi\u1EDD m\u1EA5t". Gi\xE1 mua v\xE0 gi\xE1 b\xE1n \u0111ang ch\xEAnh nhau r\u1ED9ng nh\u1EA5t t\u1EEB tr\u01B0\u1EDBc t\u1EDBi gi\u1EDD.'
+      ]),
+      [
+        C6(vn14(c) ? "Mua v\xE0ng mi\u1EBFng, c\u1EA5t k\u1EF9" : "Mua v\xE0ng th\u1ECFi, c\u1EA5t k\u1EF9", { buy: { kind: "gold", name: "v\xE0ng mi\u1EBFng", price: 0.5 }, counters: { mi_gold: 1 } }, "Gi\u1EEF gi\xE1 qua kh\u1EE7ng ho\u1EA3ng, mua \u0111\u1EC9nh th\xEC l\u1ED7"),
+        C6("Mua m\u1ED9t ch\u1EC9 nh\u1EABn v\xE0ng cho y\xEAn t\xE2m", { buy: { kind: "gold", name: "nh\u1EABn v\xE0ng", price: 0.12 }, counters: { mi_gold: 1 } }, "\xCDt ti\u1EC1n, y\xEAn t\xE2m, ch\u1EB3ng gi\xE0u th\xEAm"),
+        ...c.owns.has("gold") ? [C6("B\xE1n b\u1EDBt s\u1ED1 v\xE0ng \u0111ang c\xF3 l\xFAc gi\xE1 cao", { sell: { kind: "gold" }, flags: ["mi_sold_gold_top"] }, "Ch\u1ED1t l\u1EDDi b\xE2y gi\u1EDD, gi\xE1 c\xF3 th\u1EC3 c\xF2n l\xEAn", { tier: "awakened" })] : [],
+        C6("\u0110\u1EE9ng ngo\xE0i, gi\u1EEF ti\u1EC1n nh\u01B0 c\u0169", { happy: -1 }, "Kh\xF4ng mua \u0111\u1EC9nh, c\u0169ng kh\xF4ng \u0111\u01B0\u1EE3c che ch\u1EAFn")
+      ],
+      c.owns.has("gold") ? 3 : 2
+    )),
+    /* ---------- 3. tin đồn ngân hàng đổ ---------- */
+    money("mi_bank_rumor", [20, 85], 10, 0.3, (c) => c.deposit > 0 && c.econ_phase === "crisis", (c) => {
+      let all = yrs(c, c.deposit), half = yrs(c, c.deposit / 2);
+      return T4(
+        "Tin \u0111\u1ED3n ng\xE2n h\xE0ng s\u1EAFp \u0111\u1ED5",
+        'S\xE1ng nay tr\u01B0\u1EDBc chi nh\xE1nh ng\xE2n h\xE0ng n\u01A1i b\u1EA1n g\u1EEDi ti\u1EC1n c\xF3 g\u1EA7n tr\u0103m ng\u01B0\u1EDDi \u0111\u1EE9ng ch\u1EDD, ai c\u0169ng c\u1EA7m s\u1ED5. Tr\xEAn m\u1EA1ng lan m\u1ED9t t\u1EA5m \u1EA3nh ch\u1EE5p "v\u0103n b\u1EA3n n\u1ED9i b\u1ED9" kh\xF4ng r\xF5 th\u1EADt gi\u1EA3. Nh\xE2n vi\xEAn n\xF3i ti\u1EC1n v\u1EABn an to\xE0n, nh\u01B0ng ch\u1EC9 cho r\xFAt m\u1ED7i ng\u01B0\u1EDDi m\u1ED9t kho\u1EA3n trong ng\xE0y.',
+        [
+          C6("X\u1EBFp h\xE0ng r\xFAt h\u1EBFt, m\u1EA5t l\xE3i c\u0169ng \u0111\u01B0\u1EE3c", { withdraw: all, counters: { cash_home: 1 }, bw: -3 }, "Ch\u1EAFc tay, m\u1EA5t l\xE3i, l\u1EA1i ph\u1EA3i gi\u1EEF ti\u1EC1n m\u1EB7t"),
+          C6("R\xFAt m\u1ED9t n\u1EEDa, \u0111\u1EC3 l\u1EA1i m\u1ED9t n\u1EEDa", { withdraw: half, bw: -1 }, "Chia r\u1EE7i ro l\xE0m \u0111\xF4i"),
+          C6("H\u1ECFi r\xF5 m\u1EE9c b\u1EA3o hi\u1EC3m ti\u1EC1n g\u1EEDi r\u1ED3i m\u1EDBi quy\u1EBFt", { flags: ["mi_checked_guarantee"], know: 2, gamble: { p: 0.6, win: { happy: 2, log: "Ph\u1EA7n ti\u1EC1n c\u1EE7a b\u1EA1n n\u1EB1m trong m\u1EE9c \u0111\u01B0\u1EE3c b\u1EA3o \u0111\u1EA3m. B\u1EA1n v\u1EC1 nh\xE0, ng\u1EE7 \u0111\u01B0\u1EE3c." }, lose: { bw: -4, log: "N\u01A1i b\u1EA1n s\u1ED1ng kh\xF4ng c\xF3 qu\u1EF9 b\u1EA3o \u0111\u1EA3m n\xE0o \u0111\xE1ng k\u1EC3. B\u1EA1n \u0111\xE0nh ch\u1EDD xem." } } }, "T\u1ED1n m\u1ED9t bu\u1ED5i, quy\u1EBFt b\u1EB1ng th\xF4ng tin thay v\xEC tin \u0111\u1ED3n", { tier: "awakened" }),
+          C6("Kh\xF4ng l\xE0m g\xEC, ch\u1EDD tin \u0111\u1ED3n qua", { counters: { mi_held_bank: 1 } }, "Gi\u1EEF l\xE3i, n\u1EBFu ng\xE2n h\xE0ng \u0111\u1ED5 th\u1EADt th\xEC m\u1EA5t")
+        ],
+        1
+      );
+    }),
+    /* ---------- 4. góp vốn làm ăn ---------- */
+    money("mi_joint_venture", [25, 60], 10, 0.45, (c) => !!role6(c, "partner") && !c.broke, (c, N) => {
+      let p = role6(c, "partner"), biz = vary4("mi_jv", c.age, [
+        c.poor_country ? "m\u1ED9t x\u01B0\u1EDFng xay x\xE1t nh\u1ECF \u1EDF ven th\u1ECB tr\u1EA5n" : "m\u1ED9t ti\u1EC7m gi\u1EB7t l\xE0 \u1EDF khu chung c\u01B0 m\u1EDBi",
+        c.poor_country ? "hai chi\u1EBFc xe t\u1EA3i nh\u1ECF ch\u1EDF h\xE0ng thu\xEA" : "m\u1ED9t qu\u1EA7y c\xE0 ph\xEA trong t\xF2a v\u0103n ph\xF2ng"
+      ]);
+      return T4(
+        `${N(p)} r\u1EE7 g\xF3p v\u1ED1n`,
+        `${N(p)} \u0111\xE3 xem xong m\u1EB7t b\u1EB1ng cho ${biz} v\xE0 c\u1EA7n th\xEAm m\u1ED9t ng\u01B0\u1EDDi g\xF3p v\u1ED1n. T\xEDnh tr\xEAn gi\u1EA5y, hai n\u0103m l\xE0 ho\xE0n v\u1ED1n. ${N(p)} ch\u01B0a n\xF3i ai s\u1EBD gi\u1EEF s\u1ED5 s\xE1ch.`,
+        [
+          C6("G\xF3p ph\u1EA7n l\u1EDBn, tin nhau l\xE0 ch\xEDnh", { buy: { kind: "stake", name: "ph\u1EA7n v\u1ED1n g\xF3p v\u1EDBi " + N(p), price: 0.6, with_npc: p }, ...tr3(p, 0.1) }, "L\u1EDDi nhi\u1EC1u n\u1EBFu su\xF4n s\u1EBB, kh\xF4ng gi\u1EA5y t\u1EDD th\xEC kh\xF3 \u0111\xF2i"),
+          C6("G\xF3p \xEDt h\u01A1n, \u0111\xF2i h\u1EE3p \u0111\u1ED3ng v\xE0 s\u1ED5 s\xE1ch chung", { buy: { kind: "stake", name: "ph\u1EA7n v\u1ED1n c\xF3 h\u1EE3p \u0111\u1ED3ng", price: 0.35, with_npc: p }, flags: ["mi_stake_contract"], ...mem4(p, "WIN_WIN_DEAL", 0.15, "g\xF3p v\u1ED1n c\xF3 h\u1EE3p \u0111\u1ED3ng r\xF5 r\xE0ng") }, "Ph\u1EA7n l\u1EDDi nh\u1ECF h\u01A1n, c\xE3i nhau th\xEC c\xF3 gi\u1EA5y", { tier: "sovereign" }),
+          C6("Kh\xF4ng g\xF3p v\u1ED1n, ch\u1EC9 c\xF9ng l\xE0m th\u1EED m\u1ED9t chuy\u1EBFn h\xE0ng", { game: { npc: p, move: "cooperate", stake_frac: 0.15 } }, "Th\u1EED l\xF2ng nhau b\u1EB1ng m\u1ED9t kho\u1EA3n nh\u1ECF"),
+          C6("T\u1EEB ch\u1ED1i, gi\u1EEF ti\u1EC1n", { ...tr3(p, -0.05) }, "Kh\xF4ng r\u1EE7i ro, c\xF3 th\u1EC3 l\u1EE1 m\u1ED9t c\u01A1 h\u1ED9i")
+        ],
+        1,
+        { npc: p }
+      );
+    }),
+    /* ---------- 5. người bán bảo hiểm sức khỏe ---------- */
+    money("mi_health_policy", [25, 60], 10, 0.55, (c) => !c.insured.has("health"), (c) => T4(
+      "Ng\u01B0\u1EDDi b\xE1n b\u1EA3o hi\u1EC3m s\u1EE9c kh\u1ECFe",
+      vary4("mi_hp", c.age, [
+        "M\u1ED9t ng\u01B0\u1EDDi b\xE1n b\u1EA3o hi\u1EC3m ng\u1ED3i ch\u1EDD b\u1EA1n \u1EDF qu\xE1n n\u01B0\u1EDBc tr\u01B0\u1EDBc c\u01A1 quan, mang theo x\u1EA5p t\xE0i li\u1EC7u d\xE0y hai \u0111\u1ED1t ng\xF3n tay. Ph\xED m\u1ED7i n\u0103m b\u1EB1ng g\u1EA7n n\u1EEDa th\xE1ng l\u01B0\u01A1ng.",
+        `M\u1ED9t ng\u01B0\u1EDDi quen c\u0169 g\u1ECDi \u0111i\u1EC7n m\u1EDDi b\u1EA1n mua b\u1EA3o hi\u1EC3m s\u1EE9c kh\u1ECFe, k\u1EC3 chuy\u1EC7n ${c.parent_sick ? "m\u1ED9t ng\u01B0\u1EDDi c\xF9ng tu\u1ED5i b\u1ED1 m\u1EB9 b\u1EA1n" : "m\u1ED9t \u0111\u1ED3ng nghi\u1EC7p"} n\u1EB1m vi\u1EC7n ba tu\u1EA7n m\xE0 kh\xF4ng ph\u1EA3i b\xE1n g\xEC.`
+      ]),
+      [
+        C6("K\xFD lu\xF4n cho xong", { insure: "health" }, "\u1ED0m c\xF3 ng\u01B0\u1EDDi tr\u1EA3 m\u1ED9t ph\u1EA7n, m\u1EA5t ph\xED m\u1ED7i n\u0103m"),
+        C6("Xin h\u1EE3p \u0111\u1ED3ng mang v\u1EC1 \u0111\u1ECDc t\u1EEBng d\xF2ng", { know: 2, bw: -2, gamble: { p: 0.6, win: { insure: "health", flags: ["mi_read_fine_print"], log: "B\u1EA1n g\u1EA1ch ch\xE2n ba \u0111i\u1EC1u kho\u1EA3n lo\u1EA1i tr\u1EEB, h\u1ECFi l\u1EA1i, r\u1ED3i m\u1EDBi k\xFD." }, lose: { flags: ["mi_read_fine_print"], log: "\u0110\u1ECDc \u0111\u1EBFn trang m\u01B0\u1EDDi, b\u1EA1n th\u1EA5y h\u1EE3p \u0111\u1ED3ng lo\u1EA1i tr\u1EEB \u0111\xFAng nh\u1EEFng b\u1EC7nh nh\xE0 b\u1EA1n hay m\u1EAFc. B\u1EA1n kh\xF4ng k\xFD." } } }, "Ch\u1EADm h\u01A1n, bi\u1EBFt r\xF5 m\xECnh \u0111\u01B0\u1EE3c tr\u1EA3 g\xEC", { tier: "awakened" }),
+        C6("Kh\xF4ng mua, t\u1EF1 \u0111\u1EC3 ri\xEAng m\u1ED9t kho\u1EA3n ph\xF2ng \u1ED1m", { deposit: 0.08, counters: { save: 1 } }, "Ti\u1EC1n v\u1EABn l\xE0 c\u1EE7a m\xECnh, \u1ED1m n\u1EB7ng th\xEC kh\xF4ng \u0111\u1EE7"),
+        C6("T\u1EEB ch\u1ED1i", {}, "Kh\xF4ng m\u1EA5t ph\xED, \u1ED1m th\xEC t\u1EF1 lo")
+      ],
+      3
+    )),
+    /* ---------- 6. bảo hiểm tài sản sau đám cháy nhà hàng xóm ---------- */
+    money("mi_neighbor_fire", [22, 85], 12, 0.4, (c) => (c.owns.has("house") || c.owns.has("shop")) && !c.insured.has("property"), (c, N) => {
+      let nb = role6(c, "neighbor"), what = c.owns.has("house") ? c.asset_names.house ?? "c\u0103n nh\xE0" : c.asset_names.shop ?? "c\u1EEDa h\xE0ng";
+      return T4(
+        "\u0110\xE1m ch\xE1y b\xEAn kia t\u01B0\u1EDDng",
+        `${nb ? `Nh\xE0 ${N(nb)}` : "C\u0103n nh\xE0 s\xE1t v\xE1ch"} ch\xE1y l\xFAc hai gi\u1EDD s\xE1ng v\xEC ch\u1EADp \u0111i\u1EC7n. Kh\xF4ng ai b\u1ECB th\u01B0\u01A1ng, nh\u01B0ng c\u1EA3 t\u1EA7ng d\u01B0\u1EDBi th\xE0nh than v\xE0 h\u1ECD kh\xF4ng c\xF3 b\u1EA3o hi\u1EC3m. B\u1EA1n \u0111\u1EE9ng nh\xECn b\u1EE9c t\u01B0\u1EDDng chung c\xF2n \xE1m kh\xF3i, ngh\u0129 \u0111\u1EBFn ${what} c\u1EE7a m\xECnh.`,
+        [
+          C6("Mua b\u1EA3o hi\u1EC3m t\xE0i s\u1EA3n ngay tu\u1EA7n n\xE0y", { insure: "property" }, "M\u1EA5t ph\xED h\u1EB1ng n\u0103m, ch\xE1y th\xEC kh\xF4ng tr\u1EAFng tay"),
+          C6("T\u1EF1 s\u1EEDa l\u1EA1i \u0111i\u1EC7n trong nh\xE0, kh\xF4ng mua b\u1EA3o hi\u1EC3m", { money: -0.04, flags: ["mi_rewired"] }, "Gi\u1EA3m nguy c\u01A1, nh\u01B0ng ch\u1EB3ng ai \u0111\u1EC1n n\u1EBFu x\u1EA3y ra"),
+          ...nb ? [C6(`G\xF3p ti\u1EC1n gi\xFAp ${N(nb)} d\u1EF1ng l\u1EA1i`, { give: { npc: nb, amount: 0.05 }, ...mem4(nb, "HELPED_IN_CRISIS", 0.3, "g\xF3p ti\u1EC1n sau \u0111\xE1m ch\xE1y"), rel: 2 }, "M\u1EA5t ti\u1EC1n, \u0111\u01B0\u1EE3c m\u1ED9t ng\u01B0\u1EDDi h\xE0ng x\xF3m")] : [],
+          C6("Kh\xF4ng l\xE0m g\xEC, chuy\u1EC7n xui kh\xF3 tr\xFAng hai l\u1EA7n", {}, "Gi\u1EEF ti\u1EC1n, g\xE1nh tr\u1ECDn r\u1EE7i ro")
+        ],
+        0
+      );
+    }),
+    /* ---------- 7. mô hình "lãi 5% mỗi tháng" ---------- */
+    money("mi_scheme", [20, 75], 15, 0.5, (c) => !c.broke || c.owns.has("deposit"), (c, N) => {
+      let fr = role6(c, "childhood_friend"), who = fr ? N(fr) : vn14(c) ? "M\u1ED9t ch\u1ECB trong x\xF3m" : "M\u1ED9t \u0111\u1ED3ng nghi\u1EC7p c\u0169";
+      return T4(
+        "L\u1EDDi h\u1EE9a l\xE3i n\u0103m ph\u1EA7n tr\u0103m m\u1ED7i th\xE1ng",
+        `${who} k\u1EC3 \u0111\xE3 "\u0111\u1EA7u t\u01B0" v\xE0o m\u1ED9t qu\u1EF9 \u0111\u01B0\u1EE3c tr\u1EA3 \u0111\u1EC1u n\u0103m ph\u1EA7n tr\u0103m m\u1ED7i th\xE1ng, th\xE1ng n\xE0o c\u0169ng \u0111\xFAng ng\xE0y. Ng\u01B0\u1EDDi gi\u1EDBi thi\u1EC7u th\xEAm ng\u01B0\u1EDDi c\xF2n \u0111\u01B0\u1EE3c th\u01B0\u1EDFng. Kh\xF4ng ai gi\u1EA3i th\xEDch \u0111\u01B0\u1EE3c ti\u1EC1n l\xE3i \u1EA5y t\u1EEB \u0111\xE2u ra.`,
+        [
+          C6("B\u1ECF m\u1ED9t kho\u1EA3n l\u1EDBn v\xE0o", { gamble: { p: 0.12, win: { money: 0.25, counters: { gamble: 1 }, log: "B\u1EA1n r\xFAt ra k\u1ECBp tr\u01B0\u1EDBc khi qu\u1EF9 \u0111\xF3ng c\u1EEDa. Nhi\u1EC1u ng\u01B0\u1EDDi kh\xE1c th\xEC kh\xF4ng." }, lose: { money: -0.6, happy: -8, flags: ["mi_scheme_victim"], ...mem4(fr, "CHEATED_ME", -0.2, "r\u1EE7 v\xE0o qu\u1EF9 l\xE3i cao r\u1ED3i m\u1EA5t tr\u1EAFng"), log: "Th\xE1ng th\u1EE9 b\u1EA3y, qu\u1EF9 ng\u1EEBng tr\u1EA3 l\xE3i. V\u0103n ph\xF2ng \u0111\xF3ng c\u1EEDa, s\u1ED1 \u0111i\u1EC7n tho\u1EA1i kh\xF4ng ai nghe." } } }, "C\xF3 th\u1EC3 l\u1EDDi v\xE0i th\xE1ng, th\u01B0\u1EDDng l\xE0 m\u1EA5t g\u1ED1c"),
+          C6("Th\u1EED m\u1ED9t \xEDt cho bi\u1EBFt", { gamble: { p: 0.25, win: { money: 0.03, log: "B\u1EA1n nh\u1EADn l\xE3i hai th\xE1ng r\u1ED3i r\xFAt ra, coi nh\u01B0 may." }, lose: { money: -0.08, counters: { gamble: 1 }, log: "Kho\u1EA3n nh\u1ECF \u1EA5y kh\xF4ng bao gi\u1EDD quay v\u1EC1." } } }, "M\u1EA5t \xEDt, nh\u01B0ng \u0111\xE3 \u0111\u1EB7t ch\xE2n v\xE0o"),
+          C6("C\u1EA3nh b\xE1o nh\u1EEFng ng\u01B0\u1EDDi \u0111ang \u0111\u1ECBnh g\xF3p ti\u1EC1n", { agency: 0.02, rel: -1, flags: ["mi_warned_scheme"], ...tr3(fr, -0.15), gamble: { p: 0.5, win: { rel: 4, log: "M\u1ED9t n\u0103m sau qu\u1EF9 s\u1EE5p. V\xE0i ng\u01B0\u1EDDi t\xECm \u0111\u1EBFn c\u1EA3m \u01A1n b\u1EA1n \u0111\xE3 can." }, lose: { happy: -2, log: "Ng\u01B0\u1EDDi ta b\u1EA3o b\u1EA1n ghen \u0103n t\u1EE9c \u1EDF. Khi qu\u1EF9 s\u1EE5p, ch\u1EB3ng ai nh\u1EAFc l\u1EA1i." } } }, "M\u1EA5t l\xF2ng ng\u01B0\u1EDDi r\u1EE7, c\xF3 th\u1EC3 gi\u1EEF ti\u1EC1n cho ng\u01B0\u1EDDi kh\xE1c", { tier: "sovereign" }),
+          C6("L\u1EAFc \u0111\u1EA7u, kh\xF4ng l\xE0m g\xEC", {}, "Kh\xF4ng l\u1EDDi, kh\xF4ng l\u1ED7")
+        ],
+        3,
+        fr ? { npc: fr } : {}
+      );
+    }),
+    /* ---------- 8. hụi / nhóm góp tiền xoay vòng ---------- */
+    money("mi_rotating_club", [22, 65], 12, 0.5, () => !0, (c, N) => {
+      let nb = role6(c, "neighbor"), club = vn14(c) ? "d\xE2y h\u1EE5i" : "nh\xF3m g\xF3p ti\u1EC1n xoay v\xF2ng";
+      return T4(
+        vn14(c) ? "D\xE2y h\u1EE5i m\u01B0\u1EDDi hai ng\u01B0\u1EDDi" : "Nh\xF3m g\xF3p ti\u1EC1n m\u01B0\u1EDDi hai ng\u01B0\u1EDDi",
+        `${nb ? N(nb) : "M\u1ED9t ng\u01B0\u1EDDi quen"} r\u1EE7 b\u1EA1n v\xE0o ${club}: m\u01B0\u1EDDi hai ng\u01B0\u1EDDi, m\u1ED7i th\xE1ng m\u1ED7i ng\u01B0\u1EDDi g\xF3p m\u1ED9t kho\u1EA3n, m\u1ED7i th\xE1ng m\u1ED9t ng\u01B0\u1EDDi nh\u1EADn c\u1EA3 ph\u1EA7n. Ai c\u1EA7n tr\u01B0\u1EDBc th\xEC nh\u1EADn tr\u01B0\u1EDBc nh\u01B0ng ch\u1ECBu b\u1EDBt m\u1ED9t ph\u1EA7n cho ng\u01B0\u1EDDi nh\u1EADn sau. Ng\u01B0\u1EDDi c\u1EA7m s\u1ED5 ch\u1EC9 ghi tay.`,
+        [
+          C6("V\xE0o v\xE0 nh\u1EADn ph\u1EA7n s\u1EDBm, ch\u1ECBu b\u1EDBt ti\u1EC1n", { custom: "borrow:0.3", flags: ["mi_club_early"], ...tr3(nb, 0.05) }, "C\xF3 ti\u1EC1n ngay, ph\u1EA3i g\xF3p \u0111\u1EE7 c\xE1c th\xE1ng sau"),
+          C6("V\xE0o v\xE0 ch\u1EDD nh\u1EADn cu\u1ED1i \u0111\u1EC3 \u0111\u01B0\u1EE3c tr\u1ECDn ph\u1EA7n", { money: -0.3, flags: ["mi_club_late"], gamble: { p: 0.75, win: { money: 0.36, log: "Cu\u1ED1i n\u0103m b\u1EA1n nh\u1EADn \u0111\u1EE7 ph\u1EA7n, th\xEAm m\u1ED9t kho\u1EA3n nh\u01B0 ti\u1EC1n l\xE3i." }, lose: { happy: -6, ...mem4(nb, "CHEATED_ME", -0.3, vn14(c) ? "d\xE2y h\u1EE5i v\u1EE1" : "nh\xF3m g\xF3p ti\u1EC1n tan"), log: `Th\xE1ng th\u1EE9 ch\xEDn, ng\u01B0\u1EDDi c\u1EA7m s\u1ED5 b\u1ECF \u0111i. ${vn14(c) ? "D\xE2y h\u1EE5i v\u1EE1" : "Nh\xF3m tan"}, ph\u1EA7n c\u1EE7a b\u1EA1n kh\xF4ng ai tr\u1EA3.` } } }, "\u0110\u01B0\u1EE3c ph\u1EA7n l\xE3i, nh\u01B0ng nh\xF3m c\xF3 th\u1EC3 tan tr\u01B0\u1EDBc"),
+          C6("\u0110\u1EE9ng ra gi\u1EEF s\u1ED5, c\xF4ng khai m\u1ED7i k\u1EF3", { money: -0.3, agency: 0.02, flags: ["mi_club_keeper"], gamble: { p: 0.85, win: { money: 0.34, rel: 3, log: "C\u1EA3 nh\xF3m ch\xE9p s\u1ED5 m\u1ED7i th\xE1ng. N\u0103m sau ng\u01B0\u1EDDi ta t\u1EF1 t\xECm \u0111\u1EBFn xin v\xE0o." }, lose: { money: -0.15, rel: -3, log: "M\u1ED9t ng\u01B0\u1EDDi b\u1ECF tr\u1ED1n gi\u1EEFa ch\u1EEBng. B\u1EA1n gi\u1EEF s\u1ED5 n\xEAn ph\u1EA3i b\xF9 ph\u1EA7n thi\u1EBFu." } } }, "T\u1ED1n c\xF4ng, gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n v\xE0 ti\u1EBFng c\u1EE7a c\u1EA3 nh\xF3m", { tier: "sovereign" }),
+          C6("Kh\xF4ng v\xE0o", {}, "Kh\xF4ng r\u1EE7i ro, kh\xF4ng c\xF3 kho\u1EA3n xoay l\xFAc c\u1EA7n")
+        ],
+        3,
+        nb ? { npc: nb } : {}
+      );
+    }),
+    /* ---------- 9. quỹ dưỡng già ---------- */
+    money("mi_nest_egg", [45, 62], 12, 0.55, (c) => !c.broke, (c) => {
+      let biz = c.owns.has("shop") || c.owns.has("stake") || f4(c, "own_business");
+      return T4(
+        "Kho\u1EA3n ti\u1EC1n cho tu\u1ED5i gi\xE0",
+        `B\u1EA1n ng\u1ED3i t\xEDnh: c\xF2n kho\u1EA3ng ${Math.max(3, 62 - c.age)} n\u0103m n\u1EEFa l\xE0 h\u1EBFt s\u1EE9c \u0111i l\xE0m. \u1EDE tu\u1ED5i b\u1EA1n, ${c.poor_country ? "l\u01B0\u01A1ng h\u01B0u n\u1EBFu c\xF3 c\u0169ng ch\u1EC9 \u0111\u1EE7 ti\u1EC1n ch\u1EE3" : "l\u01B0\u01A1ng h\u01B0u ch\u1EC9 b\u1EB1ng ch\u1EEBng m\u1ED9t n\u1EEDa l\u01B0\u01A1ng b\xE2y gi\u1EDD"}. Trong t\xE0i kho\u1EA3n c\xF3 m\u1ED9t kho\u1EA3n ch\u01B0a bi\u1EBFt \u0111\u1EC3 l\xE0m g\xEC.`,
+        [
+          C6("G\u1EEDi k\u1EF3 h\u1EA1n d\xE0i, h\u1EE9a kh\xF4ng \u0111\u1ED9ng t\u1EDBi", { deposit: 0.8, flags: ["mi_nest_egg"], counters: { save: 1 } }, "Y\xEAn l\xF2ng v\u1EC1 gi\xE0, k\u1EB9t khi c\u1EA7n ti\u1EC1n g\u1EA5p"),
+          C6("Chia ra: m\u1ED9t ph\u1EA7n g\u1EEDi, m\u1ED9t ph\u1EA7n mua v\xE0ng", { deposit: 0.4, buy: { kind: "gold", name: "v\xE0ng \u0111\u1EC3 d\xE0nh", price: 0.25 }, flags: ["mi_nest_egg"] }, "Kh\xF4ng b\u1ECF tr\u1EE9ng m\u1ED9t gi\u1ECF, l\xE3i ch\u1EB3ng cao", { tier: "awakened" }),
+          ...biz ? [C6("\u0110\u1EC3 ti\u1EC1n quay v\xF2ng trong vi\u1EC7c l\xE0m \u0103n", { counters: { mi_biz_cash: 1 }, gamble: { p: 0.55, win: { money: 0.3, log: "N\u0103m \u1EA5y l\xE0m \u0103n \u0111\u01B0\u1EE3c. Kho\u1EA3n ti\u1EC1n sinh th\xEAm m\u1ED9t ph\u1EA7n ba." }, lose: { money: -0.3, log: "H\xE0ng t\u1ED3n, kh\xE1ch n\u1EE3. Kho\u1EA3n d\u01B0\u1EE1ng gi\xE0 m\u1ECFng \u0111i m\u1ED9t n\u1EEDa." } } }, "C\xF3 th\u1EC3 sinh l\u1EDDi nhi\u1EC1u h\u01A1n, c\u0169ng c\xF3 th\u1EC3 hao")] : [],
+          C6("\u0110\u1EC3 sau, gi\u1EDD v\u1EABn c\xF2n kh\u1ECFe", {}, "Ti\u1EC1n linh ho\u1EA1t, tu\u1ED5i gi\xE0 ch\u01B0a c\xF3 g\xEC ch\u1EAFc")
+        ],
+        0
+      );
+    }),
+    /* ---------- 10. bỏ bảo hiểm lúc túng ---------- */
+    money("mi_drop_policy", [25, 80], 8, 0.6, (c) => c.insured.size > 0 && c.broke, (c) => {
+      let both = c.insured.has("health") && c.insured.has("property"), k = c.insured.has("health") ? "health" : "property";
+      return T4(
+        "H\xF3a \u0111\u01A1n ph\xED b\u1EA3o hi\u1EC3m",
+        `Th\u01B0 nh\u1EAFc \u0111\xF3ng ph\xED b\u1EA3o hi\u1EC3m ${k === "health" ? "s\u1EE9c kh\u1ECFe" : "t\xE0i s\u1EA3n"} \u0111\u1EBFn c\xF9ng tu\u1EA7n v\u1EDBi h\xF3a \u0111\u01A1n ti\u1EC1n \u0111i\u1EC7n v\xE0 ti\u1EC1n h\u1ECDc. Trong v\xED c\xF2n ch\u01B0a \u0111\u1EBFn n\u1EEDa th\xE1ng chi ti\xEAu. N\u0103m nay b\u1EA1n ch\u01B0a d\xF9ng \u0111\u1EBFn b\u1EA3o hi\u1EC3m l\u1EA7n n\xE0o.`,
+        [
+          C6(both ? "B\u1ECF b\u1EA3o hi\u1EC3m s\u1EE9c kh\u1ECFe, l\u1EA5y ti\u1EC1n ti\xEAu tr\u01B0\u1EDBc" : "B\u1ECF h\u1EE3p \u0111\u1ED3ng, l\u1EA5y ti\u1EC1n ti\xEAu tr\u01B0\u1EDBc", { uninsure: k, flags: ["mi_dropped_policy"] }, "Nh\u1EB9 chi ngay, c\xF3 chuy\u1EC7n th\xEC t\u1EF1 g\xE1nh"),
+          both ? C6("B\u1ECF b\u1EA3o hi\u1EC3m t\xE0i s\u1EA3n, gi\u1EEF b\u1EA3o hi\u1EC3m s\u1EE9c kh\u1ECFe", { uninsure: "property", flags: ["mi_dropped_policy"] }, "Gi\u1EEF c\xE1i kh\xF3 g\xE1nh nh\u1EA5t, b\u1EDBt m\u1ED9t kho\u1EA3n ph\xED", { tier: "awakened" }) : C6("Vay t\u1EA1m m\u1ED9t kho\u1EA3n \u0111\u1EC3 \u0111\xF3ng cho k\u1ECBp", { custom: "borrow:0.05" }, "Gi\u1EEF b\u1EA3o hi\u1EC3m, th\xEAm m\u1ED9t kho\u1EA3n n\u1EE3"),
+          C6("C\u1EAFt chi ti\xEAu c\u1EA3 nh\xE0 \u0111\u1EC3 gi\u1EEF b\u1EA3o hi\u1EC3m", { lifestyle: "tan_tien", happy: -3 }, "Gi\u1EEF \u0111\u01B0\u1EE3c t\u1EA5m khi\xEAn, c\u1EA3 nh\xE0 s\u1ED1ng ch\u1EADt h\u01A1n", { longterm: !0 }),
+          C6("Kh\xF4ng l\xE0m g\xEC, c\u1EE9 \u0111\xF3ng nh\u01B0 m\u1ECDi n\u0103m", { money: -0.03, bw: -3 }, "Gi\u1EEF b\u1EA3o hi\u1EC3m, th\xE1ng n\xE0y \u0103n u\u1ED1ng ch\u1EADt v\u1EADt")
+        ],
+        0
+      );
+    }),
+    /* ---------- 11. khoản thưởng bất ngờ ---------- */
+    money("mi_windfall", [22, 60], 10, 0.6, (c) => c.has_job, (c) => T4(
+      "Kho\u1EA3n th\u01B0\u1EDFng b\u1EA5t ng\u1EDD",
+      vary4("mi_wf", c.age, [
+        "Cu\u1ED1i n\u0103m c\xF4ng ty l\xE0m \u0103n \u0111\u01B0\u1EE3c, b\u1EA1n nh\u1EADn m\u1ED9t kho\u1EA3n th\u01B0\u1EDFng b\u1EB1ng ba th\xE1ng l\u01B0\u01A1ng, chuy\u1EC3n th\u1EB3ng v\xE0o t\xE0i kho\u1EA3n l\xFAc n\u1EEDa \u0111\xEAm.",
+        "M\u1ED9t d\u1EF1 \xE1n c\u0169 b\u1EA1n l\xE0m n\u0103m tr\u01B0\u1EDBc \u0111\u01B0\u1EE3c tr\u1EA3 n\u1ED1t ph\u1EA7n c\xF2n l\u1EA1i, nhi\u1EC1u h\u01A1n b\u1EA1n t\u01B0\u1EDFng g\u1EA7n g\u1EA5p \u0111\xF4i.",
+        `B\u1EA1n nh\u1EADn m\u1ED9t kho\u1EA3n ti\u1EC1n kh\xF4ng ng\u1EDD t\u1EDBi. ${c.married ? "Ng\u01B0\u1EDDi nh\xE0" : "B\u1EA1n b\xE8"} \u0111\xE3 k\u1ECBp g\u1EE3i \xFD c\u1EA3 ch\u1EE5c c\xE1ch ti\xEAu.`
+      ]),
+      [
+        C6("G\u1EEDi ti\u1EBFt ki\u1EC7m h\u1EBFt", { money: 0.25, deposit: 0.25, counters: { save: 1 } }, "D\xE0y th\xEAm s\u1ED5, kh\xF4ng ai \u0111\u01B0\u1EE3c h\u01B0\u1EDFng g\xEC ngay"),
+        C6(vn14(c) ? "Mua v\xE0ng \u0111\u1EC3 d\xE0nh" : "Mua m\u1ED9t \xEDt v\xE0ng \u0111\u1EC3 d\xE0nh", { money: 0.25, buy: { kind: "gold", name: "nh\u1EABn v\xE0ng", price: 0.25 } }, "C\u1EA5t gi\xE1 tr\u1ECB, gi\xE1 v\xE0ng l\xEAn xu\u1ED1ng th\u1EA5t th\u01B0\u1EDDng"),
+        C6("\u0110\u01B0a c\u1EA3 nh\xE0 \u0111i ch\u01A1i m\u1ED9t chuy\u1EBFn cho \u0111\xE1ng", { money: 0.05, happy: 6, rel: 4, counters: { mi_spent_bonus: 1 } }, "H\u1EBFt ti\u1EC1n, c\xF2n k\u1EF7 ni\u1EC7m"),
+        C6("Kh\xF4ng l\xE0m g\xEC, \u0111\u1EC3 nguy\xEAn trong t\xE0i kho\u1EA3n", { money: 0.25 }, "Linh ho\u1EA1t, d\u1EC5 ti\xEAu d\u1EA7n l\xFAc n\xE0o kh\xF4ng hay")
+      ],
+      0
+    )),
+    /* ---------- 12. cơn sốt đầu cơ thời kinh tế lên ---------- */
+    money("mi_boom_fever", [20, 75], 8, 0.4, (c) => c.econ_phase === "boom", (c) => {
+      let land = c.owns.has("land");
+      return T4(
+        "C\u01A1n s\u1ED1t l\xE0m gi\xE0u nhanh",
+        vary4("mi_bf", c.age, [
+          `Kinh t\u1EBF \u0111ang l\xEAn. \u1EDE qu\xE1n n\u01B0\u1EDBc, ai c\u0169ng n\xF3i v\u1EC1 ${vn14(c) ? "\u0111\u1EA5t n\u1EC1n ven \u0111\xF4" : "m\u1ED9t lo\u1EA1i c\u1ED5 phi\u1EBFu m\u1EDBi"} v\u1EEBa t\u0103ng g\u1EA5p ba trong n\u1EEDa n\u0103m. Ng\u01B0\u1EDDi b\xE1n h\xE0ng rong c\u0169ng h\u1ECFi b\u1EA1n \u0111\xE3 "v\xE0o" ch\u01B0a.`,
+          "H\xE0ng x\xF3m v\u1EEBa tr\xFAng gi\u1EA3i x\u1ED5 s\u1ED1, mua ngay chi\u1EBFc xe m\u1EDBi. C\u1EA3 khu ph\u1ED1 tu\u1EA7n n\xE0y \u0111\u1EC1u mua v\xE9, qu\u1EA7y v\xE9 s\u1ED1 h\u1EBFt h\xE0ng tr\u01B0\u1EDBc m\u01B0\u1EDDi gi\u1EDD s\xE1ng."
+        ]),
+        [
+          C6("D\u1ED3n ti\u1EC1n theo c\u01A1n s\u1ED1t", { counters: { gamble: 1 }, gamble: { p: 0.35, win: { money: 0.5, log: "B\u1EA1n b\xE1n ra \u0111\xFAng l\xFAc. Ba th\xE1ng sau gi\xE1 r\u01A1i m\u1ED9t n\u1EEDa." }, lose: { money: -0.6, happy: -5, flags: ["mi_bubble_burned"], log: "B\u1EA1n mua g\u1EA7n \u0111\u1EC9nh. C\u01A1n s\u1ED1t t\u1EAFt, kh\xF4ng ai mua l\u1EA1i v\u1EDBi gi\xE1 \u1EA5y." } } }, "C\xF3 th\u1EC3 l\u1EDDi nhanh, th\u01B0\u1EDDng mua \u0111\xFAng \u0111\u1EC9nh"),
+          C6("Mua v\xE0i t\u1EA5m v\xE9 s\u1ED1 cho vui", { money: -0.01, counters: { gamble: 1 }, gamble: { p: 0.02, win: { money: 1.5, log: "M\u1ED9t t\u1EA5m tr\xFAng. B\u1EA1n \u0111\u1ECDc \u0111i \u0111\u1ECDc l\u1EA1i d\xE3y s\u1ED1 ba l\u1EA7n." }, lose: { log: "Kh\xF4ng t\u1EA5m n\xE0o tr\xFAng. Ti\u1EC1n v\xE9 b\u1EB1ng m\u1ED9t b\u1EEFa \u0103n." } } }, "M\u1EA5t \xEDt, mua \u0111\u01B0\u1EE3c m\u1ED9t tu\u1EA7n m\u01A1 m\u1ED9ng"),
+          land ? C6("B\xE1n m\u1EA3nh \u0111\u1EA5t \u0111ang c\xF3 l\xFAc gi\xE1 \u0111ang cao", { sell: { kind: "land" }, flags: ["mi_sold_at_peak"] }, "Ch\u1ED1t l\u1EDDi b\xE2y gi\u1EDD, c\xF3 th\u1EC3 b\xE1n h\u1EDB n\u1EBFu c\xF2n l\xEAn", { tier: "awakened" }) : C6("\u0110\u1EE9ng ngo\xE0i, g\u1EEDi ph\u1EA7n d\u01B0 v\xE0o ti\u1EBFt ki\u1EC7m", { deposit: 0.15, flags: ["mi_sat_out_boom"] }, "L\xE3i ch\u1EADm, ng\u1EE7 ngon khi c\u01A1n s\u1ED1t t\u1EAFt", { tier: "awakened" }),
+          C6("Kh\xF4ng l\xE0m g\xEC", {}, "Kh\xF4ng l\u1EDDi, kh\xF4ng l\u1ED7")
+        ],
+        3
+      );
+    })
+  ];
+
+  // src/engine/narrative/paths/money_assets.ts
+  var vn15 = (c) => c.country === "VN", poor = (c) => c.poor_country || c.gdp < 8e3, amt = (x, lo, hi) => Math.round(Math.min(hi, Math.max(lo, x)) * 100) / 100, mem5 = (npc, tag, weight, note) => npc ? { memory: { npc, tag, weight, note } } : {}, tr4 = (npc, delta) => npc ? { trust: { npc, delta } } : {}, PACK_MONEY_ASSETS = [
+    /* ---------- 1. chiếc xe đầu tiên ---------- */
+    money("ma_first_ride", [18, 35], 99, 0.8, (c) => !c.owns.has("vehicle") && c.has_job, (c) => {
+      let p = poor(c), v = c.price_years.vehicle;
+      return T4(p ? "Chi\u1EBFc xe m\xE1y \u0111\u1EA7u ti\xEAn" : "Chi\u1EBFc \xF4 t\xF4 \u0111\u1EA7u ti\xEAn", p ? "\u0110i l\xE0m b\u1EB1ng hai ch\u1EB7ng xe bu\xFDt m\u1EA5t m\u1ED9t ti\u1EBFng r\u01B0\u1EE1i m\u1ED7i s\xE1ng. C\u1EEDa h\xE0ng \u0111\u1EA7u ph\u1ED1 c\xF3 xe m\xE1y m\u1EDBi, tr\u1EA3 tr\u01B0\u1EDBc ba ph\u1EA7n m\u01B0\u1EDDi, g\xF3p hai n\u0103m. M\u1ED9t ng\u01B0\u1EDDi quen b\xE1n l\u1EA1i chi\u1EBFc xe c\u0169 \u0111\xE3 ch\u1EA1y s\xE1u n\u0103m, l\u1EA5y ti\u1EC1n m\u1EB7t." : "Chuy\u1EBFn t\xE0u cu\u1ED1i v\u1EC1 khu b\u1EA1n \u1EDF l\xE0 m\u01B0\u1EDDi m\u1ED9t gi\u1EDD \u0111\xEAm, ca l\xE0m th\xEC tan l\xFAc m\u01B0\u1EDDi m\u1ED9t r\u01B0\u1EE1i. \u0110\u1EA1i l\xFD ch\xE0o xe m\u1EDBi, g\xF3p n\u0103m n\u0103m. Tr\xEAn m\u1EA1ng c\xF3 chi\u1EBFc xe c\u0169 \u0111\xE3 ch\u1EA1y t\xE1m v\u1EA1n c\xE2y s\u1ED1, ch\u1EE7 c\u1EA7n b\xE1n g\u1EA5p.", [
+        C6(p ? "Mua xe m\xE1y m\u1EDBi, g\xF3p hai n\u0103m" : "Mua xe m\u1EDBi, g\xF3p n\u0103m n\u0103m", { buy: { kind: "vehicle", name: p ? "chi\u1EBFc xe m\xE1y m\u1EDBi" : "chi\u1EBFc \xF4 t\xF4 m\u1EDBi", price: amt(v * 1.3, 0.05, 3), borrow: !0 }, happy: 3 }, "\u0110i l\u1EA1i nh\xE0n, xe m\u1EA5t gi\xE1 m\u1ED7i n\u0103m, c\xF2n kho\u1EA3n g\xF3p"),
+        C6("Mua xe c\u0169 b\u1EB1ng ti\u1EC1n m\u1EB7t", { buy: { kind: "vehicle", name: p ? "chi\u1EBFc xe m\xE1y c\u0169" : "chi\u1EBFc \xF4 t\xF4 c\u0169", price: amt(v * 0.5, 0.03, 2) }, happy: 1 }, "Kh\xF4ng n\u1EE3, c\xF3 th\u1EC3 h\u1ECFng gi\u1EEFa \u0111\u01B0\u1EDDng"),
+        C6("Ch\u01B0a mua, \u0111i xe c\xF4ng c\u1ED9ng", { flags: ["no_vehicle"], bw: -2, counters: { save: 1 } }, "Gi\u1EEF ti\u1EC1n, m\u1EA5t th\u1EDDi gian v\xE0 s\u1EE9c m\u1ED7i ng\xE0y")
+      ], 1);
+    }),
+    /* ---------- 2. căn nhà đầu tiên ---------- */
+    money("ma_first_home", [26, 45], 12, 0.75, (c) => !c.home_owner && !c.owns.has("house") && c.has_job, (c) => {
+      let h2 = c.price_years.house, where = vary4("ma_fh", c.age, [
+        "Ch\u1EE7 nh\xE0 b\xE1o t\u0103ng ti\u1EC1n thu\xEA l\u1EA7n th\u1EE9 ba trong b\u1ED1n n\u0103m.",
+        "B\u1EA1n \u0111\xE3 chuy\u1EC3n nh\xE0 tr\u1ECD n\u0103m l\u1EA7n, l\u1EA7n n\xE0o c\u0169ng m\u1EA5t ti\u1EC1n c\u1ECDc.",
+        "H\xE0ng x\xF3m c\xF9ng d\xE3y thu\xEA v\u1EEBa b\u1ECB ch\u1EE7 nh\xE0 \u0111\xF2i l\u1EA1i ph\xF2ng trong ba m\u01B0\u01A1i ng\xE0y."
+      ]);
+      return T4("Ch\xE1n c\u1EA3nh \u0111i thu\xEA", `${where} M\u1ED9t c\u0103n h\u1ED9 hai ph\xF2ng ${poor(c) ? "b\u1ED1n m\u01B0\u01A1i l\u0103m" : "s\xE1u m\u01B0\u01A1i"} m\xE9t vu\xF4ng \u1EDF ngo\u1EA1i \xF4 \u0111ang m\u1EDF b\xE1n, ng\xE2n h\xE0ng cho vay hai m\u01B0\u01A1i n\u0103m. \u1EDE th\u1ECB tr\u1EA5n c\xE1ch hai ti\u1EBFng, m\u1ED9t c\u0103n nh\xE0 nh\u1ECF ch\u1EC9 b\u1EB1ng m\u1ED9t ph\u1EA7n ba gi\xE1.`, [
+        C6("Mua c\u0103n h\u1ED9 ngo\u1EA1i \xF4, vay hai m\u01B0\u01A1i n\u0103m", { buy: { kind: "house", name: "c\u0103n h\u1ED9 hai ph\xF2ng \u1EDF ngo\u1EA1i \xF4", price: amt(h2 * 0.9, 0.5, 30), borrow: !0 }, happy: 4, bw: -3 }, "C\xF3 nh\xE0, g\xE1nh hai m\u01B0\u01A1i n\u0103m g\xF3p"),
+        C6("Mua c\u0103n nh\xE0 nh\u1ECF \u1EDF th\u1ECB tr\u1EA5n", { buy: { kind: "house", name: "c\u0103n nh\xE0 nh\u1ECF \u1EDF th\u1ECB tr\u1EA5n", price: amt(h2 * 0.35, 0.3, 12), borrow: !0 }, rel: -2, flags: ["long_commute"] }, "N\u1EE3 \xEDt h\u01A1n, xa vi\u1EC7c v\xE0 xa b\u1EA1n b\xE8"),
+        C6("\u1EDE thu\xEA ti\u1EBFp, g\u1EEDi ti\u1EBFt ki\u1EC7m ph\u1EA7n ch\xEAnh", { deposit: amt(c.savings / Math.max(1, c.income) * 0.5, 0.1, 2), flags: ["renter"] }, "Linh ho\u1EA1t, kh\xF4ng c\xF3 g\xEC trong tay khi v\u1EC1 gi\xE0")
+      ], 2);
+    }),
+    /* ---------- 3. sốt đất ven đô ---------- */
+    money("ma_land_fever", [22, 70], 8, 0.5, (c) => c.econ_phase === "boom" && !c.broke, (c) => {
+      let l = c.price_years.land, rumor = vary4("ma_lf", c.age, [
+        "Tin \u0111\u1ED3n c\xF3 c\xE2y c\u1EA7u m\u1EDBi b\u1EAFc qua s\xF4ng.",
+        "Ng\u01B0\u1EDDi ta n\xF3i khu c\xF4ng nghi\u1EC7p s\u1EAFp m\u1EDF ngay b\xEAn kia \u0111\u01B0\u1EDDng.",
+        "C\xF3 tin m\u1ED9t tr\u01B0\u1EDDng \u0111\u1EA1i h\u1ECDc s\u1EBD d\u1EDDi v\u1EC1 \u0111\xE2y."
+      ]);
+      return T4("\u0110\u1EA5t ven \u0111\xF4 l\xEAn gi\xE1 t\u1EEBng tu\u1EA7n", `${rumor} M\u1EA3nh \u0111\u1EA5t ba tr\u0103m m\xE9t vu\xF4ng ven \u0111\xF4 th\xE1ng tr\u01B0\u1EDBc c\xF2n rao m\u1ED9t gi\xE1, tu\u1EA7n n\xE0y \u0111\xE3 cao h\u01A1n m\u1ED9t ph\u1EA7n n\u0103m. ${vn15(c) ? "M\xF4i gi\u1EDBi cam \u0111oan s\u1ED5 \u0111\u1ECF c\xF3 s\u1EB5n, c\u1ECDc trong ng\xE0y." : "M\xF4i gi\u1EDBi n\xF3i h\u1ED3 s\u01A1 \u0111\u1EA7y \u0111\u1EE7, ai \u0111\u1EB7t c\u1ECDc tr\u01B0\u1EDBc th\xEC \u0111\u01B0\u1EE3c."}`, [
+        C6("Mua b\u1EB1ng ti\u1EC1n d\xE0nh d\u1EE5m", { buy: { kind: "land", name: "m\u1EA3nh \u0111\u1EA5t ven \u0111\xF4", price: amt(l * 0.6, 0.2, 8) }, flags: ["land_speculator"] }, "C\xF3 th\u1EC3 l\xE3i l\u1EDBn, ti\u1EC1n n\u1EB1m ch\u1EBFt khi th\u1ECB tr\u01B0\u1EDDng \u0111\u1EE9ng"),
+        C6("Vay th\xEAm \u0111\u1EC3 mua m\u1EA3nh to h\u01A1n", { buy: { kind: "land", name: "m\u1EA3nh \u0111\u1EA5t g\xF3c ven \u0111\xF4", price: amt(l * 1.1, 0.4, 14), borrow: !0 }, bw: -4, flags: ["land_speculator"] }, "L\xE3i g\u1EA5p \u0111\xF4i n\u1EBFu s\u1ED1t ti\u1EBFp, si\u1EBFt n\u1EE3 n\u1EBFu s\u1ED1t t\u1EAFt"),
+        C6("\u0110\u1EE9ng ngo\xE0i, \u0111\u1EC3 ng\u01B0\u1EDDi kh\xE1c \u0111u\u1ED5i gi\xE1", { counters: { save: 1 }, happy: -1 }, "Kh\xF4ng r\u1EE7i ro, c\xF3 th\u1EC3 nh\xECn ng\u01B0\u1EDDi kh\xE1c gi\xE0u l\xEAn")
+      ], 2);
+    }),
+    /* ---------- 4. khủng hoảng: bán tháo hay mua rẻ ---------- */
+    money("ma_fire_sale", [25, 75], 10, 0.4, (c) => c.econ_phase === "crisis" && (c.owns.has("house") && c.loan_burden > 0.3 || c.deposit > 0 || c.rich), (c) => {
+      let squeezed = c.owns.has("house") && c.loan_burden > 0.3, name = c.asset_names.house ?? "c\u0103n nh\xE0";
+      return squeezed ? T4("N\u1EE3 nhi\u1EC1u h\u01A1n gi\xE1 nh\xE0", `Gi\xE1 nh\xE0 trong khu \u0111\xE3 r\u01A1i g\u1EA7n m\u1ED9t ph\u1EA7n t\u01B0 sau m\u01B0\u1EDDi hai th\xE1ng. Kho\u1EA3n g\xF3p cho ${name} v\u1EABn ng\u1ED1n h\u01A1n ba ph\u1EA7n m\u01B0\u1EDDi thu nh\u1EADp. Ng\xE2n h\xE0ng g\u1EEDi th\u01B0 nh\u1EAFc: ch\u1EADm hai n\u0103m li\u1EC1n l\xE0 si\u1EBFt.`, [
+        C6(`B\xE1n ${name} khi c\xF2n b\xE1n \u0111\u01B0\u1EE3c`, { sell: { kind: "house" }, happy: -5, flags: ["sold_in_crisis"] }, "Tho\xE1t n\u1EE3, l\u1ED7 th\u1EADt v\xE0 m\u1EA5t ch\u1ED7 \u1EDF"),
+        C6("Th\u1EAFt l\u01B0ng, s\u1ED1ng t\u1EB1n ti\u1EC7n \u0111\u1EC3 gi\u1EEF nh\xE0", { lifestyle: "tan_tien", bw: -4, flags: ["held_through_crisis"] }, "Gi\u1EEF \u0111\u01B0\u1EE3c nh\xE0 n\u1EBFu tr\u1EE5 n\u1ED5i, m\u1EC7t m\u1ECFi nhi\u1EC1u n\u0103m"),
+        ...c.deposit > 0 ? [C6("R\xFAt ti\u1EBFt ki\u1EC7m ra \u0111\u1EC3 g\xF3p ti\u1EBFp", { withdraw: amt(c.deposit / Math.max(1, c.income), 0.05, 5), happy: -2 }, "Mua th\xEAm th\u1EDDi gian, c\u1EA1n qu\u1EF9 ph\xF2ng th\xE2n")] : []
+      ], 1) : T4("Nh\xE0 b\xE1n g\u1EA5p gi\xE1 b\u1EB1ng s\xE1u ph\u1EA7n m\u01B0\u1EDDi", `Kh\u1EAFp khu ph\u1ED1 treo bi\u1EC3n b\xE1n g\u1EA5p. M\u1ED9t gia \u0111\xECnh v\u1EE1 n\u1EE3 rao c\u0103n nh\xE0 hai t\u1EA7ng, s\xE1u m\u01B0\u01A1i m\xE9t vu\xF4ng, b\u1EB1ng s\xE1u ph\u1EA7n m\u01B0\u1EDDi gi\xE1 n\u0103m ngo\xE1i. ${vn15(c) ? "H\u1ECD c\u1EA7n ti\u1EC1n m\u1EB7t tr\u01B0\u1EDBc r\u1EB1m." : "H\u1ECD c\u1EA7n ti\u1EC1n m\u1EB7t trong th\xE1ng."}`, [
+        C6("Mua c\u0103n nh\xE0 \u0111\xF3 b\u1EB1ng ti\u1EC1n m\u1EB7t", { buy: { kind: "house", name: "c\u0103n nh\xE0 hai t\u1EA7ng mua l\xFAc kh\u1EE7ng ho\u1EA3ng", price: amt(c.price_years.house * 0.6, 0.5, 20) }, flags: ["crisis_buyer"] }, "M\xF3n h\u1EDDi n\u1EBFu th\u1ECB tr\u01B0\u1EDDng h\u1ED3i, ti\u1EC1n m\u1EB7t c\u1EA1n gi\u1EEFa b\xE3o"),
+        C6("Mua m\u1ED9t ki-\u1ED1t r\u1EBB, vay ph\u1EA7n thi\u1EBFu", { buy: { kind: "shop", name: vn15(c) ? "ki-\u1ED1t b\xE1n g\u1EA5p \u1EDF ch\u1EE3" : "c\u1EEDa h\xE0ng nh\u1ECF b\xE1n g\u1EA5p", price: amt(c.price_years.shop * 0.5, 0.3, 8), borrow: !0 } }, "C\xF3 ch\u1ED7 cho thu\xEA, th\xEAm n\u1EE3 l\xFAc ng\xE2n h\xE0ng si\u1EBFt ch\u1EB7t"),
+        C6("Gi\u1EEF ti\u1EC1n m\u1EB7t, ch\u1EDD \u0111\xE1y", { flags: ["crisis_cash"], counters: { save: 1 } }, "An to\xE0n, c\xF3 th\u1EC3 l\u1EE1 c\u01A1 h\u1ED9i m\u1ED9t \u0111\u1EDDi")
+      ], 2);
+    }),
+    /* ---------- 5. cho thuê mặt tiền tầng trệt ---------- */
+    money("ma_ground_floor", [25, 75], 10, 0.5, (c) => c.owns.has("house"), (c) => {
+      let name = c.asset_names.house ?? "c\u0103n nh\xE0";
+      return T4("C\xF3 ng\u01B0\u1EDDi h\u1ECFi thu\xEA t\u1EA7ng tr\u1EC7t", `M\u1ED9t ng\u01B0\u1EDDi b\xE1n \u0111\u1ED3 \u0103n s\xE1ng h\u1ECFi thu\xEA b\u1ED1n m\xE9t m\u1EB7t ti\u1EC1n t\u1EA7ng tr\u1EC7t c\u1EE7a ${name}, d\u1ECDn h\xE0ng t\u1EEB n\u0103m gi\u1EDD s\xE1ng. Ti\u1EC1n thu\xEA m\u1ED9t n\u0103m b\u1EB1ng g\u1EA7n m\u1ED9t th\xE1ng r\u01B0\u1EE1i thu nh\u1EADp c\u1EE7a b\u1EA1n. C\u1EA3 nh\xE0 s\u1EBD ph\u1EA3i \u0111i c\u1EEDa sau.`, [
+        C6("Cho thu\xEA theo th\xE1ng", { money: 0.12, happy: -2, flags: ["rents_ground_floor"] }, "C\xF3 th\xEAm ti\u1EC1n, m\u1EA5t y\xEAn t\u0129nh bu\u1ED5i s\xE1ng"),
+        C6("K\xFD h\u1EE3p \u0111\u1ED3ng ba n\u0103m, l\u1EA5y tr\u01B0\u1EDBc m\u1ED9t n\u0103m ti\u1EC1n", { money: 0.15, flags: ["rents_ground_floor", "written_lease"], happy: -1 }, "Ti\u1EC1n ch\u1EAFc, b\u1ECB r\xE0ng bu\u1ED9c ba n\u0103m", { tier: "awakened" }),
+        C6("T\u1EF1 m\u1EDF qu\u1EA7y b\xE1n h\xE0ng \u1EDF \u0111\xF3", { money: -0.08, flags: ["home_shop"], bw: -3, gamble: { p: 0.5, win: { money: 0.2, log: "Qu\u1EA7y h\xE0ng \u0111\xF4ng kh\xE1ch t\u1EEB th\xE1ng th\u1EE9 hai." }, lose: { money: -0.05, log: "Qu\u1EA7y h\xE0ng \u1EBF, s\xE1u th\xE1ng sau b\u1EA1n d\u1EB9p." } } }, "L\xE3i nhi\u1EC1u h\u01A1n, t\u1EF1 m\xECnh \u0111\u1EE9ng qu\u1EA7y"),
+        C6("Gi\u1EEF nguy\xEAn, nh\xE0 \u0111\u1EC3 \u1EDF", { happy: 1 }, "Y\xEAn t\u0129nh, b\u1ECF qua m\u1ED9t kho\u1EA3n thu")
+      ], 3);
+    }),
+    /* ---------- 6. người thuê cửa hàng ngừng trả ---------- */
+    money("ma_tenant_late", [28, 80], 8, 0.45, (c) => c.owns.has("shop"), (c) => {
+      let name = c.asset_names.shop ?? "c\u1EEDa h\xE0ng", why = vary4("ma_tl", c.age, [
+        "Ng\u01B0\u1EDDi thu\xEA n\xF3i con \u1ED1m n\u1EB1m vi\u1EC7n.",
+        "Ng\u01B0\u1EDDi thu\xEA n\xF3i l\xE0m \u0103n thua l\u1ED7 t\u1EEB \u0111\u1EA7u n\u0103m.",
+        "Ng\u01B0\u1EDDi thu\xEA kh\xF4ng nghe m\xE1y, c\u1EEDa v\u1EABn m\u1EDF b\xE1n h\xE0ng."
+      ]);
+      return T4("B\u1ED1n th\xE1ng ch\u01B0a tr\u1EA3 ti\u1EC1n thu\xEA", `Ng\u01B0\u1EDDi thu\xEA ${name} \u0111\xE3 ch\u1EADm b\u1ED1n th\xE1ng. ${why} H\xE0ng x\xF3m m\xE1ch c\xF3 ng\u01B0\u1EDDi kh\xE1c \u0111ang d\xF2 h\u1ECFi thu\xEA ch\u1ED7 \u0111\xF3.`, [
+        C6("\u0110\xF2i l\u1EA1i m\u1EB7t b\u1EB1ng, t\xECm ng\u01B0\u1EDDi thu\xEA m\u1EDBi", { money: -0.03, flags: ["evicted_tenant"], rel: -2, gamble: { p: 0.6, win: { money: 0.06, log: "Ba tu\u1EA7n sau \u0111\xE3 c\xF3 ng\u01B0\u1EDDi m\u1EDBi, tr\u1EA3 tr\u01B0\u1EDBc s\xE1u th\xE1ng." }, lose: { money: -0.05, log: "M\u1EB7t b\u1EB1ng b\u1ECF tr\u1ED1ng g\u1EA7n n\u1EEDa n\u0103m." } } }, "D\u1EE9t kho\xE1t, c\xF3 th\u1EC3 \u0111\u1EC3 tr\u1ED1ng m\u1EA5y th\xE1ng"),
+        C6("Cho kh\u1EA5t, l\u1EADp gi\u1EA5y tr\u1EA3 d\u1EA7n c\xF3 ch\u1EEF k\xFD", { flags: ["tenant_payment_plan"], rel: 2, gamble: { p: 0.65, win: { money: 0.05, log: "H\u1ECD tr\u1EA3 \u0111\u1EE7 trong m\u1ED9t n\u0103m, k\xE8m m\u1ED9t gi\u1ECF qu\xE0." }, lose: { money: -0.06, log: "H\u1ECD d\u1ECDn \u0111i trong \u0111\xEAm, \u0111\u1EC3 l\u1EA1i t\u1EDD gi\u1EA5y n\u1EE3." } } }, "Gi\u1EEF ng\u01B0\u1EDDi, ch\u1ECBu ch\u1EDD ti\u1EC1n", { tier: "awakened" }),
+        C6(`B\xE1n lu\xF4n ${name}, th\xF4i l\xE0m ch\u1EE7 cho thu\xEA`, { sell: { kind: "shop" }, happy: 1 }, "H\u1EBFt \u0111au \u0111\u1EA7u, b\xE1n d\u01B0\u1EDBi gi\xE1 v\xE0 m\u1EA5t kho\u1EA3n thu"),
+        C6("\u0110\u1EC3 \u0111\xF3, ch\u1EDD h\u1ECD t\u1EF1 tr\u1EA3", { happy: -2, counters: { kind: 1 } }, "Kh\xF4ng m\u1EA5t l\xF2ng ai, c\xF3 th\u1EC3 m\u1EA5t tr\u1EAFng")
+      ], 1);
+    }),
+    /* ---------- 7. mái nhà dột ---------- */
+    money("ma_roof_leak", [25, 85], 8, 0.6, (c) => c.owns.has("house"), (c) => {
+      let name = c.asset_names.house ?? "c\u0103n nh\xE0", fix = amt(c.price_years.house * 0.03, 0.05, 0.8), what = vary4("ma_rl", c.age, [
+        `Sau tr\u1EADn m\u01B0a \u0111\u1EA7u m\xF9a, tr\u1EA7n ph\xF2ng ng\u1EE7 c\u1EE7a ${name} loang m\u1ED9t v\u1EC7t r\u1ED9ng b\u1EB1ng c\xE1i chi\u1EBFu, n\u01B0\u1EDBc nh\u1ECF gi\u1ECDt v\xE0o x\xF4 su\u1ED1t \u0111\xEAm.`,
+        `Th\u1EE3 \u0111\u1EBFn xem n\xF3i \u1ED1ng n\u01B0\u1EDBc \xE2m t\u01B0\u1EDDng c\u1EE7a ${name} \u0111\xE3 m\u1EE5c, t\u01B0\u1EDDng t\u1EA7ng hai th\u1EA5m \u01B0\u1EDBt cao n\u1EEDa m\xE9t.`,
+        `M\u1ED9t v\u1EBFt n\u1EE9t ch\u1EA1y d\u1ECDc t\u01B0\u1EDDng b\u1EBFp c\u1EE7a ${name}, c\u1EEDa s\u1ED5 ph\xF2ng kh\xE1ch \u0111\xF3ng kh\xF4ng kh\xEDt n\u1EEFa.`
+      ]);
+      return T4("Th\u1EE3 b\xE1o ph\u1EA3i l\xE0m l\u1EA1i c\u1EA3 m\xE1i", `${what} Th\u1EE3 b\xE1o gi\xE1 s\u1EEDa t\u1EADn g\u1ED1c m\u1EA5t ba tu\u1EA7n, ho\u1EB7c v\xE1 t\u1EA1m trong m\u1ED9t bu\u1ED5i chi\u1EC1u.`, [
+        C6("S\u1EEDa t\u1EADn g\u1ED1c", { money: -fix, flags: ["house_renovated"], happy: 2 }, "T\u1ED1n m\u1ED9t kho\u1EA3n l\u1EDBn, y\xEAn t\xE2m ch\u1EE5c n\u0103m"),
+        C6("V\xE1 t\u1EA1m, \u0111\u1EC3 n\u0103m sau t\xEDnh", { money: -0.02, flags: ["house_patched"], gamble: { p: 0.55, win: { log: "Ch\u1ED7 v\xE1 tr\u1EE5 \u0111\u01B0\u1EE3c qua m\xF9a m\u01B0a." }, lose: { money: -amt(fix * 1.5, 0.05, 1.2), health: -2, log: "M\xF9a m\u01B0a sau, ch\u1ED7 v\xE1 b\u1EE5c, h\u1ECFng lu\xF4n \u0111\u1ED3 \u0111\u1EA1c b\xEAn d\u01B0\u1EDBi." } } }, "R\u1EBB b\xE2y gi\u1EDD, c\xF3 th\u1EC3 \u0111\u1EAFt g\u1EA5p r\u01B0\u1EE1i v\u1EC1 sau"),
+        C6(`B\xE1n ${name} nh\u01B0 hi\u1EC7n tr\u1EA1ng`, { sell: { kind: "house" }, happy: -3, flags: ["sold_as_is"] }, "Tho\xE1t g\xE1nh s\u1EEDa ch\u1EEFa, b\u1ECB \xE9p gi\xE1 v\xE0 ph\u1EA3i t\xECm ch\u1ED7 \u1EDF")
+      ], 0);
+    }),
+    /* ---------- 8. giải tỏa / thu hồi đất ---------- */
+    money("ma_clearance", [25, 85], 99, 0.25, (c) => c.owns.has("land") || c.owns.has("house"), (c, N) => {
+      let kind = c.owns.has("land") ? "land" : "house", name = (kind === "land" ? c.asset_names.land : c.asset_names.house) ?? (kind === "land" ? "m\u1EA3nh \u0111\u1EA5t" : "c\u0103n nh\xE0"), base = c.price_years[kind], nb = role6(c, "neighbor");
+      return T4(vn15(c) ? "Quy\u1EBFt \u0111\u1ECBnh gi\u1EA3i t\u1ECFa" : "Th\xF4ng b\xE1o thu h\u1ED3i \u0111\u1EA5t l\xE0m \u0111\u01B0\u1EDDng", `${vn15(c) ? "Ph\u01B0\u1EDDng d\xE1n th\xF4ng b\xE1o" : "Ch\xEDnh quy\u1EC1n g\u1EEDi th\u01B0"}: con \u0111\u01B0\u1EDDng s\xE1u l\xE0n s\u1EBD \u0111i qua ${name}. Gi\xE1 \u0111\u1EC1n b\xF9 b\u1EB1ng kho\u1EA3ng b\u1EA3y ph\u1EA7n m\u01B0\u1EDDi gi\xE1 ngo\xE0i ch\u1EE3, nh\u1EADn trong ch\xEDn m\u01B0\u01A1i ng\xE0y. ${nb ? `${N(nb)} r\u1EE7 c\u1EA3 d\xE3y c\xF9ng k\xFD \u0111\u01A1n \u0111\xF2i \u0111\u1ECBnh gi\xE1 l\u1EA1i.` : "V\xE0i h\u1ED9 trong d\xE3y n\xF3i s\u1EBD kh\xF4ng k\xFD."}`, [
+        C6("Nh\u1EADn \u0111\u1EC1n b\xF9, d\u1ECDn \u0111i s\u1EDBm", { sell: { kind }, money: -amt(base * 0.15, 0.05, 1.5), flags: ["took_compensation"], happy: -2 }, "Ti\u1EC1n ch\u1EAFc, th\u1EA5p h\u01A1n gi\xE1 th\u1EADt"),
+        C6("Kh\xF4ng k\xFD, ch\u1EDD gi\xE1 cao h\u01A1n", { bw: -5, gamble: { p: 0.4, win: { sell: { kind }, money: amt(base * 0.15, 0.05, 1.5), flags: ["held_out_won"], log: "Hai n\u0103m sau, gi\xE1 \u0111\u1EC1n b\xF9 \u0111\u01B0\u1EE3c n\xE2ng. B\u1EA1n l\xE0 h\u1ED9 cu\u1ED1i c\xF9ng k\xFD." }, lose: { sell: { kind }, money: -amt(base * 0.25, 0.05, 2), happy: -5, flags: ["held_out_lost"], log: "B\u1EA1n b\u1ECB c\u01B0\u1EE1ng ch\u1EBF. Ti\u1EC1n \u0111\u1EC1n b\xF9 t\xEDnh theo gi\xE1 c\u0169, tr\u1EEB c\u1EA3 ph\xED th\xE1o d\u1EE1." } } }, "C\xF3 th\u1EC3 \u0111\u01B0\u1EE3c nhi\u1EC1u h\u01A1n, c\xF3 th\u1EC3 m\u1EA5t nhi\u1EC1u h\u01A1n"),
+        C6("C\xF9ng c\u1EA3 d\xE3y \u0111\xF2i \u0111\u1ECBnh gi\xE1 \u0111\u1ED9c l\u1EADp, c\xF4ng khai", { agency: 0.02, flags: ["led_clearance_petition"], ...tr4(nb, 0.2), gamble: { p: 0.5, win: { sell: { kind }, money: amt(base * 0.08, 0.03, 1), rel: 4, log: "H\u1ED9i \u0111\u1ED3ng \u0111\u1ECBnh gi\xE1 l\u1EA1i. C\u1EA3 d\xE3y \u0111\u01B0\u1EE3c \u0111\u1EC1n b\xF9 s\xE1t gi\xE1 th\u1ECB tr\u01B0\u1EDDng." }, lose: { sell: { kind }, bw: -4, log: "\u0110\u01A1n b\u1ECB b\xE1c. B\u1EA1n nh\u1EADn \u0111\u1EC1n b\xF9 nh\u01B0 m\u1ECDi ng\u01B0\u1EDDi, nh\u01B0ng c\u1EA3 d\xE3y nh\u1EDB t\xEAn b\u1EA1n." } } }, "M\u1EA5t th\u1EDDi gian, \u0111\u01B0\u1EE3c hay m\u1EA5t c\xF9ng c\u1EA3 x\xF3m", { tier: "sovereign" })
+      ], 0, nb ? { npc: nb } : {});
+    }),
+    /* ---------- 9. bán nhà vì một việc lớn ---------- */
+    money("ma_sell_for_dream", [35, 70], 15, 0.4, (c) => c.owns.has("house") && (c.kids_teen > 0 || f4(c, "own_business") || c.parent_sick), (c) => {
+      let name = c.asset_names.house ?? "c\u0103n nh\xE0", why = c.kids_teen > 0 ? "Con b\u1EA1n \u0111\u1ED7 m\u1ED9t tr\u01B0\u1EDDng \u1EDF n\u01B0\u1EDBc ngo\xE0i, h\u1ECDc b\u1ED5ng ch\u1EC9 \u0111\u1EE7 m\u1ED9t n\u1EEDa h\u1ECDc ph\xED b\u1ED1n n\u0103m." : c.parent_sick ? "B\xE1c s\u0129 n\xF3i ca m\u1ED5 c\u1EE7a b\u1ED1 m\u1EB9 b\u1EA1n n\xEAn l\xE0m \u1EDF b\u1EC7nh vi\u1EC7n tuy\u1EBFn tr\xEAn, chi ph\xED b\u1EB1ng nhi\u1EC1u n\u0103m thu nh\u1EADp." : "C\u1EEDa h\xE0ng c\u1EE7a b\u1EA1n c\xF3 c\u01A1 h\u1ED9i m\u1EDF chi nh\xE1nh th\u1EE9 hai, ch\u1EC9 thi\u1EBFu v\u1ED1n.";
+      return T4("B\xE1n nh\xE0 \u0111\u1EC3 \u0111\u1ED5i l\u1EA5y m\u1ED9t c\u01A1 h\u1ED9i", `${why} Th\u1EE9 duy nh\u1EA5t \u0111\u1EE7 l\u1EDBn l\xE0 ${name}. M\u1ED9t ng\u01B0\u1EDDi m\xF4i gi\u1EDBi n\xF3i b\xE1n trong ba th\xE1ng, ch\u1EADm th\xEC m\u1EA5t gi\xE1.`, [
+        C6(`B\xE1n ${name}, mua c\u0103n nh\u1ECF h\u01A1n`, { sell: { kind: "house" }, buy: { kind: "house", name: "c\u0103n nh\xE0 nh\u1ECF h\u01A1n", price: amt(c.price_years.house * 0.4, 0.3, 12) }, money: -amt(c.price_years.house * 0.4, 0.3, 10), flags: ["sold_home_for_family"], happy: -2 }, "C\xF3 ti\u1EC1n cho vi\u1EC7c l\u1EDBn, s\u1ED1ng ch\u1EADt h\u01A1n"),
+        C6(`B\xE1n ${name}, c\u1EA3 nh\xE0 \u0111i thu\xEA`, { sell: { kind: "house" }, money: -amt(c.price_years.house * 0.5, 0.3, 12), flags: ["sold_home_for_family", "renter"], happy: -4 }, "Nhi\u1EC1u ti\u1EC1n nh\u1EA5t, kh\xF4ng c\xF2n nh\xE0 ri\xEAng"),
+        C6("Gi\u1EEF nh\xE0, vay th\xEAm m\u1ED9t kho\u1EA3n", { custom: "borrow:0.6", money: -0.6, bw: -4 }, "Gi\u1EEF ch\u1ED7 \u1EDF, n\u1EE3 ti\xEAu d\xF9ng l\xE3i cao"),
+        C6("Gi\u1EEF nh\xE0, b\u1ECF qua c\u01A1 h\u1ED9i n\xE0y", { happy: -3, flags: ["kept_home"] }, "Nh\xE0 c\xF2n, c\u01A1 h\u1ED9i m\u1EA5t")
+      ], 0);
+    }),
+    /* ---------- 10. mất xe ---------- */
+    money("ma_vehicle_loss", [20, 75], 8, 0.5, (c) => c.owns.has("vehicle"), (c) => {
+      let name = c.asset_names.vehicle ?? "chi\u1EBFc xe", ins = c.insured.has("property"), what = vary4("ma_vl", c.age, [
+        `S\xE1ng ra, ${name} kh\xF4ng c\xF2n \u1EDF ch\u1ED7 \u0111\u1EC3. Camera nh\xE0 b\xEAn ch\u1EC9 quay \u0111\u01B0\u1EE3c m\u1ED9t b\xF3ng ng\u01B0\u1EDDi l\xFAc ba gi\u1EDD s\xE1ng.`,
+        `M\u1ED9t chi\u1EBFc xe t\u1EA3i t\u1EA1t v\xE0o ${name} \u1EDF ng\xE3 t\u01B0. B\u1EA1n ch\u1EC9 tr\u1EA7y tay, xe th\xEC b\u1EB9p n\u1EEDa th\xE2n.`
+      ]);
+      return T4(`M\u1EA5t ${name}`, `${what} ${ins ? "H\u1EE3p \u0111\u1ED3ng b\u1EA3o hi\u1EC3m t\xE0i s\u1EA3n s\u1EBD tr\u1EA3 m\u1ED9t ph\u1EA7n, sau hai th\xE1ng gi\u1EA5y t\u1EDD." : "B\u1EA1n ch\u01B0a t\u1EEBng mua b\u1EA3o hi\u1EC3m t\xE0i s\u1EA3n."}`, [
+        C6("Mua xe kh\xE1c ngay", { buy: { kind: "vehicle", name: poor(c) ? "chi\u1EBFc xe m\xE1y thay th\u1EBF" : "chi\u1EBFc \xF4 t\xF4 thay th\u1EBF", price: amt(c.price_years.vehicle * (ins ? 0.6 : 0.8), 0.03, 3), borrow: !0 } }, "Kh\xF4ng l\u1EE1 vi\u1EC7c, th\xEAm m\u1ED9t kho\u1EA3n chi"),
+        C6("\u0110i xe c\xF4ng c\u1ED9ng m\u1ED9t th\u1EDDi gian", { flags: ["no_vehicle"], bw: -3, counters: { save: 1 } }, "\u0110\u1EE1 ti\u1EC1n, m\u1EA5t th\u1EDDi gian m\u1ED7i ng\xE0y"),
+        ...ins ? [] : [C6("Mua b\u1EA3o hi\u1EC3m t\xE0i s\u1EA3n t\u1EEB gi\u1EDD", { insure: "property", money: -0.02 }, "T\u1ED1n ph\xED m\u1ED7i n\u0103m, l\u1EA7n sau \u0111\u1EE1 \u0111au", { tier: "awakened" })]
+      ], 0);
+    }),
+    /* ---------- 11. nhà của bố mẹ để lại ---------- */
+    money("ma_parents_house", [30, 75], 99, 0.4, (c) => !!role6(c, "sibling") && c.parents_alive === 0 && f4(c, "parent_died") && !f4(c, "inherited_home"), (c, N) => flagAll((() => {
+      let s = role6(c, "sibling"), share = amt(c.price_years.house * 0.12, 0.1, 2);
+      return T4("Ch\xECa kh\xF3a nh\xE0 b\u1ED1 m\u1EB9 \u0111\u1EC3 l\u1EA1i", `C\u0103n nh\xE0 c\u1EA5p b\u1ED1n c\u1EE7a b\u1ED1 m\u1EB9 \u0111\u1EE9ng tr\u1ED1ng t\u1EEB sau ${vn15(c) ? "\u0111\xE1m gi\u1ED7 \u0111\u1EA7u" : "\u0111\xE1m tang"}, s\xE2n sau c\xF2n c\xE2y \u0103n qu\u1EA3 b\u1ED1 tr\u1ED3ng ba m\u01B0\u01A1i n\u0103m tr\u01B0\u1EDBc. ${N(s)} mu\u1ED1n b\xE1n ngay, chia \u0111\u1EC1u. C\xF3 ng\u01B0\u1EDDi tr\u1EA3 gi\xE1 trong tu\u1EA7n n\xE0y.`, [
+        C6("\u0110\u1ED3ng \xFD b\xE1n, chia ph\u1EA7n", { money: share, happy: -3, flags: ["parents_house_sold"], ...tr4(s, 0.1) }, "C\xF3 ti\u1EC1n ngay, m\u1EA5t ch\u1ED7 v\u1EC1"),
+        C6("Mua l\u1EA1i ph\u1EA7n c\u1EE7a anh ch\u1ECB em", { buy: { kind: "house", name: "c\u0103n nh\xE0 c\u0169 c\u1EE7a b\u1ED1 m\u1EB9", price: amt(c.price_years.house * 0.25, 0.3, 8), borrow: !0 }, ...mem5(s, "WIN_WIN_DEAL", 0.2, "mua l\u1EA1i nh\xE0 b\u1ED1 m\u1EB9"), flags: ["kept_parents_house"] }, "Gi\u1EEF \u0111\u01B0\u1EE3c nh\xE0, g\xE1nh th\xEAm n\u1EE3"),
+        C6("Gi\u1EEF chung, cho thu\xEA, c\xF3 gi\u1EA5y chia ti\u1EC1n", { money: 0.05, flags: ["shared_parents_house", "written_agreement"], ...tr4(s, 0.2) }, "Gi\u1EEF nh\xE0, gi\u1EEF h\xF2a kh\xED, thu \xEDt", { tier: "sovereign" }),
+        C6("Kh\xF4ng cho b\xE1n", { ...mem5(s, "REFUSED_HELP", -0.25, "kh\xF4ng cho b\xE1n nh\xE0 b\u1ED1 m\u1EB9"), happy: 1 }, "Gi\u1EEF k\u1EF7 ni\u1EC7m, m\u1EA5t l\xF2ng anh ch\u1ECB em")
+      ], 0, { npc: s });
+    })(), "inherited_home")),
+    /* ---------- 12. bạn đời muốn nhà to hơn ---------- */
+    money("ma_spouse_bigger", [30, 60], 12, 0.45, (c) => c.married && !!role6(c, "spouse") && c.owns.has("house"), (c, N) => {
+      let sp2 = role6(c, "spouse"), name = c.asset_names.house ?? "c\u0103n nh\xE0";
+      return T4(`${N(sp2)} mu\u1ED1n \u0111\u1ED5i nh\xE0`, `${N(sp2)} \u0111\u1EB7t l\xEAn b\xE0n t\u1EDD rao b\xE1n m\u1ED9t c\u0103n ba ph\xF2ng ng\u1EE7, c\xF3 s\xE2n nh\u1ECF. ${c.kids_alive > 0 ? "B\u1ECDn tr\u1EBB \u0111ang l\u1EDBn, ng\u1EE7 chung m\u1ED9t ph\xF2ng m\u01B0\u1EDDi hai m\xE9t vu\xF4ng." : "Hai ng\u01B0\u1EDDi l\xE0m vi\u1EC7c \u1EDF nh\xE0, chung m\u1ED9t b\xE0n \u0103n."} B\xE1n ${name} v\u1EABn ch\u01B0a \u0111\u1EE7, ph\u1EA3i vay th\xEAm.`, [
+        C6(`B\xE1n ${name}, vay mua c\u0103n to h\u01A1n`, { sell: { kind: "house" }, buy: { kind: "house", name: "c\u0103n nh\xE0 ba ph\xF2ng c\xF3 s\xE2n", price: amt(c.price_years.house * 1.2, 0.5, 34), borrow: !0 }, ...tr4(sp2, 0.2), bw: -3 }, "R\u1ED9ng r\xE3i, n\u1EE3 m\u1EDBi hai m\u01B0\u01A1i n\u0103m"),
+        C6("C\u01A1i n\u1EDBi th\xEAm m\u1ED9t ph\xF2ng", { money: -amt(c.price_years.house * 0.06, 0.1, 1.5), ...tr4(sp2, 0.1), flags: ["house_extended"] }, "\u0110\u1EE1 ch\u1EADt, t\u1ED1n m\u1ED9t kho\u1EA3n, \u1ED3n m\u1EA5y th\xE1ng"),
+        C6("\u1EDE l\u1EA1i, ch\u1EDD v\xE0i n\u0103m n\u1EEFa", { ...tr4(sp2, -0.15), counters: { save: 1 } }, "Kh\xF4ng th\xEAm n\u1EE3, b\u1EA1n \u0111\u1EDDi kh\xF4ng vui")
+      ], 2, { npc: sp2 });
+    }),
+    /* ---------- 13. ki-ốt / cửa hàng nhỏ ---------- */
+    money("ma_kiosk", [22, 60], 10, 0.5, (c) => !c.owns.has("shop") && !c.broke, (c) => {
+      let sh = c.price_years.shop, place = vn15(c) ? "ki-\u1ED1t ch\xEDn m\xE9t vu\xF4ng \u1EDF c\u1ED5ng ch\u1EE3" : "c\u1EEDa h\xE0ng m\u01B0\u1EDDi hai m\xE9t vu\xF4ng \u1EDF g\xF3c ph\u1ED1";
+      return T4(vn15(c) ? "Ki-\u1ED1t c\u1ED5ng ch\u1EE3 sang nh\u01B0\u1EE3ng" : "C\u1EEDa h\xE0ng g\xF3c ph\u1ED1 rao b\xE1n", `M\u1ED9t ${place} \u0111ang \u0111\u01B0\u1EE3c rao b\xE1n. Ng\u01B0\u1EDDi b\xE1n l\xE0m hai m\u01B0\u01A1i n\u0103m, gi\u1EDD v\u1EC1 qu\xEA. M\u1ED7i s\xE1ng c\xF3 h\xE0ng tr\u0103m ng\u01B0\u1EDDi \u0111i qua tr\u01B0\u1EDBc c\u1EEDa.`, [
+        C6("Mua b\u1EB1ng ti\u1EC1n d\xE0nh d\u1EE5m", { buy: { kind: "shop", name: vn15(c) ? "ki-\u1ED1t \u1EDF ch\u1EE3" : "c\u1EEDa h\xE0ng g\xF3c ph\u1ED1", price: amt(sh * 0.4, 0.2, 6) }, flags: ["own_business"] }, "C\xF3 ch\u1ED7 bu\xF4n b\xE1n ho\u1EB7c cho thu\xEA, ti\u1EC1n kh\xF3 r\xFAt ra"),
+        C6("Vay ng\xE2n h\xE0ng \u0111\u1EC3 mua", { buy: { kind: "shop", name: vn15(c) ? "ki-\u1ED1t \u1EDF ch\u1EE3" : "c\u1EEDa h\xE0ng g\xF3c ph\u1ED1", price: amt(sh * 0.5, 0.3, 8), borrow: !0 }, flags: ["own_business"], bw: -3 }, "Gi\u1EEF ti\u1EC1n m\u1EB7t, g\xF3p n\u1EE3 d\xF9 b\xE1n \u0111\u01B0\u1EE3c hay kh\xF4ng"),
+        C6("Thu\xEA l\u1EA1i thay v\xEC mua", { money: -0.05, flags: ["rented_shop"] }, "\xCDt v\u1ED1n, ch\u1EE7 nh\xE0 c\xF3 th\u1EC3 l\u1EA5y l\u1EA1i b\u1EA5t c\u1EE9 l\xFAc n\xE0o"),
+        C6("Kh\xF4ng mua", { happy: -1, counters: { save: 1 } }, "Kh\xF4ng r\u1EE7i ro, kh\xF4ng c\xF3 th\xEAm ngu\u1ED3n thu")
+      ], 3);
+    }),
+    /* ---------- 14. tiền góp vay đè nặng ---------- */
+    money("ma_loan_squeeze", [25, 70], 8, 0.5, (c) => c.loans > 0 && c.loan_burden > 0.2 && c.econ_phase !== "crisis", (c) => {
+      let pct = Math.round(c.loan_burden * 10);
+      return T4("Ti\u1EC1n g\xF3p \u0103n h\u1EBFt ph\u1EA7n d\u01B0", `M\u1ED7i th\xE1ng, kho\u1EA3n g\xF3p vay mua \u0111\xE3 \u0103n g\u1EA7n ${pct} ph\u1EA7n m\u01B0\u1EDDi thu nh\u1EADp. Ng\xE2n h\xE0ng v\u1EEBa b\xE1o l\xE3i th\u1EA3 n\u1ED5i t\u0103ng t\u1EEB k\u1EF3 sau. Ch\u1EADm g\xF3p hai n\u0103m li\u1EC1n l\xE0 b\u1ECB si\u1EBFt.`, [
+        C6("Chuy\u1EC3n sang s\u1ED1ng t\u1EB1n ti\u1EC7n", { lifestyle: "tan_tien", happy: -2 }, "G\xF3p \u0111\u1EE7, c\u1EA3 nh\xE0 ch\u1EADt v\u1EADt nhi\u1EC1u n\u0103m"),
+        ...c.owns.has("vehicle") ? [C6(`B\xE1n ${c.asset_names.vehicle ?? "chi\u1EBFc xe"} \u0111\u1EC3 c\xF3 ti\u1EC1n \u0111\u1EC7m`, { sell: { kind: "vehicle" }, bw: -2 }, "C\xF3 th\xEAm ti\u1EC1n m\u1EB7t, \u0111i l\u1EA1i v\u1EA5t v\u1EA3")] : [],
+        ...c.owns.has("house") ? [C6("Cho thu\xEA m\u1ED9t ph\xF2ng trong nh\xE0", { money: 0.08, happy: -3, flags: ["rents_room"] }, "\u0110\u1EE1 kho\u1EA3n g\xF3p, m\u1EA5t ri\xEAng t\u01B0", { tier: "awakened" })] : [],
+        C6("Gi\u1EEF nguy\xEAn, hy v\u1ECDng l\u01B0\u01A1ng t\u0103ng", { bw: -3, flags: ["hoping_on_raise"] }, "Kh\xF4ng \u0111\u1ED5i g\xEC, r\u1EE7i ro b\u1ECB si\u1EBFt n\u1EBFu c\xF3 bi\u1EBFn")
+      ], 0);
+    }),
+    /* ---------- 15. thuê hay mua ở nước giàu ---------- */
+    money("ma_rent_vs_buy", [26, 50], 99, 0.45, (c) => c.gdp >= 3e4 && !c.poor_country && !c.home_owner, (c) => {
+      let h2 = c.price_years.house;
+      return T4("Ti\u1EC1n thu\xEA nh\xE0 c\xF3 ph\u1EA3i l\xE0 n\xE9m qua c\u1EEDa s\u1ED5?", `M\u1ED9t \u0111\u1ED3ng nghi\u1EC7p v\u1EEBa mua nh\xE0 n\xF3i \u0111i thu\xEA l\xE0 n\xE9m ti\u1EC1n qua c\u1EEDa s\u1ED5. B\u1EA1n ng\u1ED3i t\xEDnh: c\u0103n h\u1ED9 \u0111ang thu\xEA gi\xE1 b\u1EB1ng kho\u1EA3ng ${Math.round(h2)} n\u0103m thu nh\u1EADp, ti\u1EC1n thu\xEA th\xEC ch\u1EC9 b\u1EB1ng m\u1ED9t ph\u1EA7n t\u01B0 l\u01B0\u01A1ng. L\xE3i vay \u0111ang cao h\u01A1n hai n\u0103m tr\u01B0\u1EDBc.`, [
+        C6("Mua c\u0103n h\u1ED9 \u0111ang thu\xEA, vay hai m\u01B0\u01A1i n\u0103m", { buy: { kind: "house", name: "c\u0103n h\u1ED9 \u0111ang thu\xEA", price: amt(h2 * 0.8, 0.5, 30), borrow: !0 }, happy: 2 }, "C\xF3 nh\xE0, m\u1EA5t linh ho\u1EA1t, g\xE1nh l\xE3i vay"),
+        C6("\u1EDE thu\xEA, \u0111\u1EC1u \u0111\u1EB7n g\u1EEDi ph\u1EA7n ch\xEAnh l\u1EC7ch", { deposit: 0.3, flags: ["renter_by_choice"], counters: { save: 2 } }, "Linh ho\u1EA1t, c\u1EA7n k\u1EF7 lu\u1EADt nhi\u1EC1u n\u0103m", { tier: "awakened" }),
+        C6("Chuy\u1EC3n v\u1EC1 th\u1ECB tr\u1EA5n nh\u1ECF, mua nh\xE0 r\u1EBB", { buy: { kind: "house", name: "c\u0103n nh\xE0 \u1EDF th\u1ECB tr\u1EA5n nh\u1ECF", price: amt(h2 * 0.3, 0.3, 10), borrow: !0 }, income_mult: 0.9, flags: ["moved_small_town"] }, "Nh\xE0 r\u1EBB, l\u01B0\u01A1ng th\u1EA5p h\u01A1n v\xE0 xa b\u1EA1n b\xE8"),
+        C6("Ch\u01B0a quy\u1EBFt, \u1EDF thu\xEA nh\u01B0 c\u0169", { flags: ["renter"] }, "Kh\xF4ng \u0111\u1ED5i g\xEC, c\xE2u h\u1ECFi c\xF2n \u0111\xF3")
+      ], 3);
+    }),
+    /* ---------- 16. mua đất chung với anh chị em ---------- */
+    money("ma_joint_land", [25, 55], 99, 0.35, (c) => !!role6(c, "sibling") && !c.owns.has("land") && !c.broke, (c, N) => {
+      let s = role6(c, "sibling"), l = c.price_years.land;
+      return T4(`${N(s)} r\u1EE7 mua \u0111\u1EA5t chung`, `${N(s)} t\xECm \u0111\u01B0\u1EE3c m\u1ED9t m\u1EA3nh \u0111\u1EA5t n\u0103m tr\u0103m m\xE9t vu\xF4ng ${vn15(c) ? "\u1EDF qu\xEA, s\xE1t \u0111\u01B0\u1EDDng li\xEAn x\xE3" : "\u1EDF ngo\u1EA1i \xF4, c\u1EA1nh \u0111\u01B0\u1EDDng t\u1EC9nh"}, gi\xE1 v\u1EEBa, m\u1ED9t m\xECnh kh\xF4ng \u0111\u1EE7 ti\u1EC1n. ${N(s)} \u0111\u1EC1 ngh\u1ECB m\u1ED7i ng\u01B0\u1EDDi g\xF3p m\u1ED9t n\u1EEDa, ${vn15(c) ? "\u0111\u1EE9ng t\xEAn m\u1ED9t ng\u01B0\u1EDDi cho nhanh" : "\u0111\u1EE9ng t\xEAn m\u1ED9t ng\u01B0\u1EDDi cho g\u1ECDn"}.`, [
+        C6("G\xF3p m\u1ED9t n\u1EEDa, l\u1EADp gi\u1EA5y g\xF3p v\u1ED1n c\xF3 ch\u1EEF k\xFD", { buy: { kind: "land", name: "m\u1EA3nh \u0111\u1EA5t mua chung v\u1EDBi anh ch\u1ECB em", price: amt(l * 0.5, 0.2, 6), with_npc: s }, ...mem5(s, "WIN_WIN_DEAL", 0.25, "mua chung m\u1EA3nh \u0111\u1EA5t c\xF3 gi\u1EA5y r\xF5 r\xE0ng"), flags: ["written_agreement"] }, "R\xF5 r\xE0ng t\u1EEB \u0111\u1EA7u, c\xF3 th\u1EC3 l\xE0m anh ch\u1ECB em ph\u1EADt l\xF2ng", { tier: "sovereign" }),
+        C6("G\xF3p m\u1ED9t n\u1EEDa, tin l\u1EDDi l\xE0 \u0111\u1EE7", { buy: { kind: "land", name: "m\u1EA3nh \u0111\u1EA5t mua chung v\u1EDBi anh ch\u1ECB em", price: amt(l * 0.5, 0.2, 6), with_npc: s }, ...tr4(s, 0.15), flags: ["handshake_land"] }, "Gi\u1EEF h\xF2a kh\xED, sau n\xE0y d\u1EC5 tranh ch\u1EA5p"),
+        C6("Cho m\u01B0\u1EE3n ti\u1EC1n, \u0111\u1EA5t \u0111\u1EC3 h\u1ECD \u0111\u1EE9ng t\xEAn", { lend: { npc: s, amount: amt(l * 0.4, 0.1, 5), years: 5 }, ...tr4(s, 0.1) }, "Kh\xF4ng v\u01B0\u1EDBng \u0111\u1EA5t, ch\u1EDD \u0111\u01B0\u1EE3c tr\u1EA3"),
+        C6("T\u1EEB ch\u1ED1i", { ...tr4(s, -0.1) }, "Gi\u1EEF ti\u1EC1n, anh ch\u1ECB em h\u01A1i bu\u1ED3n")
+      ], 0, { npc: s });
+    })
+  ];
+
   // src/engine/narrative/paths/index.ts
   var PATH_STORYLETS = [
     ...SINGER,
@@ -18270,7 +19195,12 @@ var Argon = (() => {
     ...PACK_SERVE_B,
     ...PACK_SPORT_A,
     ...PACK_STATE_A,
-    ...PACK_STATE_B
+    ...PACK_STATE_B,
+    /* Thẻ tiền (spec 2026-10-18-tien-bac) */
+    ...PACK_MONEY_LIFE,
+    ...PACK_MONEY_PEOPLE,
+    ...PACK_MONEY_INVEST,
+    ...PACK_MONEY_ASSETS
   ];
 
   // src/engine/narrative/vignettes.ts
@@ -18550,8 +19480,18 @@ var Argon = (() => {
     co_con: "sinh con",
     nghi_huu: "ngh\u1EC9 h\u01B0u",
     xin_loi: "\u0111i xin l\u1ED7i nh\u1EEFng ng\u01B0\u1EDDi m\xECnh l\xE0m t\u1ED5n th\u01B0\u01A1ng",
-    theo_duong: "b\u01B0\u1EDBc v\xE0o m\u1ED9t con \u0111\u01B0\u1EDDng \u0111\u1EDDi \u2014 gia_tri = id con \u0111\u01B0\u1EDDng"
-  }, OUTCOMES = /* @__PURE__ */ new Set(["thanh", "nua_voi", "hong", "khong_lam_duoc"]), FAMILIES = /* @__PURE__ */ new Set(["farm", "market", "driver", "build", "factory", "teach", "health", "office", "tech", "domestic"]), HABITS = /* @__PURE__ */ new Set(["smoke", "drink", "exercise", "read", "save", "gamble", "honest", "kind"]), SECRETS = /* @__PURE__ */ new Set(["CHEATED_EXAM", "PAID_BRIBE", "DEFRAUDED_FRIEND", "STOLE_SHARED_PROFIT", "FORGED_PAPERS", "ABANDONED_PARENT"]), STAT_CAPS = { money: [-3, 3], health: [-40, 20], happy: [-20, 20], know: [-20, 20], rel: [-20, 20], bw: [-25, 15], income_mult: [0.5, 2], agency: [-0.05, 0.05] }, obj = (x) => x && typeof x == "object" && !Array.isArray(x) ? x : null, num = (x) => typeof x == "number" && Number.isFinite(x) ? x : void 0, str = (x, max) => typeof x == "string" ? x.trim().slice(0, max) : "", clamp2 = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+    theo_duong: "b\u01B0\u1EDBc v\xE0o m\u1ED9t con \u0111\u01B0\u1EDDng \u0111\u1EDDi \u2014 gia_tri = id con \u0111\u01B0\u1EDDng",
+    mua: 'mua m\u1ED9t m\xF3n \u2014 tai_san \u2208 house|land|vehicle|shop|gold|stake, ten = t\xEAn m\xF3n (vd "c\u0103n h\u1ED9 hai ph\xF2ng"), so = gi\xE1 theo s\u1ED1 n\u0103m thu nh\u1EADp (d\u1EF1a v\xE0o cua_cai.gia_dien_hinh_nam_thu_nhap), vay = true n\u1EBFu vay ng\xE2n h\xE0ng; stake c\u1EA7n id ng\u01B0\u1EDDi g\xF3p chung',
+    ban: "b\xE1n m\u1ED9t m\xF3n \u0111ang c\xF3 \u2014 ten = t\xEAn m\xF3n trong cua_cai.tai_san (ho\u1EB7c tai_san = lo\u1EA1i)",
+    muc_song: "\u0111\u1ED5i m\u1EE9c s\u1ED1ng \u2014 muc \u2208 tan_tien|vua_phai|thoai_mai|pho_truong",
+    gui_tiet_kiem: "g\u1EEDi ti\u1EBFt ki\u1EC7m \u2014 so = s\u1ED1 n\u0103m thu nh\u1EADp (\u22645)",
+    rut_tiet_kiem: "r\xFAt ti\u1EBFt ki\u1EC7m \u2014 so = s\u1ED1 n\u0103m thu nh\u1EADp (\u22645)",
+    bao_hiem: "mua b\u1EA3o hi\u1EC3m \u2014 muc \u2208 health|property",
+    bo_bao_hiem: "b\u1ECF b\u1EA3o hi\u1EC3m \u2014 muc \u2208 health|property",
+    cho_vay: "cho m\u1ED9t ng\u01B0\u1EDDi vay \u2014 id, so (\u22643), nam = s\u1ED1 n\u0103m h\u1EB9n tr\u1EA3",
+    cho_tien: "cho/bi\u1EBFu m\u1ED9t ng\u01B0\u1EDDi ti\u1EC1n \u2014 id, so (\u22643)",
+    chu_cap: "m\u1EE9c chi cho b\u1ED1 m\u1EB9 ho\u1EB7c con \u2014 ai \u2208 parents|kids, muc \u2208 it|du|hau"
+  }, MONEY_ACTIONS = /* @__PURE__ */ new Set(["mua", "ban", "muc_song", "gui_tiet_kiem", "rut_tiet_kiem", "bao_hiem", "bo_bao_hiem", "cho_vay", "cho_tien", "chu_cap"]), OUTCOMES = /* @__PURE__ */ new Set(["thanh", "nua_voi", "hong", "khong_lam_duoc"]), FAMILIES = /* @__PURE__ */ new Set(["farm", "market", "driver", "build", "factory", "teach", "health", "office", "tech", "domestic"]), HABITS = /* @__PURE__ */ new Set(["smoke", "drink", "exercise", "read", "save", "gamble", "honest", "kind"]), SECRETS = /* @__PURE__ */ new Set(["CHEATED_EXAM", "PAID_BRIBE", "DEFRAUDED_FRIEND", "STOLE_SHARED_PROFIT", "FORGED_PAPERS", "ABANDONED_PARENT"]), STAT_CAPS = { money: [-3, 3], health: [-40, 20], happy: [-20, 20], know: [-20, 20], rel: [-20, 20], bw: [-25, 15], income_mult: [0.5, 2], agency: [-0.05, 0.05] }, obj = (x) => x && typeof x == "object" && !Array.isArray(x) ? x : null, num = (x) => typeof x == "number" && Number.isFinite(x) ? x : void 0, str = (x, max) => typeof x == "string" ? x.trim().slice(0, max) : "", clamp2 = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
   function bwCost(n11) {
     let c = 0;
     for (let k = 1; k <= n11; k++) c = k === 1 ? 3 : c + k;
@@ -18601,6 +19541,12 @@ var Argon = (() => {
           v !== void 0 && v > 0 && viec_lon.push({ loai, gia_tri: Math.min(3, v) });
           continue;
         }
+        if (MONEY_ACTIONS.has(loai)) {
+          if (child) continue;
+          let m = sanitizeMoneyAction(loai, a, castIds);
+          m && viec_lon.push(m);
+          continue;
+        }
         if (loai === "ket_hon") {
           let ten = str(a.gia_tri, 30).replace(/[|:]/g, "").trim();
           viec_lon.push(ten ? { loai, gia_tri: ten } : { loai });
@@ -18616,6 +19562,60 @@ var Argon = (() => {
     }
     let bi_mat = null, bm = obj(o.bi_mat);
     return bm && typeof bm.loai == "string" && SECRETS.has(bm.loai) && (bi_mat = { loai: bm.loai, nang: clamp2(num(bm.nang) ?? 0.3, 0.1, 0.8), fuse: Math.round(clamp2(num(bm.fuse) ?? num(bm.ngoi_nam) ?? 6, 3, 12)), ghi: str(bm.ghi, 120) }), { chi_so, nguoi, co: flagList(o.co), bo_co: flagList(o.bo_co), viec_lon, thoi_quen, bi_mat };
+  }
+  function sanitizeMoneyAction(loai, a, castIds) {
+    let so = num(a.so) ?? num(a.gia_tri), ten = str(a.ten, 40) || (typeof a.gia_tri == "string" ? str(a.gia_tri, 40) : ""), muc = typeof a.muc == "string" ? a.muc : typeof a.gia_tri == "string" ? a.gia_tri : "", id = typeof a.id == "string" && castIds.has(a.id) ? a.id : void 0, ts = typeof a.tai_san == "string" && ASSET_KINDS.includes(a.tai_san) ? a.tai_san : void 0;
+    switch (loai) {
+      case "mua":
+        return !ts || ts === "deposit" || so === void 0 || !(so > 0 && so <= 40) || ts === "stake" && !id ? null : { loai, tai_san: ts, ten: ten || "", so, vay: a.vay === !0, ...id ? { id } : {} };
+      case "ban":
+        return ten || ts ? { loai, ...ten ? { ten } : {}, ...ts ? { tai_san: ts } : {} } : null;
+      case "muc_song":
+        return LIFESTYLES.includes(muc) ? { loai, muc } : null;
+      case "gui_tiet_kiem":
+      case "rut_tiet_kiem":
+        return so !== void 0 && so > 0 ? { loai, so: Math.min(5, so) } : null;
+      case "bao_hiem":
+      case "bo_bao_hiem":
+        return muc === "health" || muc === "property" ? { loai, muc } : null;
+      case "cho_vay":
+        return id && so !== void 0 && so > 0 ? { loai, id, so: Math.min(3, so), nam: Math.round(clamp2(num(a.nam) ?? 2, 1, 10)) } : null;
+      case "cho_tien":
+        return id && so !== void 0 && so > 0 ? { loai, id, so: Math.min(3, so) } : null;
+      case "chu_cap":
+        return (a.ai === "parents" || a.ai === "kids") && (muc === "it" || muc === "du" || muc === "hau") ? { loai, ai: a.ai, muc } : null;
+      default:
+        return null;
+    }
+  }
+  function moneyActionEffect(a) {
+    switch (a.loai) {
+      case "mua":
+        return { buy: { kind: a.tai_san, name: a.ten ?? "", price: a.so, borrow: !!a.vay, ...a.id ? { with_npc: a.id } : {} } };
+      case "ban":
+        return { sell: { ...a.ten ? { name: a.ten } : {}, ...a.tai_san ? { kind: a.tai_san } : {} } };
+      case "muc_song":
+        return { lifestyle: a.muc };
+      case "gui_tiet_kiem":
+        return { deposit: a.so };
+      case "rut_tiet_kiem":
+        return { withdraw: a.so };
+      case "bao_hiem":
+        return { insure: a.muc };
+      case "bo_bao_hiem":
+        return { uninsure: a.muc };
+      case "cho_vay":
+        return { lend: { npc: a.id, amount: a.so, years: a.nam ?? 2 } };
+      case "cho_tien":
+        return { give: { npc: a.id, amount: a.so } };
+      case "chu_cap":
+        return { support: { who: a.ai, level: a.muc } };
+      default:
+        return null;
+    }
+  }
+  function isMoneyAction(a) {
+    return MONEY_ACTIONS.has(a.loai);
   }
   function sanitizeAct(raw, castIds, age) {
     let o = obj(raw);

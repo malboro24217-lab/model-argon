@@ -38,7 +38,7 @@ assert.equal(Object.keys(ALLOWED_FLAGS).length, 15);
   assert.deepEqual(a.viec_lon, [{ loai: "vay", gia_tri: 3 }, { loai: "ly_hon" }]); }
 { const a = sanitizeAct({ ...base, viec_lon: [{ loai: "theo_duong", gia_tri: "monk" }, { loai: "theo_duong", gia_tri: "wizard" }] }, cast, 30)!;
   assert.deepEqual(a.viec_lon, [{ loai: "theo_duong", gia_tri: "monk" }]); }
-assert.ok("theo_duong" in BIG_ACTIONS && "doi_nghe" in BIG_ACTIONS && Object.keys(BIG_ACTIONS).length === 15);
+assert.ok("theo_duong" in BIG_ACTIONS && "doi_nghe" in BIG_ACTIONS && Object.keys(BIG_ACTIONS).length === 25);
 
 // story hen_nam clamp; secret clamp; habits
 { assert.equal(sanitizeAct({ ...base, chuyen: { ten: "Quán phở", tom_tat: "t", hen_nam: 0 } }, cast, 30)!.chuyen!.hen_nam, 1);

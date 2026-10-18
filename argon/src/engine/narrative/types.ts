@@ -10,6 +10,7 @@
  */
 import type { Archetype } from "../types/AgentArchetype.ts";
 import type { DoorId } from "./Causality.ts";
+import type { AssetKind, Lifestyle, PolicyKind, SupportLevel } from "../economy/Holdings.ts";
 
 /* ------------------------------------------------------------------ Cast */
 
@@ -113,6 +114,22 @@ export interface Effect {
   close_doors?: DoorId[];
   /** A promise made to a named person, due in `years`. Kept or broken later by the host's promise scene. */
   promise?: { to: string; what: string; years: number; cost_money?: number };
+  /* ---- Dùng tiền (spec 2026-10-18-tien-bac §6.1). price / amount tính bằng SỐ NĂM thu nhập hộ, như money. ---- */
+  /** Mua một món có tên. borrow = vay ngân hàng phần còn thiếu. Engine kẹp giá vào khung của nước đó. */
+  buy?: { kind: AssetKind; name: string; price: number; borrow?: boolean; with_npc?: string };
+  /** Bán món đầu tiên khớp tên, hoặc khớp loại. */
+  sell?: { kind?: AssetKind; name?: string };
+  lifestyle?: Lifestyle;
+  deposit?: number;
+  withdraw?: number;
+  /** Cho một người vay, hẹn trả sau `years` năm. Người đó tự quyết trả hay quỵt (trò chơi lặp lại). */
+  lend?: { npc: string; amount: number; years: number };
+  /** Cho hoặc biếu tiền, không đòi lại. */
+  give?: { npc: string; amount: number };
+  insure?: PolicyKind;
+  uninsure?: PolicyKind;
+  /** Mức chi cho bố mẹ hoặc con: nhân lên khoản người phụ thuộc. */
+  support?: { who: "parents" | "kids"; level: SupportLevel };
   log?: string;
 }
 
@@ -182,6 +199,29 @@ export interface FactContext {
   tension: number;
   crises_survived: number;
   traits: { coop: number; fair: number; risk: number; bold: number };
+  /* ---- Của cải ---- */
+  /** Các loại tài sản đang có. */
+  owns: Set<AssetKind>;
+  /** Tên món đầu tiên của mỗi loại đang có ("căn nhà ở quê"). */
+  asset_names: Partial<Record<AssetKind, string>>;
+  /** Tổng giá trị tài sản (không gồm tiền gửi), CU. */
+  assets_value: number;
+  /** Gốc còn nợ các khoản vay mua, CU. */
+  loans: number;
+  /** Tiền góp vay mua mỗi năm / thu nhập năm. */
+  loan_burden: number;
+  deposit: number;
+  lifestyle: Lifestyle;
+  lifestyle_years: number;
+  insured: Set<PolicyKind>;
+  /** Tổng người khác đang nợ mình, CU. */
+  owed_to_me: number;
+  /** id những người đang nợ mình và đã quá hạn. */
+  debtors_overdue: string[];
+  home_owner: boolean;
+  support: { parents: SupportLevel; kids: SupportLevel };
+  /** Giá điển hình của mỗi loại tài sản ở nơi đang sống, tính bằng số năm thu nhập của người chơi. */
+  price_years: Record<"house" | "land" | "vehicle" | "shop", number>;
 }
 
 /* ------------------------------------------------------------------ Storylets */
@@ -223,7 +263,7 @@ export interface Storylet {
   /** Most times one storylet may fire in a life (host default 1 for micro cards). */
   maxPerLife?: number;
   /** Authoring metadata (content packs): which life path and which kit helper produced the card. Not read by the matcher. */
-  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" };
+  meta?: { path?: string; kind: "talent" | "door" | "beat" | "daily" | "cross" | "news" | "money" };
   /** Tension this storylet adds to the storyteller when it fires. */
   tension: number;
   /** Builds the scene. May read the context and roles to write names in. */

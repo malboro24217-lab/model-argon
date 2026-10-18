@@ -17,6 +17,7 @@ import { scarcityTax, ratRace, nextStress, survivalThreshold, type ScarcityRepor
 import { awaken, type AwakeningResult } from "../perception/AwakeningMechanic.ts";
 import { tierOf } from "../perception/ChoiceFilter.ts";
 import { createGraph } from "../gametheory/SocialLedger.ts";
+import { createHoldings, LIFESTYLE_MULT } from "../economy/Holdings.ts";
 
 export type WorkPolicy = "standard" | "overtime" | "recover";
 
@@ -55,7 +56,9 @@ export function purchaseDelta(price: number): CapitalDelta {
 export function lifestyleSpend(s: WorldState, income: number, frugal: boolean): number {
   const dop = s.spawn.biology.baseline_dopamine_sensitivity;
   const surplus = Math.max(0, income - s.spawn.macro.survival_cost_quarterly);
-  return dop * 0.9 * surplus * (frugal ? 0.35 : 1);
+  // Mức sống người chơi chọn (Holdings.lifestyle): "thoải mái" = ×1 là hành vi cũ; "frugal" của tickChoices vẫn ép ×0.35.
+  const mult = frugal ? 0.35 : LIFESTYLE_MULT[s.holdings?.lifestyle ?? "thoai_mai"];
+  return dop * 0.9 * surplus * mult;
 }
 
 export interface TickReport {
@@ -86,6 +89,7 @@ export function createWorld(spawn: SpawnVector): { state: WorldState; rng: Rng }
     npcs: new Map<string, NpcAgent>(),
     graph,
     economic_phase: spawn.macro.economic_phase,
+    holdings: createHoldings(),
     dead: false,
   };
   state.perception.phase = state.capitals.agency >= 0.3 ? "phase_change" : "autopilot";

@@ -9,7 +9,7 @@ import { STORYLETS, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMP
 import { randomCtx } from "./fuzz-ctx.ts";
 
 const file = process.argv[2];
-const isNews = process.argv.includes("--news");
+const isNews = process.argv.includes("--news") || process.argv.includes("--money");
 if (!file) { console.error("usage: check-pack.ts <pack.ts> [--news]"); process.exit(2); }
 const mod = await import(pathToFileURL(resolve(file)).href) as Record<string, unknown>;
 const pack: Storylet[] = Object.values(mod).filter(Array.isArray).flat() as Storylet[];
@@ -47,12 +47,21 @@ if (!isNews) {
 }
 
 /* ---- fuzz: build hợp lệ, hiệu ứng hợp lệ, mỗi thẻ đều bắn được ---- */
-const marks = (e: Effect | undefined): boolean => !!e && !!(e.flags?.length || e.unflags?.length || e.later || e.memory || e.secret || e.promise || e.close_doors?.length || e.trust || e.custom || e.game || (e.counters && Object.keys(e.counters).length) || (e.gamble && (marks(e.gamble.win) || marks(e.gamble.lose))));
+const marks = (e: Effect | undefined): boolean => !!e && !!(e.buy || e.sell || e.lifestyle || e.deposit || e.withdraw || e.lend || e.give || e.insure || e.uninsure || e.support || e.flags?.length || e.unflags?.length || e.later || e.memory || e.secret || e.promise || e.close_doors?.length || e.trust || e.custom || e.game || (e.counters && Object.keys(e.counters).length) || (e.gamble && (marks(e.gamble.win) || marks(e.gamble.lose))));
 function walk(e: Effect, age: number, where: string): void {
   if (e.later?.storylet && !allIds.has(e.later.storylet)) bad(`${where}: later → unknown storylet '${e.later.storylet}'`);
   if (age < 18 && typeof e.money === "number" && Math.abs(e.money) > 0.05) bad(`${where}: money ${e.money} for a child (age ${age}) — max ±0.05 of household income`);
   if (age < 12 && (e.game || e.trust)) bad(`${where}: game/trust under 12`);
   if (e.custom) for (const part of e.custom.split("|")) { const k = part.split(":")[0]!; if (!["borrow","repay","restructure","job_lose","job_lose_maybe","job_new","job_switch","scholar","return_home","spouse_leave","apologize","explode_hook","confess_hook","shop_end","become"].includes(k)) bad(`${where}: unknown custom '${k}'`); if (k === "become" && !PATHS[part.split(":")[1] ?? ""]) bad(`${where}: become → unknown path`); }
+  const KINDS = ["house", "land", "vehicle", "shop", "gold", "deposit", "stake"];
+  if (e.buy) { if (!KINDS.includes(e.buy.kind)) bad(`${where}: buy.kind '${e.buy.kind}'`); if (!(e.buy.price > 0 && e.buy.price <= 40)) bad(`${where}: buy.price ${e.buy.price} must be in (0,40] years of income`); if (!e.buy.name) bad(`${where}: buy needs a name`); if (age < 18) bad(`${where}: buy under 18`); }
+  if (e.sell && !e.sell.kind && !e.sell.name) bad(`${where}: sell needs kind or name`);
+  if (e.lifestyle && !["tan_tien", "vua_phai", "thoai_mai", "pho_truong"].includes(e.lifestyle)) bad(`${where}: lifestyle '${e.lifestyle}'`);
+  for (const k of ["deposit", "withdraw"] as const) { const v = e[k]; if (v !== undefined && !(v > 0 && v <= 5)) bad(`${where}: ${k} ${v} must be in (0,5]`); }
+  if (e.lend && !(e.lend.amount > 0 && e.lend.amount <= 5 && e.lend.years >= 1)) bad(`${where}: lend amount (0,5], years ≥ 1`);
+  if (e.give && !(e.give.amount > 0 && e.give.amount <= 5)) bad(`${where}: give amount (0,5]`);
+  if (e.support && !(["parents", "kids"].includes(e.support.who) && ["it", "du", "hau"].includes(e.support.level))) bad(`${where}: support`);
+  if ((e.lend || e.give || e.deposit || e.withdraw || e.insure) && age < 18) bad(`${where}: money action under 18`);
   if (e.gamble) { if (!(e.gamble.p > 0 && e.gamble.p < 1)) bad(`${where}: gamble.p must be in (0,1)`); walk(e.gamble.win, age, where + "/win"); walk(e.gamble.lose, age, where + "/lose"); }
 }
 const fired = new Map<string, number>();

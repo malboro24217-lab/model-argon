@@ -27,6 +27,10 @@ import { PACK_SERVE_B } from "./serve_b.ts";
 import { PACK_SPORT_A } from "./sport_a.ts";
 import { PACK_STATE_A } from "./state_a.ts";
 import { PACK_STATE_B } from "./state_b.ts";
+import { PACK_MONEY_LIFE } from "./money_life.ts";
+import { PACK_MONEY_PEOPLE } from "./money_people.ts";
+import { PACK_MONEY_INVEST } from "./money_invest.ts";
+import { PACK_MONEY_ASSETS } from "./money_assets.ts";
 
 /** Mọi thẻ của 96 con đường + thời sự. Các gói mới thêm vào mảng này. */
 export const PATH_STORYLETS: Storylet[] = [
@@ -57,4 +61,9 @@ export const PATH_STORYLETS: Storylet[] = [
   ...PACK_SPORT_A,
   ...PACK_STATE_A,
   ...PACK_STATE_B,
+  /* Thẻ tiền (spec 2026-10-18-tien-bac) */
+  ...PACK_MONEY_LIFE,
+  ...PACK_MONEY_PEOPLE,
+  ...PACK_MONEY_INVEST,
+  ...PACK_MONEY_ASSETS,
 ];

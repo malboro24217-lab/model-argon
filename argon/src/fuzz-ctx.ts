@@ -27,7 +27,26 @@ export function randomCtx(r: ReturnType<typeof createRng>, focusPaths: string[] 
     health: r.next() * 100, happy: r.next() * 100, know: r.next() * 100, rel: r.next() * 100, bandwidth: bw, bandwidth_locked: bw < 30, scarcity: r.chance(0.35), rat_race: r.chance(0.2),
     tier, agency: r.next(), reputation: r.next() * 100, allies: Math.floor(r.next() * 4), enemies: Math.floor(r.next() * 4), econ_phase: r.pick(["boom", "stagnation", "crisis"] as const), ill: r.chance(0.1), migrated: r.chance(0.1),
     flags, counters: { ...pathCounters, shop_round: Math.floor(r.next() * 5), married_years: Math.floor(r.next() * 10), smoke: Math.floor(r.next() * 10), drink: Math.floor(r.next() * 10), gamble: Math.floor(r.next() * 8), exercise: Math.floor(r.next() * 8), read: Math.floor(r.next() * 8), save: Math.floor(r.next() * 8), honest: Math.floor(r.next() * 14 - 7), kind: Math.floor(r.next() * 8) }, cast, opinion, roles: rolesMap, hooks, last_move: {}, doors: new Set(), years_since_major: Math.floor(r.next() * 8), tension: r.next() * 100, crises_survived: Math.floor(r.next() * 4),
+    ...moneyFacts(r, income, age, cast),
     traits: { coop: Math.floor(r.next() * 7 - 3), fair: Math.floor(r.next() * 7 - 3), risk: Math.floor(r.next() * 7 - 3), bold: Math.floor(r.next() * 7 - 3) },
   };
 }
 
+
+/** Của cải ngẫu nhiên cho fuzz. */
+function moneyFacts(r: ReturnType<typeof createRng>, income: number, age: number, cast: Partial<Record<CastRole, string>>) {
+  const kinds = ["house", "land", "vehicle", "shop", "gold", "deposit", "stake"] as const;
+  const owns = new Set<(typeof kinds)[number]>(); const asset_names: Partial<Record<(typeof kinds)[number], string>> = {};
+  if (age >= 18) for (const k of kinds) if (r.chance(0.3)) { owns.add(k); asset_names[k] = "món " + k; }
+  const assets_value = owns.size ? r.next() * 15 * income : 0, loans = owns.has("house") && r.chance(0.5) ? r.next() * 8 * income : 0;
+  const debtors = Object.values(cast).filter((id): id is string => !!id && r.chance(0.1));
+  const insured = new Set<"health" | "property">(); if (r.chance(0.3)) insured.add("health"); if (r.chance(0.2)) insured.add("property");
+  const lv = ["it", "du", "hau"] as const;
+  return {
+    owns, asset_names, assets_value, loans, loan_burden: loans ? r.next() * 0.5 : 0, deposit: owns.has("deposit") ? r.next() * 3 * income : 0,
+    lifestyle: r.pick(["tan_tien", "vua_phai", "thoai_mai", "pho_truong"] as const), lifestyle_years: Math.floor(r.next() * 12), insured,
+    owed_to_me: debtors.length ? r.next() * 2 * income : 0, debtors_overdue: debtors, home_owner: owns.has("house"),
+    support: { parents: r.pick(lv), kids: r.pick(lv) },
+    price_years: { house: 2 + r.next() * 25, land: 1 + r.next() * 10, vehicle: 0.05 + r.next() * 1.5, shop: 1 + r.next() * 12 },
+  };
+}

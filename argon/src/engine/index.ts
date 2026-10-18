@@ -14,3 +14,10 @@ export { createGraph, addNpcToGraph, connectNpcs, propagate, reputationOf, allia
 export { awaken, detectCrisis, phaseFor, checkRelapse, RELAPSE_AGENCY, RELAPSE_TICKS, type AwakeningResult, type CrisisKind, type CrisisFlags } from "./perception/AwakeningMechanic.ts";
 export { tierOf, isBandwidthLocked, tickChoices, dealChoices, type Choice, type ChoiceId, type ChoiceTier, type VisibleInfo } from "./perception/ChoiceFilter.ts";
 export * from "./narrative/index.ts";
+export {
+  ASSET_KINDS, LIFESTYLES, LIFESTYLE_MULT, LIFESTYLE_VN, HAIRCUT, createHoldings, lifestyleYear, housePriceToIncome, basePrice, priceBounds,
+  loanTerms, annuity, loanService, loanTotal, quoteBuy, buyAsset, addAsset, defaultName, sellAsset, findAsset, depositRate, deposit, withdraw,
+  policyTerms, hasPolicy, holdingsYear, healthPayout, seizeForDebt, repayChance, lend, owedToMe, netWorth, illiquidValue,
+  type AssetKind, type Lifestyle, type SupportLevel, type PolicyKind, type Asset, type Receivable, type Policy, type Holdings, type MarketCtx,
+  type BuyRequest, type BuyQuote, type YearReport, type NetWorth,
+} from "./economy/Holdings.ts";

@@ -76,7 +76,7 @@ function argonYear(L) {
   const s = L.ar.state, A = L.ar;
   if (!A.started) { A.started = true; s.capitals.bioEnergy.value = clamp(L.st.health, 10, s.capitals.bioEnergy.cap); const a0 = s.capitals.capitalAssets; a0.liquid = Math.max(0, L.savings) + (earnsOwnLiving(L) ? 0 : L.famIncome * 0.6); a0.debt += Math.max(0, -L.savings); if (L.savings < 0) L.savings = 0; A.hh = a0.liquid - a0.debt - L.savings; A.syncedHealth = L.st.health; A.syncedSavings = L.savings; }
   // Tự lập: từ năm có việc làm thật, sổ là của riêng bạn. Quỹ, nợ và nhà đất của gia đình ở lại với gia đình (thừa kế đi qua kịch bản riêng).
-  if (!A.indep && earnsOwnLiving(L)) { settleDependent(L); const a = s.capitals.capitalAssets; A.indep = true; A.hh = 0; a.liquid = Math.max(0, L.savings); a.debt = Math.max(0, -L.savings); a.illiquid = 0; A.syncedSavings = L.savings; }
+  if (!A.indep && earnsOwnLiving(L)) { settleDependent(L); const a = s.capitals.capitalAssets; A.indep = true; A.hh = 0; a.liquid = Math.max(0, L.savings); a.debt = Math.max(0, -L.savings); a.illiquid = s.holdings ? Argon.illiquidValue(s.holdings) : 0; A.syncedSavings = L.savings; }
   // 1. Đồng bộ các thay đổi trong năm từ phía trò chơi (sự kiện, kịch bản)
   const dH = L.st.health - A.syncedHealth, dS = L.savings - A.syncedSavings;
   if (dH || dS) s.capitals = Argon.applyDelta(s.capitals, { bio: dH, liquid: dS });
@@ -89,9 +89,13 @@ function argonYear(L) {
     A.betrayedThisYear = false;
   }
   A.repay = 0;
+  // 2a. Của cải: tài sản lên xuống, thu chi, góp vay, người nợ mình, mức sống (money.js)
+  if (!s.dead) moneyYear(L);
+  // Bảo hiểm sức khỏe trả lại một phần viện phí của các cú ốm trong năm
+  for (const r of reports) if (r.shock && r.shock.kind === "health" && r.shock.liquid < 0 && s.holdings && Argon.hasPolicy(s.holdings, "health")) { const p = Argon.healthPayout(s.holdings, marketCtx(L), -r.shock.liquid); s.capitals = Argon.applyDelta(s.capitals, { liquid: p }); if (!A.indep) { L.savings += p; A.syncedSavings = L.savings; } }
   // 2b. Vỡ nợ: nợ không thể lớn vô hạn. Quá 5 năm thu nhập thì chủ nợ siết, xóa bớt, và đời bạn mang dấu.
   { const a = s.capitals.capitalAssets, yi = Math.max(300, householdIncome(L));
-    if (a.debt > 5 * yi) { const seized = a.illiquid; a.illiquid = 0; a.liquid = 0; a.debt = 1.5 * yi; L.bankrupt = (L.bankrupt || 0) + 1; log(L, `Vỡ nợ. Chủ nợ siết hết${seized > 0 ? " nhà đất" : " những gì còn lại"}, phần nợ còn lại bị khoanh. Từ nay ai cũng biết.`, "bad big"); addSt(L, "happy", -15); addSt(L, "rel", -8); if (L.lw) { L.lw.sflags.add("bankrupt"); closeDoorNow(L, "partner_circle"); } } }
+    if (a.debt > 5 * yi) { a.liquid = 0; const seized = seizeOnDefault(L, 1.5 * yi); a.debt = Math.min(a.debt, 1.5 * yi); L.bankrupt = (L.bankrupt || 0) + 1; log(L, `Vỡ nợ. Chủ nợ siết ${seized.length ? seized.join(", ") : "hết những gì còn lại"}, phần nợ còn lại bị khoanh. Từ nay ai cũng biết.`, "bad big"); addSt(L, "happy", -15); addSt(L, "rel", -8); if (L.lw) { L.lw.sflags.add("bankrupt"); closeDoorNow(L, "partner_circle"); } } }
   // 3. Lấy về
   L.st.health = s.capitals.bioEnergy.value;
   L.st.bw = s.capitals.cognitiveBandwidth.value;
