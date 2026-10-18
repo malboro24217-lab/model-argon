@@ -2,7 +2,7 @@
 import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
 import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch } from "./engine/index.ts";
-import { FIXTURE_SEASON } from "./engine/narrative/canon/seasons/_fixture.ts";
+import { SEASONS_NORMAL } from "./engine/narrative/canon/seasons/index.ts";
 import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy } from "./engine/index.ts";
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
 import { actorRole } from "./engine/narrative/turning/kit.ts";
@@ -87,7 +87,7 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
 
 /* ---- canon: generator canon event (Task 5) ---- */
 {
-  const FX = FIXTURE_SEASON;
+  const FX = SEASONS_NORMAL[0]!;
   const N = (id: string) => (id === "place" ? "Hải Phòng" : ({ n1: "Lan", n2: "Hùng", n3: "Mai", cast_creditor: "ông Tư" } as Record<string, string>)[id] ?? id);
   const base = (over: Partial<FactContext> = {}): FactContext => {
     const o = ctx({ age: 30, cast: { mother: "n1", creditor: "cast_creditor", rival: "n2" }, opinion: { n1: 0.2, cast_creditor: -0.6, n2: 0.4 },

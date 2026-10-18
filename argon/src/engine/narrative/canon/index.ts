@@ -5,9 +5,10 @@ export { pickScars, scarText, type Scars } from "./Scars.ts";
 export { BEATS, BEAT_VN, SEASON_END_MAX, SEASON_MIN, seasonLength, beatGap, isDurable, addCustom, landingOf, gagStart, seasonKitFromNames, compileSeason } from "./Season.ts";
 export type { BeatName, SeasonKit, BeatCard, NewCast, Landing, SeasonDef } from "./Season.ts";
 import { compileSeason as compileSeasonFn, type SeasonDef as SeasonDefT } from "./Season.ts";
-import { FIXTURE_SEASON } from "./seasons/_fixture.ts";
-/** Mùa thường đã đăng ký. Task 6 thay mùa mẫu bằng 5 mùa thật (và thêm WEIRD). */
-export const SEASONS: SeasonDefT[] = [FIXTURE_SEASON];
+import { SEASONS_NORMAL } from "./seasons/index.ts";
+export { SEASONS_NORMAL };
+/** Mùa thường đã đăng ký (5 mùa đợt A). */
+export const SEASONS: SeasonDefT[] = [...SEASONS_NORMAL];
 /* ---- Task 5: generator canon event ---- */
 export { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag } from "./Canon.ts";
 export type { DoorKind, Slots, SeedDoor, CanonSeed, WeirdBranch, ResolvedDoor, CanonEvent } from "./Canon.ts";

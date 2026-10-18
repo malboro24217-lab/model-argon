@@ -65,6 +65,7 @@ var Argon = (() => {
     RELAPSE_AGENCY: () => RELAPSE_AGENCY,
     RELAPSE_TICKS: () => RELAPSE_TICKS,
     SEASONS: () => SEASONS,
+    SEASONS_NORMAL: () => SEASONS_NORMAL,
     SEASON_END_MAX: () => SEASON_END_MAX,
     SEASON_MIN: () => SEASON_MIN,
     SEASON_STORYLETS: () => SEASON_STORYLETS,
@@ -21632,166 +21633,887 @@ var Argon = (() => {
   }
   var cap3 = (s) => s.charAt(0).toUpperCase() + s.slice(1), land = (id, line, effects) => ({ id, line, effects: addCustom(effects, `season_end:${id}`) }), ending = (l, label, hint, extra = {}) => C(label, l.effects, hint, extra);
 
-  // src/engine/narrative/canon/seasons/_fixture.ts
-  var L_QUAN = land("quan_co_ten", "Qu\xE1n nh\u1ECF \u0111\u1EA7u h\u1EBBm th\xE0nh qu\xE1n c\xF3 t\xEAn, c\xF3 gi\u1EA5y ph\xE9p, c\xF3 kh\xE1ch quen.", { custom: "become:restaurateur", happy: 5 }), L_BAN = land("ban_quan", "B\u1EA1n b\xE1n l\u1EA1i qu\xE1n, tr\u1EA3 s\u1EA1ch n\u1EE3 v\xE0 c\xF2n d\u01B0 m\u1ED9t kho\u1EA3n.", { money: 1.2, happy: -3 }), L_DI = land("len_pho", "B\u1EA1n tr\u1EA3 ch\xECa kh\xF3a cho b\xE0 ch\u1EE7 nh\xE0 v\xE0 l\xEAn chuy\u1EBFn xe s\u1EDBm.", { custom: "move_city", money: -0.2 }), FIXTURE_SEASON = {
-    id: "fixture",
-    vn: "M\xF9a m\u1EABu: Qu\xE1n \u0111\u1EA7u h\u1EBBm",
-    color: "#b8742a",
-    years: [8, 12],
-    rules: { income: 0.8, flags: ["w_fixture"] },
-    reset: { cash: 1, cast: [{ key: "ba_chu_nha", role: "neighbor", label: "b\xE0 ch\u1EE7 nh\xE0" }, { key: "quan_doi_dien", role: "rival", label: "ch\u1EE7 qu\xE1n \u0111\u1ED1i di\u1EC7n" }] },
-    gag: { key: "tam_bien", lines: [
-      "T\u1EA5m bi\u1EC3n qu\xE1n v\u1EEBa treo \u0111\xE3 r\u01A1i xu\u1ED1ng, tr\xFAng ngay ch\u1EADu \u1EDBt.",
-      "Gi\xF3 th\u1ED5i nh\u1EB9 th\xF4i m\xE0 t\u1EA5m bi\u1EC3n c\u0169ng r\u01A1i, kh\xE1ch quen v\u1ED7 tay.",
-      "T\u1EA5m bi\u1EC3n r\u01A1i \u0111\xFAng l\xFAc c\xF3 ng\u01B0\u1EDDi h\u1ECFi t\xEAn qu\xE1n.",
-      "B\u1EA1n \u0111\xF3ng th\xEAm hai c\xE2y \u0111inh. T\u1EA5m bi\u1EC3n v\u1EABn r\u01A1i, nh\u01B0 c\xF3 h\u1EB9n."
+  // src/engine/narrative/canon/seasons/tron_chay.ts
+  var L_XE = land("xe_chao_hop_phap", "Xe ch\xE1o khuya \u0111\u01B0\u1EE3c c\u1EA5p ch\u1ED7 \u0111\u1EE9ng h\u1EE3p ph\xE1p, c\xF3 s\u1ED1 ri\xEAng, v\xE0 t\u1EA5m b\u1EA3ng ghi c\u1EA3 t\xEAn th\u1EADt l\u1EABn ch\u1EEF \u201CL\xE2m\u201D.", { custom: "become:street_vendor", happy: 6 }), L_VE = land("ve_tra_no", "B\u1EA1n v\u1EC1 l\u1EA1i ch\u1ED1n c\u0169 b\u1EB1ng t\xEAn th\u1EADt, tr\u1EA3 s\u1EA1ch m\xF3n n\u1EE3, v\xE0 th\u1EA5y nh\u1EB9 nh\u01B0 v\u1EEBa \u0111\u1EB7t ba l\xF4 xu\u1ED1ng.", { money: -1, custom: "repay:1", happy: 8 }), L_SANG = land("sang_xe", "B\u1EA1n sang l\u1EA1i xe ch\xE1o cho ng\u01B0\u1EDDi h\u1ECDc vi\u1EC7c, c\u1EA7m m\u1ED9t kho\u1EA3n \u0111\u1EE7 d\u01B0\u1EE1ng gi\xE0, v\xE0 l\u1EA7n \u0111\u1EA7u ti\xEAn sau nhi\u1EC1u n\u0103m k\xFD t\xEAn th\u1EADt v\xE0o gi\u1EA5y t\u1EDD.", { money: 1, happy: 4 }), L_LAI = land("lai_xe_dem", "B\u1EA1n nh\u1EADn l\xE1i xe t\u1EA3i \u0111\u01B0\u1EDDng d\xE0i. Kh\xF4ng \u1EDF \u0111\xE2u qu\xE1 ba ng\xE0y, v\xE0 l\u1EA7n n\xE0y l\xE0 v\xEC th\xEDch th\u1EBF.", { custom: "become:long_hauler", happy: 3 }), has = (c, f5) => c.flags.has(f5), TRON_CHAY = {
+    id: "tron_chay",
+    vn: "K\u1EBB tr\u1ED1n ch\u1EA1y",
+    color: "#4f6377",
+    years: [8, 14],
+    rules: { income: 0.6, flags: ["w_tron_chay", "w_ten_gia"] },
+    reset: {
+      cash: 0.2,
+      effects: { custom: "move_city" },
+      cast: [
+        { key: "chu_tro", role: "neighbor", label: "b\xE0 ch\u1EE7 tr\u1ECD" },
+        { key: "ao_hoa", role: "creditor", label: "g\xE3 \u0111\xF2i n\u1EE3 \xE1o hoa" },
+        { key: "tra_da", role: "partner", label: "c\xF4 b\xE1n n\u01B0\u1EDBc" }
+      ]
+    },
+    gag: { key: "ten_gia_lam", lines: [
+      "B\u1EA1n khai t\xEAn l\xE0 L\xE2m. Ba ng\xE0y sau c\xF3 ng\u01B0\u1EDDi g\u1ECDi \u201CL\xE2m \u01A1i\u201D ngay sau l\u01B0ng, b\u1EA1n v\u1EABn \u0111\u1EE9ng im v\xEC qu\xEAn m\u1EA5t m\xECnh \u0111ang t\xEAn L\xE2m.",
+      "Ngo\xE0i ch\u1EE3 c\xF3 ng\u01B0\u1EDDi g\u1ECDi \u201CL\xE2m\u201D, b\u1EA1n kh\xF4ng quay l\u1EA1i. M\u1ED9t \xF4ng L\xE2m th\u1EADt quay l\u1EA1i, r\u1ED3i nh\xECn b\u1EA1n r\u1EA5t l\xE2u.",
+      "B\u1EA1n \u0111\xE3 t\u1EADp quay \u0111\u1EA7u m\u1ED7i khi nghe ch\u1EEF \u201CL\xE2m\u201D, t\u1EADp k\u1EF9 t\u1EDBi m\u1EE9c nghe ai n\xF3i \u201Cl\xE2m th\u1EDDi\u201D c\u0169ng gi\u1EADt m\xECnh.",
+      "C\xF3 ng\u01B0\u1EDDi g\u1ECDi t\xEAn th\u1EADt c\u1EE7a b\u1EA1n gi\u1EEFa \u0111\u01B0\u1EDDng. B\u1EA1n kh\xF4ng quay l\u1EA1i, v\xE0 l\u1EA7n \u0111\u1EA7u ti\xEAn \u0111i\u1EC1u \u0111\xF3 l\xE0m b\u1EA1n bu\u1ED3n.",
+      "T\u1EA5m thi\u1EC7p m\u1EDDi ghi \u201CTh\xE2n g\u1EEDi L\xE2m\u201D. B\u1EA1n \u0111\u1EB7t n\xF3 c\u1EA1nh g\u1ED1i, th\u1EA5y c\xE1i t\xEAn gi\u1EA3 h\xF4m nay \u1EA5m h\u01A1n t\xEAn th\u1EADt."
     ] },
-    landings: [L_QUAN, L_BAN, L_DI],
+    landings: [L_XE, L_VE, L_LAI, L_SANG],
     beats: [
       /* mo_man */
       [
         card(
-          "fx_mo_thue",
-          "C\u0103n b\u1EBFp m\u1EB7t h\u1EBBm",
-          (c, k) => `B\u1EA1n thu\xEA l\u1EA1i m\u1ED9t c\u0103n b\u1EBFp nh\u1ECF m\u1EB7t h\u1EBBm \u1EDF ${k.noi}, \u0111\u1EE7 k\xEA b\u1ED1n c\xE1i b\xE0n th\u1EA5p. ${cap3(k.npc("ba_chu_nha"))} \u0111\u1EBFm ti\u1EC1n c\u1ECDc hai l\u1EA7n r\u1ED3i m\u1EDBi \u0111\u01B0a ch\xECa kh\xF3a. ${k.gag()}`,
+          "tc_mo_xe",
+          "Chuy\u1EBFn xe l\xFAc hai gi\u1EDD s\xE1ng",
+          (c, k) => `Hai gi\u1EDD s\xE1ng, b\u1EA1n x\xE1ch m\u1ED9t c\xE1i ba l\xF4, b\u1ECF l\u1EA1i ch\u1EADu c\xE2y v\xE0 n\u1EEDa n\u1ED3i c\u01A1m. Chuy\u1EBFn xe \u0111\xEAm c\xF2n \u0111\xFAng m\u1ED9t gh\u1EBF, c\u1EA1nh m\u1ED9t l\u1ED3ng g\xE0 r\u1EA5t c\xF3 \xFD ki\u1EBFn. S\xE1ng ra, xe th\u1EA3 b\u1EA1n xu\u1ED1ng m\u1ED9t b\u1EBFn l\u1EA1 \u1EDF ${k.noi}.`,
           [
-            C("Treo bi\u1EC3n, m\u1EDF qu\xE1n ngay", { flags: ["fx_mo_som"], happy: 3 }, "C\xF3 kh\xE1ch s\u1EDBm, ch\u01B0a k\u1ECBp quen vi\u1EC7c"),
-            C("S\u1EEDa b\u1EBFp m\u1ED9t th\xE1ng r\u1ED3i m\u1EDBi m\u1EDF", { money: -0.1, counters: { fx_chuan_bi: 1 } }, "T\u1ED1n th\xEAm ti\u1EC1n, qu\xE1n g\u1ECDn h\u01A1n")
+            C("Ng\u1ED3i c\u1EA1nh l\u1ED3ng g\xE0, \u0111i th\u1EB3ng m\u1ED9t m\u1EA1ch", { flags: ["tc_di_thang"], happy: -2 }, "T\u1EDBi nhanh, ai h\u1ECFi th\u0103m b\u1EBFn xe l\xE0 l\u1EA7n ra"),
+            C("\u0110\u1ED5i ba chuy\u1EBFn xe cho r\u1ED1i d\u1EA5u", { money: -0.1, health: -2, flags: ["tc_doi_xe"] }, "T\u1ED1n ti\u1EC1n v\xE0 s\u1EE9c, kh\xF3 b\u1ECB l\u1EA7n theo")
           ]
         ),
         card(
-          "fx_mo_mon",
-          "M\xF3n \u0111\u1EA7u ti\xEAn",
-          () => "Qu\xE1n c\u1EA7n m\u1ED9t m\xF3n \u0111\u1EC3 ng\u01B0\u1EDDi ta nh\u1EDB. B\u1EA1n th\u1EED ba n\u1ED3i n\u01B0\u1EDBc trong m\u1ED9t \u0111\xEAm, n\u1ED3i th\u1EE9 ba v\u1EEBa mi\u1EC7ng nh\u1EA5t.",
+          "tc_mo_tro",
+          "Ph\xF2ng tr\u1ECD kh\xF4ng h\u1ECFi gi\u1EA5y",
+          (c, k) => `${cap3(k.npc("chu_tro"))} cho thu\xEA c\u0103n g\xE1c m\u01B0\u1EDDi m\xE9t vu\xF4ng, kh\xF4ng h\u1ECFi gi\u1EA5y t\u1EDD, ch\u1EC9 h\u1ECFi b\u1EA1n c\xF3 bi\u1EBFt s\u1EEDa \u1ED1ng n\u01B0\u1EDBc kh\xF4ng. B\u1EA1n n\xF3i bi\u1EBFt. ${k.gag()}`,
           [
-            C("Gi\u1EEF c\xF4ng th\u1EE9c c\u1EE7a nh\xE0", { flags: ["fx_mon_nha"], happy: 2 }, "Quen v\u1ECB, \xEDt ng\u01B0\u1EDDi l\u1EA1 t\xF2 m\xF2"),
-            C("H\u1ECDc m\xF3n \u0111ang \u0111\u01B0\u1EE3c chu\u1ED9ng", { flags: ["fx_mon_moi"], know: 2 }, "D\u1EC5 h\xFAt kh\xE1ch, d\u1EC5 b\u1ECB b\u1EAFt ch\u01B0\u1EDBc")
+            C("Tr\u1EA3 tr\u01B0\u1EDBc ba th\xE1ng ti\u1EC1n ph\xF2ng", { money: -0.15, flags: ["tc_tra_truoc"] }, "H\u1EBFt s\u1EA1ch ti\u1EC1n, \u0111\u01B0\u1EE3c y\xEAn ba th\xE1ng"),
+            C("Tr\u1EA3 theo tu\u1EA7n, s\u1EEDa \u1ED1ng n\u01B0\u1EDBc b\xF9", { health: -1, flags: ["tc_sua_ong"], counters: { tc_chu_tro: 1 } }, "Gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n, nh\u01B0ng b\u1EA1n \u0111\xE2u c\xF3 bi\u1EBFt s\u1EEDa \u1ED1ng n\u01B0\u1EDBc")
           ]
         ),
         card(
-          "fx_mo_doi_dien",
-          "Qu\xE1n b\xEAn kia h\u1EBBm",
-          (c, k) => `B\xEAn kia h\u1EBBm, ${k.npc("quan_doi_dien")} c\u0169ng b\xE1n n\u01B0\u1EDBc, \u0111\xE3 b\xE1n m\u01B0\u1EDDi n\u0103m. S\xE1ng \u0111\u1EA7u ti\xEAn ng\u01B0\u1EDDi \u0111\xF3 sang u\u1ED1ng th\u1EED m\u1ED9t ly, tr\u1EA3 \u0111\u1EE7 ti\u1EC1n, kh\xF4ng n\xF3i g\xEC.`,
+          "tc_mo_viec",
+          "Vi\u1EC7c kh\xF4ng c\u1EA7n t\xEAn",
+          () => "\u1EDE ch\u1EE3 \u0111\xEAm, ng\u01B0\u1EDDi ta ch\u1EC9 h\u1ECFi b\u1EA1n l\xE0m \u0111\u01B0\u1EE3c g\xEC, kh\xF4ng ai h\u1ECFi b\u1EA1n l\xE0 ai. M\u1ED9t \xF4ng gi\xE0 b\xE1n ch\xE1o b\u1ECB \u0111au l\u01B0ng, c\u1EA7n ng\u01B0\u1EDDi \u0111\u1EA9y xe t\u1EEB ch\xEDn gi\u1EDD t\u1ED1i t\u1EDBi ba gi\u1EDD s\xE1ng.",
           [
-            C("Sang ch\xE0o v\xE0 bi\u1EBFu m\u1ED9t h\u1ED9p b\xE1nh", { flags: ["fx_chao_hang_xom"], rel: 2 }, "Th\xEAm m\u1ED9t ng\u01B0\u1EDDi quen, b\u1EDBt m\u1ED9t b\xED m\u1EADt"),
-            C("H\u1EA1 gi\xE1 th\u1EA5p h\u01A1n m\u1ED9t n\u1EEDa", { flags: ["fx_ha_gia"], money: -0.05 }, "K\xE9o kh\xE1ch nhanh, g\xE2y th\xF9 c\u0169ng nhanh")
+            C("\u0110\u1EA9y xe ch\xE1o cho \xF4ng gi\xE0", { flags: ["tc_xe_chao"], counters: { tc_chao: 1 } }, "L\u01B0\u01A1ng \xEDt, h\u1ECDc \u0111\u01B0\u1EE3c n\u1ED3i ch\xE1o"),
+            C("R\u1EEDa b\xE1t cho qu\xE1n nh\u1EADu b\xEAn c\u1EA1nh", { money: 0.1, flags: ["tc_rua_bat"] }, "Ti\u1EC1n kh\xE1 h\u01A1n, \u0111\xEAm n\xE0o c\u0169ng \u01B0\u1EDBt t\u1EDBi khu\u1EF7u tay")
           ]
         )
       ],
       /* khoi_dong */
       [
         card(
-          "fx_kd_tho_xay",
-          "Ba m\u01B0\u01A1i th\u1EE3 x\xE2y",
-          (c, k) => `M\u1ED9t c\xF4ng tr\xECnh m\u1ECDc l\xEAn cu\u1ED1i h\u1EBBm, ba m\u01B0\u01A1i th\u1EE3 x\xE2y c\u1EA7n ch\u1ED7 u\u1ED1ng n\u01B0\u1EDBc m\u1ED7i tr\u01B0a. H\u1ECD h\u1ECFi c\xF3 b\xE1n ch\u1ECBu \u0111\u1EBFn cu\u1ED1i th\xE1ng \u0111\u01B0\u1EE3c kh\xF4ng. ${k.gag()}`,
+          "tc_kd_ao_hoa",
+          "\xC1o hoa \u1EDF \u0111\u1EA7u h\u1EBBm",
+          (c, k) => `Chi\u1EC1u th\u1EE9 b\u1EA3y, ${k.npc("ao_hoa")} xu\u1EA5t hi\u1EC7n \u1EDF \u0111\u1EA7u h\u1EBBm, c\u1EA7m m\u1ED9t t\u1EA5m \u1EA3nh \u0111i h\u1ECFi t\u1EEBng nh\xE0. T\u1EA5m \u1EA3nh ch\u1EE5p b\u1EA1n n\u0103m n\u0103m tr\u01B0\u1EDBc, t\xF3c c\xF2n d\xE0i, m\u1EB7t c\xF2n tr\xF2n. ${cap3(k.npc("chu_tro"))} c\u1EA7m \u1EA3nh nh\xECn r\u1EA5t l\xE2u, r\u1ED3i l\u1EAFc \u0111\u1EA7u.`,
           [
-            C("Cho ghi s\u1ED5 \u0111\u1EBFn cu\u1ED1i th\xE1ng", { flags: ["fx_so_no"], counters: { fx_khach: 2 } }, "\u0110\xF4ng kh\xE1ch, nh\u01B0ng ti\u1EC1n n\u1EB1m trong s\u1ED5"),
-            C("Ch\u1EC9 b\xE1n ti\u1EC1n m\u1EB7t", { money: 0.05, counters: { fx_khach: 1 } }, "Ch\u1EAFc ti\u1EC1n, m\u1EA5t n\u1EEDa s\u1ED1 kh\xE1ch")
+            C("Tr\u1ED1n trong b\u1EBFp nh\xE0 b\xE0 ch\u1EE7 tr\u1ECD", { flags: ["tc_tron_bep"], counters: { tc_chu_tro: 1 } }, "Tho\xE1t l\u1EA7n n\xE0y, m\u1EAFc n\u1EE3 b\xE0 ch\u1EE7 th\xEAm m\u1ED9t l\u1EA7n"),
+            C("C\u1EAFt t\xF3c, \u0111\u1ED5i d\xE1ng \u0111i, \u0111\u1ED5i c\u1EA3 gi\u1ECDng", { money: -0.03, happy: -2, flags: ["tc_doi_dang"] }, "Kh\xF3 nh\u1EADn ra h\u01A1n, soi g\u01B0\u01A1ng th\u1EA5y ng\u01B0\u1EDDi l\u1EA1"),
+            C("Ra m\u1EB7t, h\u1EB9n n\xF3i chuy\u1EC7n cho xong", { health: -3, flags: ["tc_ra_mat"], counters: { tc_gan: 1 } }, "H\u1EBFt tr\u1ED1n, nh\u01B0ng trong t\xFAi ch\u01B0a c\xF3 ti\u1EC1n tr\u1EA3", { tier: "sovereign" })
           ]
         ),
         card(
-          "fx_kd_giay_dan",
-          "T\u1EDD gi\u1EA5y d\xE1n c\u1EEDa",
-          (c, k) => `S\xE1ng th\u1EE9 hai c\xF3 t\u1EDD gi\u1EA5y d\xE1n \u1EDF c\u1EEDa: qu\xE1n ph\u1EA3i b\u1ED5 sung gi\u1EA5y ph\xE9p trong ba m\u01B0\u01A1i ng\xE0y. ${cap3(k.npc("ba_chu_nha"))} n\xF3i h\u1EE3p \u0111\u1ED3ng thu\xEA kh\xF4ng c\xF3 \u0111i\u1EC1u kho\u1EA3n n\xE0y.`,
+          "tc_kd_chao",
+          "N\u1ED3i ch\xE1o l\xFAc n\u1EEDa \u0111\xEAm",
+          (c, k) => `${has(c, "tc_xe_chao") ? "\xD4ng gi\xE0 b\xE1n ch\xE1o ngh\u1EC9 h\u1EB3n, \u0111\u1EC3 l\u1EA1i cho b\u1EA1n c\xE1i xe v\xE0 m\u1ED9t l\u1EDDi d\u1EB7n: \u201C\u0110\u1EEBng b\u1EDBt h\xE0nh.\u201D" : "\xD4ng gi\xE0 b\xE1n ch\xE1o ngh\u1EC9 h\u1EB3n. Th\u1EA5y b\u1EA1n hay gh\xE9 \u0103n, \xF4ng b\xE1n l\u1EA1i c\xE1i xe v\u1EDBi gi\xE1 r\u1EBB nh\u01B0 cho."} B\u1EA1n n\xEAm th\xEAm m\u1ED9t nh\xFAm ti\xEAu theo ki\u1EC3u nh\xE0 m\xECnh, v\xE0 \u0111\xE1m c\xF4ng nh\xE2n ca \u0111\xEAm b\u1EAFt \u0111\u1EA7u x\u1EBFp h\xE0ng. ${k.gag()}`,
           [
-            C("Ch\u1EA1y gi\u1EA5y t\u1EDD cho \u0111\xFAng", { money: -0.1, flags: ["fx_giay_phep"] }, "T\u1ED1n ti\u1EC1n v\xE0 m\u1ED9t th\xE1ng \u0111i l\u1EA1i"),
-            C("D\u1EDDi b\xE0n v\xE0o trong, b\xE1n nh\u1ECF l\u1EA1i", { counters: { fx_khach: -1 }, happy: -2 }, "\u0110\u1EE1 phi\u1EC1n, b\u1EDBt kh\xE1ch")
+            C("B\xE1n xuy\xEAn \u0111\xEAm, t\u1EDBi khi c\u1EA1n n\u1ED3i", { money: 0.15, health: -3, counters: { tc_chao: 2 } }, "\u0110\xF4ng kh\xE1ch, ng\u1EE7 ban ng\xE0y nh\u01B0 d\u01A1i"),
+            C("B\xE1n \xEDt, v\u1EC1 s\u1EDBm, gi\u1EEF m\xECnh k\xEDn", { flags: ["tc_ban_it"], counters: { tc_chao: 1 } }, "\xCDt ti\u1EC1n, \xEDt ng\u01B0\u1EDDi nh\u1EDB m\u1EB7t")
           ]
         ),
         card(
-          "fx_kd_anh_mang",
-          "\u1EA2nh ly n\u01B0\u1EDBc tr\xEAn m\u1EA1ng",
-          () => "Ai \u0111\xF3 ch\u1EE5p ly n\u01B0\u1EDBc c\u1EE7a qu\xE1n \u0111\u0103ng l\xEAn m\u1EA1ng, k\xE8m d\xF2ng ch\u1EEF 'r\u1EBB m\xE0 ngon'. H\xF4m sau c\xF3 m\u01B0\u1EDDi hai ng\u01B0\u1EDDi l\u1EA1 \u0111\u1EE9ng ch\u1EDD tr\u01B0\u1EDBc khi b\u1EA1n k\u1ECBp k\xE9o c\u1EEDa.",
+          "tc_kd_anh",
+          "T\u1EA5m \u1EA3nh b\u1ED1n m\u01B0\u01A1i ngh\xECn l\u01B0\u1EE3t th\xEDch",
+          (c, k) => `M\u1ED9t c\xF4 sinh vi\xEAn ch\u1EE5p xe ch\xE1o, \u0111\u0103ng l\xEAn m\u1EA1ng v\u1EDBi d\xF2ng ch\u1EEF \u201CCh\xE1o c\u1EE7a ng\u01B0\u1EDDi kh\xF4ng bao gi\u1EDD n\xF3i t\xEAn\u201D. B\xE0i vi\u1EBFt c\xF3 b\u1ED1n m\u01B0\u01A1i ngh\xECn l\u01B0\u1EE3t th\xEDch. ${cap3(k.npc("tra_da"))} \u1EDF xe b\xEAn c\u1EA1nh nh\u1EADn x\xE9t: trong \u1EA3nh, m\u1EB7t b\u1EA1n c\xF2n r\xF5 h\u01A1n \u1EA3nh c\u0103n c\u01B0\u1EDBc.`,
           [
-            C("M\u1EDF s\u1EDBm h\u01A1n hai ti\u1EBFng", { health: -2, counters: { fx_khach: 2 }, flags: ["fx_noi"] }, "Ki\u1EBFm th\xEAm, ng\u1EE7 \xEDt \u0111i"),
-            C("Gi\u1EEF gi\u1EDD c\u0169, ai ch\u1EDD th\xEC ch\u1EDD", { flags: ["fx_giu_nhip"], happy: 2 }, "Gi\u1EEF s\u1EE9c, c\xF3 ng\u01B0\u1EDDi b\u1ECF \u0111i")
+            C("\u0110eo kh\u1EA9u trang v\xE0 m\u0169, k\u1EC3 c\u1EA3 l\xFAc ng\u1EE7", { happy: -1, flags: ["tc_khau_trang"] }, "An to\xE0n h\u01A1n, kh\xE1ch \u0111\u1ED3n b\u1EA1n l\xE0 ng\u01B0\u1EDDi n\u1ED5i ti\u1EBFng"),
+            C("Treo bi\u1EC3n \u201CCh\xE1o L\xE2m\u201D cho \u0111\xE0ng ho\xE0ng", { flags: ["tc_bien_lam"], counters: { tc_chao: 2 } }, "\u0110\u1EAFt kh\xE1ch, c\xE1i t\xEAn gi\u1EA3 th\xE0nh th\u01B0\u01A1ng hi\u1EC7u")
           ]
         )
       ],
       /* cu_lat */
       [
         card(
-          "fx_cl_nguoi_cu",
-          "Ng\u01B0\u1EDDi c\u0169 gh\xE9 qu\xE1n",
-          (c, k) => `Tr\u01B0a nay, ${k.scar("nguoi") || "m\u1ED9t ng\u01B0\u1EDDi quen c\u0169"} b\u01B0\u1EDBc v\xE0o qu\xE1n v\xE0 g\u1ECDi \u0111\xFAng m\xF3n b\u1EA1n hay u\u1ED1ng h\u1ED3i tr\u01B0\u1EDBc. Ng\u01B0\u1EDDi \u0111\xF3 n\xF3i nh\u1ECF: qu\xE1n \u0111\u1ED1i di\u1EC7n \u0111ang t\xEDnh mua l\u1EA1i c\u1EA3 d\xE3y nh\xE0 n\xE0y.`,
+          "tc_cl_nguoi_cu",
+          "Ng\u01B0\u1EDDi t\u1EEB \u0111\u1EDDi c\u0169 ng\u1ED3i xu\u1ED1ng gh\u1EBF nh\u1EF1a",
+          (c, k) => `M\u1ED9t t\u1ED1i, ${k.scar("nguoi") || "m\u1ED9t ng\u01B0\u1EDDi quen \u1EDF ch\u1ED1n c\u0169"} ng\u1ED3i xu\u1ED1ng gh\u1EBF nh\u1EF1a tr\u01B0\u1EDBc xe ch\xE1o, g\u1ECDi m\u1ED9t t\xF4, r\u1ED3i n\xF3i nh\u1ECF: \u201CTh\u1EA5y tr\xEAn m\u1EA1ng.\u201D Ng\u01B0\u1EDDi \u0111\xF3 k\u1EC3 m\xF3n n\u1EE3 c\u1EE7a b\u1EA1n \u0111\xE3 \u0111\u01B0\u1EE3c b\xE1n l\u1EA1i cho m\u1ED9t nh\xF3m kh\xE1c, v\xE0 nh\xF3m n\xE0y kh\xF4ng ki\xEAn nh\u1EABn nh\u01B0 ${k.npc("ao_hoa")}.`,
           [
-            C("H\u1ECFi th\xEAm cho r\xF5", { flags: ["fx_biet_tin"], know: 2 }, "Bi\u1EBFt tr\u01B0\u1EDBc, m\u1EA5t m\u1ED9t bu\u1ED5i b\xE1n"),
-            C("K\u1EC7, lo b\xE1n cho h\u1EBFt ng\xE0y", { happy: 1, counters: { fx_khach: 1 } }, "Y\xEAn \u1ED5n h\xF4m nay, m\xF9 chuy\u1EC7n ng\xE0y mai")
+            C("Nh\u1EDD ng\u01B0\u1EDDi \u0111\xF3 gi\u1EEF k\xEDn, \u0111\u1EEBng k\u1EC3 v\u1EDBi ai", { flags: ["tc_nho_giu"], counters: { tc_gan: 1 } }, "Gi\u1EEF \u0111\u01B0\u1EE3c ch\u1ED7 tr\u1ED1n, th\xEAm m\u1ED9t ng\u01B0\u1EDDi bi\u1EBFt"),
+            C("G\u1EEDi ng\u01B0\u1EDDi \u0111\xF3 c\u1EA7m v\u1EC1 m\u1ED9t kho\u1EA3n tr\u1EA3 b\u1EDBt", { money: -0.3, flags: ["tc_tra_bot"] }, "Nh\u1EB9 n\u1EE3, nh\u01B0ng l\u1ED9 ra l\xE0 b\u1EA1n \u0111ang c\xF3 ti\u1EC1n")
           ]
         ),
         card(
-          "fx_cl_mon_do",
-          "M\xF3n \u0111\u1ED3 \u1EDF g\xF3c qu\u1EA7y",
-          (c, k) => `B\u1EA1n mang ${k.scar("do") || "m\u1ED9t m\xF3n \u0111\u1ED3 c\u0169 t\u1EEB \u0111\u1EDDi tr\u01B0\u1EDBc"} t\u1EDBi qu\xE1n, \u0111\u1EB7t \u1EDF g\xF3c qu\u1EA7y cho \u0111\u1EE1 tr\u1ED1ng. M\u1ED9t kh\xE1ch l\u1EA1 ng\u1EAFm r\u1EA5t l\xE2u r\u1ED3i tr\u1EA3 gi\xE1 g\u1EA5p n\u0103m l\u1EA7n ti\u1EC1n b\u1EA1n t\u1EEBng b\u1ECF ra.`,
+          "tc_cl_mon_do",
+          "Th\u1EE9 duy nh\u1EA5t trong ba l\xF4",
+          (c, k) => `T\u1EEB \u0111\u1EDDi c\u0169, b\u1EA1n ch\u1EC9 mang theo m\u1ED9t th\u1EE9: ${k.scar("do") || "con dao th\xE1i c\u1EE7a nh\xE0"}. \u0110\xEAm c\u1EA3 ch\u1EE3 m\u1EA5t \u0111i\u1EC7n, ch\xEDnh th\u1EE9 \u0111\xF3 gi\xFAp b\u1EA1n gi\u1EEF \u0111\u01B0\u1EE3c n\u1ED3i ch\xE1o, v\xE0 c\u1EA3 ch\u1EE3 nh\xECn th\u1EA5y. S\xE1ng h\xF4m sau, ng\u01B0\u1EDDi qu\u1EA3n l\xFD ch\u1EE3 h\u1ECFi b\u1EA1n c\xF3 mu\u1ED1n l\u1EA5y th\xEAm m\u1ED9t ch\u1ED7 n\u1EEFa kh\xF4ng.`,
           [
-            C("B\xE1n, l\u1EA5y ti\u1EC1n s\u1EEDa qu\xE1n", { money: 0.3, flags: ["fx_ban_do"] }, "C\xF3 ti\u1EC1n, m\u1EA5t m\u1ED9t th\u1EE9 c\u1EE7a \u0111\u1EDDi c\u0169"),
-            C("Gi\u1EEF l\u1EA1i", { happy: 3, flags: ["fx_giu_do"] }, "Gi\u1EEF \u0111\u01B0\u1EE3c k\u1EF7 ni\u1EC7m, qu\xE1n v\u1EABn d\u1ED9t")
+            C("L\u1EA5y th\xEAm ch\u1ED7, m\u1EDF xe th\u1EE9 hai", { money: -0.2, flags: ["tc_xe_hai"], counters: { tc_chao: 2 } }, "L\u1EDBn h\u01A1n, d\u1EC5 b\u1ECB \u0111\u1EC3 \xFD h\u01A1n"),
+            C("T\u1EEB ch\u1ED1i, m\u1ED9t xe l\xE0 \u0111\u1EE7 \u0111\u1EC3 tr\u1ED1n", { happy: 2, flags: ["tc_mot_xe"] }, "Y\xEAn th\xE2n, \u0111\u1EE9ng y\xEAn m\u1ED9t ch\u1ED7")
           ]
         ),
         card(
-          "fx_cl_phong_bi",
-          "Phong b\xEC tr\xEAn b\xE0n",
-          (c, k) => `${cap3(k.npc("quan_doi_dien"))} sang h\u1EB3n b\xEAn n\xE0y, \u0111\u1EB7t m\u1ED9t phong b\xEC l\xEAn b\xE0n: \u0111\u1EE7 \u0111\u1EC3 b\u1EA1n l\u1EA5y l\u1EA1i ti\u1EC1n c\u1ECDc v\xE0 s\u1ED1ng th\xEAm n\u1EEDa n\u0103m. ${k.gag()}`,
+          "tc_cl_goi_chao",
+          "G\xE3 \xE1o hoa g\u1ECDi m\u1ED9t t\xF4 th\xEAm tr\u1EE9ng",
+          (c, k) => `Hai gi\u1EDD s\xE1ng, ${k.npc("ao_hoa")} ng\u1ED3i xu\u1ED1ng xe ch\xE1o c\u1EE7a b\u1EA1n, g\u1ECDi m\u1ED9t t\xF4 th\xEAm tr\u1EE9ng. ${has(c, "tc_khau_trang") ? "G\xE3 kh\xF4ng nh\u1EADn ra b\u1EA1n sau l\u1EDBp kh\u1EA9u trang." : has(c, "tc_doi_dang") ? "G\xE3 kh\xF4ng nh\u1EADn ra b\u1EA1n v\u1EDBi m\xE1i t\xF3c m\u1EDBi." : "G\xE3 nh\xECn b\u1EA1n hai l\u1EA7n, nh\u01B0ng kh\xF4ng nh\u1EADn ra."} G\xE3 k\u1EC3 \u0111\xE3 ch\xE1n ngh\u1EC1 \u0111i \u0111\xF2i n\u1EE3, ch\u1EC9 mu\u1ED1n v\u1EC1 qu\xEA nu\xF4i c\xE1. ${k.gag()}`,
           [
-            C("Nh\u1EADn phong b\xEC, xin ngh\u0129 th\xEAm", { flags: ["fx_nhan_phong_bi"], money: 0.2 }, "C\xF3 ti\u1EC1n ngay, n\u1EE3 m\u1ED9t c\xE2u tr\u1EA3 l\u1EDDi"),
-            C("\u0110\u1EA9y phong b\xEC l\u1EA1i", { flags: ["fx_tu_choi"], counters: { fx_gan: 1 } }, "Gi\u1EEF qu\xE1n, th\xEAm m\u1ED9t \u0111\u1ED1i th\u1EE7")
+            C("N\xF3i th\u1EADt m\xECnh l\xE0 ai", { flags: ["tc_lo_mat"], counters: { tc_gan: 2 } }, "Li\u1EC1u, c\xF3 th\u1EC3 th\xE0nh b\u1EA1n, c\xF3 th\u1EC3 th\xE0nh h\u1ED3 s\u01A1"),
+            C("M\xFAc th\xEAm tr\u1EE9ng, im l\u1EB7ng", { flags: ["tc_im"], counters: { tc_chao: 1 } }, "Qua \u0111\u01B0\u1EE3c \u0111\xEAm nay, n\u1ED7i s\u1EE3 c\xF2n nguy\xEAn")
           ]
         )
       ],
       /* day */
       [
         card(
-          "fx_day_ngap",
-          "M\xF9a m\u01B0a ng\u1EADp h\u1EBBm",
-          () => "M\u01B0a ba ng\xE0y, n\u01B0\u1EDBc trong h\u1EBBm l\xEAn qu\xE1 m\u1EAFt c\xE1. B\u1EBFp \u01B0\u1EDBt, hai c\xE1i n\u1ED3i tr\xF4i m\u1EA5t, b\u1ED1n ng\xE0y kh\xF4ng b\xE1n \u0111\u01B0\u1EE3c ly n\xE0o.",
+          "tc_day_dep",
+          "\u0110\xEAm d\u1EB9p ch\u1EE3",
+          (c) => `M\u1ED9t \u0111\xEAm c\xF3 l\u1EC7nh d\u1EB9p ch\u1EE3 \u0111\xEAm. Xe ch\xE1o b\u1ECB c\u1EA9u \u0111i l\xFAc n\u1ED3i c\xF2n \u0111ang s\xF4i, k\xE8m theo ${has(c, "tc_xe_hai") ? "c\u1EA3 chi\u1EBFc xe th\u1EE9 hai" : "c\xE1i gh\u1EBF nh\u1EF1a duy nh\u1EA5t"}. Mu\u1ED1n chu\u1ED9c xe ph\u1EA3i c\xF3 gi\u1EA5y t\u1EDD t\xF9y th\xE2n th\u1EADt.`,
           [
-            C("Vay ti\u1EC1n s\u1EEDa b\u1EBFp", { custom: "borrow:0.3", flags: ["fx_vay"] }, "M\u1EDF l\u1EA1i nhanh, g\xE1nh th\xEAm n\u1EE3"),
-            C("\u0110\xF3ng c\u1EEDa m\u1ED9t th\xE1ng", { money: -0.1, happy: -4 }, "Kh\xF4ng n\u1EE3 th\xEAm, kh\xE1ch quen t\u1EA3n \u0111i")
+            C("D\xF9ng gi\u1EA5y t\u1EDD th\u1EADt \u0111\u1EC3 chu\u1ED9c xe", { money: -0.15, flags: ["tc_lo_ten"] }, "L\u1EA5y l\u1EA1i xe, t\xEAn th\u1EADt n\u1EB1m trong s\u1ED5"),
+            C("B\u1ECF xe, b\xE1n ch\xE1o tr\u01B0\u1EDBc c\u1EEDa nh\xE0 b\xE0 ch\u1EE7 tr\u1ECD", { flags: ["tc_ban_cua"], counters: { tc_chu_tro: 1, tc_chao: -1 } }, "Kh\xF4ng l\u1ED9 t\xEAn, kh\xE1ch gi\u1EA3m m\u1ED9t n\u1EEDa"),
+            C("Vay n\xF3ng \u0111\xF3ng m\u1ED9t chi\u1EBFc xe m\u1EDBi", { custom: "borrow:0.3", flags: ["tc_vay_moi"] }, "Tr\u1ED1n n\u1EE3 b\u1EB1ng m\u1ED9t m\xF3n n\u1EE3 m\u1EDBi")
           ]
         ),
         card(
-          "fx_day_so",
-          "S\u1ED5 cu\u1ED1i th\xE1ng",
-          (c, k) => `${c.flags.has("fx_so_no") ? "Cu\u1ED1i th\xE1ng, cu\u1ED1n s\u1ED5 ghi ch\u1ECBu d\xE0y g\u1EA7n k\xEDn, \u0111\u1ED9i th\u1EE3 \u0111\xE3 chuy\u1EC3n sang c\xF4ng tr\xECnh kh\xE1c." : "Cu\u1ED1i th\xE1ng, ti\u1EC1n v\xE0o kh\xF4ng b\u1EB1ng ti\u1EC1n ra, ng\u0103n k\xE9o ch\u1EC9 c\xF2n ti\u1EC1n l\u1EBB."} ${k.gag()}`,
+          "tc_day_sot",
+          "C\u01A1n s\u1ED1t kh\xF4ng c\xF3 h\u1ECD",
+          (c, k) => `B\u1EA1n s\u1ED1t ba ng\xE0y li\u1EC1n. \u1EDE ph\xF2ng kh\xE1m ng\u01B0\u1EDDi ta h\u1ECFi h\u1ECD t\xEAn, b\u1EA1n \u1EA5p \xFAng, c\xF4 y t\xE1 vi\u1EBFt t\u1EA1m \u201CL\xE2m, kh\xF4ng r\xF5 h\u1ECD\u201D. ${(c.counters.tc_chu_tro ?? 0) >= 2 ? `${cap3(k.npc("chu_tro"))} n\u1EA5u ch\xE1o mang l\xEAn t\u1EADn g\xE1c, b\u1EA3o cho b\u1EA1n bi\u1EBFt c\u1EA3m gi\xE1c \u0103n ch\xE1o ng\u01B0\u1EDDi kh\xE1c n\u1EA5u.` : "Kh\xF4ng ai bi\u1EBFt b\u1EA1n \u1ED1m, n\u1ED3i ch\xE1o ngu\u1ED9i tr\xEAn b\u1EBFp."}`,
           [
-            C("\u0110i t\xECm t\u1EEBng ng\u01B0\u1EDDi \u0111\xF2i", { health: -2, money: 0.1, flags: ["fx_doi_no"] }, "L\u1EA5y l\u1EA1i m\u1ED9t ph\u1EA7n, m\u1EC7t c\u1EA3 tu\u1EA7n"),
-            C("X\xE9 s\u1ED5, coi nh\u01B0 h\u1ECDc ph\xED", { happy: -2, flags: ["fx_xe_so"] }, "Nh\u1EB9 \u0111\u1EA7u, m\u1EA5t tr\u1EAFng")
+            C("N\u1EB1m vi\u1EC7n cho kh\u1ECFi h\u1EB3n", { money: -0.2, health: 5, flags: ["tc_nam_vien"] }, "M\u1EA5t ti\u1EC1n, l\u1EA5y l\u1EA1i s\u1EE9c"),
+            C("U\u1ED1ng thu\u1ED1c r\u1ED3i d\u1EADy b\xE1n ti\u1EBFp", { health: -6, counters: { tc_chao: 1 } }, "Gi\u1EEF kh\xE1ch, s\u1EE9c kh\u1ECFe tr\u1EA3 gi\xE1 sau")
           ]
         ),
         card(
-          "fx_day_dem",
-          "Ba gi\u1EDD s\xE1ng",
-          () => "B\u1EA1n ng\u1ED3i t\xEDnh s\u1ED5 \u0111\u1EBFn ba gi\u1EDD s\xE1ng. N\u1EBFu th\xE1ng sau v\u1EABn nh\u01B0 th\xE1ng n\xE0y, qu\xE1n ch\u1EC9 tr\u1EE5 th\xEAm \u0111\u01B0\u1EE3c ch\xEDn tu\u1EA7n.",
+          "tc_day_giay",
+          "T\u1EDD gi\u1EA5y lu\u1ED3n d\u01B0\u1EDBi c\u1EEDa",
+          (c, k) => `S\xE1ng nay c\xF3 t\u1EDD gi\u1EA5y lu\u1ED3n d\u01B0\u1EDBi c\u1EEDa, vi\u1EBFt tay: \u201CBi\u1EBFt ch\u1ED7 r\u1ED3i.\u201D ${has(c, "tc_lo_mat") ? `N\xE9t ch\u1EEF gi\u1ED1ng h\u1EC7t ch\u1EEF ${k.npc("ao_hoa")} k\xFD n\u1EE3 t\xF4 ch\xE1o h\xF4m n\u1ECD.` : "Kh\xF4ng k\xFD t\xEAn, kh\xF4ng bi\u1EBFt c\u1EE7a ai, ch\u1EEF vi\u1EBFt r\u1EA5t \u0111\u1EB9p."} ${k.gag()}`,
           [
-            C("G\u1ECDi \u0111i\u1EC7n nh\u1EDD ng\u01B0\u1EDDi nh\xE0", { rel: 2, flags: ["fx_nho_nha"] }, "C\xF3 ng\u01B0\u1EDDi \u0111\u1EE1, m\u1EA5t ch\xFAt th\u1EC3 di\u1EC7n"),
-            C("T\u1EF1 xoay, kh\xF4ng n\xF3i v\u1EDBi ai", { happy: -3, counters: { fx_gan: 1 } }, "Gi\u1EEF th\u1EC3 di\u1EC7n, g\xE1nh m\u1ED9t m\xECnh")
+            C("X\u1EBFp ba l\xF4, \u0111\u1EC3 s\u1EB5n sau c\u1EEDa", { happy: -3, flags: ["tc_ba_lo"] }, "S\u1EB5n s\xE0ng ch\u1EA1y ti\u1EBFp, kh\xF4ng ng\u1EE7 y\xEAn"),
+            C("D\xE1n t\u1EDD gi\u1EA5y l\xEAn t\u01B0\u1EDDng, k\u1EC7 n\xF3", { flags: ["tc_o_lai"], counters: { tc_gan: 1 } }, "Quy\u1EBFt kh\xF4ng ch\u1EA1y n\u1EEFa, ch\u01B0a bi\u1EBFt \u0111\xFAng sai")
           ]
         )
       ],
-      /* chung_ket */
+      /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng (host bắn theo thứ tự khai báo). */
       [
         card(
-          "fx_ket_chon",
-          "\u0110\xE8n h\u1EBBm s\xE1ng l\u1EA7n cu\u1ED1i",
-          (c, k) => `S\xE1ng nay, ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"} l\u1EA1i \u0111\u01B0\u1EE3c nh\u1EAFc t\u1EDBi, k\xE8m m\u1ED9t t\u1EDD gi\u1EA5y h\u1EB9n ng\xE0y tr\u1EA3. ${cap3(k.npc("quan_doi_dien"))} v\u1EABn ch\u1EDD c\xE2u tr\u1EA3 l\u1EDDi. \u0110\xE3 \u0111\u1EBFn l\xFAc quy\u1EBFt qu\xE1n n\xE0y s\u1EBD th\xE0nh g\xEC.`,
-          [
-            ending(L_QUAN, "\u0110\u0103ng k\xFD t\xEAn qu\xE1n, l\xE0m cho ra h\u1ED3n", "Th\xE0nh ngh\u1EC1, nh\u01B0ng bu\u1ED9c ch\xE2n \u1EDF \u0111\xE2y"),
-            ending(L_BAN, "B\xE1n l\u1EA1i qu\xE1n, tr\u1EA3 n\u1EE3", "C\xF3 ti\u1EC1n, m\u1EA5t ch\u1ED7 \u0111\u1EE9ng")
-          ]
+          "tc_ket_nga_ba",
+          "Ng\xE3 ba l\xFAc r\u1EA1ng s\xE1ng",
+          (c, k) => `${has(c, "tc_lo_ten") ? "T\xEAn th\u1EADt c\u1EE7a b\u1EA1n \u0111\xE3 n\u1EB1m trong s\u1ED5 b\xE3i gi\u1EEF xe t\u1EEB l\xE2u, v\xE0 ch\u1EB3ng ai t\u1EDBi t\xECm." : "B\u1EA1n \u0111\xE3 s\u1ED1ng b\u1EB1ng t\xEAn L\xE2m l\xE2u t\u1EDBi m\u1EE9c t\xEAn th\u1EADt nghe nh\u01B0 c\u1EE7a ng\u01B0\u1EDDi kh\xE1c."} C\xF2n m\u1ED9t chuy\u1EC7n c\u1EE7a \u0111\u1EDDi c\u0169 v\u1EABn ch\u1EDD l\u1EDDi k\u1EBFt: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}. M\u1ED9t t\xE0i x\u1EBF quen \u1EDF ch\u1EE3 \u0111\xEAm c\u1EA7n ng\u01B0\u1EDDi thay ca, ch\u1EA1y su\u1ED1t chi\u1EC1u d\xE0i \u0111\u1EA5t n\u01B0\u1EDBc. ${k.gag()}`,
+          (c) => [
+            ending(L_LAI, "C\u1EA7m v\xF4 l\u0103ng, \u0111i ti\u1EBFp m\xE0 kh\xF4ng ph\u1EA3i tr\u1ED1n", "\u0110i m\xE3i, nh\u01B0ng l\u1EA7n n\xE0y l\xE0 t\u1EF1 ch\u1ECDn"),
+            ending(L_XE, "\u1EDE l\u1EA1i, xin gi\u1EA5y ph\xE9p cho xe ch\xE1o", "\u0110\u1EE9ng y\xEAn m\u1ED9t ch\u1ED7, b\u1EB1ng t\xEAn th\u1EADt"),
+            ...has(c, "tc_lo_mat") || has(c, "tc_ra_mat") || has(c, "tc_tra_bot") ? [ending(L_VE, "V\u1EC1 ch\u1ED1n c\u0169, tr\u1EA3 n\u1EE3 cho xong", "M\u1EA5t g\u1EA7n h\u1EBFt ti\u1EC1n, \u0111\u01B0\u1EE3c ng\u1EE7 y\xEAn")] : []
+          ],
+          (c) => c.age <= 55
         ),
         card(
-          "fx_ket_xe_som",
-          "Chuy\u1EBFn xe s\u1EDBm",
-          (c, k) => `M\u1ED9t ng\u01B0\u1EDDi b\xE0 con \u1EDF th\xE0nh ph\u1ED1 kh\xE1c nh\u1EAFn: c\xF3 vi\u1EC7c cho b\u1EA1n l\xE0m, c\xF3 ph\xF2ng \u0111\u1EC3 \u1EDF, v\xE9 xe s\xE1ng mai. C\xF2n ${k.scar("no") || "m\xF3n n\u1EE3 \u1EDF qu\xE1n"} th\xEC v\u1EABn ch\u01B0a tr\u1EA3 xong.`,
-          [
-            ending(L_DI, "L\xEAn xe, \u0111i th\xE0nh ph\u1ED1 kh\xE1c", "L\xE0m l\u1EA1i t\u1EEB \u0111\u1EA7u, b\u1ECF qu\xE1n l\u1EA1i sau l\u01B0ng"),
-            ending(L_QUAN, "\u1EDE l\u1EA1i, gi\u1EEF qu\xE1n", "B\xE1m tr\u1EE5, ch\u1ECBu th\xEAm v\xE0i n\u0103m v\u1EA5t v\u1EA3")
-          ],
-          (c) => c.age < 60
+          "tc_ket_ten_that",
+          "T\xEAn th\u1EADt",
+          (c, k) => `M\u1ED9t s\xE1ng, b\u1EA1n nh\u1EADn ra m\xECnh kh\xF4ng c\xF2n s\u1EE3 ti\u1EBFng g\xF5 c\u1EEDa n\u1EEFa. ${cap3(k.scar("no") || "m\xF3n n\u1EE3 c\u0169")}: chuy\u1EC7n \u0111\xF3 v\u1EABn ch\u01B0a xong, v\xE0 ch\u1EC9 c\xF3 t\xEAn th\u1EADt c\u1EE7a b\u1EA1n m\u1EDBi kh\xE9p n\xF3 l\u1EA1i \u0111\u01B0\u1EE3c. ${k.gag()}`,
+          (c) => [
+            ending(L_VE, "V\u1EC1 ch\u1ED1n c\u0169, tr\u1EA3 n\u1EE3 b\u1EB1ng t\xEAn th\u1EADt", "M\u1EA5t g\u1EA7n h\u1EBFt ti\u1EC1n, \u0111\u01B0\u1EE3c ng\u1EE7 y\xEAn"),
+            c.age <= 75 ? ending(L_XE, "\u1EDE l\u1EA1i, treo t\xEAn th\u1EADt l\xEAn xe ch\xE1o", "Gi\u1EEF \u0111\u01B0\u1EE3c ch\u1ED7 \u0111\u1EE9ng, g\u1EEDi ti\u1EC1n tr\u1EA3 d\u1EA7n") : ending(L_SANG, "Sang l\u1EA1i xe ch\xE1o, ngh\u1EC9 ng\u01A1i b\u1EB1ng t\xEAn th\u1EADt", "C\xF3 m\u1ED9t kho\u1EA3n d\u01B0\u1EE1ng gi\xE0, r\u1EDDi kh\u1ECFi n\u1ED3i ch\xE1o")
+          ]
         )
       ]
     ]
   };
+
+  // src/engine/narrative/canon/seasons/vu_an_gia_toc.ts
+  var L_LUAT = land("hoc_luat", "B\u1EA1n \u0111\u1ECDc lu\u1EADt nhi\u1EC1u t\u1EDBi m\u1EE9c \u0111i thi lu\xF4n, v\xE0 t\u1EEB \u0111\xF3 h\u1ECD h\xE0ng g\u1ECDi b\u1EA1n b\u1EB1ng ch\u1EE9c danh m\u1ED7i khi c\xF3 chuy\u1EC7n.", { custom: "become:lawyer", know: 5 }), L_PHAN = land("nhan_phan", "B\u1EA1n nh\u1EADn ph\u1EA7n th\u1EEBa k\u1EBF, d\xF9ng m\u1ED9t ph\u1EA7n kh\xE9p l\u1EA1i chuy\u1EC7n c\u0169, r\u1ED3i k\xFD v\xE0o bi\xEAn b\u1EA3n cu\u1ED1i c\xF9ng.", { money: 1.5, custom: "repay:0.5", happy: 3 }), L_RA_RIENG = land("ra_rieng", "B\u1EA1n r\u1EDDi c\u1EA3 h\u1ECD, chuy\u1EC3n sang th\xE0nh ph\u1ED1 kh\xE1c, ch\u1EC9 gi\u1EEF l\u1EA1i s\u1ED1 \u0111i\u1EC7n tho\u1EA1i c\u1EE7a m\u1ED9t ng\u01B0\u1EDDi.", { custom: "move_city", rel: -3 }), has2 = (c, f5) => c.flags.has(f5);
+  function verdict(c) {
+    let manh = c.counters.va_manh ?? 0, hoa = c.counters.va_hoa ?? 0;
+    return has2(c, "va_noi_ca_ho") && (hoa >= 4 || has2(c, "va_dot_so")) ? "hoa" : manh >= 5 ? "thang" : manh >= 3 ? "nua" : "deu";
+  }
+  var VERDICT = {
+    hoa: (k) => `Phi\xEAn t\xF2a h\xF3a ra kh\xF4ng c\u1EA7n: c\u1EA3 h\u1ECD \u0111\xE3 c\xF9ng \u0111\u1ECDc phong b\xEC c\u1EE7a ${k.npc("co_ut")}, v\xE0 ${k.npc("anh_ho")} r\xFAt \u0111\u01A1n tr\u01B0\u1EDBc m\u1ED9t ng\xE0y.`,
+    thang: () => "B\u1EB1ng ch\u1EE9ng x\u1EBFp th\xE0nh h\xE0ng, v\xE0 b\u1EA3n di ch\xFAc th\u1EE9 hai b\u1ECB tuy\xEAn v\xF4 hi\u1EC7u tr\u01B0\u1EDBc gi\u1EDD ngh\u1EC9 tr\u01B0a.",
+    nua: () => "B\u1EB1ng ch\u1EE9ng \u0111\u1EE7 \u0111\u1EC3 t\xF2a nghi b\u1EA3n di ch\xFAc th\u1EE9 hai, ch\u01B0a \u0111\u1EE7 \u0111\u1EC3 g\u1EA1t n\xF3 \u0111i, n\xEAn c\u0103n nh\xE0 b\u1ECB chia \u0111\xF4i.",
+    deu: () => "Kh\xF4ng ai c\xF3 b\u1EB1ng ch\u1EE9ng tr\u1ECDn v\u1EB9n, n\xEAn t\xF2a chia \u0111\u1EC1u cho ba m\u01B0\u01A1i hai ng\u01B0\u1EDDi. Ph\u1EA7n c\u1EE7a b\u1EA1n b\u1EB1ng \u0111\xFAng m\u1ED9t khung c\u1EEDa s\u1ED5."
+  }, phanHint = (c) => verdict(c) === "hoa" || verdict(c) === "thang" ? "Ph\u1EA7n tr\u1ECDn v\u1EB9n, \u0111\u1EE7 kh\xE9p chuy\u1EC7n c\u0169" : "Ph\u1EA7n nh\u1ECF, ch\u1EC9 \u0111\u1EE7 kh\xE9p m\u1ED9t n\u1EEDa chuy\u1EC7n c\u0169", VU_AN_GIA_TOC = {
+    id: "vu_an_gia_toc",
+    vn: "V\u1EE5 \xE1n gia t\u1ED9c",
+    color: "#7a3b45",
+    years: [8, 16],
+    rules: { income: 0.9, flags: ["w_vu_an_gia_toc"] },
+    reset: {
+      cast: [
+        { key: "anh_ho", role: "rival", label: "ng\u01B0\u1EDDi anh h\u1ECD \u0111eo \u0111\u1ED3ng h\u1ED3 to" },
+        { key: "co_ut", role: "mentor", label: "b\xE0 c\xF4 \xFAt" },
+        { key: "cong_chung", role: "official", label: "\xF4ng c\xF4ng ch\u1EE9ng vi\xEAn" }
+      ]
+    },
+    gag: { key: "nhom_chat_ho", lines: [
+      "T\u1ED1i \u0111\xF3, nh\xF3m chat c\u1EE7a h\u1ECD \u0111\u1ED5i t\xEAn t\u1EEB \u201C\u0110\u1EA1i gia \u0111\xECnh y\xEAu th\u01B0\u01A1ng\u201D th\xE0nh \u201CGia \u0111\xECnh (t\u1EA1m th\u1EDDi)\u201D.",
+      "Nh\xF3m chat c\u1EE7a h\u1ECD l\u1EA1i \u0111\u1ED5i t\xEAn: \u201CAi c\u1EA7m gi\u1EA5y t\u1EDD nh\xE0 th\xEC t\u1EF1 bi\u1EBFt\u201D.",
+      "C\xF3 ng\u01B0\u1EDDi l\u1EE1 g\u1EEDi \u1EA3nh con m\xE8o v\xE0o nh\xF3m chat c\u1EE7a h\u1ECD. Ba m\u01B0\u01A1i ng\u01B0\u1EDDi th\u1EA3 tim, cu\u1ED9c chi\u1EBFn ng\u1EEBng \u0111\xFAng b\u1ED1n ph\xFAt.",
+      "Nh\xF3m chat c\u1EE7a h\u1ECD gi\u1EDD t\xEAn l\xE0 \u201CH\u1ECD h\xE0ng \u01A1i, b\xECnh t\u0129nh\u201D. Kh\xF4ng ai b\xECnh t\u0129nh.",
+      "Nh\xF3m chat c\u1EE7a h\u1ECD \u0111\u1ED5i v\u1EC1 t\xEAn c\u0169 \u201C\u0110\u1EA1i gia \u0111\xECnh y\xEAu th\u01B0\u01A1ng\u201D. L\u1EA7n n\xE0y, h\xECnh nh\u01B0 c\xF3 ng\u01B0\u1EDDi tin th\u1EADt."
+    ] },
+    landings: [L_LUAT, L_PHAN, L_RA_RIENG],
+    beats: [
+      /* mo_man */
+      [
+        card(
+          "va_mo_tang",
+          "Ba m\u01B0\u01A1i hai ng\u01B0\u1EDDi kh\xF3c to b\u1EB1ng nhau",
+          (c, k) => `Ng\u01B0\u1EDDi l\u1EDBn nh\u1EA5t h\u1ECD m\u1EA5t \u1EDF tu\u1ED5i ch\xEDn m\u01B0\u01A1i m\u1ED1t, \u0111\u1EC3 l\u1EA1i c\u0103n nh\xE0 c\u0169 c\xF3 gi\xE0n hoa gi\u1EA5y, m\u1ED9t h\u1ED9p s\u1EAFt kh\xF3a s\u1ED1 v\xE0 ba m\u01B0\u01A1i hai ng\u01B0\u1EDDi con ch\xE1u kh\xF3c to b\u1EB1ng nhau. Sau b\u1EEFa c\u01A1m, ${k.npc("co_ut")} k\xE9o b\u1EA1n ra sau b\u1EBFp, th\xEC th\u1EA7m: \u201CH\u1ED9p s\u1EAFt nh\u1EB9 h\u01A1n h\xF4m qua.\u201D ${k.gag()}`,
+          [
+            C("C\xE2n th\u1EED h\u1ED9p s\u1EAFt, ghi l\u1EA1i c\xE2n n\u1EB7ng", { know: 2, flags: ["va_can_hop"] }, "C\xF3 b\u1EB1ng ch\u1EE9ng \u0111\u1EA7u ti\xEAn, b\u1ECB g\u1ECDi l\xE0 \u0111a nghi"),
+            C("B\u1EA3o b\xE0 c\xF4 \u0111\u1EEBng n\xF3i lung tung", { flags: ["va_im_di"], counters: { va_hoa: 1 } }, "Gi\u1EEF h\xF2a kh\xED, m\u1EA5t d\u1EA5u v\u1EBFt s\u1EDBm")
+          ]
+        ),
+        card(
+          "va_mo_doc",
+          "Bu\u1ED5i \u0111\u1ECDc di ch\xFAc b\u1ECB ho\xE3n",
+          (c, k) => `${cap3(k.npc("cong_chung"))} t\u1EDBi, m\u1EDF c\u1EB7p, r\u1ED3i xin ho\xE3n v\xEC qu\xEAn k\xEDnh. Trong m\u01B0\u1EDDi l\u0103m ph\xFAt ch\u1EDD, ${k.npc("anh_ho")} k\u1ECBp \u0111\u1EC1 ngh\u1ECB b\xE1n c\u0103n nh\xE0, chia \u0111\u1EC1u, \u201Ccho nhanh\u201D.`,
+          [
+            C("\u0110\u1ED3ng \xFD chia nhanh cho \xEAm", { money: 0.1, flags: ["va_chia_nhanh"], counters: { va_hoa: 1 } }, "C\xF3 ch\xFAt ti\u1EC1n ngay, m\u1EA5t quy\u1EC1n h\u1ECFi v\u1EC1 sau"),
+            C("\u0110\xF2i ch\u1EDD \u0111\u1ECDc di ch\xFAc \u0111\xE3", { flags: ["va_cho_doc"], counters: { va_nghi: 1 } }, "\u0110\xFAng th\u1EE7 t\u1EE5c, anh h\u1ECD b\u1EAFt \u0111\u1EA7u ghi th\xF9")
+          ]
+        ),
+        card(
+          "va_mo_chia_khoa",
+          "Ng\u01B0\u1EDDi gi\u1EEF ch\xECa",
+          () => "V\xEC l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t kh\xF4ng \u0111\xF2i g\xEC trong b\u1EEFa c\u01A1m, b\u1EA1n \u0111\u01B0\u1EE3c c\u1EA3 h\u1ECD giao gi\u1EEF ch\xECa kh\xF3a c\u0103n nh\xE0. Chi\u1EBFc ch\xECa nh\u1ECF x\xEDu m\xE0 n\u1EB7ng nh\u01B0 m\u1ED9t l\u1EDDi bu\u1ED9c t\u1ED9i ch\u01B0a n\xF3i ra.",
+          (c, k) => [
+            C("Nh\u1EADn ch\xECa, l\u1EADp s\u1ED5 ghi ai ra v\xE0o", { flags: ["va_so_ra_vao"], counters: { va_nghi: 1 } }, "C\xF3 s\u1ED5 s\xE1ch, m\u1EA5t l\xF2ng ng\u01B0\u1EDDi hay gh\xE9"),
+            C(`G\u1EEDi ch\xECa cho ${k.npc("co_ut")} gi\u1EEF h\u1ED9`, { flags: ["va_dua_chia"], counters: { va_hoa: 1 } }, "Nh\u1EB9 ng\u01B0\u1EDDi, ch\xECa n\u1EB1m trong tay ng\u01B0\u1EDDi kh\xE1c")
+          ]
+        )
+      ],
+      /* khoi_dong */
+      [
+        card(
+          "va_kd_di_chuc",
+          "B\u1EA3n di ch\xFAc th\u1EE9 hai",
+          (c, k) => `Cu\u1ED1i c\xF9ng di ch\xFAc c\u0169ng \u0111\u01B0\u1EE3c \u0111\u1ECDc. R\u1ED3i ${k.npc("anh_ho")} r\xFAt ra b\u1EA3n th\u1EE9 hai, m\u1EDBi h\u01A1n ba th\xE1ng, giao g\u1EA7n h\u1EBFt cho ch\xEDnh anh ta. Ch\u1EEF k\xFD gi\u1ED1ng, nh\u01B0ng n\xE9t m\xF3c \u1EDF cu\u1ED1i th\xEC kh\xF4ng. ${k.gag()}`,
+          [
+            C("\u0110\xF2i \u0111em b\u1EA3n th\u1EE9 hai \u0111i gi\xE1m \u0111\u1ECBnh", { money: -0.1, flags: ["va_giam_dinh"], counters: { va_nghi: 1 } }, "T\u1ED1n ti\u1EC1n, chi\u1EBFn tranh ch\xEDnh th\u1EE9c n\u1ED5 ra"),
+            C("K\xFD nh\u1EADn c\u1EA3 hai, \u0111\u1EC3 t\xF2a lo", { flags: ["va_de_toa"] }, "\u0110\u1EE1 \u1ED3n \xE0o, m\u1ECDi th\u1EE9 k\xE9o d\xE0i th\xEAm v\xE0i n\u0103m")
+          ]
+        ),
+        card(
+          "va_kd_hop",
+          "H\u1ED9p s\u1EAFt kh\xF3a b\u1ED1n s\u1ED1",
+          () => "H\u1ED9p s\u1EAFt c\xF3 \u1ED5 kh\xF3a b\u1ED1n s\u1ED1. C\u1EA3 h\u1ECD th\u1EED ng\xE0y sinh, ng\xE0y c\u01B0\u1EDBi, s\u1ED1 nh\xE0, r\u1ED3i t\u1EDBi s\u1ED1 \u0111i\u1EC7n tho\u1EA1i c\u1EE7a ti\u1EC7m b\xE1nh \u0111\u1EA7u ng\xF5. Kh\xF4ng c\xE1i n\xE0o \u0111\xFAng, v\xE0 ti\u1EC7m b\xE1nh b\u1EAFt \u0111\u1EA7u nh\u1EADn nh\u1EEFng cu\u1ED9c g\u1ECDi r\u1EA5t l\u1EA1.",
+          [
+            C("Thu\xEA th\u1EE3 ph\xE1 kh\xF3a", { money: -0.05, flags: ["va_pha_khoa"] }, "M\u1EDF \u0111\u01B0\u1EE3c h\u1ED9p, m\u1EA5t d\u1EA5u v\u1EBFt tr\xEAn \u1ED5 kh\xF3a"),
+            C("\u0110\u1ECDc nh\u1EADt k\xFD c\u0169 \u0111\u1EC3 \u0111o\xE1n m\xE3 s\u1ED1", { know: 3, flags: ["va_nhat_ky"], counters: { va_manh: 1 } }, "Ch\u1EADm, nh\u01B0ng bi\u1EBFt th\xEAm chuy\u1EC7n c\u0169 c\u1EE7a h\u1ECD")
+          ]
+        ),
+        card(
+          "va_kd_dem",
+          "D\u1EA5u d\xE9p c\u1EE1 b\u1ED1n m\u01B0\u01A1i ba",
+          (c) => `${has2(c, "va_so_ra_vao") ? "S\u1ED5 ra v\xE0o ghi tr\u1ED1ng tr\u01A1n, v\u1EADy m\xE0" : "Kh\xF4ng ai ghi ch\xE9p g\xEC, v\xE0"} s\xE1ng nay c\u1EEDa sau m\u1EDF h\xE9, d\u1EA5u d\xE9p in r\xF5 tr\xEAn l\u1EDBp b\u1ED9t m\xEC b\u1EA1n r\u1EAFc t\u1EEB t\u1ED1i qua. C\u1EE1 b\u1ED1n m\u01B0\u01A1i ba. C\u1EA3 h\u1ECD c\xF3 b\u1EA3y ng\u01B0\u1EDDi \u0111i d\xE9p c\u1EE1 b\u1ED1n m\u01B0\u01A1i ba.`,
+          [
+            C("\u0110o ch\xE2n c\u1EA3 b\u1EA3y ng\u01B0\u1EDDi trong b\u1EEFa c\u01A1m h\u1ECD", { rel: -3, flags: ["va_do_chan"], counters: { va_nghi: 2 } }, "Ra manh m\u1ED1i, c\u1EA3 h\u1ECD th\u1EA5y b\u1ECB x\xFAc ph\u1EA1m"),
+            C("L\u1EB7ng l\u1EBD thay \u1ED5 kh\xF3a", { money: -0.02, flags: ["va_thay_khoa"] }, "Ch\u1EB7n \u0111\u01B0\u1EE3c l\u1EA7n sau, m\u1EA5t d\u1EA5u l\u1EA7n n\xE0y")
+          ]
+        )
+      ],
+      /* cu_lat */
+      [
+        card(
+          "va_cl_nhan_chung",
+          "C\xFA \u0111i\u1EC7n tho\u1EA1i n\u1EEDa \u0111\xEAm",
+          (c, k) => `${cap3(k.scar("nguoi") || "m\u1ED9t ng\u01B0\u1EDDi quen c\u0169")} g\u1ECDi cho b\u1EA1n l\xFAc n\u1EEDa \u0111\xEAm. H\xF4m b\u1EA3n di ch\xFAc \u0111\u1EA7u ti\xEAn \u0111\u01B0\u1EE3c k\xFD, ng\u01B0\u1EDDi \u0111\xF3 t\xECnh c\u1EDD c\xF3 m\u1EB7t, \u0111\u1EE9ng ngo\xE0i c\u1EEDa s\u1ED5 ch\u1EDD tr\u1EA3 \u0111\u1ED3. Ng\u01B0\u1EDDi \u0111\xF3 nh\u1EDB r\u1EA5t r\xF5: b\u1EA3n di ch\xFAc k\xFD b\u1EB1ng tay tr\xE1i, v\xEC tay ph\u1EA3i c\u1EE7a ng\u01B0\u1EDDi l\u1EDBn nh\u1EA5t h\u1ECD \u0111ang b\u0103ng b\xF3.`,
+          [
+            C("M\u1EDDi ng\u01B0\u1EDDi \u0111\xF3 ra l\xE0m ch\u1EE9ng", { flags: ["va_co_nhan_chung"], counters: { va_manh: 2 } }, "C\xF3 nh\xE2n ch\u1EE9ng, k\xE9o ng\u01B0\u1EDDi c\u0169 v\xE0o v\u1EE5 \u1ED3n \xE0o"),
+            C("Gi\u1EEF b\xED m\u1EADt, t\u1EF1 \u0111i ki\u1EC3m ch\u1EE9ng", { know: 2, flags: ["va_tu_kiem"], counters: { va_manh: 1 } }, "Kh\xF4ng phi\u1EC1n ai, ch\u1EADm h\u01A1n")
+          ]
+        ),
+        card(
+          "va_cl_ma_so",
+          "B\u1ED1n c\xE2u h\u1ECFi, b\u1ED1n con s\u1ED1",
+          (c, k) => `${has2(c, "va_pha_khoa") ? "H\u1ED9p s\u1EAFt \u0111\xE3 b\u1ECB ph\xE1 kh\xF3a t\u1EEB tr\u01B0\u1EDBc, nh\u01B0ng \u0111\xE1y h\u1ED9p c\xF2n m\u1ED9t ng\u0103n b\xED m\u1EADt, c\u0169ng kh\xF3a b\u1ED1n s\u1ED1." : "H\u1ED9p s\u1EAFt v\u1EABn \u0111\xF3ng ch\u1EB7t."} \u0110\xEAm m\u1EA5t ng\u1EE7, b\u1EA1n ngh\u0129 t\u1EDBi th\u1EE9 c\u1EE7a \u0111\u1EDDi c\u0169 v\u1EABn c\xF2n \u0111i theo m\xECnh: ${k.scar("do") || "chi\u1EBFc \u0111\u1ED3ng h\u1ED3 c\u0169"}. H\u1ED3i b\u1EA1n c\xF2n nh\u1ECF, ng\u01B0\u1EDDi l\u1EDBn nh\u1EA5t h\u1ECD t\u1EEBng h\u1ECFi b\u1EA1n v\u1EC1 n\xF3 \u0111\xFAng b\u1ED1n c\xE2u, v\xE0 b\u1EA1n nh\u1EDB c\u1EA3 b\u1ED1n c\xE2u tr\u1EA3 l\u1EDDi.`,
+          (c, k) => [
+            C("Th\u1EED b\u1ED1n con s\u1ED1 l\xEAn \u1ED5 kh\xF3a", { flags: ["va_mo_hop"], counters: { va_manh: 2 } }, "C\xF3 th\u1EC3 m\u1EDF \u0111\u01B0\u1EE3c, c\xF3 th\u1EC3 ch\u1EC9 l\xE0 tr\xF9ng h\u1EE3p"),
+            C(`H\u1EB9n ${k.npc("cong_chung")} m\u1EDF c\xF9ng`, { flags: ["va_mo_cong_khai"], counters: { va_hoa: 1, va_manh: 1 } }, "Minh b\u1EA1ch, m\u1EA5t m\u1ED9t th\xE1ng ch\u1EDD l\u1ECBch")
+          ]
+        ),
+        card(
+          "va_cl_so_vay",
+          "Cu\u1ED1n s\u1ED5 trong h\u1ED9p s\u1EAFt",
+          (c, k) => `Trong h\u1ED9p kh\xF4ng c\xF3 ti\u1EC1n. Ch\u1EC9 c\xF3 m\u1ED9t cu\u1ED1n s\u1ED5 ghi tay, li\u1EC7t k\xEA ai trong h\u1ECD t\u1EEBng vay bao nhi\xEAu, t\u1EEB n\u0103m n\xE0o, k\xE8m l\u1EDDi nh\u1EAFn \u201Ckh\xF4ng \u0111\xF2i\u201D. ${has2(c, "va_chia_nhanh") ? "T\xEAn b\u1EA1n c\u0169ng c\xF3, \u1EDF d\xF2ng th\u1EE9 ch\xEDn." : `T\xEAn c\u1EE7a ${k.npc("anh_ho")} \u0111\u1EE9ng \u0111\u1EA7u, g\u1EA1ch ch\xE2n hai l\u1EA7n.`} ${k.gag()}`,
+          [
+            C("\u0110\u1ECDc to cu\u1ED1n s\u1ED5 tr\u01B0\u1EDBc c\u1EA3 h\u1ECD", { rel: -4, flags: ["va_doc_so"], counters: { va_nghi: 2 } }, "S\u1EF1 th\u1EADt ra \xE1nh s\xE1ng, c\u1EA3 h\u1ECD m\u1EA5t m\u1EB7t"),
+            C("C\u1EA5t s\u1ED5, ch\u1EC9 n\xF3i v\u1EDBi ng\u01B0\u1EDDi c\u1EA7n bi\u1EBFt", { flags: ["va_cat_so"], counters: { va_hoa: 1 } }, "Gi\u1EEF th\u1EC3 di\u1EC7n cho h\u1ECD, gi\u1EEF m\u1ED9t qu\u1EA3 bom"),
+            C("\u0110\u1ED1t s\u1ED5, x\xF3a n\u1EE3 cho t\u1EA5t c\u1EA3", { happy: 3, flags: ["va_dot_so"], counters: { va_hoa: 2 } }, "C\u1EA3 h\u1ECD \u0111\u01B0\u1EE3c tha, b\u1EA1n m\u1EA5t con b\xE0i", { tier: "sovereign" })
+          ]
+        )
+      ],
+      /* day */
+      [
+        card(
+          "va_day_to_cao",
+          "L\xE1 \u0111\u01A1n c\xF3 m\u01B0\u1EDDi m\u1ED9t ch\u1EEF k\xFD",
+          (c, k) => `${cap3(k.npc("anh_ho"))} n\u1ED9p \u0111\u01A1n, ${has2(c, "va_dua_chia") ? `n\xF3i b\u1EA1n g\u1EEDi ch\xECa cho ${k.npc("co_ut")} ch\u1EC9 \u0111\u1EC3 che m\u1EAFt, c\xF2n gi\u1EA5y t\u1EDD nh\xE0 th\xEC b\u1EA1n \u0111\xE3 l\u1EA5y t\u1EEB tr\u01B0\u1EDBc.` : "n\xF3i b\u1EA1n l\xE0 ng\u01B0\u1EDDi gi\u1EEF ch\xECa n\xEAn ch\xEDnh b\u1EA1n l\u1EA5y gi\u1EA5y t\u1EDD nh\xE0."} L\xE1 \u0111\u01A1n c\xF3 ch\u1EEF k\xFD c\u1EE7a m\u01B0\u1EDDi m\u1ED9t ng\u01B0\u1EDDi h\u1ECD h\xE0ng, trong \u0111\xF3 c\xF3 hai ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng cho vay ti\u1EC1n.`,
+          [
+            C("Thu\xEA lu\u1EADt s\u01B0, c\xE3i t\u1EDBi c\xF9ng", { money: -0.3, flags: ["va_thue_ls"] }, "T\u1ED1n ti\u1EC1n, gi\u1EEF \u0111\u01B0\u1EE3c t\xEAn m\xECnh"),
+            C("T\u1EF1 \u0111\u1ECDc lu\u1EADt, t\u1EF1 b\xE0o ch\u1EEFa", { know: 5, health: -3, flags: ["va_tu_hoc_luat"] }, "R\u1EBB, m\u1EA5t ng\u1EE7, hi\u1EC3u lu\u1EADt h\u01A1n m\xECnh t\u01B0\u1EDFng")
+          ]
+        ),
+        card(
+          "va_day_o_khoa",
+          "\u1ED4 kh\xF3a l\u1EA1 tr\xEAn c\u1EEDa nh\xE0 c\u0169",
+          (c, k) => `S\xE1ng nay c\u0103n nh\xE0 c\u0169 c\xF3 \u1ED5 kh\xF3a m\u1EDBi, kh\xF4ng ph\u1EA3i c\u1EE7a b\u1EA1n. ${has2(c, "va_thay_khoa") ? "\u1ED4 kh\xF3a b\u1EA1n thay h\xF4m tr\u01B0\u1EDBc b\u1ECB th\xE1o ra, v\u1EE9t d\u01B0\u1EDBi g\u1ED1c hoa gi\u1EA5y." : "Gi\xE0n hoa gi\u1EA5y \u0111\xE3 b\u1ECB ch\u1EB7t s\xE1t g\u1ED1c."} H\xE0ng x\xF3m k\u1EC3 ${k.npc("anh_ho")} \u0111\u01B0a ng\u01B0\u1EDDi t\u1EDBi d\u1ECDn \u0111\u1ED3 t\u1EEB l\xFAc tr\u1EDDi ch\u01B0a s\xE1ng. ${k.gag()}`,
+          [
+            C("\u0110\u1EE9ng tr\u01B0\u1EDBc c\u1EEDa c\u1EA3 ng\xE0y, kh\xF4ng v\u1EC1", { health: -3, flags: ["va_ngoi_cua"], counters: { va_nghi: 1 } }, "C\u1EA3 x\xF3m nh\xECn th\u1EA5y, anh h\u1ECD bu\u1ED9c ph\u1EA3i n\xF3i chuy\u1EC7n"),
+            C("V\u1EC1 nh\xE0, gom gi\u1EA5y t\u1EDD, ch\u1EDD phi\xEAn t\xF2a", { happy: -3, flags: ["va_cho_toa"] }, "Gi\u1EEF s\u1EE9c cho tr\u1EADn ch\xEDnh, m\u1EA5t c\u0103n nh\xE0 v\xE0i th\xE1ng")
+          ]
+        ),
+        card(
+          "va_day_co_ut",
+          "\u1EA4m tr\xE0 r\u1EA5t \u0111\u1EB7c",
+          (c, k) => `${cap3(k.npc("co_ut"))} g\u1ECDi b\u1EA1n t\u1EDBi, pha m\u1ED9t \u1EA5m tr\xE0 r\u1EA5t \u0111\u1EB7c, r\u1ED3i \u0111\u1EB7t l\xEAn b\xE0n m\u1ED9t phong b\xEC c\u0169. Ch\xEDnh b\xE0 l\xE0 ng\u01B0\u1EDDi l\u1EA5y gi\u1EA5y t\u1EDD nh\xE0 kh\u1ECFi h\u1ED9p s\u1EAFt, t\u1EEB tr\u01B0\u1EDBc khi ng\u01B0\u1EDDi l\u1EDBn nh\u1EA5t h\u1ECD m\u1EA5t, theo \u0111\xFAng l\u1EDDi d\u1EB7n: \u201C\u0110\u1EEBng \u0111\u01B0a cho \u0111\u1EE9a n\xE0o h\u1ECFi \u0111\u1EA7u ti\xEAn.\u201D`,
+          [
+            C("\u0110\u01B0a phong b\xEC ra t\xF2a ngay", { flags: ["va_nop_giay"], counters: { va_manh: 2 } }, "Th\u1EAFng nhanh, b\xE0 c\xF4 b\u1ECB h\u1ECFi han \xEA ch\u1EC1"),
+            C("C\xF9ng b\xE0 t\xECm c\xE1ch n\xF3i v\u1EDBi c\u1EA3 h\u1ECD", { flags: ["va_noi_ca_ho"], counters: { va_hoa: 2 } }, "Ch\u1EADm h\u01A1n, kh\xF4ng ai ph\u1EA3i m\u1EA5t m\u1EB7t m\u1ED9t m\xECnh")
+          ]
+        )
+      ],
+      /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. lawyer nhận tới 45 tuổi (PATHS) → chỉ mở khi ≤ 50. */
+      [
+        card(
+          "va_ket_toa",
+          "Phi\xEAn t\xF2a \u0111\xF4ng nh\u01B0 \u0111\xE1m c\u01B0\u1EDBi",
+          (c, k) => `${verdict(c) === "hoa" ? `Ng\xE0y h\u1EB9n x\u1EED, c\u1EA3 h\u1ECD v\u1EABn k\xE9o t\u1EDBi t\xF2a, ch\u1EADt nh\u01B0 \u0111\xE1m c\u01B0\u1EDBi. ${VERDICT.hoa(k)} Tr\xEAn b\u1EADc th\u1EC1m, anh ta v\u1EABn k\u1ECBp nh\u1EAFc chuy\u1EC7n ri\xEAng c\u1EE7a b\u1EA1n, nh\u01B0 m\u1ED9t l\u1EDDi ch\xE0o: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}.` : `Ng\xE0y x\u1EED, ph\xF2ng t\xF2a ch\u1EADt nh\u01B0 \u0111\xE1m c\u01B0\u1EDBi. ${cap3(k.npc("anh_ho"))} m\u1EDF m\xE0n b\u1EB1ng chuy\u1EC7n ri\xEAng c\u1EE7a b\u1EA1n: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}, r\u1ED3i n\xF3i ng\u01B0\u1EDDi \u0111ang mang chuy\u1EC7n \u0111\xF3 th\xEC c\xF3 l\xFD do l\u1EA5y gi\u1EA5y t\u1EDD nh\xE0. ${has2(c, "va_thue_ls") ? "Lu\u1EADt s\u01B0 c\u1EE7a b\u1EA1n b\u1EBB l\u1EA1i trong \u0111\xFAng hai c\xE2u." : has2(c, "va_tu_hoc_luat") ? "B\u1EA1n t\u1EF1 \u0111\u1EE9ng d\u1EADy, tr\xEDch \u0111\xFAng \u0111i\u1EC1u lu\u1EADt \u0111\xE3 thu\u1ED9c l\xFAc ba gi\u1EDD s\xE1ng." : "B\u1EA1n \u0111\u1EE9ng d\u1EADy, trong tay ch\u1EC9 c\xF3 s\u1EF1 th\u1EADt."} ${VERDICT[verdict(c)](k)}`} ${k.gag()}`,
+          (c) => [
+            ending(L_LUAT, "\u0110i thi v\xE0o ngh\u1EC1 lu\u1EADt, l\xE0m cho ra l\u1EBD", "B\u1EAFt \u0111\u1EA7u m\u1ED9t ngh\u1EC1 m\u1EDBi, c\u1EA3 h\u1ECD th\xE0nh kh\xE1ch h\xE0ng"),
+            ending(L_PHAN, "Nh\u1EADn ph\u1EA7n c\u1EE7a m\xECnh, kh\xE9p h\u1ED3 s\u01A1", phanHint(c)),
+            ...has2(c, "va_dot_so") || (c.counters.va_hoa ?? 0) >= 4 ? [ending(L_RA_RIENG, "R\u1EDDi c\u1EA3 h\u1ECD, ra ri\xEAng \u1EDF th\xE0nh ph\u1ED1 kh\xE1c", "Nh\u1EB9 \u0111\u1EA7u, \xEDt ng\u01B0\u1EDDi g\u1ECDi v\u1EC1")] : []
+          ],
+          (c) => c.age <= 50
+        ),
+        card(
+          "va_ket_hoa_giay",
+          "Gi\xE0n hoa gi\u1EA5y m\u1ECDc l\u1EA1i",
+          (c, k) => `${VERDICT[verdict(c)](k)} Trong l\xE1 \u0111\u01A1n n\u0103m \u1EA5y, ch\xEDnh chuy\u1EC7n ri\xEAng c\u1EE7a b\u1EA1n t\u1EEBng b\u1ECB \u0111em ra l\xE0m c\u1EDB bu\u1ED9c t\u1ED9i: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}. Gi\u1EDD gi\xE0n hoa gi\u1EA5y tr\u01B0\u1EDBc c\u0103n nh\xE0 c\u0169 \u0111\xE3 \u0111\xE2m ch\u1ED3i l\u1EA1i, v\xE0 b\u1EA1n mu\u1ED1n kh\xE9p chuy\u1EC7n \u0111\xF3 cho xong. ${k.gag()}`,
+          (c) => [
+            ending(L_PHAN, "Nh\u1EADn ph\u1EA7n th\u1EEBa k\u1EBF, tr\u1EA3 d\u1EE9t chuy\u1EC7n c\u0169", phanHint(c)),
+            ending(L_RA_RIENG, "R\u1EDDi c\u1EA3 h\u1ECD, ra ri\xEAng \u1EDF th\xE0nh ph\u1ED1 kh\xE1c", "Nh\u1EB9 \u0111\u1EA7u, \xEDt ng\u01B0\u1EDDi g\u1ECDi v\u1EC1")
+          ]
+        )
+      ]
+    ]
+  };
+
+  // src/engine/narrative/canon/seasons/ngoi_sao.ts
+  var L_MC = land("dan_chuong_trinh", "B\u1EA1n nh\u1EADn d\u1EABn m\u1ED9t ch\u01B0\u01A1ng tr\xECnh bu\u1ED5i t\u1ED1i. C\xE2y ch\u1ED5i n\u0103m \u1EA5y \u0111\u01B0\u1EE3c treo tr\xEAn t\u01B0\u1EDDng tr\u01B0\u1EDDng quay, nh\u01B0 m\u1ED9t t\u1EA5m b\u1EB1ng.", { custom: "become:tv_host", happy: 5 }), L_HAI = land("dien_hai", "B\u1EA1n \u0111\u1EE9ng tr\xEAn s\xE2n kh\u1EA5u h\xE0i, k\u1EC3 chuy\u1EC7n v\u1EC1 c\xE2y ch\u1ED5i b\u1EB1ng gi\u1ECDng c\u1EE7a ng\u01B0\u1EDDi \u0111\xE3 ch\xE1n n\xF3, v\xE0 kh\xE1n gi\u1EA3 c\u01B0\u1EDDi to h\u01A1n bao gi\u1EDD h\u1EBFt.", { custom: "become:comedian", happy: 6 }), L_RUT = land("rut_lui", "B\u1EA1n r\xFAt lui khi c\xF2n \u0111\u01B0\u1EE3c nh\u1EDB t\u1EDBi, c\u1EA7m m\u1ED9t kho\u1EA3n \u0111\u1EE7 \u0111\u1EC3 mua s\u1EF1 y\xEAn t\u0129nh trong nhi\u1EC1u n\u0103m.", { money: 2.5, happy: 4 }), L_QUY = land("quy_cay_choi", "B\u1EA1n \u0111em g\u1EA7n h\u1EBFt s\u1ED1 ti\u1EC1n ki\u1EBFm \u0111\u01B0\u1EE3c l\u1EADp m\u1ED9t qu\u1EF9 h\u1ECDc b\u1ED5ng mang t\xEAn c\xE2y ch\u1ED5i, v\xE0 cu\u1ED1i c\xF9ng \u0111\u01B0\u1EE3c ng\u01B0\u1EDDi ta nh\u1EDB t\u1EDBi v\xEC m\u1ED9t chuy\u1EC7n kh\xE1c.", { money: -1, happy: 8 }), L_CUOI = land("cuoi_nguoi_khong_chup", "B\u1EA1n c\u01B0\u1EDBi ng\u01B0\u1EDDi duy nh\u1EA5t ch\u01B0a t\u1EEBng xin ch\u1EE5p \u1EA3nh v\u1EDBi m\xECnh.", { custom: "marry", happy: 8 }), has3 = (c, f5) => c.flags.has(f5), danh = (c) => c.counters.ns_danh ?? 0, ql = (c, co, khong) => has3(c, "ns_tu_lam") ? khong : co, cuoi = (c) => ending(L_CUOI, has3(c, "ns_quen_fan") ? "C\u01B0\u1EDBi ng\u01B0\u1EDDi mang h\u1ED9p c\u01A1m, ch\u01B0a t\u1EEBng xin ch\u1EE5p \u1EA3nh" : "C\u01B0\u1EDBi ng\u01B0\u1EDDi ch\u01B0a t\u1EEBng xin ch\u1EE5p \u1EA3nh", "M\u1ED9t \u0111\u1EDDi t\u01B0 tr\u1EDF l\u1EA1i, c\xF9ng m\u1ED9t ng\u01B0\u1EDDi"), NGOI_SAO = {
+    id: "ngoi_sao",
+    vn: "Ng\xF4i sao b\u1EA5t \u0111\u1EAFc d\u0129",
+    color: "#d39b1f",
+    years: [8, 14],
+    rules: { income: 3, flags: ["w_ngoi_sao", "no_privacy"] },
+    reset: {
+      cast: [
+        { key: "quan_ly", role: "partner", label: "c\xF4 qu\u1EA3n l\xFD n\xF3i nhanh" },
+        { key: "fan", role: "neighbor", label: "ng\u01B0\u1EDDi h\xE2m m\u1ED9 s\u1ED1 m\u1ED9t" },
+        { key: "doi_thu", role: "rival", label: "ng\u01B0\u1EDDi b\u1EAFt ch\u01B0\u1EDBc b\u1EA1n" }
+      ]
+    },
+    gag: { key: "cay_choi", lines: [
+      "T\u1EEB h\xF4m \u0111\xF3, \u1EDF \u0111\xE2u b\u1EA1n \u0111i qua c\u0169ng c\xF3 ng\u01B0\u1EDDi gi\u01A1 c\xE2y ch\u1ED5i l\xEAn ch\xE0o.",
+      "M\u1ED9t x\u01B0\u1EDFng l\xE0m ch\u1ED5i g\u1EEDi t\u1EB7ng b\u1EA1n b\u1ED1n tr\u0103m c\xE2y ch\u1ED5i. Ph\xF2ng kh\xE1ch gi\u1EDD ch\u1EC9 c\xF2n l\u1ED1i \u0111i ngang.",
+      "\u1EDE \u0111\xE1m c\u01B0\u1EDBi m\u1ED9t ng\u01B0\u1EDDi quen, c\xF4 d\xE2u tung b\xF3 hoa, r\u1ED3i tung lu\xF4n m\u1ED9t c\xE2y ch\u1ED5i v\u1EC1 ph\xEDa b\u1EA1n.",
+      "C\xF3 ng\u01B0\u1EDDi xin ch\u1EEF k\xFD l\xEAn c\xE1n ch\u1ED5i. B\u1EA1n k\xFD, v\xE0 nh\u1EADn ra ch\u1EEF k\xFD c\u1EE7a m\xECnh tr\xEAn c\xE1n ch\u1ED5i \u0111\u1EB9p h\u01A1n tr\xEAn gi\u1EA5y.",
+      "B\u1EA1n m\u01A1 th\u1EA5y m\xECnh l\xE0 m\u1ED9t c\xE2y ch\u1ED5i. T\u1EC9nh d\u1EADy, c\xE2u \u0111\u1EA7u ti\xEAn b\u1EA1n t\u1EF1 h\u1ECFi l\xE0 c\xF3 quay l\u1EA1i \u0111\u01B0\u1EE3c kh\xF4ng."
+    ] },
+    landings: [L_MC, L_HAI, L_RUT, L_QUY, L_CUOI],
+    beats: [
+      /* mo_man */
+      [
+        card(
+          "ns_mo_clip",
+          "Ba m\u01B0\u01A1i gi\xE2y gi\u1EEFa ng\xE3 t\u01B0",
+          () => "\u0110\xE8n giao th\xF4ng \u1EDF ng\xE3 t\u01B0 h\u1ECFng, xe k\u1EB9t c\u1EE9ng, v\xE0 b\u1EA1n \u0111ang c\u1EA7m s\u1EB5n c\xE2y ch\u1ED5i v\u1EEBa mua. Ba m\u01B0\u01A1i gi\xE2y b\u1EA1n \u0111\u1EE9ng gi\u1EEFa \u0111\u01B0\u1EDDng h\xF4 \u201CB\xEAn n\xE0y \u0111i, b\xEAn kia ch\u1EDD\u201D \u0111\u01B0\u1EE3c ai \u0111\xF3 quay l\u1EA1i. S\xE1ng h\xF4m sau, \u0111o\u1EA1n clip c\xF3 m\u01B0\u1EDDi m\u1ED9t tri\u1EC7u l\u01B0\u1EE3t xem.",
+          [
+            C("L\xEAn m\u1EA1ng n\xF3i v\xE0i c\xE2u c\u1EA3m \u01A1n", { flags: ["ns_cam_on"], counters: { ns_danh: 1 } }, "D\u1EC5 th\u01B0\u01A1ng, th\xEAm m\u1ED9t tri\u1EC7u l\u01B0\u1EE3t xem"),
+            C("T\u1EAFt \u0111i\u1EC7n tho\u1EA1i, \u0111i l\xE0m nh\u01B0 th\u01B0\u1EDDng", { happy: 1, flags: ["ns_tat_may"] }, "Y\xEAn \u0111\u01B0\u1EE3c ba ng\xE0y, r\u1ED3i ng\u01B0\u1EDDi ta t\u1EF1 t\xECm t\u1EDBi")
+          ]
+        ),
+        card(
+          "ns_mo_quan_ly",
+          "H\u1EE3p \u0111\u1ED3ng d\xE0y nh\u01B0 s\xE1ch gi\xE1o khoa",
+          (c, k) => `${cap3(k.npc("quan_ly"))} g\xF5 c\u1EEDa l\xFAc s\xE1u gi\u1EDD s\xE1ng, n\xF3i li\u1EC1n m\u1ED9t m\u1EA1ch b\u1ED1n ph\xFAt kh\xF4ng ng\u1EAFt c\xE2u, r\u1ED3i \u0111\u1EC3 l\u1EA1i m\u1ED9t b\u1EA3n h\u1EE3p \u0111\u1ED3ng d\xE0y nh\u01B0 s\xE1ch gi\xE1o khoa. ${k.gag()}`,
+          [
+            C("K\xFD lu\xF4n, tin c\xF4 \u1EA5y", { flags: ["ns_ky_ngay"], counters: { ns_danh: 2 } }, "N\u1ED5i nhanh, kh\xF4ng bi\u1EBFt m\xECnh \u0111\xE3 b\xE1n nh\u1EEFng g\xEC"),
+            C("\u0110\u1ECDc h\u1EBFt h\u1EE3p \u0111\u1ED3ng r\u1ED3i m\u1EDBi k\xFD", { know: 2, flags: ["ns_doc_hd"], counters: { ns_danh: 1 } }, "Ch\u1EADm m\u1ED9t tu\u1EA7n, bi\u1EBFt r\xF5 m\xECnh b\xE1n c\xE1i g\xEC"),
+            C("T\u1EF1 l\xE0m l\u1EA5y, kh\xF4ng c\u1EA7n qu\u1EA3n l\xFD", { flags: ["ns_tu_lam"], counters: { ns_danh: 1 }, health: -2 }, "Gi\u1EEF to\xE0n quy\u1EC1n, t\u1EF1 g\xE1nh m\u1ECDi cu\u1ED9c g\u1ECDi", { tier: "sovereign" })
+          ]
+        ),
+        card(
+          "ns_mo_quang_cao",
+          "Qu\u1EA3ng c\xE1o \u0111\u1EA7u ti\xEAn",
+          () => "M\u1ED9t h\xE3ng n\u01B0\u1EDBc ch\u1EA5m mu\u1ED1n b\u1EA1n c\u1EA7m ch\u1ED5i ch\u1EC9 \u0111\u01B0\u1EDDng cho m\u1ED9t chai n\u01B0\u1EDBc ch\u1EA5m, tr\u1EA3 b\u1EB1ng s\u1ED1 ti\u1EC1n b\u1EA1n t\u1EEBng ki\u1EBFm trong ba n\u0103m. K\u1ECBch b\u1EA3n ch\u1EC9 c\xF3 m\u1ED9t c\xE2u: \u201CCh\u1EA5m l\xE0 ph\u1EA3i \u0111\xFAng l\xE0n.\u201D",
+          (c) => [
+            C("Nh\u1EADn, \u0111\u1ECDc c\xE2u tho\u1EA1i th\u1EADt nghi\xEAm t\xFAc", { money: 0.5, flags: ["ns_qc_dau"], counters: { ns_danh: 1 } }, "Ti\u1EC1n v\u1EC1, ng\u01B0\u1EDDi ta g\u1ECDi b\u1EA1n l\xE0 \u201Cchai n\u01B0\u1EDBc ch\u1EA5m\u201D"),
+            C("T\u1EEB ch\u1ED1i, ch\u1EC9 nh\u1EADn vi\u1EC7c m\xECnh th\xEDch", { happy: 2, flags: ["ns_ken_chon"] }, ql(c, "Gi\u1EEF \u0111\u01B0\u1EE3c m\xECnh, qu\u1EA3n l\xFD th\u1EDF d\xE0i", "Gi\u1EEF \u0111\u01B0\u1EE3c m\xECnh, b\u1ECF l\u1EE1 m\u1ED9t kho\u1EA3n l\u1EDBn"))
+          ]
+        )
+      ],
+      /* khoi_dong */
+      [
+        card(
+          "ns_kd_fan",
+          "T\u1EA5m b\u1EA3ng t\u1EF1 v\u1EBD \u1EDF h\xE0ng \u0111\u1EA7u",
+          (c, k) => `${cap3(k.npc("fan"))} c\xF3 m\u1EB7t \u1EDF m\u1ECDi bu\u1ED5i b\u1EA1n xu\u1EA5t hi\u1EC7n, lu\xF4n \u0111\u1EE9ng h\xE0ng \u0111\u1EA7u, lu\xF4n c\u1EA7m t\u1EA5m b\u1EA3ng t\u1EF1 v\u1EBD h\xECnh b\u1EA1n v\xE0 c\xE2y ch\u1ED5i. H\xF4m nay ng\u01B0\u1EDDi \u0111\xF3 mang t\u1EDBi m\u1ED9t h\u1ED9p c\u01A1m, b\u1EA3o d\u1EA1o n\xE0y b\u1EA1n g\u1EA7y \u0111i.`,
+          [
+            C("Nh\u1EADn h\u1ED9p c\u01A1m, h\u1ECFi chuy\u1EC7n ng\u01B0\u1EDDi \u0111\xF3", { flags: ["ns_quen_fan"], counters: { ns_than: 1 } }, "C\xF3 th\xEAm m\u1ED9t ng\u01B0\u1EDDi quen th\u1EADt, kh\xF3 gi\u1EEF kho\u1EA3ng c\xE1ch"),
+            C("C\u1EA3m \u01A1n l\u1ECBch s\u1EF1, gi\u1EEF kho\u1EA3ng c\xE1ch", { flags: ["ns_xa_fan"] }, "An to\xE0n, h\u01A1i l\u1EA1nh")
+          ]
+        ),
+        card(
+          "ns_kd_doi_thu",
+          "Tr\u1EADn \u0111\u1EA5u ch\u1EC9 \u0111\u01B0\u1EDDng",
+          (c, k) => `Tr\xEAn m\u1EA1ng xu\u1EA5t hi\u1EC7n ${k.npc("doi_thu")}, c\u1EA7m c\xE2y lau nh\xE0 ch\u1EC9 \u0111\u01B0\u1EDDng \u1EDF m\u1ECDi ng\xE3 t\u01B0, n\xF3i to h\u01A1n b\u1EA1n v\xE0 c\xE1n d\xE0i h\u01A1n ch\u1ED5i c\u1EE7a b\u1EA1n. Ng\u01B0\u1EDDi \u0111\xF3 th\xE1ch b\u1EA1n m\u1ED9t tr\u1EADn ch\u1EC9 \u0111\u01B0\u1EDDng ph\xE1t tr\u1EF1c ti\u1EBFp. ${k.gag()}`,
+          [
+            C("Nh\u1EADn l\u1EDDi th\xE1ch \u0111\u1EA5u", { gamble: {
+              p: 0.5,
+              win: { flags: ["ns_thang_dau"], counters: { ns_danh: 3 }, log: "B\u1EA1n th\u1EAFng s\xE1t n\xFAt, kh\xE1n gi\u1EA3 tung ch\u1ED5i l\xEAn tr\u1EDDi." },
+              lose: { happy: -4, flags: ["ns_thua_dau"], counters: { ns_danh: 1 }, log: "B\u1EA1n thua, v\xE0 \u0111o\u1EA1n thua c\xF3 nhi\u1EC1u l\u01B0\u1EE3t xem h\u01A1n m\u1ECDi \u0111o\u1EA1n th\u1EAFng." }
+            } }, "Th\u1EAFng th\xEC l\xEAn \u0111\u1EC9nh, thua th\xEC th\xE0nh tr\xF2 c\u01B0\u1EDDi"),
+            C("L\u1EDD \u0111i, kh\xF4ng \u0111\xE1p l\u1EA1i", { flags: ["ns_lo_di"], counters: { ns_danh: -1 } }, "Gi\u1EEF phong \u0111\u1ED9, m\u1EA5t nhi\u1EC7t")
+          ]
+        ),
+        card(
+          "ns_kd_lich",
+          "M\u01B0\u1EDDi ch\xEDn s\u1EF1 ki\u1EC7n m\u1ED9t tu\u1EA7n",
+          () => "L\u1ECBch tu\u1EA7n n\xE0y c\xF3 m\u01B0\u1EDDi ch\xEDn s\u1EF1 ki\u1EC7n, ba bu\u1ED5i ch\u1EE5p \u1EA3nh v\xE0 m\u1ED9t bu\u1ED5i c\u1EAFt b\u0103ng kh\xE1nh th\xE0nh nh\xE0 v\u1EC7 sinh c\xF4ng c\u1ED9ng. B\u1EA1n ng\u1EE7 trung b\xECnh b\u1ED1n ti\u1EBFng, \u0103n trong xe, v\xE0 \u0111\xE3 qu\xEAn ng\xE0y sinh c\u1EE7a ch\xEDnh m\xECnh.",
+          (c) => [
+            C("Ch\u1EA1y h\u1EBFt l\u1ECBch", { money: 0.3, health: -6, counters: { ns_danh: 2 } }, "Ti\u1EC1n v\xE0o \xE0o \xE0o, c\u01A1 th\u1EC3 ghi s\u1ED5"),
+            C("H\u1EE7y m\u1ED9t n\u1EEDa, ng\u1EE7 cho \u0111\u1EE7", { health: 3, flags: ["ns_nghi_ngoi"], counters: { ns_danh: -1 } }, ql(c, "Kh\u1ECFe h\u01A1n, qu\u1EA3n l\xFD gi\u1EADn m\u1ED9t tu\u1EA7n", "Kh\u1ECFe h\u01A1n, ba nh\xE0 t\xE0i tr\u1EE3 kh\xF4ng g\u1ECDi l\u1EA1i"))
+          ]
+        )
+      ],
+      /* cu_lat */
+      [
+        card(
+          "ns_cl_nguoi_cu",
+          "Ng\xF4i sao n\xE0y t\u1EEBng l\xE0 ai",
+          (c, k) => `M\u1ED9t ch\u01B0\u01A1ng tr\xECnh truy\u1EC1n h\xECnh t\xECm \u0111\u01B0\u1EE3c ${k.scar("nguoi") || "m\u1ED9t ng\u01B0\u1EDDi quen c\u0169 c\u1EE7a b\u1EA1n"} v\xE0 m\u1EDDi l\xEAn s\xF3ng trong s\u1ED1 \u0111\u1EB7c bi\u1EC7t \u201CNg\xF4i sao n\xE0y t\u1EEBng l\xE0 ai\u201D. Ng\u01B0\u1EDDi \u0111\xF3 \u0111\u1ED3ng \xFD l\xEAn h\xECnh, nh\u01B0ng mu\u1ED1n g\u1EB7p b\u1EA1n tr\u01B0\u1EDBc, \u1EDF qu\xE1n n\u01B0\u1EDBc c\u0169.`,
+          [
+            C("G\u1EB7p, c\xF9ng chu\u1EA9n b\u1ECB c\xE2u chuy\u1EC7n", { flags: ["ns_cung_ke"], counters: { ns_than: 1 } }, "C\xE2u chuy\u1EC7n \u0111\u1EB9p, c\xF3 th\u1EC3 kh\xF4ng ho\xE0n to\xE0n th\u1EADt"),
+            C("Kh\xF4ng g\u1EB7p, ng\u01B0\u1EDDi \u0111\xF3 k\u1EC3 g\xEC th\xEC k\u1EC3", { flags: ["ns_de_ke"], counters: { ns_danh: 1 } }, "Th\u1EADt h\u01A1n, kh\xF4ng ai bi\u1EBFt ng\u01B0\u1EDDi \u0111\xF3 s\u1EBD n\xF3i g\xEC")
+          ]
+        ),
+        card(
+          "ns_cl_trien_lam",
+          "Tri\u1EC3n l\xE3m \u201CTr\u01B0\u1EDBc khi c\xF3 ch\u1ED5i\u201D",
+          (c, k) => `M\u1ED9t nh\xF3m l\xE0m tri\u1EC3n l\xE3m mu\u1ED1n d\u1EF1ng ph\u1EA7n \u201CTr\u01B0\u1EDBc khi c\xF3 ch\u1ED5i\u201D, k\u1EC3 v\u1EC1 \u0111\u1EDDi tr\u01B0\u1EDBc c\u1EE7a b\u1EA1n. H\u1ECD mu\u1ED1n l\xE0m ri\xEAng m\u1ED9t g\xF3c v\u1EC1 ${k.scar("do") || "\u0111\xF4i d\xE9p b\u1EA1n \u0111i h\xF4m quay clip"}, th\u1EE9 b\u1EA1n mang theo t\u1EEB \u0111\u1EDDi c\u0169, v\xE0 tr\u1EA3 g\u1EA5p m\u01B0\u1EDDi l\u1EA7n gi\xE1 tr\u1ECB c\u1EE7a n\xF3.`,
+          [
+            C("\u0110\u1ED3ng \xFD, k\u1EC3 h\u1EBFt chuy\u1EC7n c\u0169", { money: 0.3, flags: ["ns_ban_chuyen"], counters: { ns_danh: 1 } }, "C\xF3 ti\u1EC1n, \u0111\u1EDDi tr\u01B0\u1EDBc th\xE0nh c\u1EE7a c\xF4ng ch\xFAng"),
+            C("T\u1EEB ch\u1ED1i, gi\u1EEF ph\u1EA7n \u0111\xF3 cho ri\xEAng m\xECnh", { happy: 2, flags: ["ns_giu_rieng"] }, "Gi\u1EEF \u0111\u01B0\u1EE3c m\u1ED9t g\xF3c ri\xEAng, m\u1EA5t m\u1ED9t h\u1EE3p \u0111\u1ED3ng")
+          ]
+        ),
+        card(
+          "ns_cl_dieu_khoan",
+          "\u0110i\u1EC1u kho\u1EA3n s\u1ED1 m\u01B0\u1EDDi b\u1EA3y",
+          (c, k) => `${has3(c, "ns_tu_lam") ? "H\xE3ng qu\u1EA3ng c\xE1o \u0111\u1EA7u ti\xEAn g\u1EEDi th\u01B0 b\xE1o" : `${cap3(k.npc("quan_ly"))} b\xE1o tin`}: theo \u0111i\u1EC1u kho\u1EA3n m\u01B0\u1EDDi b\u1EA3y, h\xECnh \u1EA3nh c\xE2y ch\u1ED5i gi\u1EDD thu\u1ED9c v\u1EC1 c\xF4ng ty. ${has3(c, "ns_doc_hd") ? "B\u1EA1n \u0111\xE3 \u0111\u1ECDc \u0111i\u1EC1u kho\u1EA3n n\xE0y t\u1EEB \u0111\u1EA7u, n\xEAn r\xFAt ngay b\u1EA3n h\u1EE3p \u0111\u1ED3ng c\xF3 g\u1EA1ch ch\xE2n \u0111\u1ECF." : has3(c, "ns_tu_lam") ? "B\u1EA1n t\u1EF1 k\xFD b\u1EA3n h\u1EE3p \u0111\u1ED3ng \u0111\xF3, kh\xF4ng ai \u0111\u1ECDc gi\xFAp, n\xEAn ng\u1ED3i im r\u1EA5t l\xE2u." : "B\u1EA1n ch\u01B0a t\u1EEBng \u0111\u1ECDc \u0111i\u1EC1u kho\u1EA3n m\u01B0\u1EDDi b\u1EA3y, n\xEAn ng\u1ED3i im r\u1EA5t l\xE2u."} ${k.gag()}`,
+          [
+            C("Mua l\u1EA1i quy\u1EC1n d\xF9ng c\xE2y ch\u1ED5i", { money: -0.6, flags: ["ns_mua_quyen"] }, "\u0110\u1EAFt, nh\u01B0ng c\xE2y ch\u1ED5i l\u1EA1i l\xE0 c\u1EE7a b\u1EA1n"),
+            C("\u0110\u1ED5i h\xECnh \u1EA3nh, b\u1ECF h\u1EB3n c\xE2y ch\u1ED5i", { flags: ["ns_bo_choi"], counters: { ns_danh: -2 } }, "T\u1EF1 do, kh\xE1n gi\u1EA3 c\u1EE9 h\u1ECFi \u201Cch\u1ED5i \u0111\xE2u\u201D"),
+            C("L\xEAn m\u1EA1ng k\u1EC3 h\u1EBFt chuy\u1EC7n h\u1EE3p \u0111\u1ED3ng", { happy: -2, flags: ["ns_to_hd"], counters: { ns_danh: 2 } }, "\u0110\u01B0\u1EE3c th\u01B0\u01A1ng, b\u1ECB ki\u1EC7n", { tier: "sovereign" })
+          ]
+        )
+      ],
+      /* day */
+      [
+        card(
+          "ns_day_clip_cu",
+          "\u0110o\u1EA1n clip m\u01B0\u1EDDi n\u0103m tr\u01B0\u1EDBc",
+          () => "Ai \u0111\xF3 \u0111\xE0o l\xEAn m\u1ED9t \u0111o\u1EA1n clip m\u01B0\u1EDDi n\u0103m tr\u01B0\u1EDBc: b\u1EA1n qu\xE1t m\u1ED9t ng\u01B0\u1EDDi b\xE1n h\xE0ng v\xEC th\u1ED1i nh\u1EA7m ti\u1EC1n. Trong m\u1ED9t \u0111\xEAm, s\u1ED1 ng\u01B0\u1EDDi theo d\xF5i gi\u1EA3m b\u1ED1n tr\u0103m ngh\xECn, v\xE0 ba h\u1EE3p \u0111\u1ED3ng qu\u1EA3ng c\xE1o r\xFAt lui.",
+          [
+            C("L\xEAn s\xF3ng xin l\u1ED7i, kh\xF4ng bi\u1EC7n minh", { happy: -3, flags: ["ns_xin_loi"], counters: { ns_danh: -1 } }, "M\u1EA5t m\u1EB7t m\u1ED9t l\u1EA7n, c\xF3 th\u1EC3 \u0111\u01B0\u1EE3c tha"),
+            C("Im l\u1EB7ng ch\u1EDD b\xE3o qua", { flags: ["ns_im_bao"], counters: { ns_danh: -2 } }, "Kh\xF4ng n\xF3i sai th\xEAm, b\u1ECB cho l\xE0 ki\xEAu"),
+            C("\u0110i t\xECm ng\u01B0\u1EDDi b\xE1n h\xE0ng n\u0103m \u1EA5y", { money: -0.1, flags: ["ns_tim_nguoi_ban"], counters: { ns_than: 1 } }, "Chu\u1ED9c l\u1ED7i th\u1EADt, kh\xF4ng ai quay phim", { tier: "sovereign" })
+          ]
+        ),
+        card(
+          "ns_day_khong_ai_nhan",
+          "\u0110i ch\u1EE3 kh\xF4ng \u0111eo k\xEDnh r\xE2m",
+          (c, k) => `${danh(c) >= 5 ? "D\xF9 v\u1EABn c\xF2n n\u1ED5i," : "Hai n\u0103m sau c\u01A1n s\u1ED1t,"} m\u1ED9t s\xE1ng b\u1EA1n \u0111i ch\u1EE3 kh\xF4ng \u0111eo k\xEDnh r\xE2m. C\u1EA3 d\xE3y h\xE0ng kh\xF4ng ai ng\u1EA9ng l\xEAn, ch\u1EC9 c\xF3 \u0111\xFAng m\u1ED9t ng\u01B0\u1EDDi nh\u1EADn ra b\u1EA1n. ${k.gag()}`,
+          [
+            C("T\u1EADn h\u01B0\u1EDFng s\u1EF1 y\xEAn l\u1EB7ng", { happy: 4, flags: ["ns_yen"] }, "D\u1EC5 th\u1EDF, thu nh\u1EADp b\u1EAFt \u0111\u1EA7u t\u1EE5t"),
+            C("Quay m\u1ED9t clip m\u1EDBi th\u1EADt \u1ED3n \u0111\u1EC3 n\xEDu kh\xE1n gi\u1EA3", { health: -2, flags: ["ns_niu"], counters: { ns_danh: 1 } }, "C\xF3 th\u1EC3 tr\u1EDF l\u1EA1i, c\xF3 th\u1EC3 th\xE0nh l\u1ED1")
+          ]
+        ),
+        card(
+          "ns_day_cap_cuu",
+          "\u0110\xEAm \u1EDF ph\xF2ng c\u1EA5p c\u1EE9u",
+          (c, k) => `B\u1EA1n ng\u1EA5t trong h\u1EADu tr\u01B0\u1EDDng m\u1ED9t ch\u01B0\u01A1ng tr\xECnh ca nh\u1EA1c, ngay tr\u01B0\u1EDBc ti\u1EBFt m\u1EE5c c\u1EA7m ch\u1ED5i. ${has3(c, "ns_quen_fan") ? `${cap3(k.npc("fan"))} l\xE0 ng\u01B0\u1EDDi ng\u1ED3i ch\u1EDD ngo\xE0i ph\xF2ng c\u1EA5p c\u1EE9u t\u1EDBi s\xE1ng, kh\xF4ng ch\u1EE5p m\u1ED9t t\u1EA5m \u1EA3nh n\xE0o.` : "S\xE1ng ra, \u1EA3nh b\u1EA1n n\u1EB1m tr\xEAn b\u0103ng ca \u0111\xE3 l\xEAn m\u1EA1ng tr\u01B0\u1EDBc khi b\u1EA1n k\u1ECBp t\u1EC9nh."}`,
+          [
+            C("Ngh\u1EC9 h\u1EB3n ba th\xE1ng", { health: 6, flags: ["ns_nghi_dai"], counters: { ns_danh: -2 } }, "L\u1EA5y l\u1EA1i s\u1EE9c, m\u1EA5t gh\u1EBF"),
+            C("Xu\u1EA5t vi\u1EC7n, quay l\u1EA1i s\xE2n kh\u1EA5u ngay", { money: 0.2, health: -5, counters: { ns_danh: 1 } }, "Kh\xE1n gi\u1EA3 v\u1ED7 tay, b\xE1c s\u0129 l\u1EAFc \u0111\u1EA7u")
+          ]
+        )
+      ],
+      /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. tv_host nhận tới 40, comedian tới 45 (PATHS) → mở tới 45 / 50. */
+      [
+        card(
+          "ns_ket_dem_dien",
+          "\u0110\xEAm di\u1EC5n cu\u1ED1i c\u1EE7a c\xE2y ch\u1ED5i",
+          (c, k) => `${danh(c) >= 6 ? "V\xE9 \u0111\xEAm di\u1EC5n k\u1EF7 ni\u1EC7m b\xE1n h\u1EBFt trong b\u1ED1n ph\xFAt." : "\u0110\xEAm di\u1EC5n k\u1EF7 ni\u1EC7m c\xF2n tr\u1ED1ng v\xE0i h\xE0ng gh\u1EBF, \u0111\u1EE7 \u0111\u1EC3 b\u1EA1n nh\xECn r\xF5 t\u1EEBng khu\xF4n m\u1EB7t."} Tr\u01B0\u1EDBc gi\u1EDD l\xEAn s\xE2n kh\u1EA5u, c\xF3 tin nh\u1EAFn nh\u1EAFc b\u1EA1n v\u1EC1 chuy\u1EC7n c\u0169 ch\u01B0a xong: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}. Ng\u01B0\u1EDDi ta n\xF3i gi\u1EDD b\u1EA1n n\u1ED5i ti\u1EBFng r\u1ED3i, ch\u1EAFc kh\xF4ng qu\xEAn. ${k.gag()}`,
+          (c) => [
+            ending(L_MC, "Nh\u1EADn d\u1EABn ch\u01B0\u01A1ng tr\xECnh bu\u1ED5i t\u1ED1i", "\u1ED4n \u0111\u1ECBnh, c\xE2y ch\u1ED5i th\xE0nh qu\xE1 kh\u1EE9 c\xF3 khung"),
+            ending(L_RUT, "R\xFAt lui, c\u1EA7m ti\u1EC1n tr\u1EA3 chuy\u1EC7n c\u0169", "Y\xEAn t\u0129nh, c\xF3 ti\u1EC1n, kh\xF4ng c\xF2n ai nh\u1EADn ra"),
+            c.married ? ending(L_HAI, "L\xEAn s\xE2n kh\u1EA5u h\xE0i, t\u1EF1 c\u01B0\u1EDDi m\xECnh", "V\u1EABn \u1EDF tr\xEAn s\xE2n kh\u1EA5u, l\u1EA7n n\xE0y b\u1EB1ng gi\u1ECDng th\u1EADt") : cuoi(c)
+          ],
+          (c) => c.age <= 45
+        ),
+        card(
+          "ns_ket_tang_choi",
+          "C\xE2y ch\u1ED5i cu\u1ED1i c\xF9ng",
+          (c, k) => `B\u1EA1n \u0111em t\u1EB7ng c\xE2y ch\u1ED5i cu\u1ED1i c\xF9ng trong s\u1ED1 b\u1ED1n tr\u0103m c\xE2y. Chuy\u1EC7n c\u0169 v\u1EABn c\xF2n \u0111\xF3: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}, v\xE0 gi\u1EDD b\u1EA1n \u0111\u1EE7 ti\u1EC1n \u0111\u1EC3 kh\xE9p n\xF3 l\u1EA1i. M\u01B0\u1EDDi m\u1EA5y n\u0103m \u0111\u01B0\u1EE3c c\u1EA3 n\u01B0\u1EDBc nh\u1EADn ra, gi\u1EDD b\u1EA1n mu\u1ED1n \u0111\u01B0\u1EE3c nh\u1EADn ra theo c\xE1ch kh\xE1c. ${k.gag()}`,
+          (c) => [
+            c.age <= 50 ? ending(L_HAI, "L\xEAn s\xE2n kh\u1EA5u h\xE0i, t\u1EF1 c\u01B0\u1EDDi m\xECnh", "V\u1EABn \u1EDF tr\xEAn s\xE2n kh\u1EA5u, l\u1EA7n n\xE0y b\u1EB1ng gi\u1ECDng th\u1EADt") : ending(L_QUY, "L\u1EADp qu\u1EF9 h\u1ECDc b\u1ED5ng mang t\xEAn c\xE2y ch\u1ED5i", "Ti\u1EC1n \u0111i g\u1EA7n h\u1EBFt, c\xE1i t\xEAn \u1EDF l\u1EA1i"),
+            ending(L_RUT, "R\xFAt lui, c\u1EA7m ti\u1EC1n tr\u1EA3 chuy\u1EC7n c\u0169", "Y\xEAn t\u0129nh, c\xF3 ti\u1EC1n, kh\xF4ng c\xF2n ai nh\u1EADn ra"),
+            ...c.married ? [] : [cuoi(c)]
+          ]
+        )
+      ]
+    ]
+  };
+
+  // src/engine/narrative/canon/seasons/lam_lai.ts
+  var L_TIEM = land("tiem_giay_lech", "B\u1EA1n m\u1EDF ti\u1EC7m gi\xE0y \u0111\u1EB7t ri\xEAng, \u0111\xF4i n\xE0o c\u0169ng l\u1EC7ch m\u1ED9t c\xE1ch c\xF3 ch\u1EE7 \xFD, v\xE0 ng\u01B0\u1EDDi ta x\u1EBFp h\xE0ng \u0111\u1EC3 \u0111\u01B0\u1EE3c \u0111i l\u1EC7ch.", { custom: "become:fashion", happy: 6 }), L_MANG = land("ban_giay_le", "B\u1EA1n b\xE1n gi\xE0y l\u1EBB chi\u1EBFc tr\xEAn m\u1EA1ng cho nh\u1EEFng ng\u01B0\u1EDDi ch\u1EC9 c\xF2n m\u1ED9t ch\xE2n gi\xE0y, g\u1EEDi \u0111i kh\u1EAFp n\u01A1i k\xE8m m\u1ED9t t\u1EA5m thi\u1EC7p vi\u1EBFt tay.", { custom: "become:ecommerce", happy: 4 }), L_BAN_Y = land("ban_y_tuong", "M\u1ED9t x\u01B0\u1EDFng l\u1EDBn mua l\u1EA1i c\xE1i t\xEAn \u201CGi\xE0y l\u1EC7ch\u201D. L\u1EA7n \u0111\u1EA7u ti\xEAn t\u1EEB s\u1ED1 kh\xF4ng, b\u1EA1n c\xF3 m\u1ED9t kho\u1EA3n \u0111\u1EE7 \u0111\u1EC3 kh\xF4ng ph\u1EA3i b\u1EAFt \u0111\u1EA7u l\u1EA1i n\u1EEFa.", { money: 1.2, happy: 3 }), L_KHEP = land("khep_xuong", "B\u1EA1n kh\xE9p x\u01B0\u1EDFng, \u0111\u1EC3 chi\u1EBFc gi\xE0y tr\xE1i cu\u1ED1i c\xF9ng l\u1EA1i tr\xEAn b\u1EADu c\u1EEDa, r\u1ED3i chuy\u1EC3n v\u1EC1 m\u1ED9t th\u1ECB tr\u1EA5n nh\u1ECF y\xEAn t\u0129nh.", { custom: "move_city", happy: 4 }), has4 = (c, f5) => c.flags.has(f5), banY = (c) => ending(L_BAN_Y, "B\xE1n c\xE1i t\xEAn \u201CGi\xE0y l\u1EC7ch\u201D, c\u1EA7m ti\u1EC1n", has4(c, "ll_vay") ? "Tr\u1EA3 \u0111\u01B0\u1EE3c c\u1EA3 kho\u1EA3n vay th\xE2n thi\u1EC7n l\u1EABn chuy\u1EC7n c\u0169" : "C\xF3 ti\u1EC1n tr\u1EA3 chuy\u1EC7n c\u0169, nh\xECn ng\u01B0\u1EDDi kh\xE1c l\xE0m ti\u1EBFp"), LAM_LAI = {
+    id: "lam_lai",
+    vn: "L\xE0m l\u1EA1i t\u1EEB s\u1ED1 0",
+    color: "#6f8f4e",
+    years: [8, 20],
+    rules: { income: 0.6, flags: ["w_lam_lai"] },
+    reset: {
+      cash: 0,
+      cast: [
+        { key: "ba_phe_lieu", role: "mentor", label: "b\xE0 ch\u1EE7 v\u1EF1a ph\u1EBF li\u1EC7u" },
+        { key: "ban_phong", role: "partner", label: "ng\u01B0\u1EDDi b\u1EA1n c\xF9ng ph\xF2ng" },
+        { key: "chu_xuong", role: "first_boss", label: "\xF4ng ch\u1EE7 x\u01B0\u1EDFng gi\xE0y" }
+      ]
+    },
+    gag: { key: "giay_trai", lines: [
+      "Ba tr\u0103m chi\u1EBFc gi\xE0y tr\xE1i x\u1EBFp ch\u1ED3ng trong g\xF3c, chi\u1EBFc n\xE0o c\u0169ng nh\u01B0 \u0111ang nh\xECn b\u1EA1n.",
+      "C\xF3 ng\u01B0\u1EDDi g\xF5 c\u1EEDa h\u1ECFi mua m\u1ED9t chi\u1EBFc gi\xE0y ph\u1EA3i. B\u1EA1n ti\u1EC5n h\u1ECD v\u1EC1, l\xF2ng n\u1EB7ng tr\u0129u.",
+      "M\u1ED9t \u0111o\xE0n k\u1ECBch h\u1ECFi thu\xEA ba m\u01B0\u01A1i chi\u1EBFc gi\xE0y tr\xE1i \u0111\u1EC3 di\u1EC5n c\u1EA3nh \u201C\u0111o\xE0n qu\xE2n \u0111i l\u1EA1c\u201D.",
+      "B\u1EA1n d\xF9ng m\u1EA5y chi\u1EBFc gi\xE0y tr\xE1i l\xE0m ch\u1EADu tr\u1ED3ng h\xE0nh. H\xE0nh m\u1ECDc nghi\xEAng h\u1EBFt v\u1EC1 m\u1ED9t b\xEAn.",
+      "\u1EDE h\u1ED9i ch\u1EE3, c\xF3 ng\u01B0\u1EDDi b\xE0y b\xE1n ba tr\u0103m chi\u1EBFc gi\xE0y ph\u1EA3i. Hai ng\u01B0\u1EDDi nh\xECn nhau r\u1EA5t l\xE2u, nh\u01B0 trong phim."
+    ] },
+    landings: [L_TIEM, L_MANG, L_BAN_Y, L_KHEP],
+    beats: [
+      /* mo_man */
+      [
+        card(
+          "ll_mo_trang_tay",
+          "Bu\u1ED5i s\xE1ng tr\u1EAFng tay",
+          (c, k) => `B\u1EA1n th\u1EE9c d\u1EADy trong c\u0103n ph\xF2ng tr\u1ECD m\u01B0\u1EDDi hai m\xE9t vu\xF4ng, v\xED c\xF2n \u0111\xFAng ti\u1EC1n m\u1ED9t b\u1EEFa s\xE1ng. M\u1ECDi th\u1EE9 c\u1EE7a \u0111\u1EDDi tr\u01B0\u1EDBc \u0111\xE3 m\u1EA5t: ti\u1EC1n, ch\u1ED7 \u1EDF, v\xE0 c\u1EA3 c\xE1i t\xEAn trong danh b\u1EA1 c\u1EE7a nhi\u1EC1u ng\u01B0\u1EDDi. ${cap3(k.npc("ban_phong"))} ng\xE1y to t\u1EDBi m\u1EE9c c\u1EEDa s\u1ED5 rung theo nh\u1ECBp.`,
+          [
+            C("\u0102n s\xE1ng th\u1EADt no, r\u1ED3i t\xEDnh ti\u1EBFp", { happy: 3, flags: ["ll_an_no"] }, "H\u1EBFt ti\u1EC1n, nh\u01B0ng c\xF3 s\u1EE9c"),
+            C("Nh\u1ECBn, gi\u1EEF ti\u1EC1n \u0111i xe t\xECm vi\u1EC7c", { health: -2, flags: ["ll_nhin"], counters: { ll_cham: 1 } }, "\u0110\xF3i, nh\u01B0ng \u0111i \u0111\u01B0\u1EE3c xa h\u01A1n")
+          ]
+        ),
+        card(
+          "ll_mo_giay",
+          "Ba tr\u0103m chi\u1EBFc gi\xE0y tr\xE1i",
+          (c, k) => `B\u1EA1n khu\xE2n h\xE0ng gi\xFAp m\u1ED9t x\u01B0\u1EDFng gi\xE0y \u0111ang d\u1ECDn \u0111i. X\u01B0\u1EDFng ph\xE1 s\u1EA3n, ${k.npc("chu_xuong")} tr\u1EA3 c\xF4ng b\u1EB1ng th\u1EE9 duy nh\u1EA5t c\xF2n l\u1EA1i: ba tr\u0103m chi\u1EBFc gi\xE0y, chi\u1EBFc n\xE0o c\u0169ng l\xE0 chi\u1EBFc tr\xE1i. ${k.gag()}`,
+          [
+            C("Ch\u1EA5t \u0111\u1EA7y ph\xF2ng tr\u1ECD", { flags: ["ll_giay_phong"], counters: { ll_ban: -1 } }, "C\xF3 h\xE0ng trong t\u1EA7m tay, b\u1EA1n c\xF9ng ph\xF2ng kh\xF4ng vui"),
+            C("G\u1EEDi nh\u1EDD \u1EDF v\u1EF1a ph\u1EBF li\u1EC7u \u0111\u1EA7u d\u1ED1c", { flags: ["ll_giay_vua"], counters: { ll_ba: 1 } }, "Ph\xF2ng tho\xE1ng, m\u1EAFc n\u1EE3 b\xE0 ch\u1EE7 v\u1EF1a m\u1ED9t ch\u1ED7 \u0111\u1EC3")
+          ]
+        ),
+        card(
+          "ll_mo_vua",
+          "V\u1EF1a ph\u1EBF li\u1EC7u \u0111\u1EA7u d\u1ED1c",
+          (c, k) => `${cap3(k.npc("ba_phe_lieu"))} thu\xEA ng\u01B0\u1EDDi ph\xE2n lo\u1EA1i ph\u1EBF li\u1EC7u, tr\u1EA3 theo c\xE2n. B\xE0 kh\xF4ng h\u1ECFi b\u1EA1n t\u1EEBng l\xE0m g\xEC, ch\u1EC9 h\u1ECFi b\u1EA1n c\xF3 ph\xE2n bi\u1EC7t \u0111\u01B0\u1EE3c nh\xF4m v\u1EDBi thi\u1EBFc kh\xF4ng.`,
+          [
+            C("Nh\u1EADn vi\u1EC7c, h\u1ECDc ph\xE2n lo\u1EA1i", { health: -2, flags: ["ll_lam_vua"], counters: { ll_ba: 1 } }, "B\u1EA9n, \u1ED5n \u0111\u1ECBnh, h\u1ECDc \u0111\u01B0\u1EE3c gi\xE1 c\u1EE7a t\u1EEBng th\u1EE9"),
+            C("Ch\u1EDF h\xE0ng thu\xEA b\u1EB1ng chi\u1EBFc xe m\u01B0\u1EE3n", { money: 0.05, flags: ["ll_cho_thue"] }, "Ti\u1EC1n t\u01B0\u01A1i, nh\u01B0ng xe kh\xF4ng ph\u1EA3i c\u1EE7a m\xECnh")
+          ]
+        )
+      ],
+      /* khoi_dong */
+      [
+        card(
+          "ll_kd_ban_thu",
+          "Chi\u1EBFc gi\xE0y tr\xE1i \u0111\u1EA7u ti\xEAn",
+          () => "B\u1EA1n rao b\xE1n gi\xE0y tr\xE1i tr\xEAn m\u1EA1ng, ch\u1EE7 y\u1EBFu cho vui. \u0110\xEAm \u0111\xF3 c\xF3 m\u1ED9t ng\u01B0\u1EDDi nh\u1EAFn: h\u1ECD \u0111\xE1nh r\u01A1i chi\u1EBFc gi\xE0y tr\xE1i xu\u1ED1ng s\xF4ng khi b\u01B0\u1EDBc l\xEAn thuy\u1EC1n, chi\u1EBFc ph\u1EA3i v\u1EABn c\xF2n m\u1EDBi tinh.",
+          [
+            C("B\xE1n, ghi l\u1EA1i c\xE2u chuy\u1EC7n c\u1EE7a h\u1ECD", { money: 0.02, flags: ["ll_ban_le"], counters: { ll_khach: 1 } }, "M\u1ED9t chi\u1EBFc, m\u1ED9t c\xE2u chuy\u1EC7n, m\u1ED9t \xFD t\u01B0\u1EDFng"),
+            C("T\u1EB7ng lu\xF4n, xin h\u1ECD \u0111\u0103ng \u1EA3nh", { flags: ["ll_tang"], counters: { ll_tieng: 1 } }, "Kh\xF4ng c\xF3 ti\u1EC1n, c\xF3 ng\u01B0\u1EDDi k\u1EC3 v\u1EC1 b\u1EA1n")
+          ]
+        ),
+        card(
+          "ll_kd_may_may",
+          "C\xE1i m\xE1y may c\u1EE7a ng\u01B0\u1EDDi ng\xE1y to",
+          (c, k) => `${cap3(k.npc("ban_phong"))} c\xF3 m\u1ED9t c\xE1i m\xE1y may c\u0169, b\u1EA1n c\xF3 ba tr\u0103m chi\u1EBFc gi\xE0y. Ng\u01B0\u1EDDi \u0111\xF3 \u0111\u1EC1 ngh\u1ECB th\u1EED kh\xE2u hai chi\u1EBFc tr\xE1i kh\xE1c m\xE0u th\xE0nh m\u1ED9t \u0111\xF4i \u201Cl\u1EC7ch c\xF3 ch\u1EE7 \xFD\u201D. ${k.gag()}`,
+          [
+            C("G\xF3p chung, chia \u0111\xF4i l\xE3i", { flags: ["ll_gop_von"], counters: { ll_ban: 1 } }, "C\xF3 b\u1EA1n \u0111\u1ED3ng h\xE0nh, ph\u1EA3i chia m\u1ECDi th\u1EE9"),
+            C("M\u01B0\u1EE3n m\xE1y, t\u1EF1 l\xE0m m\u1ED9t m\xECnh", { flags: ["ll_mot_minh"], counters: { ll_cham: 1 } }, "Gi\u1EEF h\u1EBFt l\xE3i, g\xE1nh h\u1EBFt vi\u1EC7c")
+          ]
+        ),
+        card(
+          "ll_kd_loi_moi_vay",
+          "L\u1EDDi m\u1EDDi vay r\u1EA5t th\xE2n thi\u1EC7n",
+          () => "M\u1ED9t ng\u01B0\u1EDDi quen th\u1EA5y b\u1EA1n b\u1EAFt \u0111\u1EA7u c\xF3 kh\xE1ch, g\u1EE3i \xFD vay m\u1ED9t kho\u1EA3n \u201C\u0111\u1EC3 l\xE0m l\u1EDBn\u201D. L\xE3i kh\xF4ng cao, ng\u01B0\u1EDDi cho vay r\u1EA5t th\xE2n thi\u1EC7n, th\xE2n thi\u1EC7n t\u1EDBi m\u1EE9c h\u01A1i l\u1EA1.",
+          [
+            C("Vay, l\xE0m l\u1EDBn ngay", { custom: "borrow:0.5", flags: ["ll_vay"] }, "L\u1EDBn nhanh, \u0111\u1EDDi tr\u01B0\u1EDBc c\u0169ng b\u1EAFt \u0111\u1EA7u y nh\u01B0 th\u1EBF"),
+            C("Kh\xF4ng vay, l\u1EDBn b\u1EB1ng ti\u1EC1n c\u1EE7a m\xECnh", { flags: ["ll_khong_vay"], counters: { ll_cham: 1 } }, "Ch\u1EADm, nh\u01B0ng kh\xF4ng ai g\xF5 c\u1EEDa \u0111\xF2i")
+          ]
+        )
+      ],
+      /* cu_lat */
+      [
+        card(
+          "ll_cl_nguoi_cu",
+          "H\xF3a ra v\u1EABn c\xF2n s\u1ED1ng",
+          (c, k) => `${cap3(k.scar("nguoi") || "m\u1ED9t ng\u01B0\u1EDDi quen c\u0169")} t\xECm t\u1EDBi ph\xF2ng tr\u1ECD, nh\xECn \u0111\u1ED1ng gi\xE0y tr\xE1i, r\u1ED3i nh\xECn b\u1EA1n. Ng\u01B0\u1EDDi \u0111\xF3 n\xF3i c\xE2u b\u1EA1n ch\u1EDD \u0111\xE3 l\xE2u, ho\u1EB7c s\u1EE3 \u0111\xE3 l\xE2u: \u201CH\xF3a ra v\u1EABn c\xF2n s\u1ED1ng.\u201D R\u1ED3i \u0111\u1EC1 ngh\u1ECB gi\xFAp m\u1ED9t kho\u1EA3n, v\u1EDBi m\u1ED9t \u0111i\u1EC1u ki\u1EC7n.`,
+          [
+            C("Nh\u1EADn gi\xFAp, ch\u1EA5p nh\u1EADn \u0111i\u1EC1u ki\u1EC7n", { money: 0.3, flags: ["ll_nhan_giup"] }, "C\xF3 v\u1ED1n, c\xF3 ng\u01B0\u1EDDi nh\u1EAFc chuy\u1EC7n c\u0169 m\u1ED7i tu\u1EA7n"),
+            C("C\u1EA3m \u01A1n, t\u1EF1 \u0111i ti\u1EBFp", { happy: 2, flags: ["ll_tu_di"], counters: { ll_cham: 1 } }, "Gi\u1EEF l\xF2ng t\u1EF1 tr\u1ECDng, gi\u1EEF c\xE1i ngh\xE8o th\xEAm \xEDt l\xE2u")
+          ]
+        ),
+        card(
+          "ll_cl_con_sot",
+          "Th\u1EE9 c\xF2n s\xF3t l\u1EA1i",
+          (c, k) => `\u0110\u1EDDi tr\u01B0\u1EDBc cu\u1ED1n \u0111i g\u1EA7n h\u1EBFt, tr\u1EEB m\u1ED9t th\u1EE9: ${k.scar("do") || "\u0111\xF4i tay quen vi\u1EC7c"}. M\u1ED9t \u0111\xEAm, b\u1EA1n nh\u1EADn ra ch\xEDnh n\xF3 l\xE0 m\u1EA3nh c\xF2n thi\u1EBFu \u0111\u1EC3 nh\u1EEFng \u0111\xF4i gi\xE0y l\u1EC7ch th\xE0nh th\u1EE9 ng\u01B0\u1EDDi ta mu\u1ED1n mua, kh\xF4ng ch\u1EC9 mu\u1ED1n ch\u1EE5p \u1EA3nh.`,
+          [
+            C("D\u1ED3n h\u1EBFt s\u1EE9c v\xE0o h\u01B0\u1EDBng \u0111\xF3", { health: -3, flags: ["ll_dung_vet"], counters: { ll_khach: 2 } }, "L\xE0m ra h\xE0ng th\u1EADt, ki\u1EC7t s\u1EE9c"),
+            C("G\xE1c n\xF3 l\u1EA1i, l\xE0m theo ki\u1EC3u d\u1EC5 b\xE1n", { money: 0.15, flags: ["ll_gac_vet"] }, "C\xF3 ti\u1EC1n nhanh, h\xE0ng gi\u1ED1ng c\u1EE7a m\u1ECDi ng\u01B0\u1EDDi")
+          ]
+        ),
+        card(
+          "ll_cl_don_lon",
+          "\u0110\u01A1n h\xE0ng m\u1ED9t ngh\xECn \u0111\xF4i",
+          (c, k) => `M\u1ED9t chu\u1ED7i c\u1EEDa h\xE0ng \u0111\u1EB7t m\u1ED9t ngh\xECn \u0111\xF4i gi\xE0y l\u1EC7ch, c\u1ECDc tr\u01B0\u1EDBc ba m\u01B0\u01A1i ph\u1EA7n tr\u0103m, giao trong s\xE1u tu\u1EA7n. B\u1EA1n c\xF3 ${has4(c, "ll_gop_von") ? "hai ng\u01B0\u1EDDi" : "m\u1ED9t m\xECnh"}, m\u1ED9t c\xE1i m\xE1y may, v\xE0 m\u1ED9t \u0111\u1ED1ng gi\xE0y tr\xE1i \u0111\xE3 v\u01A1i \u0111i m\u1ED9t n\u1EEDa. ${k.gag()}`,
+          [
+            C("Nh\u1EADn \u0111\u01A1n, thu\xEA th\xEAm ng\u01B0\u1EDDi", { money: 0.3, health: -4, flags: ["ll_don_lon"] }, "L\xEAn m\u1ED9t b\u1EADc, m\u1ED9t sai s\xF3t l\xE0 s\u1EADp"),
+            C("Nh\u1EADn m\u1ED9t n\u1EEDa s\u1ED1 l\u01B0\u1EE3ng", { money: 0.15, flags: ["ll_don_nua"] }, "An to\xE0n, kh\xE1ch c\xF3 th\u1EC3 \u0111i t\xECm ng\u01B0\u1EDDi kh\xE1c"),
+            C("T\u1EEB ch\u1ED1i, gi\u1EEF h\xE0ng l\xE0m tay", { flags: ["ll_lam_tay"], counters: { ll_tieng: 1 } }, "Nh\u1ECF m\xE0 ch\u1EA5t, ti\u1EC1n v\u1EC1 ch\u1EADm", { tier: "sovereign" })
+          ]
+        )
+      ],
+      /* day */
+      [
+        card(
+          "ll_day_tra_hang",
+          "Nh\u1EEFng \u0111\xF4i gi\xE0y h\xE1 m\xF5m",
+          (c) => `${has4(c, "ll_don_lon") ? "S\xE1u tr\u0103m \u0111\xF4i trong \u0111\u01A1n h\xE0ng l\u1EDBn b\u1ECB tr\u1EA3 l\u1EA1i v\xEC bong keo." : "M\u1ED9t l\xF4 h\xE0ng b\u1ECB tr\u1EA3 l\u1EA1i v\xEC bong keo."} ${has4(c, "ll_vay") ? "C\xF9ng tu\u1EA7n \u0111\xF3, kho\u1EA3n vay r\u1EA5t th\xE2n thi\u1EC7n t\u1EDBi h\u1EA1n." : "C\xF9ng tu\u1EA7n \u0111\xF3, ti\u1EC1n nh\xE0 c\u0169ng t\u1EDBi h\u1EA1n."} B\u1EA1n ng\u1ED3i gi\u1EEFa \u0111\u1ED1ng gi\xE0y b\u1ECB tr\u1EA3 v\u1EC1, \u0111\xF4i n\xE0o c\u0169ng h\xE1 m\xF5m nh\u01B0 \u0111ang c\u01B0\u1EDDi.`,
+          [
+            C("Ho\xE0n ti\u1EC1n \u0111\u1EE7, nh\u1EADn l\u1ED7i", { money: -0.4, flags: ["ll_hoan_tien"], counters: { ll_tieng: 1 } }, "S\u1EA1ch ti\u1EC1n, gi\u1EEF \u0111\u01B0\u1EE3c t\xEAn tu\u1ED5i"),
+            C("S\u1EEDa l\u1EA1i t\u1EEBng \u0111\xF4i, xin kh\xE1ch gia h\u1EA1n", { health: -4, flags: ["ll_sua_lai"], counters: { ll_cham: 1 } }, "Kh\xF4ng m\u1EA5t ti\u1EC1n, m\u1EA5t ba th\xE1ng ng\u1EE7")
+          ]
+        ),
+        card(
+          "ll_day_ban_phong",
+          "Ph\xF2ng tr\u1ECD im l\u1EB7ng",
+          (c, k) => `${has4(c, "ll_gop_von") ? `${cap3(k.npc("ban_phong"))} \u0111\u1EC3 l\u1EA1i m\u1ED9t l\xE1 th\u01B0, n\xF3i kh\xF4ng ch\u1ECBu n\u1ED5i n\u1EEFa, r\u1ED3i mang theo m\u1ED9t n\u1EEDa ti\u1EC1n chung.` : `${cap3(k.npc("ban_phong"))} chuy\u1EC3n \u0111i, \u0111\u1EC3 l\u1EA1i c\xE1i m\xE1y may v\xE0 m\u1ED9t c\xE2u: \u201CPh\xF2ng y\xEAn qu\xE1, t\xF4i kh\xF4ng ng\u1EE7 \u0111\u01B0\u1EE3c.\u201D`} \u0110\xEAm \u0111\u1EA7u ti\xEAn kh\xF4ng c\xF3 ti\u1EBFng ng\xE1y, b\u1EA1n c\u0169ng kh\xF4ng ng\u1EE7 \u0111\u01B0\u1EE3c. ${k.gag()}`,
+          [
+            C("\u0110i t\xECm ng\u01B0\u1EDDi \u0111\xF3, n\xF3i cho ra nh\u1EBD", { health: -2, flags: ["ll_tim_ban"], counters: { ll_ban: 1 } }, "C\xF3 th\u1EC3 l\u1EA5y l\u1EA1i m\u1ED9t ng\u01B0\u1EDDi b\u1EA1n, m\u1EA5t m\u1ED9t tu\u1EA7n"),
+            C("\u0110\u1EC3 ng\u01B0\u1EDDi ta \u0111i, l\xE0m ti\u1EBFp m\u1ED9t m\xECnh", { happy: -3, flags: ["ll_de_di"], counters: { ll_cham: 1 } }, "\u0110\u1EE1 phi\u1EC1n, c\xF4 \u0111\u01A1n h\u01A1n")
+          ]
+        ),
+        card(
+          "ll_day_so_khong",
+          "L\u1EA7n th\u1EE9 hai \u1EDF s\u1ED1 kh\xF4ng",
+          (c) => `Ba gi\u1EDD s\xE1ng, b\u1EA1n ng\u1ED3i \u0111\u1EBFm l\u1EA1i: ${has4(c, "ll_vay") ? "m\xF3n n\u1EE3 m\u1EDBi \u0111\xE3 b\u1EB1ng m\u1ED9t n\u1EEDa m\xF3n n\u1EE3 c\u0169 ng\xE0y tr\u01B0\u1EDBc" : "kh\xF4ng n\u1EE3 ai, nh\u01B0ng c\u0169ng ch\u1EB3ng c\xF2n g\xEC"}. L\u1EA7n th\u1EE9 hai trong \u0111\u1EDDi b\u1EA1n \u0111\u1EE9ng \u1EDF s\u1ED1 kh\xF4ng, ch\u1EC9 kh\xE1c l\xE0 l\u1EA7n n\xE0y b\u1EA1n bi\u1EBFt s\u1ED1 kh\xF4ng tr\xF4ng nh\u01B0 th\u1EBF n\xE0o.`,
+          (c, k) => [
+            C(`G\u1ECDi cho ${k.npc("ba_phe_lieu")}`, { flags: ["ll_goi_ba"], counters: { ll_ba: 1 } }, "C\xF3 ng\u01B0\u1EDDi ch\u1EC9 \u0111\u01B0\u1EDDng, ph\u1EA3i nghe gi\u1EA3ng m\u1ED9t bu\u1ED5i"),
+            C("Vi\u1EBFt l\u1EA1i k\u1EBF ho\u1EA1ch t\u1EEB d\xF2ng \u0111\u1EA7u ti\xEAn", { know: 3, flags: ["ll_ke_hoach"] }, "R\xF5 r\xE0ng h\u01A1n, ch\u01B0a ai ki\u1EC3m ch\u1EE9ng")
+          ]
+        )
+      ],
+      /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. fashion nhận tới 45, ecommerce tới 50 (PATHS) → mở tới 50 / 55. */
+      [
+        card(
+          "ll_ket_tam_bien",
+          "T\u1EA5m bi\u1EC3n tr\u01B0\u1EDBc x\u01B0\u1EDFng",
+          (c, k) => `${(c.counters.ll_ba ?? 0) >= 2 ? `${cap3(k.npc("ba_phe_lieu"))} cho b\u1EA1n m\u01B0\u1EE3n kho\u1EA3ng s\xE2n sau v\u1EF1a l\xE0m x\u01B0\u1EDFng, kh\xF4ng l\u1EA5y ti\u1EC1n, ch\u1EC9 \u0111\xF2i m\u1ED9t \u0111\xF4i gi\xE0y l\u1EC7ch.` : "B\u1EA1n thu\xEA \u0111\u01B0\u1EE3c m\u1ED9t gian nh\u1ECF \u1EDF cu\u1ED1i ch\u1EE3, v\u1EEBa \u0111\u1EE7 k\xEA c\xE1i m\xE1y may."} C\xF2n m\u1ED9t chuy\u1EC7n c\u1EE7a \u0111\u1EDDi tr\u01B0\u1EDBc ch\u01B0a kh\xE9p: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}. L\u1EA7n n\xE0y, b\u1EA1n c\xF3 \u0111\u1EE7 th\u1EE9 \u0111\u1EC3 ch\u1ECDn c\xE1ch kh\xE9p n\xF3. ${k.gag()}`,
+          (c) => [
+            ending(L_TIEM, "Treo bi\u1EC3n, m\u1EDF ti\u1EC7m gi\xE0y \u0111\u1EB7t ri\xEAng", (c.counters.ll_tieng ?? 0) >= 2 ? "Kh\xE1ch quen \u0111\xE3 ch\u1EDD s\u1EB5n, bu\u1ED9c ch\xE2n \u1EDF m\u1ED9t ch\u1ED7" : "Th\xE0nh ngh\u1EC1, bu\u1ED9c ch\xE2n \u1EDF m\u1ED9t ch\u1ED7"),
+            ending(L_MANG, "B\xE1n gi\xE0y l\u1EBB chi\u1EBFc tr\xEAn m\u1EA1ng", "B\xE1n kh\u1EAFp n\u01A1i, s\u1ED1ng trong nh\u1EEFng th\xF9ng h\xE0ng"),
+            banY(c)
+          ],
+          (c) => c.age <= 50
+        ),
+        card(
+          "ll_ket_chiec_cuoi",
+          "Chi\u1EBFc gi\xE0y tr\xE1i cu\u1ED1i c\xF9ng",
+          (c, k) => `Ch\u1EC9 c\xF2n m\u1ED9t chi\u1EBFc gi\xE0y tr\xE1i trong s\u1ED1 ba tr\u0103m chi\u1EBFc. B\u1EA1n \u0111\u1EB7t n\xF3 l\xEAn b\xE0n, c\u1EA1nh t\u1EDD gi\u1EA5y ghi chuy\u1EC7n c\u0169 ch\u01B0a xong: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169"}. ${k.gag()}`,
+          (c) => [
+            banY(c),
+            c.age <= 55 ? ending(L_MANG, "B\xE1n n\u1ED1t t\u1EEBng chi\u1EBFc tr\xEAn m\u1EA1ng", "Ch\u1EADm r\xE3i, vui, kh\xF4ng bao gi\u1EDD h\u1EBFt vi\u1EC7c") : ending(L_KHEP, "Kh\xE9p x\u01B0\u1EDFng, v\u1EC1 m\u1ED9t th\u1ECB tr\u1EA5n y\xEAn t\u0129nh", "Ngh\u1EC9 ng\u01A1i, ch\u1EC9 gi\u1EEF l\u1EA1i m\u1ED9t chi\u1EBFc gi\xE0y")
+          ]
+        )
+      ]
+    ]
+  };
+
+  // src/engine/narrative/canon/seasons/xu_nguoi.ts
+  var L_QUAN = land("quan_am_nuoc", "B\u1EA1n m\u1EDF m\u1ED9t qu\xE1n \u0103n nh\u1ECF \u1EDF x\u1EE9 ng\u01B0\u1EDDi, \u0111\u1EB7t t\xEAn l\xE0 \u201C\u1EA4m n\u01B0\u1EDBc\u201D. Kh\xE1ch b\u1EA3n x\u1EE9 kh\xF4ng hi\u1EC3u t\u1EA1i sao c\xE1i t\xEAn l\xE0m ng\u01B0\u1EDDi nh\u1EADp c\u01B0 b\u1EADt c\u01B0\u1EDDi.", { custom: "become:restaurateur", happy: 6 }), L_VE2 = land("ve_nuoc", "B\u1EA1n v\u1EC1 n\u01B0\u1EDBc, mang theo m\u1ED9t c\xF4ng th\u1EE9c, m\u1ED9t bi\u1EC7t danh v\xE0 m\u1ED9t c\xE1ch nh\xECn m\u1EDBi, r\u1ED3i l\xE0m l\u1EA1i l\u1EA7n n\u1EEFa \u1EDF qu\xEA nh\xE0.", { custom: "return_home|become:returnee", happy: 4 }), L_CUOI2 = land("cuoi_o_lai", "B\u1EA1n \u1EDF l\u1EA1i x\u1EE9 ng\u01B0\u1EDDi v\xE0 c\u01B0\u1EDBi m\u1ED9t ng\u01B0\u1EDDi \u1EDF \u0111\xE2y. \u1EDE \u0111\xE1m c\u01B0\u1EDBi, b\xE0n n\xE0o c\u0169ng c\xF3 m\u1ED9t c\xE1i \u1EA5m n\u01B0\u1EDBc.", { custom: "marry", happy: 8 }), L_O = land("o_lai_xu_nguoi", "B\u1EA1n \u1EDF l\u1EA1i x\u1EE9 n\xE0y, g\u1EEDi v\u1EC1 m\u1ED9t kho\u1EA3n l\u1EDBn \u0111\u1EC3 kh\xE9p chuy\u1EC7n c\u0169 \u1EDF qu\xEA, v\xE0 t\u1EEB \u0111\xF3 l\xE0 ng\u01B0\u1EDDi c\u1EE7a c\u1EA3 hai n\u01A1i.", { money: -1, happy: 3 }), L_VE_GIA = land("ve_gia", "B\u1EA1n v\u1EC1 qu\xEA nh\xE0, d\xF9ng ti\u1EC1n d\xE0nh d\u1EE5m s\u1EEDa l\u1EA1i c\u0103n b\u1EBFp c\u0169, s\u1ED1ng nh\u1EEFng n\u0103m c\xF2n l\u1EA1i g\u1EA7n ng\u01B0\u1EDDi th\xE2n.", { custom: "return_home", money: -1, happy: 5 }), has5 = (c, f5) => c.flags.has(f5), tieng = (c) => c.counters.xn_tieng ?? 0, cuoi2 = (c) => ending(
+    L_CUOI2,
+    has5(c, "xn_go_cua") ? "\u1EDE l\u1EA1i, c\u01B0\u1EDBi ng\u01B0\u1EDDi h\xE0ng x\xF3m b\u1EA1n g\xF5 c\u1EEDa \u0111\xEAm \u1ED1m" : has5(c, "xn_noi_giup") ? "\u1EDE l\u1EA1i, c\u01B0\u1EDBi ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng \u0111\u1EE9ng ra n\xF3i gi\xFAp" : has5(c, "xn_hoc_tieng") || has5(c, "xn_di_hoc") ? "\u1EDE l\u1EA1i, c\u01B0\u1EDBi ng\u01B0\u1EDDi b\u1EA1n c\xF9ng l\u1EDBp h\u1ECDc ti\u1EBFng" : "\u1EDE l\u1EA1i, c\u01B0\u1EDBi m\u1ED9t ng\u01B0\u1EDDi c\u1EE7a x\u1EE9 n\xE0y",
+    "C\xF3 m\u1ED9t m\xE1i nh\xE0 \u1EDF x\u1EE9 n\xE0y"
+  ), XU_NGUOI = {
+    id: "xu_nguoi",
+    vn: "L\xE0m l\u1EA1i \u1EDF x\u1EE9 ng\u01B0\u1EDDi",
+    color: "#3d7f8c",
+    years: [10, 20],
+    rules: { income: 0.8, flags: ["w_xu_nguoi"] },
+    reset: {
+      cash: 0.5,
+      effects: { custom: "migrate_now" },
+      cast: [
+        { key: "chu_nha", role: "neighbor", label: "b\xE0 ch\u1EE7 nh\xE0" },
+        { key: "dong_huong", role: "partner", label: "ng\u01B0\u1EDDi \u0111\u1ED3ng h\u01B0\u01A1ng b\xE1n t\u1EA1p h\xF3a" },
+        { key: "chu_bep", role: "first_boss", label: "\xF4ng ch\u1EE7 b\u1EBFp kh\xF3 t\xEDnh" }
+      ]
+    },
+    gag: { key: "am_nuoc", lines: [
+      "C\xE2u c\u1EA3m \u01A1n \u0111\u1EA7u ti\xEAn b\u1EA1n h\u1ECDc b\u1EB1ng ti\u1EBFng b\u1EA3n x\u1EE9 h\xF3a ra ngh\u0129a l\xE0 \u201CT\xF4i l\xE0 m\u1ED9t c\xE1i \u1EA5m n\u01B0\u1EDBc\u201D. B\u1EA1n \u0111\xE3 n\xF3i n\xF3 v\u1EDBi m\u01B0\u1EDDi b\u1EA3y ng\u01B0\u1EDDi.",
+      "B\u1EA1n v\u1EABn l\u1EE1 mi\u1EC7ng n\xF3i \u201CT\xF4i l\xE0 m\u1ED9t c\xE1i \u1EA5m n\u01B0\u1EDBc\u201D m\u1ED7i khi ai \u0111\xF3 gi\u1EEF c\u1EEDa. Ng\u01B0\u1EDDi ta b\u1EAFt \u0111\u1EA7u g\u1EADt \u0111\u1EA7u \u0111\xE1p l\u1EA1i.",
+      "C\u1EA3 t\xF2a nh\xE0 gi\u1EDD g\u1ECDi b\u1EA1n l\xE0 \u201C\u1EA4m n\u01B0\u1EDBc\u201D. B\u1EA1n th\xF4i kh\xF4ng c\u1EA3i ch\xEDnh n\u1EEFa.",
+      "Tr\xEAn gi\u1EA5y m\u1EDDi h\u1ECDp c\u01B0 d\xE2n, t\xEAn b\u1EA1n \u0111\u01B0\u1EE3c in k\xE8m bi\u1EC7t danh \u201C\u1EA4m n\u01B0\u1EDBc\u201D trong ngo\u1EB7c, r\u1EA5t trang tr\u1ECDng.",
+      "B\u1EA1n d\u1EA1y m\u1ED9t ng\u01B0\u1EDDi m\u1EDBi sang c\xE2u c\u1EA3m \u01A1n cho \u0111\xFAng. Ng\u01B0\u1EDDi \u0111\xF3 n\xF3i sai th\xE0nh \u201CT\xF4i l\xE0 m\u1ED9t c\xE1i \u1EA5m n\u01B0\u1EDBc\u201D, v\xE0 b\u1EA1n quy\u1EBFt \u0111\u1ECBnh kh\xF4ng s\u1EEDa."
+    ] },
+    landings: [L_QUAN, L_VE2, L_CUOI2, L_O, L_VE_GIA],
+    beats: [
+      /* mo_man */
+      [
+        card(
+          "xn_mo_san_bay",
+          "C\u1EEDa ra s\u1ED1 m\u01B0\u1EDDi b\u1ED1n",
+          () => "B\u1EA1n \u0111\u1EB7t ch\xE2n xu\u1ED1ng s\xE2n bay v\u1EDBi hai c\xE1i vali, m\u1ED9t t\xFAi \u0111\u1ED3 kh\xF4 v\xE0 m\u1ED9t t\u1EDD gi\u1EA5y ghi \u0111\u1ECBa ch\u1EC9 vi\u1EBFt tay. Bi\u1EC3n b\xE1o n\xE0o c\u0169ng l\xE0 ch\u1EEF l\u1EA1. Ng\u01B0\u1EDDi duy nh\u1EA5t b\u1EA1n h\u1ECFi \u0111\u01B0\u1EDDng h\xF3a ra c\u0169ng \u0111ang l\u1EA1c.",
+          [
+            C("\u0110i theo ng\u01B0\u1EDDi l\u1EA1c kia, hai ng\u01B0\u1EDDi \u0111\u1EE1 h\u01A1n m\u1ED9t", { flags: ["xn_ban_lac"], counters: { xn_quen: 1 } }, "C\xF3 ng\u01B0\u1EDDi quen \u0111\u1EA7u ti\xEAn, l\u1EA1c th\xEAm hai ti\u1EBFng"),
+            C("\u0110i taxi, \u0111\u01B0a t\u1EDD gi\u1EA5y cho t\xE0i x\u1EBF", { money: -0.05, flags: ["xn_taxi"] }, "T\u1EDBi n\u01A1i nhanh, m\u1EA5t ti\u1EC1n \u0103n m\u1ED9t tu\u1EA7n")
+          ]
+        ),
+        card(
+          "xn_mo_phong",
+          "C\u0103n ph\xF2ng d\u01B0\u1EDBi m\xE1i",
+          (c, k) => `${cap3(k.npc("chu_nha"))} d\u1EABn b\u1EA1n l\xEAn c\u0103n ph\xF2ng d\u01B0\u1EDBi m\xE1i, n\xF3i m\u1ED9t tr\xE0ng d\xE0i v\u1EC1 gi\u1EDD \u0111\u1ED5 r\xE1c, r\u1ED3i nh\xECn b\u1EA1n ch\u1EDD tr\u1EA3 l\u1EDDi. B\u1EA1n m\u1EC9m c\u01B0\u1EDDi, n\xF3i c\xE2u c\u1EA3m \u01A1n duy nh\u1EA5t m\xECnh thu\u1ED9c. ${k.gag()}`,
+          [
+            C("H\u1ECDc ti\u1EBFng m\u1ED7i t\u1ED1i, d\xF9 m\u1EC7t", { health: -1, flags: ["xn_hoc_tieng"], counters: { xn_tieng: 1 } }, "Ch\u1EADm m\xE0 ch\u1EAFc, \xEDt ng\u1EE7"),
+            C("S\u1ED1ng b\u1EB1ng tay ch\xE2n v\xE0 n\u1EE5 c\u01B0\u1EDDi", { happy: 2, flags: ["xn_ra_hieu"] }, "\u0110\u1EE1 m\u1EC7t, m\xE3i l\xE0 ng\u01B0\u1EDDi ngo\xE0i")
+          ]
+        ),
+        card(
+          "xn_mo_bep",
+          "Ba t\u1EEB m\u1ED7i ng\xE0y",
+          (c, k) => `${cap3(k.npc("chu_bep"))} nh\u1EADn b\u1EA1n r\u1EEDa b\xE1t \u1EDF m\u1ED9t nh\xE0 h\xE0ng, ca t\u1EEB b\u1ED1n gi\u1EDD chi\u1EC1u t\u1EDBi n\u1EEDa \u0111\xEAm. \xD4ng n\xF3i \u0111\xFAng ba t\u1EEB m\u1ED7i ng\xE0y, v\xE0 c\u1EA3 ba \u0111\u1EC1u c\xF3 ngh\u0129a l\xE0 \u201Cnhanh l\xEAn\u201D.`,
+          [
+            C("L\xE0m h\u1EBFt ca, xin l\xE0m th\xEAm cu\u1ED1i tu\u1EA7n", { money: 0.15, health: -3, flags: ["xn_lam_them"] }, "G\u1EEDi ti\u1EC1n v\u1EC1 \u0111\u01B0\u1EE3c, l\u01B0ng b\u1EAFt \u0111\u1EA7u \u0111au"),
+            C("L\xE0m \u0111\u1EE7 ca, cu\u1ED1i tu\u1EA7n \u0111i h\u1ECDc", { know: 2, flags: ["xn_di_hoc"], counters: { xn_tieng: 1 } }, "\xCDt ti\u1EC1n, m\u1EDF \u0111\u01B0\u1EE3c c\xE1nh c\u1EEDa v\u1EC1 sau")
+          ]
+        )
+      ],
+      /* khoi_dong */
+      [
+        card(
+          "xn_kd_tap_hoa",
+          "Chai n\u01B0\u1EDBc ch\u1EA5m gi\xE1 g\u1EA5p n\u0103m",
+          (c, k) => `B\u1EA1n t\xECm th\u1EA5y m\u1ED9t ti\u1EC7m t\u1EA1p h\xF3a b\xE1n \u0111\xFAng lo\u1EA1i n\u01B0\u1EDBc ch\u1EA5m c\u1EE7a qu\xEA nh\xE0, gi\xE1 g\u1EA5p n\u0103m l\u1EA7n. ${cap3(k.npc("dong_huong"))} \u0111\u1EE9ng qu\u1EA7y, nghe gi\u1ECDng l\xE0 bi\u1EBFt b\u1EA1n t\u1EEB \u0111\xE2u t\u1EDBi, v\xE0 r\u1EE7 b\u1EA1n g\xF3p v\u1ED1n m\u1EDF m\u1ED9t gian b\xE1n \u0111\u1ED3 \u0103n s\xE1ng.`,
+          [
+            C("G\xF3p v\u1ED1n, d\u1EADy s\u1EDBm b\xE1n \u0111\u1ED3 \u0103n s\xE1ng", { money: -0.2, flags: ["xn_gop_von"], counters: { xn_quan: 1 } }, "C\xF3 th\xEAm m\u1ED9t ngh\u1EC1, ng\u1EE7 c\xF2n b\u1ED1n ti\u1EBFng"),
+            C("Ch\u1EC9 mua h\xE0ng, kh\xF4ng l\xE0m chung", { flags: ["xn_khong_gop"] }, "Gi\u1EEF \u0111\u01B0\u1EE3c ti\u1EC1n, l\u1EE1 m\u1ED9t c\u01A1 h\u1ED9i")
+          ]
+        ),
+        card(
+          "xn_kd_giay_to",
+          "L\xE1 th\u01B0 m\u01B0\u1EDDi hai trang",
+          (c, k) => `Th\u01B0 c\u1EE7a c\u01A1 quan di tr\xFA t\u1EDBi, d\xE0y m\u01B0\u1EDDi hai trang, h\u1EA1n tr\u1EA3 l\u1EDDi m\u01B0\u1EDDi b\u1ED1n ng\xE0y. ${has5(c, "xn_hoc_tieng") ? "B\u1EA1n \u0111\u1ECDc \u0111\u01B0\u1EE3c ch\u1EEBng m\u1ED9t n\u1EEDa, \u0111\u1EE7 \u0111\u1EC3 bi\u1EBFt m\xECnh \u0111ang g\u1EB7p r\u1EAFc r\u1ED1i." : "B\u1EA1n kh\xF4ng \u0111\u1ECDc \u0111\u01B0\u1EE3c trang n\xE0o, ch\u1EC9 nh\u1EADn ra con s\u1ED1 m\u01B0\u1EDDi b\u1ED1n."} ${k.gag()}`,
+          (c, k) => [
+            C("Thu\xEA ng\u01B0\u1EDDi l\xE0m h\u1ED3 s\u01A1", { money: -0.2, flags: ["xn_thue_ho_so"] }, "\u0110\u1EAFt, nh\u01B0ng ch\u1EAFc ch\u1EAFn h\u01A1n"),
+            C(`T\u1EF1 l\xE0m, nh\u1EDD ${k.npc("chu_nha")} \u0111\u1ECDc gi\xFAp`, { flags: ["xn_tu_lam_ho_so"], counters: { xn_quen: 1, xn_tieng: 1 } }, "R\u1EBB, tr\xF4ng v\xE0o l\xF2ng t\u1ED1t c\u1EE7a ng\u01B0\u1EDDi kh\xE1c")
+          ]
+        ),
+        card(
+          "xn_kd_goi_ve",
+          "Cu\u1ED9c g\u1ECDi t\u1ED1i ch\u1EE7 nh\u1EADt",
+          () => "M\u1ED7i t\u1ED1i ch\u1EE7 nh\u1EADt b\u1EA1n g\u1ECDi v\u1EC1 nh\xE0. \u1EDE \u0111\u1EA7u d\xE2y b\xEAn kia, ng\u01B0\u1EDDi ta h\u1ECFi chuy\u1EC7n ti\u1EC1n nhi\u1EC1u h\u01A1n chuy\u1EC7n b\u1EA1n c\xF3 \u0103n u\u1ED1ng \u0111\u01B0\u1EE3c kh\xF4ng.",
+          [
+            C("G\u1EEDi v\u1EC1 g\u1EA5p \u0111\xF4i, n\xF3i m\u1ECDi th\u1EE9 \u0111\u1EC1u \u1ED5n", { money: -0.2, happy: -2, flags: ["xn_gui_nhieu"] }, "Nh\xE0 vui, b\u1EA1n \u0103n m\xEC g\xF3i c\u1EA3 th\xE1ng"),
+            C("N\xF3i th\u1EADt, g\u1EEDi \xEDt \u0111i", { flags: ["xn_noi_that"], counters: { xn_nha: -1 } }, "Nh\u1EB9 ng\u01B0\u1EDDi, \u1EDF nh\xE0 b\u1EAFt \u0111\u1EA7u x\xEC x\xE0o")
+          ]
+        )
+      ],
+      /* cu_lat */
+      [
+        card(
+          "xn_cl_ben_tau",
+          "G\u1EB7p l\u1EA1i \u1EDF b\u1EBFn t\xE0u \u0111i\u1EC7n",
+          (c, k) => `\u1EDE b\u1EBFn t\xE0u \u0111i\u1EC7n, b\u1EA1n \u0111\u1EE5ng m\u1EB7t ${k.scar("nguoi") || "m\u1ED9t ng\u01B0\u1EDDi quen c\u0169"}, c\u0169ng \u0111ang l\xE0m l\u1EA1i \u1EDF \u0111\xE2y, c\u0169ng m\u1EB7c \xE1o kho\xE1c qu\xE1 m\u1ECFng cho m\xF9a n\xE0y. Hai ng\u01B0\u1EDDi \u0111\u1EE9ng n\xF3i chuy\u1EC7n t\u1EDBi khi l\u1EE1 m\u1EA5t ba chuy\u1EBFn t\xE0u.`,
+          [
+            C("R\u1EE7 ng\u01B0\u1EDDi \u0111\xF3 \u1EDF chung cho \u0111\u1EE1 ti\u1EC1n", { money: 0.05, flags: ["xn_o_chung"], counters: { xn_quen: 1 } }, "\u0110\u1EE1 ti\u1EC1n nh\xE0, mang theo c\u1EA3 chuy\u1EC7n c\u0169"),
+            C("Ch\xE0o r\u1ED3i \u0111i, x\u1EE9 m\u1EDBi th\xEC ng\u01B0\u1EDDi m\u1EDBi", { flags: ["xn_chao_di"] }, "Nh\u1EB9 \u0111\u1EA7u, b\u1EDBt m\u1ED9t ch\u1ED7 d\u1EF1a")
+          ]
+        ),
+        card(
+          "xn_cl_vali",
+          "Th\u1EE9 trong \u0111\xE1y vali",
+          (c, k) => `T\u1EEB \u0111\u1EDDi c\u0169, b\u1EA1n mang sang \u0111\xE2y m\u1ED9t th\u1EE9: ${k.scar("do") || "c\xF4ng th\u1EE9c n\u1ED3i n\u01B0\u1EDBc d\xF9ng c\u1EE7a nh\xE0"}. \u1EDE x\u1EE9 n\xE0y, h\xF3a ra th\u1EE9 \u0111\xF3 hi\u1EBFm. ${cap3(k.npc("chu_bep"))} nh\xECn th\u1EA5y, v\xE0 l\u1EA7n \u0111\u1EA7u ti\xEAn n\xF3i v\u1EDBi b\u1EA1n m\u1ED9t c\xE2u d\xE0i h\u01A1n ba t\u1EEB. ${has5(c, "xn_di_hoc") ? "Nh\u1EDD m\u1EA5y n\u0103m \u0111i h\u1ECDc cu\u1ED1i tu\u1EA7n, b\u1EA1n tr\u1EA3 l\u1EDDi \u0111\u01B0\u1EE3c tr\u1ECDn c\xE2u." : has5(c, "xn_lam_them") ? "Sau m\u1EA5y n\u0103m l\xE0m th\xEAm c\u1EA3 cu\u1ED1i tu\u1EA7n, \xF4ng \u0111\xE3 quen m\u1EB7t b\u1EA1n h\u01A1n quen m\u1EB7t con m\xECnh." : "B\u1EA1n tr\u1EA3 l\u1EDDi b\u1EB1ng tay, \xF4ng g\u1EADt \u0111\u1EA7u nh\u01B0 \u0111\xE3 hi\u1EC3u."} ${k.gag()}`,
+          [
+            C("\u0110em n\xF3 v\xE0o b\u1EBFp, \u0111\u1ED5i l\u1EA5y ch\u1ED7 \u0111\u1EE9ng", { income_mult: 1.1, flags: ["xn_dung_vet"], counters: { xn_quan: 2 } }, "\u0110\u01B0\u1EE3c l\xEAn ph\u1EE5 b\u1EBFp, \xF4ng ch\u1EE7 th\xE0nh ng\u01B0\u1EDDi \u01A1n"),
+            C("Gi\u1EEF cho ri\xEAng m\xECnh", { happy: 3, flags: ["xn_giu_vet"] }, "Gi\u1EEF \u0111\u01B0\u1EE3c m\u1ED9t m\u1EA3nh nh\xE0, \u0111\u1EE9ng y\xEAn ch\u1ED7 c\u0169")
+          ]
+        ),
+        card(
+          "xn_cl_kiem_tra",
+          "\u0110\u1EE3t ki\u1EC3m tra l\xFAc m\u01B0\u1EDDi gi\u1EDD t\u1ED1i",
+          (c, k) => `M\u1ED9t \u0111\u1EE3t ki\u1EC3m tra gi\u1EA5y t\u1EDD \u1EADp t\u1EDBi nh\xE0 h\xE0ng l\xFAc m\u01B0\u1EDDi gi\u1EDD t\u1ED1i. ${has5(c, "xn_thue_ho_so") ? "H\u1ED3 s\u01A1 thu\xEA ng\u01B0\u1EDDi l\xE0m c\u1EE7a b\u1EA1n s\u1EA1ch t\u1EDBi t\u1EEBng trang." : has5(c, "xn_tu_lam_ho_so") ? `H\u1ED3 s\u01A1 b\u1EA1n t\u1EF1 l\xE0m, c\xF3 ch\u1EEF k\xFD b\u1EA3o l\xE3nh c\u1EE7a ${k.npc("chu_nha")}, v\u1EABn c\xF2n nguy\xEAn gi\xE1 tr\u1ECB.` : "Gi\u1EA5y c\u1EE7a b\u1EA1n h\u1EE3p l\u1EC7."} Ng\u01B0\u1EDDi r\u1EEDa b\xE1t \u0111\u1EE9ng c\u1EA1nh th\xEC kh\xF4ng may nh\u01B0 v\u1EADy. Ng\u01B0\u1EDDi \u0111\xF3 nh\xECn b\u1EA1n, nh\u1EDD b\u1EA1n n\xF3i gi\xFAp m\u1ED9t c\xE2u.`,
+          (c) => [
+            C("\u0110\u1EE9ng ra n\xF3i gi\xFAp", { happy: 2, flags: ["xn_noi_giup"], counters: { xn_quen: 2 } }, tieng(c) >= 2 ? "B\u1EA1n \u0111\u1EE7 ti\u1EBFng \u0111\u1EC3 n\xF3i tr\xF4i, nh\u01B0ng s\u1EBD b\u1ECB \u0111\u1EC3 \xFD" : "N\xF3i l\u1EAFp b\u1EAFp, c\xF3 th\u1EC3 gi\xFAp, c\xF3 th\u1EC3 h\u1ECFng vi\u1EC7c"),
+            C("Im l\u1EB7ng, c\xFAi \u0111\u1EA7u l\xE0m vi\u1EC7c", { happy: -3, flags: ["xn_cui_dau"] }, "An to\xE0n, m\u1EA5t ng\u1EE7 v\xE0i \u0111\xEAm")
+          ]
+        )
+      ],
+      /* day */
+      [
+        card(
+          "xn_day_om",
+          "L\u1EA7n \u0111\u1EA7u \u1ED1m \u1EDF x\u1EE9 ng\u01B0\u1EDDi",
+          (c) => `B\u1EA1n s\u1ED1t ba ng\xE0y trong c\u0103n ph\xF2ng d\u01B0\u1EDBi m\xE1i. ${has5(c, "xn_o_chung") ? "Ng\u01B0\u1EDDi \u1EDF chung \u0111i l\xE0m ca \u0111\xEAm c\u1EA3 tu\u1EA7n, n\xEAn kh\xF4ng ai n\u1EA5u ch\xE1o, kh\xF4ng ai \u0111\u1EB7t tay l\xEAn tr\xE1n." : "Kh\xF4ng ai n\u1EA5u ch\xE1o, kh\xF4ng ai \u0111\u1EB7t tay l\xEAn tr\xE1n."} ${has5(c, "xn_gui_nhieu") ? "Ti\u1EC1n thu\u1ED1c ph\u1EA3i tr\xEDch t\u1EEB ti\u1EC1n \u0103n, v\xEC th\xE1ng n\xE0y b\u1EA1n l\u1EA1i g\u1EEDi v\u1EC1 g\u1EA5p \u0111\xF4i." : "T\u1EDD h\u01B0\u1EDBng d\u1EABn trong h\u1ED9p thu\u1ED1c in to\xE0n ch\u1EEF l\u1EA1."}`,
+          (c, k) => [
+            C(`G\u1ECDi cho ${k.npc("dong_huong")}`, { flags: ["xn_goi_dong_huong"], counters: { xn_quen: 1 } }, "C\xF3 ng\u01B0\u1EDDi t\u1EDBi, ph\u1EA3i nghe m\u1ED9t tr\xE0ng chuy\u1EC7n qu\xEA"),
+            C("T\u1EF1 ch\u1ECBu, kh\xF4ng l\xE0m phi\u1EC1n ai", { health: -5, flags: ["xn_tu_chiu"] }, "Gi\u1EEF th\u1EC3 di\u1EC7n, c\u01A1 th\u1EC3 g\xE1nh"),
+            C("G\xF5 c\u1EEDa nh\xE0 b\xEAn, d\xF9 ch\u1EB3ng bi\u1EBFt n\xF3i g\xEC", { flags: ["xn_go_cua"], counters: { xn_quen: 1, xn_tieng: 1 } }, tieng(c) >= 2 ? "B\u1EA1n n\xF3i \u0111\u01B0\u1EE3c v\xE0i c\xE2u, c\xF3 th\u1EC3 c\xF3 h\xE0ng x\xF3m th\u1EADt" : "Ng\u01B0\u1EE3ng mu\u1ED1n \u0111\u1ED9n th\u1ED5, c\xF3 th\u1EC3 c\xF3 h\xE0ng x\xF3m th\u1EADt", { tier: "sovereign" })
+          ]
+        ),
+        card(
+          "xn_day_dong_cua",
+          "Nh\xE0 h\xE0ng \u0111\xF3ng c\u1EEDa sau m\u1ED9t \u0111\xEAm",
+          (c, k) => `Nh\xE0 h\xE0ng \u0111\xF3ng c\u1EEDa sau m\u1ED9t \u0111\xEAm, kh\xF4ng b\xE1o tr\u01B0\u1EDBc. ${cap3(k.npc("chu_bep"))} \u0111\u1EC3 l\u1EA1i cho m\u1ED7i ng\u01B0\u1EDDi m\u1ED9t phong b\xEC m\u1ECFng v\xE0 m\u1ED9t c\xE2u xin l\u1ED7i b\u1EB1ng ti\u1EBFng b\u1EA3n x\u1EE9. L\u1EA7n \u0111\u1EA7u ti\xEAn b\u1EA1n hi\u1EC3u tr\u1ECDn m\u1ED9t c\xE2u, v\xE0 \u0111\xF3 l\xE0 c\xE2u xin l\u1ED7i. ${has5(c, "xn_gop_von") ? `May m\xE0 c\xF2n gian \u0111\u1ED3 \u0103n s\xE1ng g\xF3p v\u1ED1n v\u1EDBi ${k.npc("dong_huong")}.` : has5(c, "xn_dung_vet") ? "B\u1EA1n v\u1EEBa \u0111\u01B0\u1EE3c l\xEAn ph\u1EE5 b\u1EBFp ch\u01B0a \u0111\u1EA7y m\u1ED9t n\u0103m." : "B\u1EA1n c\xF2n \u0111\xFAng ti\u1EC1n nh\xE0 hai th\xE1ng."} ${k.gag()}`,
+          [
+            C("Nh\u1EADn vi\u1EC7c \u0111\u1EA7u ti\xEAn t\xECm \u0111\u01B0\u1EE3c", { money: 0.1, health: -2, flags: ["xn_viec_tam"] }, "C\xF3 ti\u1EC1n ngay, l\u1EA1i b\u1EAFt \u0111\u1EA7u t\u1EEB \u0111\xE1y"),
+            C("L\u1EA5y phong b\xEC l\xE0m v\u1ED1n, t\u1EF1 n\u1EA5u b\xE1n", { money: -0.1, flags: ["xn_tu_ban"], counters: { xn_quan: 2 } }, "Li\u1EC1u, c\xF3 th\u1EC3 l\xE0 vi\xEAn g\u1EA1ch \u0111\u1EA7u ti\xEAn c\u1EE7a c\xE1i qu\xE1n")
+          ]
+        ),
+        card(
+          "xn_day_la_thu",
+          "Bao gi\u1EDD v\u1EC1",
+          (c) => `${has5(c, "xn_noi_that") ? "T\u1EEB h\u1ED3i b\u1EA1n n\xF3i th\u1EADt chuy\u1EC7n ti\u1EC1n, th\u01B0 t\u1EEB nh\xE0 th\u01B0a h\u1EB3n, n\xEAn l\xE1 th\u01B0 n\xE0y t\u1EDBi nh\u01B0 m\u1ED9t ti\u1EBFng g\xF5 c\u1EEDa." : has5(c, "xn_gui_nhieu") ? "L\xE1 th\u01B0 t\u1EEB nh\xE0 m\u1EDF \u0111\u1EA7u b\u1EB1ng l\u1EDDi c\u1EA3m \u01A1n s\u1ED1 ti\u1EC1n th\xE1ng tr\u01B0\u1EDBc, k\xEDn n\u1EEDa trang." : "M\u1ED9t l\xE1 th\u01B0 vi\u1EBFt tay t\u1EEB nh\xE0 t\u1EDBi ch\u1EADm hai th\xE1ng."} Trong th\u01B0 c\xF3 t\u1EA5m \u1EA3nh c\u0103n b\u1EBFp c\u0169, v\xE0 m\u1ED9t c\xE2u h\u1ECFi duy nh\u1EA5t: \u201CBao gi\u1EDD v\u1EC1?\u201D`,
+          [
+            C("Mua v\xE9 v\u1EC1 th\u0103m m\u1ED9t chuy\u1EBFn", { money: -0.3, happy: 4, flags: ["xn_ve_tham"] }, "\u1EA4m l\xF2ng, s\u1EA1ch ti\u1EC1n d\xE0nh d\u1EE5m"),
+            C("Vi\u1EBFt th\u01B0 tr\u1EA3 l\u1EDDi: \u201CCh\u01B0a\u201D", { flags: ["xn_chua_ve"], counters: { xn_quan: 1 } }, "\u1EDE l\u1EA1i l\xE0m ti\u1EBFp, n\u1ED7i nh\u1EDB \u0111\u1EC3 d\xE0nh")
+          ]
+        )
+      ],
+      /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng.
+         restaurateur nhận tới 50, returnee tới 60 (PATHS) → mở tới 55 / 65; già hơn chỉ có tiền, về quê, hôn nhân. */
+      [
+        card(
+          "xn_ket_bien_quan",
+          "T\u1EA5m bi\u1EC3n t\xEAn qu\xE1n",
+          (c, k) => `${(c.counters.xn_quan ?? 0) >= 3 ? `${cap3(k.npc("dong_huong"))} \u0111\u1EC3 \xFD m\u1ED9t m\u1EB7t b\u1EB1ng nh\u1ECF \u0111ang cho thu\xEA, gi\xE1 v\u1EEBa \u0111\u1EE7 \u0111\u1EC3 hai ng\u01B0\u1EDDi c\xF9ng li\u1EC1u.` : "M\u1ED9t m\u1EB7t b\u1EB1ng nh\u1ECF g\u1EA7n b\u1EBFn t\xE0u \u0111i\u1EC7n \u0111ang cho thu\xEA, gi\xE1 v\u1EEBa \u0111\u1EE7 \u0111\u1EC3 li\u1EC1u."} ${has5(c, "xn_chua_ve") ? "L\xE1 th\u01B0 \u201CCh\u01B0a\u201D n\u0103m \u1EA5y v\u1EABn ch\u01B0a c\xF3 l\xE1 n\xE0o vi\u1EBFt ti\u1EBFp." : has5(c, "xn_ve_tham") ? "T\u1EEB chuy\u1EBFn v\u1EC1 th\u0103m, b\u1EA1n bi\u1EBFt c\u0103n b\u1EBFp c\u0169 gi\u1EDD ch\u1EC9 c\xF2n m\u1ED9t ng\u01B0\u1EDDi n\u1EA5u." : "\u1EDE qu\xEA nh\xE0, c\u0103n b\u1EBFp c\u0169 v\u1EABn ch\u1EDD."} C\xF2n m\u1ED9t chuy\u1EC7n b\u1EA1n ch\u01B0a l\xE0m xong: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh"}. ${k.gag()}`,
+          (c) => [
+            ending(L_QUAN, "M\u1EDF qu\xE1n, \u0111\u1EB7t t\xEAn l\xE0 \u201C\u1EA4m n\u01B0\u1EDBc\u201D", has5(c, "xn_dung_vet") ? "\xD4ng ch\u1EE7 b\u1EBFp c\u0169 h\u1EE9a g\u1EEDi kh\xE1ch, b\xE1m r\u1EC5 \u1EDF x\u1EE9 ng\u01B0\u1EDDi" : "B\xE1m r\u1EC5 \u1EDF x\u1EE9 ng\u01B0\u1EDDi, g\u1EEDi ti\u1EC1n v\u1EC1 kh\xE9p chuy\u1EC7n c\u0169"),
+            ending(L_VE2, "V\u1EC1 n\u01B0\u1EDBc, l\xE0m l\u1EA1i l\u1EA7n n\u1EEFa \u1EDF qu\xEA nh\xE0", "V\u1EC1 g\u1EA7n nh\xE0, thu nh\u1EADp t\u1EE5t m\u1ED9t n\u1EEDa"),
+            ...c.married ? [] : [cuoi2(c)]
+          ],
+          (c) => c.age <= 55
+        ),
+        card(
+          "xn_ket_chuyen_bay",
+          "Chuy\u1EBFn bay m\u1ED9t chi\u1EC1u",
+          (c, k) => `B\u1EA1n ng\u1ED3i \u1EDF s\xE2n bay, c\u1EA7m m\u1ED9t t\u1EA5m v\xE9 m\u1ED9t chi\u1EC1u v\xE0 m\u1ED9t quy\u1EBFt \u0111\u1ECBnh ch\u01B0a vi\u1EBFt xong. ${(c.counters.xn_quen ?? 0) >= 3 ? "M\u1ED9t nh\xF3m ng\u01B0\u1EDDi quen \u1EDF x\u1EE9 n\xE0y ra t\u1EADn n\u01A1i ti\u1EC5n, mang theo m\u1ED9t c\xE1i \u1EA5m n\u01B0\u1EDBc l\xE0m qu\xE0." : "Kh\xF4ng ai ra ti\u1EC5n, n\xEAn b\u1EA1n c\xF3 nhi\u1EC1u th\u1EDDi gian \u0111\u1EC3 ngh\u0129."} Chuy\u1EC7n c\u0169 \u1EDF qu\xEA nh\xE0 v\u1EABn ch\u1EDD: ${k.scar("no") || "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh"}. ${k.gag()}`,
+          (c) => [
+            c.age <= 65 ? ending(L_VE2, "L\xEAn m\xE1y bay, v\u1EC1 h\u1EB3n qu\xEA nh\xE0", "V\u1EC1 g\u1EA7n nh\xE0, thu nh\u1EADp t\u1EE5t m\u1ED9t n\u1EEDa") : ending(L_VE_GIA, "L\xEAn m\xE1y bay, v\u1EC1 s\u1ED1ng g\u1EA7n ng\u01B0\u1EDDi th\xE2n", "Ti\xEAu h\u1EBFt ti\u1EC1n d\xE0nh d\u1EE5m cho c\u0103n b\u1EBFp c\u0169"),
+            ending(L_O, "X\xE9 v\xE9, \u1EDF l\u1EA1i, g\u1EEDi ti\u1EC1n v\u1EC1 kh\xE9p chuy\u1EC7n c\u0169", "M\u1EA5t m\u1ED9t kho\u1EA3n l\u1EDBn, gi\u1EEF \u0111\u01B0\u1EE3c c\u1EA3 hai n\u01A1i"),
+            ...c.married ? [] : [cuoi2(c)]
+          ]
+        )
+      ]
+    ]
+  };
+
+  // src/engine/narrative/canon/seasons/index.ts
+  var SEASONS_NORMAL = [TRON_CHAY, VU_AN_GIA_TOC, NGOI_SAO, LAM_LAI, XU_NGUOI];
 
   // src/engine/narrative/canon/Canon.ts
   var USED_PENALTY = 100, ON_AXIS_BONUS = 50, NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], NEEDS_INDEPENDENT = /* @__PURE__ */ new Set(["tron_chay", "xu_nguoi"]), playedFlag = (seasonId) => "season_played_" + seasonId, played = (c, season) => c.flags.has(playedFlag(season)), whoName = (s, N, dflt) => s.who ? N(s.who) : dflt, GENERIC_DOORS = [
@@ -21972,6 +22694,6 @@ var Argon = (() => {
   }
 
   // src/engine/narrative/canon/index.ts
-  var SEASONS = [FIXTURE_SEASON], CANON_SEEDS = [], WEIRD = [], SEASON_STORYLETS = [...SEASONS, ...WEIRD.map((b) => b.season)].flatMap(compileSeason);
+  var SEASONS = [...SEASONS_NORMAL], CANON_SEEDS = [], WEIRD = [], SEASON_STORYLETS = [...SEASONS, ...WEIRD.map((b) => b.season)].flatMap(compileSeason);
   return __toCommonJS(engine_exports);
 })();

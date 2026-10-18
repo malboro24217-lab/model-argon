@@ -209,6 +209,26 @@ function checkSeason(def: SeasonDef): void {
   if (gagCards < 3) bad(`${S}: gag phải lặp ≥ 3 lần mỗi mùa — chỉ ${gagCards} thẻ gọi k.gag()`);
   for (const l of def.landings) if (!landingUsed.has(l.id)) bad(`${S}: landing ${l.id} không thẻ chung kết nào dùng`);
 
+  /* Chung kết theo tuổi (16–85, có/không vợ chồng): luôn có thẻ hạ cánh được, và landing đổi nghề become:<p> chỉ ra
+     khi tuổi ≤ trần tuổi của con đường + 5 (host becomePath không kiểm tuổi). Người già chỉ còn tiền, nơi ở, hôn nhân. */
+  {
+    const base = randomCtx(createRng(31));
+    for (let age = 16; age <= 85; age++) for (const married of [false, true]) {
+      const c: FactContext = { ...base, age, married, season: def.id, season_beat: 4, counters: { ...base.counters, season_next: age } };
+      const open = def.beats[4].filter((cd) => !cd.when || cd.when(c));
+      if (!open.length) { bad(`${S}: tuổi ${age}: không thẻ chung kết nào mở`); continue; }
+      for (const cd of open) {
+        let v: StoryletView;
+        try { v = cd.build(c, fakeKit(def, false, { scar: new Set(), gag: false, npcBad: new Set() }, 0)); } catch { continue; /* đã báo ở fuzz */ }
+        for (const ch of v.choices) for (const part of customParts(ch.effects)) {
+          if (!part.startsWith("become:")) continue;
+          const p = PATHS[part.slice(7)];
+          if (p && age > p.ages[1] + 5) bad(`${S} ${cd.id}: tuổi ${age} vẫn mời ${part} (con đường nhận tới ${p.ages[1]} tuổi, cho phép ≤ ${p.ages[1] + 5})`);
+        }
+      }
+    }
+  }
+
   for (let age = 8; age <= 72; age++) for (const r of [0, 0.13, 0.5, 0.77, 0.99999]) {
     const len = seasonLength(def, age, r);
     if (!Number.isInteger(len) || len < 5 || len < y0 || len > y1 || age + len > 85) bad(`${S}: seasonLength(${age}, ${r}) = ${len} ngoài years / quá 85 / < 5`);
@@ -255,9 +275,8 @@ ok(SEASON_STORYLETS.length === SEASONS.flatMap(compileSeason).length, "SEASON_ST
   ok(kFull.gag() === def.gag.lines[1 % def.gag.lines.length] && kFull.gag() === def.gag.lines[2 % def.gag.lines.length], "kit: gag lần lượt từ thứ tự thẻ");
 }
 
-/* gag đi lần lượt: thẻ gọi gag thứ k (theo thứ tự mùa, với cùng ctx) hiện lines[k % n] */
-{
-  const def = SEASONS.find((d) => d.id === "fixture")!;
+/* gag đi lần lượt: thẻ gọi gag thứ k (theo thứ tự mùa, với cùng ctx) hiện lines[k % n] — kiểm trên mọi mùa thường */
+for (const def of SEASONS) {
   const st = compileSeason(def);
   const c0 = randomCtx(createRng(7));
   const shown: number[] = [];
@@ -269,7 +288,7 @@ ok(SEASON_STORYLETS.length === SEASONS.flatMap(compileSeason).length, "SEASON_ST
     const text = s.build(c, () => "ai đó").text;
     def.gag.lines.forEach((l, i) => { if (text.includes(l)) shown.push(i); });
   }));
-  ok(shown.length >= 3 && shown.every((x, k) => x === k % def.gag.lines.length), `gag mùa mẫu theo thứ tự 0,1,2,… (thấy ${shown.join(",")})`);
+  ok(shown.length >= 3 && shown.every((x, k) => x === k % def.gag.lines.length), `gag mùa ${def.id} theo thứ tự 0,1,2,… (thấy ${shown.join(",")})`);
 }
 ok(landingOf({ custom: "become:singer|season_end:ca_si" }) === "ca_si" && landingOf({ custom: "season_end" }) === null && landingOf({}) === null, "landingOf đọc id landing");
 ok(land("x", "Dòng.", { money: 2 }).effects.custom === "season_end:x" && land("y", "Dòng.", { custom: "marry" }).effects.custom === "marry|season_end:y", "land thêm season_end:<id>");
