@@ -43,7 +43,7 @@ function moneyFacts(r: ReturnType<typeof createRng>, income: number, age: number
   const insured = new Set<"health" | "property">(); if (r.chance(0.3)) insured.add("health"); if (r.chance(0.2)) insured.add("property");
   const lv = ["it", "du", "hau"] as const;
   return {
-    owns, asset_names, assets_value, loans, loan_burden: loans ? r.next() * 0.5 : 0, deposit: owns.has("deposit") ? r.next() * 3 * income : 0,
+    independent: age >= 18 && r.chance(0.85), own_cash: r.next() * 2 * income, owns, asset_names, assets_value, loans, loan_burden: loans ? r.next() * 0.5 : 0, deposit: owns.has("deposit") ? r.next() * 3 * income : 0,
     lifestyle: r.pick(["tan_tien", "vua_phai", "thoai_mai", "pho_truong"] as const), lifestyle_years: Math.floor(r.next() * 12), insured,
     owed_to_me: debtors.length ? r.next() * 2 * income : 0, debtors_overdue: debtors, home_owner: owns.has("house"),
     support: { parents: r.pick(lv), kids: r.pick(lv) },

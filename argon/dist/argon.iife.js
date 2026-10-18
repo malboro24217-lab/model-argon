@@ -4111,7 +4111,7 @@ var Argon = (() => {
       cooldownYears: Math.max(6, cooldown),
       tension: 2,
       maxPerLife: repeatCap(build),
-      prerequisites: (c) => inAges(c, ages) && slice(c, "m:" + id, p) && when(c),
+      prerequisites: (c) => (c.independent ?? !0) && inAges(c, ages) && slice(c, "m:" + id, p) && when(c),
       specificity: () => 5,
       build,
       meta: { kind: "money" }
@@ -18801,7 +18801,7 @@ var Argon = (() => {
   // src/engine/narrative/paths/money_invest.ts
   var vn14 = (c) => c.country === "VN", yrs = (c, cu) => Math.min(5, Math.max(0.05, Math.round(cu / Math.max(1, c.income) * 100) / 100)), mem4 = (npc, tag, weight, note) => npc ? { memory: { npc, tag, weight, note } } : {}, tr3 = (npc, delta) => npc ? { trust: { npc, delta } } : {}, PACK_MONEY_INVEST = [
     /* ---------- 1. sổ tiết kiệm đầu tiên ---------- */
-    money("mi_first_account", [18, 35], 99, 0.6, (c) => !c.owns.has("deposit") && !c.broke, (c) => T4(
+    money("mi_first_account", [18, 35], 99, 0.6, (c) => !c.owns.has("deposit") && !c.broke && c.own_cash >= 0.2 * c.income, (c) => T4(
       "Cu\u1ED1n s\u1ED5 ti\u1EBFt ki\u1EC7m \u0111\u1EA7u ti\xEAn",
       `Ti\u1EC1n b\u1EA1n d\xE0nh d\u1EE5m \u0111ang n\u1EB1m trong m\u1ED9t ${vn14(c) ? "h\u1ED9p b\xE1nh c\u0169 d\u01B0\u1EDBi g\u1EA7m gi\u01B0\u1EDDng" : "phong b\xEC k\u1EB9p trong t\u1EE7 qu\u1EA7n \xE1o"}, \u0111\u1EBFm l\u1EA1i \u0111\u01B0\u1EE3c \u0111\xFAng ${c.poor_country ? "b\u1ED1n th\xE1ng" : "ba th\xE1ng"} l\u01B0\u01A1ng. Nh\xE2n vi\xEAn ng\xE2n h\xE0ng g\u1EA7n ch\u1ED7 l\xE0m n\xF3i g\u1EEDi k\u1EF3 h\u1EA1n m\u1ED9t n\u0103m th\xEC c\xF3 l\xE3i, nh\u01B0ng r\xFAt tr\u01B0\u1EDBc h\u1EA1n s\u1EBD m\u1EA5t ph\u1EA7n l\xE3i.`,
       [

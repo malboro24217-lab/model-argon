@@ -109,12 +109,13 @@ export function news(id: string, ages: [number, number], p: number, when: (c: Fa
 
 /**
  * Thẻ tiền (gói money_pack): chuyện dùng tiền chạm vào mọi đời, không thuộc con đường nào. p = tỉ lệ đời gặp thẻ này.
+ * Chỉ dành cho người đã tự lập (c.independent): còn sống nhờ quỹ chung của gia đình thì chưa có tiền riêng để quyết.
  * Host cho tối đa 1 thẻ tiền mỗi năm. Thẻ gọi vary() được quay lại tối đa 2 lần trong đời.
  */
 export function money(id: string, ages: [number, number], cooldown: number, p: number, when: (c: FactContext) => boolean, build: Build): Storylet {
   return {
     id, category: "micro", urgency: 22, cooldownYears: Math.max(6, cooldown), tension: 2, maxPerLife: repeatCap(build),
-    prerequisites: (c) => inAges(c, ages) && slice(c, "m:" + id, p) && when(c),
+    prerequisites: (c) => (c.independent ?? true) && inAges(c, ages) && slice(c, "m:" + id, p) && when(c),
     specificity: () => 5, build, meta: { kind: "money" },
   };
 }

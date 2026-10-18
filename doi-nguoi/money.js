@@ -7,6 +7,8 @@ const KIND_VN = { house: "nhà", land: "đất", vehicle: "xe", shop: "cửa hà
 const SUPPORT_MULT = { it: 0.5, du: 1, hau: 1.6 };
 const SUPPORT_VN = { it: "ít", du: "đủ", hau: "hậu hĩnh" };
 
+/** Tiền của riêng bạn để chi cho việc tiền. Khi còn sống nhờ gia đình, quỹ chung của cả nhà KHÔNG phải tiền của bạn. */
+function ownFunds(L) { return livesOnFamily(L) ? Math.max(0, L.savings) : fundsFor(L); }
 function holdingsOf(L) { return L.ar && L.ar.state ? L.ar.state.holdings : null; }
 /** Thị trường nơi đang sống (sau khi di cư thì là nước mới). Cùng công thức với argonSpawn. */
 function marketCtx(L) {
@@ -43,12 +45,12 @@ function moneyEffect(L, e, npcId) {
   if (e.withdraw > 0) { const r = Argon.withdraw(h, e.withdraw * yearly); if (r.cash > 0) { L.savings += r.cash; log(L, `Bạn rút ${fmtPPP(r.cash)} tiết kiệm.`); } }
   if (e.buy) buyFor(L, e.buy, e.buy.with_npc ? npcOf(e.buy.with_npc) : e.buy.kind === "stake" ? npcOf(null) : null);
   if (e.deposit > 0) {
-    const amt = Math.min(e.deposit * yearly, Math.max(0, fundsFor(L)));
+    const amt = Math.min(e.deposit * yearly, Math.max(0, ownFunds(L)));
     if (amt >= 1) { L.savings += Argon.deposit(h, amt, L.age).cash; log(L, `Bạn gửi ${fmtPPP(amt)} vào sổ tiết kiệm.`); L.lw.sflags.add("own_deposit"); stampP(L, Argon.prov.flag("own_deposit")); }
     else log(L, "Bạn không có đồng nào để gửi.");
   }
   if (e.lend) {
-    const id = npcOf(e.lend.npc); const amt = Math.min(e.lend.amount * yearly, Math.max(0, fundsFor(L)));
+    const id = npcOf(e.lend.npc); const amt = Math.min(e.lend.amount * yearly, Math.max(0, ownFunds(L)));
     if (!id) { /* người không còn */ }
     else if (amt < 1) log(L, `Bạn không có tiền để cho ${moneyName(L, id)} vay.`);
     else { L.savings += Argon.lend(h, id, amt, L.age, e.lend.years || 2).cash;
@@ -56,7 +58,7 @@ function moneyEffect(L, e, npcId) {
       log(L, `Bạn cho ${moneyName(L, id)} vay ${fmtPPP(amt)}, hẹn ${e.lend.years || 2} năm.`); }
   }
   if (e.give) {
-    const id = npcOf(e.give.npc); const amt = Math.min(e.give.amount * yearly, Math.max(0, fundsFor(L)) + 0.5 * yearly);
+    const id = npcOf(e.give.npc); const amt = Math.min(e.give.amount * yearly, Math.max(0, ownFunds(L)) + (livesOnFamily(L) ? 0 : 0.5 * yearly));
     if (id && amt >= 1) { L.savings -= amt; Argon.propagate(s.graph, id, 0.1, s.tick);
       Argon.addMemory(L.lw.mem, id, "HELPED_IN_CRISIS", L.age, 0.25, `bạn cho ${fmtPPP(amt)} năm ${L.age} tuổi`); stampP(L, Argon.prov.memory(id, "HELPED_IN_CRISIS"));
       log(L, `Bạn đưa ${moneyName(L, id)} ${fmtPPP(amt)}, không đòi lại.`); }
@@ -78,7 +80,7 @@ function buyFor(L, b, coOwner) {
   if (b.kind === "deposit") { moneyEffect(L, { deposit: b.price }); return true; }
   const name = String(b.name || Argon.defaultName(b.kind)).slice(0, 40);
   const req = { kind: b.kind, name, price: b.price * yearly, borrow: !!b.borrow, ...(coOwner ? { co_owner: coOwner } : {}) };
-  const q = Argon.quoteBuy(h, req, m, fundsFor(L), yearly);
+  const q = Argon.quoteBuy(h, req, m, ownFunds(L), yearly);
   if (!q.ok) { log(L, `Bạn định mua ${name} giá ${fmtPPP(q.price || req.price)}, nhưng ${REFUSE_VN[q.reason]}.`, "bad"); L.lw.sflags.add("buy_refused"); return false; }
   const r = Argon.buyAsset(h, req, q, m, L.age);
   L.savings += r.cash;
@@ -164,7 +166,7 @@ function supportMult(L, role) { const h = holdingsOf(L); if (!h) return 1; retur
 function moneyFacts(L) {
   const h = holdingsOf(L), m = L.ar ? marketCtx(L) : null, yearly = yearlyOf(L);
   const owns = new Set(), asset_names = {};
-  const out = { owns, asset_names, assets_value: 0, loans: 0, loan_burden: 0, deposit: 0, lifestyle: "thoai_mai", lifestyle_years: 0, insured: new Set(), owed_to_me: 0, debtors_overdue: [], home_owner: false, support: { parents: "du", kids: "du" },
+  const out = { independent: !!(L.ar && !livesOnFamily(L) && L.age >= 18), own_cash: L.ar ? ownFunds(L) : 0, owns, asset_names, assets_value: 0, loans: 0, loan_burden: 0, deposit: 0, lifestyle: "thoai_mai", lifestyle_years: 0, insured: new Set(), owed_to_me: 0, debtors_overdue: [], home_owner: false, support: { parents: "du", kids: "du" },
     price_years: { house: 10, land: 4, vehicle: 0.4, shop: 5 } };
   if (m) for (const k of ["house", "land", "vehicle", "shop"]) out.price_years[k] = Argon.basePrice(k, m) / yearly;
   if (!h) return out;
@@ -188,7 +190,7 @@ function moneyPacket(L) {
     nguoi_dang_no_minh: h.receivables.filter(r => !r.closed).map(r => ({ id: r.npc, ten: castName(L, r.npc), con_lai_nam_thu_nhap: +((r.amount - r.repaid) / yi).toFixed(2), han: r.due_age })),
     chi_cho_bo_me: SUPPORT_VN[h.support.parents], chi_cho_con: SUPPORT_VN[h.support.kids],
     gia_dien_hinh_nam_thu_nhap: Object.fromEntries(["house", "land", "vehicle", "shop"].map(k => [k, +(Argon.basePrice(k, m) / yi).toFixed(2)])),
-    tien_mat_rong_nam_thu_nhap: +(fundsFor(L) / yi).toFixed(2)
+    tien_mat_rong_nam_thu_nhap: +(ownFunds(L) / yi).toFixed(2)
   };
 }
 
@@ -251,7 +253,7 @@ function moneySuggestions(L) {
   if (veh && net < 0 && cv.cash < 0.25 * yi) add(`bán ${veh.name}`);
   const kids = L.kids.filter(k => k.alive).length;
   if (!Argon.hasPolicy(h, "health") && (kids > 0 || L.st.health < 50)) add(`mua bảo hiểm sức khỏe${kids ? " cho cả nhà" : ""}`);
-  if (!h.assets.some(a => a.kind === "house")) { const m = marketCtx(L), q = Argon.quoteBuy(h, { kind: "house", name: "căn hộ nhỏ", price: Argon.basePrice("house", m), borrow: true }, m, fundsFor(L), yi); if (q.ok) add("vay ngân hàng mua một căn hộ nhỏ"); }
+  if (!h.assets.some(a => a.kind === "house")) { const m = marketCtx(L), q = Argon.quoteBuy(h, { kind: "house", name: "căn hộ nhỏ", price: Argon.basePrice("house", m), borrow: true }, m, ownFunds(L), yi); if (q.ok) add("vay ngân hàng mua một căn hộ nhỏ"); }
   const parents = L.lw && [...L.lw.cast.values()].some(m => m.alive && (m.role === "mother" || m.role === "father") && L.age + m.age_offset >= 60);
   if (parents && h.support.parents === "it" && net > 0) add("chu cấp cho bố mẹ đủ hơn");
   if (h.lifestyle === "tan_tien" && L.age - (h.lifestyle_since || L.age) >= 5 && net > 0) add("nới mức sống lên vừa phải");

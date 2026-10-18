@@ -15,7 +15,7 @@ const tr = (npc: string | undefined, delta: number): Effect => (npc ? { trust: {
 
 export const PACK_MONEY_INVEST: Storylet[] = [
   /* ---------- 1. sổ tiết kiệm đầu tiên ---------- */
-  money("mi_first_account", [18, 35], 99, 0.6, (c) => !c.owns.has("deposit") && !c.broke, (c) => T("Cuốn sổ tiết kiệm đầu tiên",
+  money("mi_first_account", [18, 35], 99, 0.6, (c) => !c.owns.has("deposit") && !c.broke && c.own_cash >= 0.2 * c.income, (c) => T("Cuốn sổ tiết kiệm đầu tiên",
     `Tiền bạn dành dụm đang nằm trong một ${vn(c) ? "hộp bánh cũ dưới gầm giường" : "phong bì kẹp trong tủ quần áo"}, đếm lại được đúng ${c.poor_country ? "bốn tháng" : "ba tháng"} lương. Nhân viên ngân hàng gần chỗ làm nói gửi kỳ hạn một năm thì có lãi, nhưng rút trước hạn sẽ mất phần lãi.`, [
     C("Mở sổ, gửi gần hết", { deposit: 0.25, counters: { save: 1 }, flags: ["mi_saver"] }, "Có lãi và đỡ tiêu vặt, cần gấp thì mất lãi"),
     C("Gửi một nửa, giữ một nửa ở nhà", { deposit: 0.12, counters: { save: 1 } }, "Vừa có lãi vừa có tiền ngay, lãi ít hơn"),

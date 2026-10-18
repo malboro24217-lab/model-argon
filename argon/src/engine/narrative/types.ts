@@ -200,6 +200,10 @@ export interface FactContext {
   crises_survived: number;
   traits: { coop: number; fair: number; risk: number; bold: number };
   /* ---- Của cải ---- */
+  /** Đã tự lập (có việc làm thật, không còn sống nhờ quỹ chung của gia đình) và từ 18 tuổi. */
+  independent: boolean;
+  /** Tiền mặt ròng của riêng bạn (không gồm quỹ chung của gia đình), CU. */
+  own_cash: number;
   /** Các loại tài sản đang có. */
   owns: Set<AssetKind>;
   /** Tên món đầu tiên của mỗi loại đang có ("căn nhà ở quê"). */
