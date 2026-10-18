@@ -1,0 +1,63 @@
+{
+  errs: 0,
+  stuck: 0,
+  decisions_p10: 65,
+  decisions_p50: 138,
+  decisions_p90: 153,
+  medianAge: 69,
+  microPerLife: '2.7',
+  idsRepeated4x: '0.02',
+  fuses: {
+    t_kind: 55,
+    t_drinker: 59,
+    t_fit: 49,
+    t_saver: 49,
+    t_honest: 8,
+    t_gambler: 3,
+    t_reader: 7,
+    t_smoker: 3,
+    t_liar: 2
+  }
+}
+life 87 decisions 146
+3t Cơn mưa rào — bạn chọn: Ngồi xem đàn kiến bò lên tường tránh nước
+5t Ngày đầu đi học — bạn chọn: Rủ cả bọn chơi trò mình bày ra
+7t Tháo ra xem — bạn chọn: Tháo ra
+8t Đêm chung kết — bạn chọn: Xin bố mẹ cho ra đường xem cùng mọi người
+9t Micro tắt giữa lễ — bạn chọn: Đứng chờ thầy sửa micro
+10t Đứa trẻ thuộc mọi con hẻm — bạn chọn: Nhận chạy hàng cho cô sau giờ học
+11t Đứa bạn sau nhà xe — bạn chọn: Đi tìm người giúp
+12t Thư viện — bạn chọn: Đọc hết cái tủ
+13t Con bác tài — bạn chọn: Rủ nó vào chơi
+13t Cuộc thi khoa học — bạn chọn: Đăng ký
+14t Đứa bạn sau nhà xe · Chuyện tiếp — bạn chọn: Hẹn nói riêng với bạn
+14t Trại hè nước ngoài — bạn chọn: Đi
+15t Khoảng lặng · 15 tuổi — bạn chọn: Tôi đã chọn
+15t Học bổng trường chuyên — bạn chọn: Đi
+16t Giấy nợ trong áo bố — bạn chọn: Hỏi bố ngay tối ấy
+16t Thói quen ngồi bàn đầu — bạn chọn: Ngồi lên đầu, tự giới thiệu
+17t Thi vào đại học? — bạn chọn: Thi đại học
+18t Giấy nợ trong áo bố · Chuyện tiếp — bạn chọn: Nhờ người thân làm chứng
+18t Bốn người cùng tên trong lời đoán — bạn chọn: Mở tiệc để mọi người tự gặp
+19t Thành phố đóng cửa — bạn chọn: Ở lại, tích trữ đồ ăn
+19t Ký túc xá — bạn chọn: Đi
+20t Bốn người cùng tên trong lời đoán · Chuyện tiếp — bạn chọn: Giữ nhóm nấu ăn cùng nhau
+20t Giải chạy không ai chịu về đích — bạn chọn: Rủ cả đoàn về đích cùng
+21t Chọn nghề — bạn chọn: Shipper
+22t Giải chạy không ai chịu về đích · Chuyện tiếp — bạn chọn: Để cúp ở nhà cộng đồng
+22t Bánh sinh nhật ghi tên đối thủ — bạn chọn: Đổi bánh và giữ hóa đơn
+23t Tầng mười hai không có thang — bạn chọn: Chạy bộ mười hai tầng
+23t Chiếc ô tô đầu tiên — bạn chọn: Chưa mua, đi xe công cộng
+23t Bốn mươi phút trước bếp — bạn chọn: Chờ, nhắn khách xin lỗi thay quán
+24t James muốn cưới người ngoài — bạn chọn: Đứng về phía em/anh/chị
+24t Tiệm rẻ vì chủ vắng mặt — bạn chọn: Thuê vận hành thử có giấy
+24t Mẹ dặn mang áo mưa — bạn chọn: Nhắn trước giờ về mỗi tối
+25t Bánh sinh nhật ghi tên đối thủ · Chuyện tiếp — bạn chọn: Đổi khoản bù lấy bánh cho xóm
+25t Người tranh khách quen — bạn chọn: Đề nghị chia ngày: chẵn bạn, lẻ người ta
+25t Lương tăng một bậc — bạn chọn: Không đổi gì, để xem đã
+26t Lời hứa với Olivia: nhắn tin mỗi tối khi về — bạn chọn: Giữ lời
+26t Người đưa hàng chỉ nhận thơ — bạn chọn: Sửa hướng dẫn giao hàng
+26t Thưởng mưa gấp rưỡi — bạn chọn: Trú mưa dưới mái hiên, nghỉ
+27t Tiệm rẻ vì chủ vắng mặt · Chuyện tiếp — bạn chọn: Giữ thuê hoặc chuyển chỗ
+27t Khoản thưởng bất ngờ — bạn chọn: Gửi tiết kiệm hết
+replay ok true true

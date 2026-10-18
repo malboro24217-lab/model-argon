@@ -1,0 +1,148 @@
+{
+  "upstreamBase": "206e831f5498c3505fff5afd5319ac0d8bc9e8a3",
+  "tests": [
+    {
+      "name": "typecheck",
+      "command": [
+        "npm.cmd",
+        "run",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 4.39
+    },
+    {
+      "name": "micro-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/micro-test.js"
+      ],
+      "exit": 0,
+      "seconds": 145.38
+    },
+    {
+      "name": "repeat-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/repeat-test.js"
+      ],
+      "exit": 0,
+      "seconds": 44.56
+    },
+    {
+      "name": "path-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/path-test.js"
+      ],
+      "exit": 0,
+      "seconds": 16.28
+    },
+    {
+      "name": "agency-host-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/agency-host-test.js"
+      ],
+      "exit": 0,
+      "seconds": 23.3
+    },
+    {
+      "name": "review-fixes-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/review-fixes-test.js"
+      ],
+      "exit": 0,
+      "seconds": 21.78
+    },
+    {
+      "name": "money-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/money-test.js"
+      ],
+      "exit": 0,
+      "seconds": 144.11
+    },
+    {
+      "name": "replay-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/replay-test.js"
+      ],
+      "exit": 0,
+      "seconds": 208.75
+    },
+    {
+      "name": "turning-points-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/turning-points-test.js"
+      ],
+      "exit": 0,
+      "seconds": 0.45
+    },
+    {
+      "name": "scheduled-followup-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/scheduled-followup-test.js"
+      ],
+      "exit": 0,
+      "seconds": 0.14
+    },
+    {
+      "name": "turning-sim-test",
+      "command": [
+        "node",
+        "doi-nguoi/tests/turning-sim-test.js"
+      ],
+      "exit": 0,
+      "seconds": 66.7
+    },
+    {
+      "name": "agency-test",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "src/agency-test.ts"
+      ],
+      "exit": 0,
+      "seconds": 0.16
+    },
+    {
+      "name": "holdings-test",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "src/holdings-test.ts"
+      ],
+      "exit": 0,
+      "seconds": 0.45
+    },
+    {
+      "name": "narrative-test",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "src/narrative-test.ts"
+      ],
+      "exit": 0,
+      "seconds": 40.25
+    },
+    {
+      "name": "turning-content-test",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "src/turning-content-test.ts"
+      ],
+      "exit": 0,
+      "seconds": 23.5
+    }
+  ],
+  "passed": 15,
+  "failed": 0,
+  "browserTests": "Not run: existing scripts hardcode Claude Linux browser paths; interactive browser unavailable in current sidebar mode."
+}
