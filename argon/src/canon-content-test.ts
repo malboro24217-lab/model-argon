@@ -15,20 +15,25 @@
  * Mỗi nhánh kỳ dị (WEIRD): id /^(S|X)\d\d$/ duy nhất, kind khớp chữ đầu, season.weird = kind, season.id = "w_" + id,
  *  `when` không ném lỗi trên 200 bối cảnh fuzz (randomCtx + áp lực + vật gài ngẫu nhiên, chỗ trống điền như generator)
  *  và đúng ở ≥ 1 bối cảnh; door/trigger ra chữ trọn vẹn (kể cả chỗ trống rỗng), trigger có câu thoại trong ngoặc kép.
+ * Quy tắc 9 (addendum): probeFacts dựng mọi thẻ của mọi mùa và tiêu đề / chữ / nhãn cửa của 8 mầm dưới các cặp sự thật
+ *  tương phản (nợ, việc / về hưu, vợ chồng / góa, nhà / sống nhờ, con) rồi dò danh sách cụm từ FACT_RULES; tiền đề do chính
+ *  mùa dựng ra ghi ở PREMISE, cụm từ nói về người khác ghi ở NOT_ASSERT (đều kèm lý do). Kèm luật: dòng landing hay hint
+ *  chung kết hứa trả nợ / khép chuyện cũ thì effects phải có repay:<x>. Xem chú thích trên probeFacts.
  * Cộng các kiểm đơn vị cho seasonLength, beatGap, isDurable, compileSeason, seasonKitFromNames.
+ * FAIL_ALL=1 in hết mọi FAIL (mặc định 200 dòng đầu); PROBE_STATS=1 in số lần dựng của probe quy tắc 9.
  */
 import {
   createRng, PATHS, STORYLETS, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, PATH_STORYLETS, TURNING_STORYLETS,
   SEASONS, SEASON_STORYLETS, BEATS, compileSeason, seasonLength, beatGap, isDurable, seasonKitFromNames, landingOf,
-  WEIRD, AXES, fillSlots, generateCanon, canonView,
-  type SeasonDef, type SeasonKit, type FactContext, type Effect, type StoryletView, type CanonSeed, type Plant, type PlantKind, type Slots,
+  WEIRD, AXES, fillSlots, generateCanon, canonView, CANON_SEEDS,
+  type SeasonDef, type SeasonKit, type FactContext, type Effect, type StoryletView, type CanonSeed, type Plant, type PlantKind, type Slots, type CastRole,
 } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
 import { land, ending } from "./engine/narrative/canon/kit.ts";
 
 let fails = 0;
 const seen = new Set<string>();
-const bad = (m: string) => { if (seen.has(m)) return; seen.add(m); fails++; if (fails <= 200) console.log("FAIL " + m); };
+const bad = (m: string) => { if (seen.has(m)) return; seen.add(m); fails++; if (fails <= (process.env.FAIL_ALL ? 1e9 : 200)) console.log("FAIL " + m); };
 const ok = (cond: boolean, msg: string) => { if (!cond) bad(msg); };
 
 /** Mọi mùa phải kiểm: mùa thường và mùa của mọi nhánh kỳ dị. */
@@ -485,6 +490,256 @@ for (const def of SEASONS) {
 ok(landingOf({ custom: "become:singer|season_end:ca_si" }) === "ca_si" && landingOf({ custom: "season_end" }) === null && landingOf({}) === null, "landingOf đọc id landing");
 ok(land("x", "Dòng.", { money: 2 }).effects.custom === "season_end:x" && land("y", "Dòng.", { custom: "marry" }).effects.custom === "marry|season_end:y", "land thêm season_end:<id>");
 { const l = land("z", "Dòng.", { money: 2 }); ok(ending(l, "Chọn").effects === l.effects, "ending dùng nguyên effects của landing"); }
+
+/* ------------------------------------------------------------------ quy tắc 9: chữ khẳng định trạng thái phải đúng với mọi ctx */
+
+/**
+ * Probe quy tắc 9 (addendum): dựng mọi thẻ của mọi mùa (và tiêu đề / chữ / nhãn cửa của 8 mầm) dưới các cặp sự thật
+ * tương phản, rồi dò một danh sách cụm từ khẳng định trạng thái. Cụm nào hiện ra ở biến thể mà trạng thái ấy SAI là vi phạm.
+ *
+ * Biến thể (VARIANTS) đặt một sự thật và dọn các trường liên quan cho nhất quán (vai spouse/child trong cast, nhà trong
+ * owns/asset_names, vật gài nợ…): không nợ / có nợ; không việc / về hưu / có việc; chưa cưới / góa / đang có vợ chồng;
+ * không nhà / có nhà / sống nhờ (không nhà, chưa tự lập); không con / có con. Biến thể "dương" (có nợ, có việc, có vợ
+ * chồng, góa, có nhà, có con) chỉ dùng cho người ≥ 18 (có con: ≥ 25).
+ *
+ * Cờ và bộ đếm của mùa: mỗi thẻ được dựng hai lần, (a) không cờ nào của mùa, (b) mọi cờ/bộ đếm do lựa chọn trong mùa
+ * đặt, TRỪ những cờ đi cùng một lựa chọn tạo ra chính sự thật đang xét (vay → nợ, marry → vợ chồng, have_child → con,
+ * job_new/become: → việc, mua nhà → nhà; chiều ngược lại: repay, spouse_leave, job_lose/retire, bán nhà). Vậy chữ
+ * "khoản vay tới hạn" đứng sau cờ của lựa chọn "Vay" không bị bắt, còn chữ dự phòng khi vết nợ rỗng thì bị bắt.
+ * Vết rỗng (k.scar → "") cho mọi luật; luật không về nợ dựng thêm với vết đầy.
+ *
+ * Mùa thường: 24 bối cảnh fuzz (tuổi ≥ 8; tron_chay / xu_nguoi cần đã tự lập như cửa của chúng). Mùa kỳ dị: tới 24
+ * bối cảnh fuzz mà `when` của nhánh đúng, và biến thể phải vẫn qua `when` đó (tiền đề nhánh đã giữ lúc vào mùa).
+ * Thẻ chung kết: dò cả dòng landing của từng lựa chọn. Mầm: dò title, text, nhãn các cửa mở.
+ *
+ * Danh sách cụm từ (FACT_RULES) bắt đầu khoan dung: chỉ cụm chính xác, đã chỉnh để không bắt nhầm nghĩa bóng
+ * ("mắc nợ bà chủ một lần", "nợ ân tình"). Tiền đề do chính mùa dựng ra (mùa trốn nợ có gã đòi nợ trong dàn mới; mùa
+ * xứ người cho một chỗ rửa bát) ghi trong PREMISE kèm lý do. Thêm một luật kèm: landing hay hint chung kết nói "trả
+ * nợ / khép chuyện cũ bằng tiền" thì effects phải có repay:<x> (không thì lời hứa trả nợ không làm gì).
+ */
+type FactTag = "debt+" | "debt-" | "job+" | "job-" | "spouse+" | "spouse-" | "kids+" | "home+" | "home-";
+/** legit: sự thật mà một lựa chọn trong mùa có thể đã tạo ra, làm câu khẳng định thành đúng (vd. vay → nợ; trả nợ → từng có nợ). */
+interface FactRule { id: string; variants: string[]; legit: FactTag[]; re: RegExp; scarFull?: boolean }
+const FACT_RULES: FactRule[] = [
+  // Khẳng định đang có nợ (khi không nợ, không vật gài nợ, vết nợ rỗng). Bỏ nghĩa bóng: "như một chủ nợ", "trả nợ giờ".
+  { id: "nợ", variants: ["no_debt"], legit: ["debt+", "debt-"],
+    re: /món nợ|khoản nợ|giấy nợ|tờ nợ|(?<!như (một )?)chủ nợ|đòi nợ|trả nợ(?! giờ)|nợ cũ|nợ nần|gánh nợ|ôm nợ|sạch nợ|hết nợ|khoản vay|món vay|nợ ngân hàng|tiền nợ/i },
+  // Khẳng định không nợ (khi đang nợ).
+  { id: "không nợ", variants: ["debt"], legit: ["debt-"], re: /không nợ ai|chẳng nợ ai|chưa nợ ai|không còn nợ|không một đồng nợ/i, scarFull: true },
+  // Khẳng định đang đi làm công (khi không có việc hay đã về hưu). Lời mời một việc mới ("lương ít") thì không tính.
+  { id: "việc", variants: ["no_job", "retired"], legit: ["job+"],
+    re: /lương của bạn|tháng lương|năm lương|lương cũ|đồng nghiệp|chỗ làm|nơi làm việc của bạn|công ty (của )?bạn|sếp (của )?bạn|đi làm như thường|vẫn (còn )?đi làm|(?<!những (năm|ngày) )còn đi làm|xin nghỉ phép|nghỉ việc|bỏ việc|mất việc|tan ca|xin (hãng|công ty|sếp)/i, scarFull: true },
+  // Khẳng định thất nghiệp hay đã thôi làm ("những năm còn đi làm") khi đang có việc.
+  { id: "thất nghiệp", variants: ["job"], legit: ["job-"], re: /thất nghiệp|không có việc làm|chưa có việc làm|những (năm|ngày) còn đi làm/i, scarFull: true },
+  // Lương hưu khi chưa về hưu (bỏ so sánh "đều như lương hưu").
+  { id: "hưu", variants: ["no_job", "job"], legit: ["job-"], re: /(?<!như )lương hưu|tiền hưu|sổ hưu/i, scarFull: true },
+  // Vợ/chồng đang có mặt (khi chưa cưới hay đã góa).
+  { id: "vợ chồng", variants: ["single", "widowed"], legit: ["spouse+"],
+    re: /vợ bạn|chồng bạn|vợ của bạn|chồng của bạn|bạn đời của bạn|vợ chồng bạn|hai vợ chồng|nhà chồng|nhà vợ|bố mẹ vợ|bố mẹ chồng|vợ hay chồng|vợ hoặc chồng|người bạn đời/i, scarFull: true },
+  // Chưa từng cưới (khi đang có vợ chồng hay đã góa).
+  { id: "chưa cưới", variants: ["married", "widowed"], legit: [],
+    re: /bạn chưa từng (có )?(vợ|chồng|cưới|lấy|kết hôn)|bạn chưa (lấy|có) (vợ|chồng)|chưa từng có vợ có chồng/i, scarFull: true },
+  { id: "độc thân", variants: ["married"], legit: ["spouse-"], re: /độc thân|ế vợ|ế chồng/i, scarFull: true },
+  // Sở hữu nhà (khi không có nhà, hay đang sống nhờ).
+  { id: "nhà", variants: ["no_home", "dependent"], legit: ["home+"],
+    re: /bán nhà|sổ đỏ|giấy tờ nhà của bạn|căn nhà của bạn|nhà riêng của bạn|cầm cố nhà của bạn|thế chấp nhà/i, scarFull: true },
+  // Thuê nhà (khi có nhà riêng, hay đang sống nhờ bố mẹ). "nhà nghỉ", "nhà hàng" không tính.
+  { id: "thuê nhà", variants: ["home", "dependent"], legit: ["home-"],
+    re: /tiền thuê nhà|tiền nhà(?! nghỉ| hàng| ăn)|thuê nhà|nhà thuê|chủ nhà trọ|phòng trọ của bạn|chủ trọ|chủ nhà (đòi|lấy lại|tăng giá)/i, scarFull: true },
+  // Con cái (khi không có con). "các con số / con vật" không tính.
+  { id: "con", variants: ["no_kids"], legit: ["kids+"],
+    re: /con bạn|con của bạn|các con(?! (số|vật|đường|chữ|thú|gà|vịt|chó|mèo))|con trai (của )?bạn|con gái (của )?bạn|con cái|cháu nội của bạn|cháu ngoại của bạn|con cháu (của )?bạn|bố mẹ của con|đứa nhỏ nhà bạn/i, scarFull: true },
+  // Không con (khi có con). "không có con số / con tem / con này" không tính.
+  { id: "không con", variants: ["kids"], legit: [],
+    re: /(chưa|không) có con(?![\p{L}])(?! (số|tem|này|nào|vật|gì|đường|phố|chữ|mèo|chó|gà|vịt|thú))|hiếm muộn|không con cái/iu, scarFull: true },
+];
+/** Tiền đề do chính mùa / mầm dựng ra: luật được miễn ở cả mùa (kèm lý do). */
+const PREMISE: Record<string, { rules: string[]; why: string }> = {
+  tron_chay: { rules: ["nợ", "thuê nhà"], why: "mùa trốn nợ: dàn mới có gã đòi nợ (vai creditor), bạn bỏ đi và thuê một căn gác" },
+  lam_lai: { rules: ["thuê nhà"], why: "mùa bắt đầu trong một phòng trọ thuê, tiền về không" },
+  xu_nguoi: { rules: ["thuê nhà"], why: "mùa sang nước khác: bạn thuê căn phòng dưới mái của bà chủ nhà" },
+  w_S07: { rules: ["việc"], why: "nhánh ký hợp đồng lên trạm sao Hỏa: dàn mới có chỉ huy trạm (first_boss), ca trực là việc của mùa" },
+  w_S33: { rules: ["việc"], why: "nhánh nhận việc làm người thật cho máy: dàn mới có chị giám sát (first_boss) và người đồng nghiệp, chỗ làm là của mùa" },
+  w_S50: { rules: ["không nợ"], why: "nhánh hệ thống xóa bạn khỏi mọi hồ sơ, xóa luôn sổ nợ: \"không còn nợ ai\" là tiền đề của mùa (chung kết repay hay lấy lại nợ)" },
+  w_X07: { rules: ["việc"], why: "nhánh bán bản quyền khuôn mặt cho hãng mì: hợp đồng với hãng là việc của mùa (dàn mới first_boss: chị đại diện của hãng)" },
+  w_X22: { rules: ["hưu"], why: "nhánh giấy tờ cộng thêm ba mươi tuổi: sổ hưu, lương hưu theo tuổi trên giấy là tiền đề của mùa" },
+  w_X37: { rules: ["nợ"], why: "nhánh thừa kế món nợ một triệu chiếc bánh của bà cô: giấy nợ trả bằng bánh là tiền đề của mùa (dàn mới có ông trưởng ban đòi bánh, vai creditor)" },
+  w_X40: { rules: ["nợ"], why: "nhánh người của một ngày: người kia vay tiền dưới tên bạn là tiền đề của mùa (dàn mới có bà chủ tiệm cầm đồ, vai creditor)" },
+  no_cu: { rules: ["nợ"], why: "mầm là một lời đòi nợ; khi không nợ gì, chữ nói rõ bạn không nhớ đã vay (lời đòi có thể sai)" },
+};
+/** Thẻ dùng cụm từ theo nghĩa khác (không khẳng định trạng thái của người chơi): miễn luật ở thẻ đó, kèm lý do. */
+const NOT_ASSERT: Record<string, { rules: string[]; why: string }> = {
+  s31_cl_ho_so: { rules: ["việc"], why: "người mất việc là cô nhân viên trạm chấm sao, không phải người chơi" },
+  x01_ket: { rules: ["việc"], why: "\"như chào đồng nghiệp cũ\": con trâu Đốm từng cùng bạn làm \"đại biểu\" thôn, nghĩa bóng" },
+  x14_kd_no_kem: { rules: ["nợ"], why: "khoản nợ thuế đi kèm tài sản thừa kế của cụ (tiền đề của mùa), không phải nợ cũ của người chơi" },
+  x15_kd_viec: { rules: ["việc"], why: "người bị quỵt ba tháng lương là bạn cùng phòng" },
+  x05_ket: { rules: ["nợ"], why: "\"món nợ cũ của ông\" (dự phòng của vết nợ) là nợ của người ông đã mất, điều kiện của phong bì cuối trong cuộc săn" },
+};
+
+const withRole = (c: FactContext, role: CastRole, on: boolean): Pick<FactContext, "cast" | "roles"> => {
+  const cast = { ...c.cast }, roles = { ...c.roles };
+  if (on) { const id = cast[role] ?? `cast_${role}`; cast[role] = id; roles[id] = [...new Set([...(roles[id] ?? []), role])]; }
+  else { const id = cast[role]; delete cast[role]; if (id) { const rs = (roles[id] ?? []).filter((x) => x !== role); if (rs.length) roles[id] = rs; else delete roles[id]; } }
+  return { cast, roles };
+};
+const withHouse = (c: FactContext, on: boolean): Partial<FactContext> => {
+  const owns = new Set(c.owns), names = { ...c.asset_names };
+  if (on) { owns.add("house"); names.house = names.house ?? "căn nhà ở đầu ngõ"; } else { owns.delete("house"); delete names.house; }
+  return { owns, asset_names: names, home_owner: on };
+};
+const VARIANTS: Record<string, { min: number; f: (c: FactContext) => FactContext }> = {
+  no_debt: { min: 0, f: (c) => ({ ...c, debt: 0, debt_ratio: 0, loans: 0, loan_burden: 0, plants: c.plants.filter((p) => p.kind !== "debt") }) },
+  debt: { min: 18, f: (c) => ({ ...c, debt: 1.5 * c.income, debt_ratio: 1.5 }) },
+  no_job: { min: 0, f: (c) => ({ ...c, has_job: false, job: "", retired: false }) },
+  retired: { min: 50, f: (c) => ({ ...c, has_job: false, job: "", retired: true }) },
+  job: { min: 18, f: (c) => ({ ...c, has_job: true, job: "thợ may", retired: false }) },
+  single: { min: 0, f: (c) => ({ ...c, married: false, widowed: false, ...withRole(c, "spouse", false) }) },
+  widowed: { min: 25, f: (c) => ({ ...c, married: false, widowed: true, ...withRole(c, "spouse", false) }) },
+  married: { min: 18, f: (c) => ({ ...c, married: true, widowed: false, ...withRole(c, "spouse", true) }) },
+  no_home: { min: 0, f: (c) => ({ ...c, ...withHouse(c, false) }) },
+  home: { min: 18, f: (c) => ({ ...c, ...withHouse(c, true) }) },
+  dependent: { min: 0, f: (c) => ({ ...c, ...withHouse(c, false), independent: false }) },
+  no_kids: { min: 0, f: (c) => ({ ...c, kids_alive: 0, kids_teen: 0, kids_school: 0, ...withRole(c, "child", false) }) },
+  kids: { min: 25, f: (c) => ({ ...c, kids_alive: 2, kids_teen: c.age >= 32 ? 1 : 0, kids_school: 1, ...withRole(c, "child", true) }) },
+};
+/** Sự thật một lựa chọn tạo ra hay xóa đi. */
+function factTags(e: Effect, out = new Set<FactTag>()): Set<FactTag> {
+  for (const p of customParts(e)) {
+    const k = p.split(":")[0];
+    if (k === "borrow") out.add("debt+");
+    else if (k === "repay" || k === "restructure") out.add("debt-");
+    else if (k === "marry") out.add("spouse+");
+    else if (k === "spouse_leave") out.add("spouse-");
+    else if (k === "have_child") out.add("kids+");
+    else if (k === "job_new" || k === "become" || k === "job_switch") out.add("job+");
+    else if (k === "job_lose" || k === "job_lose_maybe" || k === "retire") out.add("job-");
+  }
+  if (e.buy?.kind === "house") out.add("home+");
+  if (e.sell?.kind === "house") out.add("home-");
+  if (e.gamble) { factTags(e.gamble.win, out); factTags(e.gamble.lose, out); }
+  return out;
+}
+const snippet = (s: string, re: RegExp): string => {
+  const m = re.exec(s); if (!m) return s.slice(0, 80);
+  const a = Math.max(0, m.index - 40), b = Math.min(s.length, m.index + m[0].length + 40);
+  return (a > 0 ? "…" : "") + s.slice(a, b) + (b < s.length ? "…" : "");
+};
+/** Kit vết rỗng hay đầy cho probe (không ghi nhận dùng vết). */
+const probeKit = (def: SeasonDef, full: boolean): SeasonKit => fakeKit(def, !full, { scar: new Set(), gag: false, npcBad: new Set() }, 0);
+/** Dòng landing hay hint/nhãn hứa trả nợ, khép chuyện cũ bằng tiền. */
+const REPAY_CLAIM = /trả (sạch|hết|dứt|đủ|xong|nốt|nợ)|sạch nợ|hết nợ|khép (nốt )?(chuyện|món nợ|khoản)|gửi (tiền )?về khép|trả chuyện cũ|tiền trả chuyện/i;
+
+function probeFacts(): { hits: Map<string, string>; repay: Map<string, string>; cards: number; seeds: number; builds: number } {
+  const hits = new Map<string, string>(), repay = new Map<string, string>();
+  let cards = 0, builds = 0;
+  /** strs: [chữ, sự thật mà lựa chọn mang chữ ấy tự tạo ra]. Nhãn / hint / dòng landing của lựa chọn tạo ra đúng sự thật đó thì được nói về nó. */
+  const scan = (where: string, owner: string, cardId: string, variant: string, strs: [string, Set<FactTag>][], full: boolean) => {
+    for (const rule of FACT_RULES) {
+      if (!rule.variants.includes(variant) || (full && !rule.scarFull)) continue;
+      if (PREMISE[owner]?.rules.includes(rule.id) || NOT_ASSERT[cardId]?.rules.includes(rule.id)) continue;
+      for (const [s, own] of strs) if (!rule.legit.some((t) => own.has(t)) && rule.re.test(s)) { const key = `${where} [${rule.id} @ ${variant}]`; if (!hits.has(key)) hits.set(key, snippet(s, rule.re)); break; }
+    }
+  };
+  const NONE = new Set<FactTag>();
+  const normalBase = Array.from({ length: 24 }, (_, i) => { const c = randomCtx(createRng(9100 + i)); return { ...c, age: Math.max(8, c.age) }; });
+  const rng = createRng(9300);
+  const weirdPool = Array.from({ length: 400 }, (_, i) => { const c = weirdCtx(rng); return { c, s: fillSlots(KY_FUZZ, c, c.plants, fakeN(i % 2 === 0))! }; });
+  const gateOf = new Map<string, (c: FactContext) => boolean>();
+  for (const b of WEIRD) gateOf.set(b.season.id, (c) => { try { return b.when(c, fillSlots(KY_FUZZ, c, c.plants, fakeN(false))!); } catch { return false; } });
+  const NEEDS_INDEP = new Set(["tron_chay", "xu_nguoi"]);
+
+  for (const def of ALL_SEASONS) {
+    const gate = gateOf.get(def.id) ?? ((c: FactContext) => c.age >= 8 && (!NEEDS_INDEP.has(def.id) || c.independent));
+    const bases = def.weird ? weirdPool.map((x) => x.c).filter(gate).slice(0, 24) : normalBase;
+    // Cờ / bộ đếm do lựa chọn trong mùa đặt, cùng sự thật mà lựa chọn ấy tạo ra.
+    // Một khóa chỉ "kéo theo" sự thật T khi MỌI lựa chọn đặt nó đều tạo ra T (giao các tập): bộ đếm s35_nuot đặt bởi
+    // cả lựa chọn xóa nợ lẫn lựa chọn thả hóa đơn thì không kéo theo nợ.
+    const keyTags = new Map<string, Set<FactTag>>();
+    const note = (e: Effect, tags: Set<FactTag>) => {
+      for (const k of [...(e.flags ?? []), ...Object.keys(e.counters ?? {})]) { const t = keyTags.get(k); keyTags.set(k, t ? new Set([...t].filter((x) => tags.has(x))) : new Set(tags)); }
+      if (e.gamble) { note(e.gamble.win, tags); note(e.gamble.lose, tags); }
+    };
+    def.beats.forEach((beat, bi) => beat.forEach((card) => [...bases.slice(0, 6), ...normalBase.slice(0, 6)].forEach((p) => {
+      const c: FactContext = { ...p, season: def.id, season_beat: bi, counters: { ...p.counters, season_next: p.age } };
+      try { if (card.when && !card.when(c)) return; for (const ch of card.build(c, probeKit(def, true)).choices) note(ch.effects, factTags(ch.effects)); } catch { /* đã báo ở fuzz */ }
+    })));
+    const fullFor = (legit: FactTag[]) => {
+      const flags: string[] = [], counters: Record<string, number> = {};
+      for (const [k, tags] of keyTags) if (!legit.some((t) => tags.has(t))) { flags.push(k); counters[k] = 3; }
+      return { flags, counters };
+    };
+    const landingLine = new Map(def.landings.map((l) => [l.id, l.line]));
+    for (const base of bases) for (const [vn, v] of Object.entries(VARIANTS)) {
+      if (base.age < v.min) continue;
+      if (vn === "dependent" && NEEDS_INDEP.has(def.id)) continue;
+      const cv = v.f(base);
+      if (def.weird && !gate(cv)) continue;
+      const legits = new Map(FACT_RULES.filter((r) => r.variants.includes(vn)).map((r) => [r.legit.join(","), r.legit]));
+      const modes = [{ flags: [] as string[], counters: {} as Record<string, number> }, ...[...legits.values()].map(fullFor)];
+      for (const m of modes) def.beats.forEach((beat, bi) => beat.forEach((card) => {
+        const c: FactContext = { ...cv, season: def.id, season_beat: bi, flags: new Set([...cv.flags, ...m.flags]), counters: { ...cv.counters, ...m.counters, season_next: cv.age } };
+        try { if (card.when && !card.when(c)) return; } catch { return; }
+        for (const full of [false, true]) {
+          let view: StoryletView;
+          try { view = card.build(c, probeKit(def, full)); } catch { continue; }
+          builds++;
+          const strs: [string, Set<FactTag>][] = [[view.title, NONE], [view.text, NONE]];
+          for (const ch of view.choices) {
+            const own = factTags(ch.effects);
+            strs.push([ch.label, own], [ch.hint ?? "", own]);
+            const l = bi === 4 ? landingOf(ch.effects) : null;
+            if (l && landingLine.has(l)) strs.push([landingLine.get(l)!, own]);
+          }
+          scan(`${def.id} ${card.id}`, def.id, card.id, vn, strs, full);
+        }
+      }));
+    }
+    def.beats.forEach((beat) => { cards += beat.length; });
+    // Hứa trả nợ mà không repay: landing (dòng, hay hint/nhãn của lựa chọn chung kết đáp xuống nó). Món nợ là tiền đề của
+    // mùa (PREMISE "nợ": nợ bánh, nợ do người kia vay, sổ nợ bị xóa…) không nằm trong sổ của host, nên không cần repay.
+    if (!PREMISE[def.id]?.rules.includes("nợ")) for (const l of def.landings) if (REPAY_CLAIM.test(l.line) && !customParts(l.effects).some((p) => p.startsWith("repay"))) repay.set(`${def.id} landing ${l.id}: dòng hứa trả nợ / khép chuyện cũ nhưng effects không có repay:<x>`, snippet(l.line, REPAY_CLAIM));
+    if (!PREMISE[def.id]?.rules.includes("nợ")) for (const card of def.beats[4]) for (const p of normalBase.slice(0, 8)) {
+      const c: FactContext = { ...p, age: 30, season: def.id, season_beat: 4, counters: { ...p.counters, season_next: 30 } };
+      try {
+        if (card.when && !card.when(c)) continue;
+        for (const ch of card.build(c, probeKit(def, true)).choices) {
+          const s = `${ch.label} / ${ch.hint ?? ""}`;
+          if (REPAY_CLAIM.test(s) && !customParts(ch.effects).some((x) => x.startsWith("repay"))) repay.set(`${def.id} ${card.id}: lựa chọn «${ch.label}» hứa trả nợ / khép chuyện cũ nhưng landing không có repay:<x>`, snippet(s, REPAY_CLAIM));
+        }
+      } catch { /* đã báo */ }
+    }
+  }
+
+  // Mầm: tiêu đề, chữ, nhãn cửa mở.
+  let seeds = 0;
+  for (const seed of CANON_SEEDS) {
+    seeds++;
+    const [a0, a1] = seed.ages ?? [8, 72];
+    const bases = Array.from({ length: 60 }, (_, i) => { const c = randomCtx(createRng(9500 + i)); return { ...c, age: a0 + (c.age % (a1 - a0 + 1)) }; });
+    for (const base of bases) for (const [vn, v] of Object.entries(VARIANTS)) {
+      if (base.age < v.min) continue;
+      const c = v.f(base);
+      for (const empty of [false, true]) {
+        const N = fakeN(empty);
+        const s = fillSlots(seed, c, c.plants, N);
+        if (!s) continue;
+        builds++;
+        const strs: [string, Set<FactTag>][] = [[seed.title(s, c, N), NONE], [seed.text(s, c, N), NONE],
+          ...seed.doors.filter((d) => !d.when || d.when(c, s)).flatMap((d): [string, Set<FactTag>][] => [[d.label(s, c, N), NONE], [d.hint, NONE]])];
+        scan(`mầm ${seed.id}`, seed.id, seed.id, vn, strs, false);
+      }
+    }
+  }
+  return { hits, repay, cards, seeds, builds };
+}
+
+{
+  const r = probeFacts();
+  for (const [key, sample] of r.hits) bad(`quy tắc 9 ${key} — «${sample}»`);
+  for (const [key, sample] of r.repay) bad(`${key} — «${sample}»`);
+  ok(r.cards > 800 && r.builds > 20000, `probe quy tắc 9 dựng quá ít (${r.cards} thẻ, ${r.builds} lần dựng)`);
+  if (process.env.PROBE_STATS) console.log(`probe quy tắc 9: ${r.cards} thẻ, ${r.seeds} mầm, ${r.builds} lần dựng, ${r.hits.size} vi phạm`);
+}
 
 if (fails) { console.log(`${fails} FAIL`); process.exit(1); }
 console.log(`canon-content-test: OK (${ALL_SEASONS.length} mùa, ${compiled.length} thẻ, ${WEIRD.length} nhánh kỳ dị)`);
