@@ -71,7 +71,7 @@ const S21 = weird("S21", "sf", ["ky", "tinh"],
       ],
       /* chung_ket */
       [
-        card("s21_ket", "Khói lúc chạng vạng", (c, k) => `${has(c, "s21_so_tan") ? "Khói bốc lên lúc chạng vạng, khi khu nhà đã vắng quá nửa nhờ bạn làm ầm suốt ngày." : "Khói bốc lên lúc chạng vạng, đúng như giọng kia đã nói."} ${cnt(c, "s21_chuan_bi") >= 2 ? "Túi đồ chuẩn bị mấy năm nằm sẵn cạnh cửa, nặng trĩu." : "Bạn chẳng chuẩn bị gì, chỉ có đôi dép đang đi."} Bạn chợt nhớ ${k.scar("no") || "món nợ chưa trả"} vẫn còn đó, và người duy nhất biết chuyện ấy đang ở tầng trên. Điện thoại reo lần cuối: "Giờ thì mày chọn. Tao chọn rồi, và tao sống với nó mười năm." ${k.gag()}`,
+        card("s21_ket", "Khói lúc chạng vạng", (c, k) => `${has(c, "s21_so_tan") ? "Khói bốc lên lúc chạng vạng, khi khu nhà đã vắng quá nửa nhờ bạn làm ầm suốt ngày." : "Khói bốc lên lúc chạng vạng, đúng như giọng kia đã nói."} ${cnt(c, "s21_chuan_bi") >= 2 ? "Túi đồ chuẩn bị mấy năm nằm sẵn cạnh cửa, nặng trĩu." : cnt(c, "s21_chuan_bi") === 1 ? "Túi đồ chuẩn bị vội nằm cạnh cửa, thiếu trước hụt sau." : "Bạn chẳng chuẩn bị gì, chỉ có đôi dép đang đi."} Bạn chợt nhớ ${k.scar("no") || "món nợ chưa trả"} vẫn còn đó, và người duy nhất biết chuyện ấy đang ở tầng trên. Điện thoại reo lần cuối: "Giờ thì mày chọn. Tao chọn rồi, và tao sống với nó mười năm." ${k.gag()}`,
           [ending(L21_TRANH, "Chạy ra, giữ lấy mình", "Thoát nạn, có tiền, mất người"),
            ending(L21_QUAY, "Lao lên tầng trên", "Giữ được người, mất hết của")]),
       ],
@@ -80,7 +80,7 @@ const S21 = weird("S21", "sf", ["ky", "tinh"],
 
 /* ================================================================== S22 Vũ trụ song song chạm nhau */
 
-const L22_DOI = land("s22_doi_cho", "Bạn bước qua khe gương, mang theo một người, một món đồ và một món nợ của mình, sống tiếp đời mà bạn đã không chọn.", { custom: "swap_other", money: -1 });
+const L22_DOI = land("s22_doi_cho", "Bạn bước qua khe gương, mang theo một người, một thứ từ đời cũ và một món nợ của mình, sống tiếp đời mà bạn đã không chọn.", { custom: "swap_other", money: -1 });
 const L22_O = land("s22_o_lai", "Bạn ở lại đời mình. Bản kia để lại cuốn sổ ghi chú mực đỏ, và từ đó bạn làm gì cũng tính trước hai bước.", { income_mult: 1.25, happy: 4 });
 
 const S22 = weird("S22", "sf", ["ky", "mau"],
@@ -418,7 +418,7 @@ const S26 = weird("S26", "sf", ["ky", "than"],
       ],
       /* day */
       [
-        card("s26_day_tang", "Đám tang thứ mười", (c, k) => `Đây là đám tang thứ mười bạn dự trong vài năm. ${has(c, "s26_chia") ? "Người bạn chơi cờ từng được bạn chia nửa liều ngồi hàng ghế đầu, khỏe hơn cả người đã khuất." : "Lần này là đám tang của người bạn chơi cờ, người từng hỏi xin bạn chút thuốc."} Người bán hoa trước nhà tang lễ đã nhớ mặt bạn, thấy bạn từ xa là gói sẵn bó cúc trắng. ${k.gag()}`,
+        card("s26_day_tang", "Đám tang thứ mười", (c, k) => `Đây là đám tang thứ mười bạn dự trong vài năm. ${has(c, "s26_chia") ? "Người bạn chơi cờ từng được bạn chia nửa liều ngồi hàng ghế đầu, khỏe hơn cả người đã khuất." : "Lần này là đám tang của người bạn chơi cờ, người từng hỏi xin bạn chút thuốc."} Người bán hoa trước nhà tang lễ đã nhớ mặt bạn, thấy bạn từ xa là gói sẵn bó hoa quen thuộc. ${k.gag()}`,
           [C("Mua sẵn chỗ nằm cạnh bạn bè", { money: -0.2, flags: ["s26_mua_cho"] }, "Yên lòng một chút, dù còn lâu mới dùng"),
            C("Thôi không đi đám tang nữa", { flags: ["s26_khong_di"], rel: -5, happy: 2 }, "Đỡ buồn, người sống trách bạn")]),
         card("s26_day_giay", "Tờ giấy gấp trong hộp thuốc", (c, k) => `Đáy hộp thuốc có một tờ giấy gấp tư, chữ nhỏ li ti: thuốc giữ được thân thể, không giữ được ký ức. Sống thêm năm nào, bạn quên dần một năm của tuổi thơ. ${cap(k.npc("bac_si_tre"))} xác nhận, mắt không nhìn bạn: "Chúng tôi cũng mới biết."`,
@@ -473,7 +473,7 @@ const S27 = weird("S27", "sf", ["ky", "than"],
       /* khoi_dong */
       [
         card("s27_kd_nha", "Chiếc điện thoại úp trên bàn ăn", (c, k) => `Bữa cơm tối, điện thoại nằm úp trên bàn, cách tay bạn một gang. ${c.married ? "Bạn đời đang kể một chuyện vui trong ngày, cười to hơn thường lệ." : "Mấy người bạn thân ngồi quanh bàn, ai cũng đang kể chuyện ngày hôm nay."} Chỉ cần lật lên là biết. ${k.gag()}`,
-          [C("Lật lên, quét cả nhà", { flags: ["s27_quet_nha"], know: 2, happy: -6 }, "Biết hết, ăn không còn ngon"),
+          (c) => [C(c.married ? "Lật lên, quét cả nhà" : "Lật lên, quét cả bàn", { flags: ["s27_quet_nha"], know: 2, happy: -6 }, "Biết hết, ăn không còn ngon"),
            C("Cất hẳn vào ngăn kéo", { flags: ["s27_khong_quet"], happy: 2 }, "Giữ bữa cơm, bớt một lần cảnh giác")]),
         card("s27_kd_danh_sach", "Danh sách hai trăm người", (c, k) => `${cap(k.npc("lap_trinh"))} gửi bạn một bản danh sách: hai trăm người trong thành phố sẽ mất trong năm nay, nhiều người còn trẻ. Cậu hỏi: "Mình cứu được ai thì cứu, hay đó không phải việc của mình?"`,
           [C("Đi gõ cửa từng nhà", { counters: { s27_cuu: 2 }, health: -4, flags: ["s27_go_cua"] }, "Cứu được vài người, bị đuổi nhiều lần"),
@@ -489,7 +489,7 @@ const S27 = weird("S27", "sf", ["ky", "than"],
       ],
       /* day */
       [
-        card("s27_day_than_chet", "Biệt danh thần chết", (c, k) => `${cnt(c, "s27_cuu") >= 2 ? "Người ta để ý: bạn gõ cửa nhà ai thì nhà đó có chuyện." : "Người ta để ý: bạn hay đứng nhìn người khác rất lâu."} Biệt danh "thần chết" lan khắp ${k.noi}, có người dán giấy đỏ lên cửa nhà bạn. ${k.gag()}`,
+        card("s27_day_than_chet", "Biệt danh thần chết", (c, k) => `${cnt(c, "s27_cuu") >= 2 ? "Người ta để ý: bạn gõ cửa nhà ai thì nhà đó có chuyện." : "Người ta để ý: bạn hay đứng nhìn người khác rất lâu."} Biệt danh "thần chết" lan khắp ${k.noi}, có người vẽ nguệch ngoạc lên cửa nhà bạn. ${k.gag()}`,
           [C("Kể công khai về ứng dụng", { flags: ["s27_cong_khai"], counters: { s27_cuu: 1 } }, "Người ta hiểu, rồi xếp hàng nhờ"),
            C("Im lặng chịu tiếng", { flags: ["s27_chiu"], happy: -4 }, "Giữ bí mật, mất hàng xóm")]),
         card("s27_day_chu_moi", "Ứng dụng có chủ mới", (c, k) => `${has(c, "s27_hop_tac") ? `${cap(k.npc("lap_trinh"))} báo tin: cậu đã bán ứng dụng cho một công ty bảo hiểm, và xin lỗi bạn ba lần.` : `${cap(k.npc("lap_trinh"))} biến mất, ứng dụng có chủ mới là một công ty bảo hiểm.`} Phí bảo hiểm của cả khu phố tăng gấp đôi trong một đêm.`,
@@ -498,7 +498,7 @@ const S27 = weird("S27", "sf", ["ky", "than"],
       ],
       /* chung_ket */
       [
-        card("s27_ket", "Ngày của chính bạn", (c, k) => `${cnt(c, "s27_im") > cnt(c, "s27_cuu") ? "Bạn đã im lặng nhiều hơn đã cứu." : "Bạn đã cứu nhiều hơn đã im lặng."} Một sáng, thanh tiến trình trên ô ngày của chính bạn bắt đầu chạy nhanh. ${k.gag()} Bạn đặt điện thoại xuống. Trong đầu chỉ còn ${k.scar("no") || "món nợ cũ"} chưa trả, và những ngày bạn đã biết trước của người khác.`,
+        card("s27_ket", "Ngày của chính bạn", (c, k) => `${cnt(c, "s27_im") > cnt(c, "s27_cuu") ? "Bạn đã im lặng nhiều hơn đã cứu." : cnt(c, "s27_im") === cnt(c, "s27_cuu") ? "Bạn đã cứu bao nhiêu lần thì cũng im lặng bấy nhiêu lần." : "Bạn đã cứu nhiều hơn đã im lặng."} Một sáng, thanh tiến trình trên ô ngày của chính bạn bắt đầu chạy nhanh. ${k.gag()} Bạn đặt điện thoại xuống. Trong đầu chỉ còn ${k.scar("no") || "món nợ cũ"} chưa trả, và những ngày bạn đã biết trước của người khác.`,
           (c) => can(c, "aid_doctor") || can(c, "caregiver")
             ? [can(c, "aid_doctor") ? ending(L27_Y, "Đi học lại để làm bác sĩ", "Biết trước để cứu, đời bận rộn") : ending(L27_CHAM, "Làm người chăm bệnh", "Ở bên người sắp đi, lương ít"),
                ending(L27_GHET, "Đi tới nơi không ai biết mặt", "Thoát tiếng thần chết, xa hết người quen"),
@@ -560,10 +560,10 @@ const S28 = weird("S28", "sf", ["ky"],
         card("s28_kd_tram_hai", "Ngày thứ một trăm hai mươi", (c, k) => {
           const sk = skill28(c);
           const tay = sk === "dan" ? "Bạn đã đàn bài hát trên radio trôi chảy hơn chính người hát." : sk === "may" ? "Bạn tháo lắp cái radio nhắm mắt cũng xong." : "Món ăn của bạn đã ngon tới mức chính bạn cũng thấy lạ.";
-          const lieu = has(c, "s28_dong_doi") ? `${cap(k.npc("co_ca_phe"))} đề nghị thử một cách liều: lái xe thật xa, để nửa đêm tới khi đang ở chỗ khác.` : "Bạn nảy ra một cách liều: lái xe thật xa, để nửa đêm tới khi đang ở chỗ khác.";
+          const lieu = has(c, "s28_dong_doi") ? `${cap(k.npc("co_ca_phe"))} đề nghị thử một cách liều: đi thật xa, để nửa đêm tới khi đang ở chỗ khác.` : "Bạn nảy ra một cách liều: đi thật xa, để nửa đêm tới khi đang ở chỗ khác.";
           return `${tay} Nhưng thứ Tư vẫn là thứ Tư. ${lieu}`;
         },
-          [C("Lái xe đi thật xa", { flags: ["s28_di_xa"], health: -3 }, "Có thể thoát, có thể tỉnh dậy ở giường cũ"),
+          [C("Đi thật xa trước nửa đêm", { flags: ["s28_di_xa"], health: -3 }, "Có thể thoát, có thể tỉnh dậy ở giường cũ"),
            C("Luyện thêm cho thật hoàn hảo", { counters: { s28_luyen: 2 }, flags: ["s28_luyen_tiep"] }, "Giỏi hơn, ngày vẫn lặp")]),
       ],
       /* cu_lat */
@@ -576,7 +576,7 @@ const S28 = weird("S28", "sf", ["ky"],
       [
         card("s28_day_hai_tram_nam_muoi", "Ngày thứ hai trăm năm mươi", (c, k) => `${has(c, "s28_chon_lai") ? "Từ hôm chọn lại, căn phòng có vài món đồ khác đi, nhưng thứ Tư vẫn lặp." : "Thứ Tư vẫn lặp, không sai một chi tiết."} Bạn bắt đầu sợ cái radio, sợ cái tách, sợ cả tiếng mở cửa của chính mình. ${k.gag()}`,
           [C("Nằm lì cả ngày", { health: -4, flags: ["s28_nam_li"], happy: -3 }, "Nghỉ ngơi, mất đà"),
-           C("Chạy bộ quanh hồ mỗi sáng", { health: 4, flags: ["s28_chay"], counters: { s28_luyen: 1 } }, "Thân khỏe, đầu đỡ rối")]),
+           C("Chạy bộ mỗi sáng", { health: 4, flags: ["s28_chay"], counters: { s28_luyen: 1 } }, "Thân khỏe, đầu đỡ rối")]),
         card("s28_day_muoi_ngay", "Mười ngày cuối", (c, k) => `${has(c, "s28_dong_doi") ? `${cap(k.npc("co_ca_phe"))} tìm ra quy luật: ngày chỉ trôi khi có người làm trọn một việc, không sai một li.` : "Bạn tự tìm ra quy luật: ngày chỉ trôi khi bạn làm trọn một việc, không sai một li."} Gần ba trăm lần thứ Tư, giờ chỉ còn thiếu một lần đúng.`,
           [C("Tập lại từ đầu, thật chậm", { counters: { s28_luyen: 1 }, flags: ["s28_cham"] }, "Chắc tay, mệt mỏi"),
            C("Làm liều một lần cho xong", { flags: ["s28_lieu"], happy: 2 }, "Nhanh, có thể phải đếm lại")]),
