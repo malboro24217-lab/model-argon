@@ -728,7 +728,7 @@ const S30 = weird("S30", "sf", ["ky", "tinh"],
       ],
       /* chung_ket */
       [
-        card("s30_ket", "Câu hỏi cuối cùng", (c, k) => `${has(c, "s30_tiem") ? "Thuốc giải đã ngấm, nhưng bạn nhận ra mình không muốn nói dối nữa." : "Cơn sốt vẫn âm ỉ trong người bạn."} ${k.gag()} Người quan trọng nhất đời bạn hỏi câu cuối cùng: ${k.scar("no") || "món nợ cũ"} thì sao, bạn định trả hay định quên? Lần này, câu trả lời sẽ đổi hết.`,
+        card("s30_ket", "Câu hỏi cuối cùng", (c, k) => `${has(c, "s30_tiem") ? "Thuốc giải đã ngấm, nhưng bạn nhận ra mình không muốn nói dối nữa." : "Cơn sốt vẫn âm ỉ trong người bạn."} ${k.gag()} ${cnt(c, "s30_im") >= 2 ? "Người quan trọng nhất đời bạn, người đã quen với những năm bạn đeo khẩu trang và giữ mồm giữ miệng, hỏi câu cuối cùng" : "Người quan trọng nhất đời bạn hỏi câu cuối cùng"}: ${k.scar("no") || "món nợ cũ"} thì sao, bạn định trả hay định quên? Lần này, câu trả lời sẽ đổi hết.`,
           (c) => [
             c.married ? ending(L30_LY, "Nói thật, rồi ký giấy chia tay", "Hết dối nhau, hết chung nhà")
               : ending(L30_CUOI, "Nói thật một câu giữ đã lâu", "Có người ở lại, vì biết hết"),

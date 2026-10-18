@@ -637,7 +637,7 @@ const s49: WeirdBranch = weird("S49", "sf", ["than", "tien", "ky"],
            C("Xé giấy hẹn", { counters: { s49_loi: 1, s49_lanh: 1 }, flags: ["s49_xe_hen"] }, "Giữ con mắt vàng, thêm một năm nhìn người như hàng")]),
       ],
       [
-        card("s49_ket", "Thứ duy nhất không thấy giá", (c, k) => `${cap(k.scar("no") || "món nợ cũ")} là thứ duy nhất bạn chưa bao giờ nhìn ra giá. Sáng nay, ${has(c, "s49_hen_mo") ? "giấy hẹn mổ nằm trên bàn" : "một lời mời mở văn phòng đầu tư nằm trên bàn"}, cạnh ${c.married ? "chiếc nhẫn cưới" : "chùm chìa khóa sạp mới"}. ${k.gag()}`,
+        card("s49_ket", "Thứ duy nhất không thấy giá", (c, k) => `${cap(k.scar("no") || "món nợ cũ")} là thứ duy nhất bạn chưa bao giờ nhìn ra giá. Sáng nay, ${has(c, "s49_hen_mo") ? "giấy hẹn mổ nằm trên bàn" : "một lời mời mở văn phòng đầu tư nằm trên bàn"}, cạnh ${c.married ? "chiếc nhẫn cưới" : "chùm chìa khóa sạp mới"}. ${has(c, "s49_cat_dut") ? "Người bạn cũ đã nhiều năm không ghé, và bạn không thấy thiếu, chỉ thấy lạ vì mình không thấy thiếu." : "Người bạn cũ nếu còn ghé thì chỉ ngồi uống trà, không hỏi giá món nào."} ${k.gag()}`,
           (c) => {
             const giu = c.married
               ? ending(S49_LY, "Giữ con mắt, để người kia ra đi", "Giàu thêm, nhà vắng đi một người")
