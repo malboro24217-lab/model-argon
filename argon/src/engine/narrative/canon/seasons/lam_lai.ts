@@ -9,7 +9,11 @@ const L_TIEM = land("tiem_giay_lech", "Bạn mở tiệm giày đặt riêng, đ
 const L_MANG = land("ban_giay_le", "Bạn bán giày lẻ chiếc trên mạng cho những người chỉ còn một chân giày, gửi đi khắp nơi kèm một tấm thiệp viết tay.", { custom: "become:ecommerce", happy: 4 });
 const L_BAN_Y = land("ban_y_tuong", "Một xưởng lớn mua lại cái tên “Giày lệch”. Lần đầu tiên từ số không, bạn có một khoản đủ để không phải bắt đầu lại nữa.", { money: 1.2, happy: 3 });
 
+const L_KHEP = land("khep_xuong", "Bạn khép xưởng, để chiếc giày trái cuối cùng lại trên bậu cửa, rồi chuyển về một thị trấn nhỏ yên tĩnh.", { custom: "move_city", happy: 4 });
+
 const has = (c: { flags: Set<string> }, f: string) => c.flags.has(f);
+/** Bán tên "Giày lệch": hint đọc lại khoản vay giữa mùa. */
+const banY = (c: { flags: Set<string> }) => ending(L_BAN_Y, "Bán cái tên “Giày lệch”, cầm tiền", has(c, "ll_vay") ? "Trả được cả khoản vay thân thiện lẫn chuyện cũ" : "Có tiền trả chuyện cũ, nhìn người khác làm tiếp");
 
 export const LAM_LAI: SeasonDef = {
   id: "lam_lai", vn: "Làm lại từ số 0", color: "#6f8f4e", years: [8, 20],
@@ -29,7 +33,7 @@ export const LAM_LAI: SeasonDef = {
     "Bạn dùng mấy chiếc giày trái làm chậu trồng hành. Hành mọc nghiêng hết về một bên.",
     "Ở hội chợ, có người bày bán ba trăm chiếc giày phải. Hai người nhìn nhau rất lâu, như trong phim.",
   ] },
-  landings: [L_TIEM, L_MANG, L_BAN_Y],
+  landings: [L_TIEM, L_MANG, L_BAN_Y, L_KHEP],
   beats: [
     /* mo_man */
     [
@@ -82,16 +86,20 @@ export const LAM_LAI: SeasonDef = {
           C("Viết lại kế hoạch từ dòng đầu tiên", { know: 3, flags: ["ll_ke_hoach"] }, "Rõ ràng hơn, chưa ai kiểm chứng"),
         ]),
     ],
-    /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. */
+    /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. fashion nhận tới 45, ecommerce tới 50 (PATHS) → mở tới 50 / 55. */
     [
-      card("ll_ket_tam_bien", "Tấm biển trước xưởng", (c, k) => `${(c.counters.ll_ba ?? 0) >= 2 ? `${cap(k.npc("ba_phe_lieu"))} cho bạn mượn khoảng sân sau vựa làm xưởng, không lấy tiền, chỉ đòi một đôi giày lệch.` : "Bạn thuê được một gian nhỏ ở cuối chợ, vừa đủ kê cái máy may."} Còn một chuyện của đời trước chưa khép: ${k.scar("no") || "món nợ cũ"}. Lần này, bạn có đủ thứ để chọn cách khép nó.`,
-        [ending(L_TIEM, "Treo biển, mở tiệm giày đặt riêng", "Thành nghề, buộc chân ở một chỗ"),
-         ending(L_MANG, "Bán giày lẻ chiếc trên mạng", "Bán khắp nơi, sống trong những thùng hàng"),
-         ending(L_BAN_Y, "Bán cái tên “Giày lệch”, cầm tiền", "Có tiền trả chuyện cũ, nhìn người khác làm tiếp")],
-        (c) => c.age < 58),
+      card("ll_ket_tam_bien", "Tấm biển trước xưởng", (c, k) => `${(c.counters.ll_ba ?? 0) >= 2 ? `${cap(k.npc("ba_phe_lieu"))} cho bạn mượn khoảng sân sau vựa làm xưởng, không lấy tiền, chỉ đòi một đôi giày lệch.` : "Bạn thuê được một gian nhỏ ở cuối chợ, vừa đủ kê cái máy may."} Còn một chuyện của đời trước chưa khép: ${k.scar("no") || "món nợ cũ"}. Lần này, bạn có đủ thứ để chọn cách khép nó. ${k.gag()}`,
+        (c) => [
+          ending(L_TIEM, "Treo biển, mở tiệm giày đặt riêng", (c.counters.ll_tieng ?? 0) >= 2 ? "Khách quen đã chờ sẵn, buộc chân ở một chỗ" : "Thành nghề, buộc chân ở một chỗ"),
+          ending(L_MANG, "Bán giày lẻ chiếc trên mạng", "Bán khắp nơi, sống trong những thùng hàng"),
+          banY(c),
+        ], (c) => c.age <= 50),
       card("ll_ket_chiec_cuoi", "Chiếc giày trái cuối cùng", (c, k) => `Chỉ còn một chiếc giày trái trong số ba trăm chiếc. Bạn đặt nó lên bàn, cạnh tờ giấy ghi chuyện cũ chưa xong: ${k.scar("no") || "món nợ cũ"}. ${k.gag()}`,
-        [ending(L_BAN_Y, "Bán cái tên “Giày lệch”, cầm tiền", "Có tiền trả chuyện cũ, nhìn người khác làm tiếp"),
-         ending(L_MANG, "Bán nốt từng chiếc trên mạng", "Chậm rãi, vui, không bao giờ hết việc")]),
+        (c) => [
+          banY(c),
+          c.age <= 55 ? ending(L_MANG, "Bán nốt từng chiếc trên mạng", "Chậm rãi, vui, không bao giờ hết việc")
+            : ending(L_KHEP, "Khép xưởng, về một thị trấn yên tĩnh", "Nghỉ ngơi, chỉ giữ lại một chiếc giày"),
+        ]),
     ],
   ],
 };
