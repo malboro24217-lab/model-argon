@@ -137,8 +137,8 @@ function diffVN(a, b, fromAge) {
   if (b.quadrant !== a.quadrant && b.quadrant) out.push(`là ${({ builder: "người kiến tạo", extractor: "người bòn rút", sleeper: "người ngủ quên", casualty: "người bị cuốn đi" })[b.quadrant]}`);
   return out;
 }
-function counterfactualVN(L) {
-  const cf = counterfactuals(L); if (!cf) return "";
+function counterfactualVN(L, pre) {
+  const cf = pre !== undefined ? pre : counterfactuals(L); if (!cf) return "";
   const rows = cf.alts.map(a => { const d = diffVN(cf.base, a.life, a.mark.age); return `<div class="c"><b>Năm ${a.mark.age} tuổi · ${esc(a.mark.title)}</b><span>${a.typedProactive ? `Bạn đã tự quyết "${esc(a.mark.choice)}". Nếu năm ${a.mark.age} tuổi bạn không làm việc đó: ` : `Bạn đã chọn "${esc(a.mark.choice)}". Nếu chọn "${esc(a.altLabel)}": `}${d.length ? d.join("; ") + "." : "cuộc đời gần như không đổi. Có những ngã rẽ chỉ là ngã rẽ trong đầu."}</span></div>`; });
   return `<div class="panel"><span class="label">Cuộc đời suýt có</span><p style="margin:0" class="muted">Cùng một hạt giống, cùng mọi lựa chọn khác, chỉ đổi một.</p>${rows.join("")}</div>`;
 }

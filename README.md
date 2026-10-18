@@ -5,7 +5,7 @@ Trang game: https://claude.ai/artifact/Smj8uxWFib5C34KjY714Sw
 
 ## Cấu trúc
 - `argon/`: engine bằng TypeScript, gồm kinh tế, của cải (`src/engine/economy/Holdings.ts`), băng thông, NPC, storylet, ô "Tôi muốn…" (Agency) và 96 con đường đời (`src/engine/narrative/paths/`).
-- `doi-nguoi/`: trang game. `index.html` là bản đã ghép, chính là bản đăng lên trang game. Mã host nằm trong `bridge.js`, `living.js`, `choice.js`, `narrator.js`, `story.js`, `agency.js`, `money.js`.
+- `doi-nguoi/`: trang game. `index.html` là bản đã ghép, chính là bản đăng lên trang game. Mã host nằm trong `bridge.js`, `living.js`, `choice.js`, `narrator.js`, `story.js`, `agency.js`, `money.js`, `phase1.js` (hệ quả nhìn thấy được, thẻ thập kỷ, màn kết v2, Tấm bia, thử lại từ năm N).
 - `argon/docs/superpowers/`: spec và kế hoạch của tính năng "Tôi muốn…".
 - `argon/docs/ledger/`: nhật ký quyết định, các lỗi đã sửa, các việc để sau.
 
@@ -23,6 +23,8 @@ node doi-nguoi/tests/path-test.js
 node doi-nguoi/tests/agency-host-test.js
 node doi-nguoi/tests/review-fixes-test.js
 node doi-nguoi/tests/money-test.js        # tiền: không NaN, tối đa 1 thẻ tiền/năm, mua-bán liên tục thì lỗ, chơi lại khớp
+node doi-nguoi/tests/readers-test.js      # bảng MEM_READERS (báo "X sẽ nhớ điều này") phải khớp mọi storylet đọc ý kiến NPC
+node doi-nguoi/tests/fork-test.js         # "Thử lại từ năm N": đời rẽ giống bản gốc trước chỗ rẽ, chơi tiếp được, tua lại khớp (khoảng 1,5 phút)
 node doi-nguoi/tests/replay-test.js       # tất định: 200 đời có sương mù, AI, tiền, perk; vẽ giao diện không đổi đời; tua lại khớp 100%; đời giả định giữ nguyên các năm trước (ledger 2026-10-18-tat-dinh)
 node doi-nguoi/tests/ui-agency-test.mjs   # cần playwright-core và Chromium; sửa đường dẫn import ở dòng 2 cho đúng máy
 node doi-nguoi/tests/ui-test.mjs
