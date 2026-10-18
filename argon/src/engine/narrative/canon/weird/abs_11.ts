@@ -33,15 +33,15 @@ function plantKey(c: FactContext, kind: PlantKind, keys: readonly string[]): str
 
 /* ================================================================== X11 — Vận động viên môn bí ẩn */
 
-const X11_VDV = land("x11_van_dong_vien", "Liên đoàn điền kinh gọi bạn lên tuyển, vì môn kia có ra sao thì bạn vẫn chạy nhanh nhất.", { custom: "become:runner", happy: 4 });
+const X11_VDV = land("x11_van_dong_vien", "Liên đoàn điền kinh gọi bạn lên tuyển, vì môn kia có ra sao thì bạn vẫn chạy nhanh nhất.", { custom: "become:runner", happy: 4, pressure: { danh: 2 } });
 const X11_TT = land("x11_trong_tai", "Bạn thành trọng tài của môn này. Không ai cãi được bạn, vì không ai biết luật.", { custom: "become:referee", happy: 3 });
 const X11_HLV = land("x11_hlv", "Bạn thành huấn luyện viên đầu tiên của môn này, người duy nhất dám nói mình hiểu luật.", { custom: "become:coach", happy: 4 });
-const X11_SACH = land("x11_sach_luat", "Bạn bán quyền in cuốn luật cho một nhà xuất bản, đủ sống thong thả vài năm.", { money: 2, happy: 3 });
+const X11_SACH = land("x11_sach_luat", "Bạn bán quyền in cuốn luật cho một nhà xuất bản, tên bạn in ngay bìa, đủ sống thong thả vài năm.", { money: 2, happy: 3, pressure: { danh: 2 } });
 const X11_SAN = land("x11_san_tap", "Bạn bỏ tiền dựng một sân tập cho trẻ con trong phố, vạch kẻ bằng sơn hẳn hoi.", { money: -1, happy: 6 });
 
 /* ================================================================== X12 — Người đã chết hợp pháp */
 
-const X12_TEN_CU = land("x12_ten_cu", "Bạn sống lại bằng tên cũ, trả sạch nợ cũ lẫn mới, giữ tờ giấy chứng tử làm kỷ niệm.", { money: -2, happy: 4 });
+const X12_TEN_CU = land("x12_ten_cu", "Bạn sống lại bằng tên cũ, trả nợ cũ cùng phí giấy tờ, giữ tờ giấy chứng tử làm kỷ niệm.", { custom: "repay:1.5", money: -2, happy: 4 });
 const X12_TEN_MOI = land("x12_ten_moi", "Bạn nhận tên mới, dọn sang thành phố khác, bắt đầu lại ở nơi không ai gọi nhầm tên mình.", { custom: "move_city", money: -1, happy: 2 });
 const X12_TANG_LE = land("x12_nghe_tang_le", "Sau ngần ấy chuyện, bạn hiểu nghề tang lễ hơn ai hết, và mở dịch vụ tổ chức tang lễ chu đáo nhất vùng.", { custom: "become:funeral_worker", happy: 3 });
 
@@ -73,9 +73,9 @@ const X16_CUU_HO = land("x16_cuu_ho", "Bạn dồn tiền danh tiếng lập m�
 /* ================================================================== X17 — Con phố mang tên tôi */
 
 const X17_CONG_TAC = land("x17_cong_tac_xa_hoi", "Bạn mở một văn phòng nhỏ ở đầu phố, giúp ai cần thì giúp, không cần biển tên.", { custom: "become:social_worker", happy: 4 });
-const X17_DAI_BIEU = land("x17_dai_bieu", "Bạn ra ứng cử và trúng, nhờ cả một con phố mang tên mình. Từ nay danh tiếng là việc làm.", { custom: "become:politician", happy: 2 });
+const X17_DAI_BIEU = land("x17_dai_bieu", "Bạn ra ứng cử và trúng, nhờ cả một con phố mang tên mình. Từ nay danh tiếng là việc làm.", { custom: "become:politician", happy: 2, pressure: { danh: 3 } });
 const X17_DI = land("x17_don_di", "Bạn dọn sang thành phố khác, nơi không con phố nào biết tên bạn.", { custom: "move_city", happy: 5 });
-const X17_BAN_TEN = land("x17_ban_ten", "Bạn bán quyền dùng tên cho tiệm bánh đầu phố, sống bằng tiền bản quyền và chịu tiếng.", { money: 1.5, happy: -2 });
+const X17_BAN_TEN = land("x17_ban_ten", "Bạn bán quyền dùng tên cho tiệm bánh đầu phố, sống bằng tiền bản quyền và chịu tiếng.", { money: 1.5, happy: -2, pressure: { danh: 2 } });
 
 /* ================================================================== X18 — Nhà côn trùng học bất đắc dĩ */
 
@@ -102,14 +102,16 @@ const HEIRLOOMS: Record<string, string> = {
   vat_vang_trong_heo_dat: "vật bằng vàng ông gửi trong con heo đất", dong_ho_cua_ong: "chiếc đồng hồ ông để lại",
 };
 const heirloomKey = (c: FactContext): string | undefined => plantKey(c, "object", Object.keys(HEIRLOOMS));
-const museumItem = (c: FactContext): string => HEIRLOOMS[heirloomKey(c) ?? ""] ?? "bộ bàn ghế cũ trong nhà";
+const museumItem = (c: FactContext): string => HEIRLOOMS[heirloomKey(c) ?? ""] ?? "chiếc tủ gỗ cũ trong nhà";
 /* X16: con chó của người chơi (đúng khóa vật gài), một tên dùng ở cửa, biến cố và thẻ. */
-const DOGS: Record<string, string> = { con_cho_lam_nhan_chung: "con chó từng bị gọi là nhân chứng" };
+const DOGS: Record<string, string> = { con_cho_lam_nhan_chung: "con chó từng bị gọi là nhân chứng", hai_con_cho_hai_nha: "con chó nhà bạn trong cặp chó hai nhà" };
 const dogKey = (c: FactContext): string | undefined => plantKey(c, "animal", Object.keys(DOGS));
 const dogName = (c: FactContext): string => DOGS[dogKey(c) ?? ""] ?? "con chó nhà bạn";
 /* X15: làm kho, cảng hoặc giao hàng (họ nghề lái xe, nhà máy, hoặc con đường shipper / tài xế đường dài / thuyền viên). */
 const handlesCargo = (c: FactContext): boolean => f(c, "job_driver") || f(c, "job_factory") || f(c, "life_shipper") || f(c, "life_long_hauler") || f(c, "life_sailor")
   || /(^|\s)(kho|cảng)(\s|$)|bốc xếp|giao hàng/.test(c.job);
+/* X15: có đường ở lại hợp pháp (người bảo lãnh, hoặc hồ sơ đủ dày ở nhịp đáy). */
+const x15Legal = (c: FactContext): boolean => f(c, "x15_bao_lanh") || n(c, "x15_hop_phap") >= 3;
 /* X19: biết nấu (đầu bếp, thợ bánh, nội trợ, giúp việc, hoặc nghề có chữ bếp / nấu). */
 const cooks = (c: FactContext): boolean => f(c, "life_restaurateur") || f(c, "life_baker") || f(c, "life_homemaker") || f(c, "job_domestic") || /bếp|nấu/.test(c.job);
 
@@ -147,7 +149,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Từ chối, chơi cho vui", { happy: 3, flags: ["x11_choi_vui"] }, "Nhẹ đầu, đội vẫn ăn cơm hộp")]),
         ],
         [
-          card("x11_cl_luat_goc", "Bản luật gốc", (c, k) => `Trước trận bán kết, ${k.scar("nguoi") || "một người quen cũ"} tìm đến sân tập, chìa ra trang đầu của một tờ giấy ố vàng: bản luật gốc viết tay của môn này. Muốn đọc nốt, người đó đòi đổi lấy thứ bạn giữ từ đời trước: ${k.scar("do") || "món đồ quý nhất bạn có"}. Chỉ trang đầu thôi đã đủ thấy cả đội đang chạy ngược chiều.`,
+          card("x11_cl_luat_goc", "Bản luật gốc", (c, k) => `Trước trận bán kết, ${k.scar("nguoi") || "một người quen cũ"} tìm đến sân tập, chìa ra trang đầu của một tờ giấy ố vàng: bản luật gốc viết tay của môn này. Muốn đọc nốt, người đó đòi bạn nhường lại thứ mang theo từ đời cũ: ${k.scar("do") || "món đồ quý nhất bạn có"}. Chỉ trang đầu thôi đã đủ thấy cả đội đang chạy ngược chiều.`,
             [C("Đổi, rồi dạy cả đội chạy đúng chiều", { flags: ["x11_luat_goc"], counters: { x11_phong_do: 2 }, happy: 2 }, "Đội mạnh hẳn, mất một thứ của đời cũ"),
              C("Giữ đồ, cứ chạy như cũ", { flags: ["x11_chay_nguoc"], happy: 1 }, "Giữ được kỷ niệm, đội vẫn lạc hướng"),
              C("Đọc to trang đầu cho cả hai đội", { flags: ["x11_cong_bo"], rel: 3, know: 2 }, "Trận đấu công bằng, mất lợi thế riêng", { tier: "sovereign" })]),
@@ -198,10 +200,10 @@ export const ABS_11: WeirdBranch[] = [
              C("Để ông ấy khép sổ", { flags: ["x12_khep_so"], pressure: { luat: 1 } }, "Nhẹ nợ hôm nay, mang thêm một bí mật")]),
         ],
         [
-          card("x12_kd_tai_khoan", "Tài khoản của người quá cố", (c, k) => `Ngân hàng khóa tài khoản của bạn, chủ nhà đòi lại phòng, chỗ làm gửi thư chia buồn kèm quyết định thôi việc. ${k.gag()} Trên giấy tờ, bạn không còn được làm gì, kể cả mắc nợ.`,
+          card("x12_kd_tai_khoan", "Tài khoản của người quá cố", (c, k) => `Ngân hàng khóa tài khoản của bạn${c.home_owner ? ", căn nhà đứng tên bạn chuyển sang chờ thừa kế" : ", chủ nhà đòi lại phòng"}${c.has_job ? ", chỗ làm gửi thư chia buồn kèm quyết định thôi việc" : ", mọi đơn xin việc bị trả về vì người nộp đã mất"}. ${k.gag()} Trên giấy tờ, bạn không còn được làm gì, kể cả mắc nợ.`,
             [C("Nhận làm việc vặt trả công ngày", { money: 0.1, health: -2, flags: ["x12_viec_vat"] }, "Sống tạm được, không ai bảo hiểm cho bạn"),
              C("Dọn về ở nhờ người thân", { rel: 3, happy: -2, flags: ["x12_o_nho"] }, "Có mái nhà, mất chút tự trọng")]),
-          card("x12_kd_tu_do", "Tự do của người đã khuất", () => `Một tuần sau, bạn nhận ra không ai gọi điện đòi tiền, không ai mời họp, không ai hỏi bao giờ lấy vợ lấy chồng. Bạn ngủ một mạch đến trưa lần đầu sau mười năm. "Chết sướng thế này thì sống làm gì," bạn nghĩ, rồi giật mình vì đã nghĩ thế.`,
+          card("x12_kd_tu_do", "Tự do của người đã khuất", (c) => `Một tuần sau, bạn nhận ra không ai gọi điện đòi tiền, không ai mời họp, ${c.married ? "không ai nhắc ngày kỷ niệm cưới" : "không ai hỏi bao giờ lấy vợ lấy chồng"}. Bạn ngủ một mạch đến trưa lần đầu sau mười năm. "Chết sướng thế này thì sống làm gì," bạn nghĩ, rồi giật mình vì đã nghĩ thế.`,
             [C("Tận hưởng thêm một thời gian", { happy: 5, flags: ["x12_tan_huong"], counters: { x12_song: -1 } }, "Nghỉ ngơi thật, giấy tờ càng khó sửa"),
              C("Đi nộp đơn xin được sống lại", { flags: ["x12_nop_don"], counters: { x12_song: 1 }, money: -0.05 }, "Bắt đầu một hành trình giấy tờ rất dài")]),
         ],
@@ -219,10 +221,10 @@ export const ABS_11: WeirdBranch[] = [
              C("Xin họ khắc lại tấm bia", { money: -0.1, flags: ["x12_khac_bia"], happy: 1 }, "Rạch ròi, gia đình ấy hơi buồn")]),
         ],
         [
-          card("x12_ket", "Phiên tòa sống lại", (c, k) => `Cuối cùng tòa mở phiên xử: bạn được sống lại bằng tên cũ, hoặc nhận một tên hoàn toàn mới. ${k.gag()} ${f(c, "x12_hien_hinh") ? "Ai cũng nhớ ngày bạn đứng dậy giữa đám tang, nên chẳng ai phản đối." : "Nhiều người vẫn tin bạn đã mất thật."} Sống lại bằng tên cũ nghĩa là ${k.scar("no") || "món nợ cũ"} sống lại cùng bạn, cộng thêm ${f(c, "x12_im_lang") ? "mấy khoản nợ lạ kẻ mạo danh để lại" : "phí giấy tờ của ngần ấy năm"}.`,
+          card("x12_ket", "Phiên tòa sống lại", (c, k) => `Cuối cùng tòa mở phiên xử: bạn được sống lại bằng tên cũ, hoặc nhận một tên hoàn toàn mới. ${n(c, "x12_song") >= 3 ? "Hồ sơ của bạn dày và sạch, thẩm phán chỉ hỏi đúng một câu." : "Hồ sơ của bạn mỏng đến mức thẩm phán phải hỏi lại bạn là ai."} ${k.gag()} ${f(c, "x12_hien_hinh") ? "Ai cũng nhớ ngày bạn đứng dậy giữa đám tang, nên chẳng ai phản đối." : "Nhiều người vẫn tin bạn đã mất thật."} Sống lại bằng tên cũ nghĩa là ${k.scar("no") || "món nợ cũ"} sống lại cùng bạn, cộng thêm ${f(c, "x12_im_lang") ? "mấy khoản nợ lạ kẻ mạo danh để lại" : "phí giấy tờ của ngần ấy năm"}.`,
             (c) => finale(c, [
               { l: X12_TANG_LE, label: "Mở dịch vụ tang lễ", hint: "Nghề lạ, không ai hiểu khách bằng bạn", path: "funeral_worker" },
-              { l: X12_TEN_CU, label: "Sống lại bằng tên cũ, trả hết nợ", hint: "Sạch sẽ, mất hai năm thu nhập" },
+              { l: X12_TEN_CU, label: "Sống lại bằng tên cũ, trả nợ", hint: "Sạch sẽ, mất hai năm thu nhập" },
               { l: X12_TEN_MOI, label: "Nhận tên mới, đi thành phố khác", hint: "Nhẹ quá khứ, mất hết người quen" },
             ])),
         ],
@@ -231,7 +233,7 @@ export const ABS_11: WeirdBranch[] = [
 
   /* ---------------------------------------------------------------- X13 */
   weird("X13", "abs", ["ky", "dat", "mau"],
-    (c) => c.age >= 25 && (c.home_owner || heirloomKey(c) !== undefined),
+    (c) => c.age >= 25 && c.age <= 70 && (c.home_owner || heirloomKey(c) !== undefined),
     (s, c) => heirloomKey(c) ? "Để đồ ông để lại thành hiện vật bảo tàng" : "Để nhà mình thành bảo tàng",
     (s, c) => ({ title: "Chiếc ghế có số kiểm kê", text: `Một đoàn người đeo găng tay trắng bước vào nhà bạn ở ${s.noi || "nơi này"}, dán số kiểm kê lên cái ghế, cái nồi và ${museumItem(c)}. Hội đồng đã thẩm định: đồ đạc nhà bạn là hiện vật quý của một thời. "Xin đừng ngồi lên hiện vật," cô trưởng đoàn nói, đúng lúc bạn định ngồi xuống ghế của chính mình.` }),
     season({ id: "w_X13", vn: "Bảo tàng sống", color: "#e8a33d", years: [6, 10], weird: "abs",
@@ -275,7 +277,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Thuê luật sư đọc hợp đồng", { money: -0.15, flags: ["x13_luat_su"], know: 3 }, "Tốn tiền, biết rõ mình đang bán gì")]),
         ],
         [
-          card("x13_ket", "Ngày kiểm kê cuối cùng", (c, k) => `Mùa tham quan cuối cùng sắp khép lại${n(c, "x13_khach") >= 3 ? ", với số khách cao nhất từ trước tới nay" : ""}. ${f(c, "x13_su_that") ? `Bảng thuyết minh về ${museumItem(c)} giờ kể đúng chuyện thật, và khách đứng đó lâu nhất.` : `Bảng thuyết minh về ${museumItem(c)} vẫn kể phiên bản đẹp, chỉ bạn biết nó sai ở đâu.`} ${k.gag()} Tiền vé tích góp đủ trả ${k.scar("no") || "món nợ cũ"}, nhưng không mua lại được một buổi sáng đánh răng mà không ai nhìn.`,
+          card("x13_ket", "Ngày kiểm kê cuối cùng", (c, k) => `Mùa tham quan cuối cùng sắp khép lại${n(c, "x13_khach") >= 3 ? ", với số khách cao nhất từ trước tới nay" : ""}. ${f(c, "x13_su_that") ? `Bảng thuyết minh về ${museumItem(c)} giờ kể đúng chuyện thật, và khách đứng đó lâu nhất.` : `Bảng thuyết minh về ${museumItem(c)} vẫn kể phiên bản đẹp, chỉ bạn biết nó sai ở đâu.`} ${k.gag()} Tiền vé tích góp đủ trả ${k.scar("no") || "món nợ cũ"}, nhưng không mua lại được một buổi sáng đánh răng mà không ai nhìn.${f(c, "x13_luat_su") ? " Nhờ luật sư, bạn biết điều khoản trọn đời gỡ được bằng một khoản bồi thường." : ""}`,
             [ending(X13_VE, "Ký tiếp, sống bằng tiền vé", "Thu nhập cao, đời sống trong tủ kính"),
              ending(X13_BAN_DUT, "Bán đứt bộ sưu tập, dọn lên thành phố", "Có tiền, mất nơi ở cũ"),
              ending(X13_DONG_CUA, "Bồi thường, đóng cửa bảo tàng", "Mất một năm thu nhập, lấy lại cái ghế")]),
@@ -316,7 +318,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Bán con ngựa đua lấy tiền nộp", { money: 0.1, flags: ["x14_ban_ngua"] }, "Đỡ nợ, mất con ngựa bạn bắt đầu thương")]),
         ],
         [
-          card("x14_cl_di_chuc", "Bản di chúc thứ hai", (c, k) => `Đúng ngày ra tòa, ${k.scar("nguoi") || "một người quen cũ"} xuất hiện với một phong bì cũ: bản di chúc thứ hai của cụ, viết sau bản đầu ba ngày. Trong đó cụ dặn người thừa kế phải đem ${k.scar("do") || "món đồ quý nhất của mình"} ra đổi lấy chìa khóa két sắt, để chứng minh mình không tham.`,
+          card("x14_cl_di_chuc", "Bản di chúc thứ hai", (c, k) => `Đúng ngày ra tòa, ${k.scar("nguoi") || "một người quen cũ"} xuất hiện với một phong bì cũ: bản di chúc thứ hai của cụ, viết sau bản đầu ba ngày. Trong đó cụ dặn người thừa kế phải từ bỏ thứ mang theo từ đời cũ, ở bạn là ${k.scar("do") || "món đồ quý nhất của mình"}, mới được nhận chìa khóa két sắt.`,
             [C("Làm đúng di chúc, đổi món đồ", { flags: ["x14_di_chuc_2"], counters: { x14_cung: 2 }, happy: -2 }, "Thắng thế ở tòa, mất một thứ của đời cũ"),
              C("Giấu bản di chúc thứ hai", { flags: ["x14_giau"], pressure: { luat: 2 } }, "Giữ đồ, mang một bí mật vào phòng xử"),
              C("Đưa di chúc cho cả hai bên cùng đọc", { flags: ["x14_cong_khai"], rel: 3, counters: { x14_cung: -1 } }, "Công bằng, mất lợi thế", { tier: "sovereign" })]),
@@ -327,10 +329,10 @@ export const ABS_11: WeirdBranch[] = [
              C("Thuê luật sư giỏi nhất", { money: -0.4, flags: ["x14_luat_su_gioi"], counters: { x14_cung: 1 } }, "Có cơ hội, tiền thật đi trước tiền thừa kế")]),
           card("x14_day_dem", "Một đêm không ngủ", (c, k) => `Đêm đó bạn ngồi tính: ${n(c, "x14_cung") >= 3 ? "phần thắng đang nghiêng về bạn, nhưng người nhà cụ đã soạn sẵn đơn kháng cáo" : "phần thắng đang nghiêng về người nhà cụ, và án phí đã ăn gần hết tiền tiết kiệm"}. ${cap(k.npc("chau_cu"))} nhắn tin: đề nghị chia đôi vẫn còn hiệu lực đến sáng mai.`,
             [C("Trả lời: gặp nhau ở tòa", { flags: ["x14_den_cung"], counters: { x14_cung: 1 }, happy: -2 }, "Được ăn cả, ngã về không"),
-             C("Trả lời: mình nói chuyện chia đi", { flags: ["x14_muon_chia"], happy: 2 }, "Mất một nửa, ngủ được")]),
+             C("Trả lời: mình nói chuyện chia đi", { flags: ["x14_muon_chia"], happy: 2 }, "Mở cửa chia đôi, đêm nay ngủ được")]),
         ],
         [
-          card("x14_ket", "Ngày tuyên án", (c, k) => `Ngày tuyên án, phòng xử chật kín, có cả người bán cam ngồi hàng ghế đầu. ${f(c, "x14_cong_khai") ? "Nhờ bản di chúc thứ hai được đọc công khai, hai bên lần đầu chào nhau ở hành lang." : f(c, "x14_giau") ? "Bản di chúc thứ hai vẫn nằm trong túi áo bạn, nặng như một hòn đá." : "Người nhà cụ ngồi kín một bên, không ai nhìn sang phía bạn."} ${k.gag()} ${cap(k.scar("no") || "món nợ cũ")} vẫn còn đó, và dù tòa nói gì, bạn cũng phải chọn mình sẽ là ai sau hôm nay.`,
+          card("x14_ket", "Ngày tuyên án", (c, k) => `Ngày tuyên án, phòng xử chật kín, có cả người bán cam ngồi hàng ghế đầu${f(c, "x14_muon_chia") ? ", và bản thỏa thuận chia đôi đã soạn sẵn trên bàn luật sư" : ""}. ${f(c, "x14_cong_khai") ? "Nhờ bản di chúc thứ hai được đọc công khai, hai bên lần đầu chào nhau ở hành lang." : f(c, "x14_giau") ? "Bản di chúc thứ hai vẫn nằm trong túi áo bạn, nặng như một hòn đá." : "Người nhà cụ ngồi kín một bên, không ai nhìn sang phía bạn."} ${k.gag()} ${cap(k.scar("no") || "món nợ cũ")} vẫn còn đó, và dù tòa nói gì, bạn cũng phải chọn mình sẽ là ai sau hôm nay.`,
             (c) => [ending(n(c, "x14_cung") >= 3 || c.luck > 0.8 ? X14_GIAU : X14_TRANG, "Theo vụ kiện đến lời tuyên cuối", "Được ăn cả, ngã về không"),
               ending(X14_CHIA, "Ký chia đôi trước giờ tuyên án", "Chắc một nửa, có thêm một dòng họ")]),
         ],
@@ -383,19 +385,21 @@ export const ABS_11: WeirdBranch[] = [
              C("Nói thật: muốn ở lại", { flags: ["x15_muon_o"], know: 1 }, "Có mục tiêu, còn nhiều năm chật vật")]),
         ],
         [
-          card("x15_ket", "Con tàu cập bến lần nữa", (c, k) => `${k.gag()} Con tàu năm xưa chở bạn sang lại cập bến, lần này có danh sách hành khách đàng hoàng. ${f(c, "x15_bao_lanh") ? "Người bảo lãnh nhắn: giấy tờ ở lại đã có cửa, chỉ chờ bạn gật đầu." : f(c, "x15_muon_o") ? "Bạn đã nói muốn ở lại, nhưng chưa ai đứng ra bảo lãnh cho bạn." : "Không ai bảo lãnh, cũng không ai giữ bạn lại."} Ở nhà, ${k.scar("no") || "món nợ cũ"} vẫn chờ; ở đây, cuộc đời mới chưa có tên bạn trên giấy.`,
-            (c) => finale(c, [
-              { l: X15_THUYEN, label: "Xin làm thuyền viên trên con tàu ấy", hint: "Có hộ chiếu, đời lênh đênh", path: "sailor" },
-              { l: X15_O_LAI, label: "Ở lại, chờ giấy tờ hợp pháp", hint: "Đời mới ở xứ lạ, trả giá bằng nhiều năm" },
-              { l: X15_VE, label: "Về nước, nộp phạt", hint: "Mất tiền, được về nhà" },
-            ])),
+          card("x15_ket", "Con tàu cập bến lần nữa", (c, k) => `${k.gag()} Con tàu năm xưa chở bạn sang lại cập bến, lần này có danh sách hành khách đàng hoàng. ${f(c, "x15_bao_lanh") ? "Người bảo lãnh nhắn: giấy tờ ở lại đã có cửa, chỉ chờ bạn gật đầu." : x15Legal(c) ? "Giấy phép ở tạm của bạn sắp được xét gia hạn." : f(c, "x15_chap_nhan") ? "Vé về đã nằm sẵn trong túi từ hôm bạn chấp nhận quyết định." : `Lệnh về nước vẫn còn hiệu lực${f(c, "x15_muon_o") ? ", dù bạn đã nói muốn ở lại" : ""}; muốn ở, chỉ còn một lần kháng cáo.`} Ở nhà, ${k.scar("no") || "món nợ cũ"} vẫn chờ; ở đây, cuộc đời mới chưa có tên bạn trên giấy.`,
+            (c) => {
+              const home = ending(X15_VE, "Về nước, nộp phạt", "Mất tiền, được về nhà");
+              const stay = x15Legal(c) ? ending(X15_O_LAI, "Ở lại, chờ giấy tờ hợp pháp", "Đời mới ở xứ lạ, trả giá bằng nhiều năm")
+                : ending(X15_O_LAI, "Kháng cáo lần cuối để được ở lại", "Tốn hai năm thu nhập, chờ thêm nhiều năm", { effects: { ...X15_O_LAI.effects, money: -2 } });
+              const sail = fits("sailor", c.age) ? [ending(X15_THUYEN, "Xin làm thuyền viên trên con tàu ấy", "Có hộ chiếu, đời lênh đênh")] : [];
+              return f(c, "x15_chap_nhan") ? [home, stay, ...sail] : [...sail, stay, home];
+            }),
         ],
       ] }),
     "Phi lý: không giấy tờ ở xứ lạ, về hay ở đều đắt"),
 
   /* ---------------------------------------------------------------- X16 */
   weird("X16", "abs", ["ky", "danh"],
-    (c) => c.age >= 14 && dogKey(c) !== undefined,
+    (c) => c.age >= 16 && c.age <= 68 && dogKey(c) !== undefined,
     () => "Làm người phát ngôn cho con chó anh hùng",
     (s, c) => ({ title: "Con chó được đề cử anh hùng", text: `${cap(dogName(c))} sủa liền bốn mươi phút giữa đêm, đánh thức cả ${s.noi || "khu phố"} đúng lúc đường ống nước chính vỡ tung. Sáng hôm sau, hội đồng khu phố đề cử nó danh hiệu công dân anh hùng. Nó không nói được, nên mười hai chiếc micro chĩa vào bạn. "Xin cho biết, lúc ấy nó đã nghĩ gì?"` }),
     season({ id: "w_X16", vn: "Phát ngôn viên của chó", color: "#f0b429", years: [5, 9], weird: "abs",
@@ -423,6 +427,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Từ chối quảng cáo", { flags: ["x16_tu_choi_qc"], happy: 2, counters: { x16_danh: -1 } }, "Trong sạch, ít tiền hơn")]),
           card("x16_kd_con_meo", "Đối thủ có ria", (c, k) => `Ở khu bên, một con mèo cũng được đề cử vì đuổi sạch bầy chuột khỏi kho gạo. ${cap(k.npc("chu_meo"))} lên truyền hình nói con chó nhà bạn chỉ sủa vì đói. Báo chí đặt tên cho cuộc đua: chó hay mèo.`,
             [C("Lên sóng tranh luận trực tiếp", { flags: ["x16_tranh_luan"], counters: { x16_danh: 2 }, happy: -1 }, "Nổi hơn, cả phố chia phe"),
+             C("Lờ đi, để con chó tự nói bằng việc làm", { flags: ["x16_lo_meo"], happy: 1, counters: { x16_danh: -1 } }, "Yên thân, báo chí cho mèo thắng"),
              C("Mời chủ con mèo đi ăn trưa", { flags: ["x16_lien_minh"], rel: 3 }, "Có đồng minh, báo chí mất trò vui", { tier: "sovereign" })]),
         ],
         [
@@ -434,9 +439,10 @@ export const ABS_11: WeirdBranch[] = [
           card("x16_day_kiet_suc", "Con chó nằm dưới gầm giường", (c, k) => `${k.gag()} Sau ${f(c, "x16_ky_quan_ly") ? "năm mươi sự kiện trong một mùa" : "bao nhiêu sự kiện tự lo lộn xộn"}, con chó bỏ ăn, nằm im dưới gầm giường. Bác sĩ thú y nói nhỏ: nó không ốm, nó chỉ mệt vì phải làm anh hùng.`,
             [C("Hủy hết lịch, đưa nó về quê", { flags: ["x16_nghi"], money: -0.2, happy: 3, counters: { x16_danh: -1 } }, "Con chó khỏe lại, phải đền hợp đồng"),
              C("Giảm lịch, giữ các sự kiện lớn", { flags: ["x16_giam_lich"], health: -2, counters: { x16_danh: 1 } }, "Giữ được danh, con chó vẫn buồn")]),
-          card("x16_day_mot_minh", "Lời mời không có chó", () => "Một đài truyền hình mời bạn dẫn chương trình riêng, không có chó. Họ nói giọng bạn dễ nghe, và bạn dịch tiếng sủa hay hơn bất kỳ ai từng làm nghề này, nếu nghề này có thật. Con chó nhìn bạn từ góc phòng.",
-            [C("Nhận lời, đi một mình", { flags: ["x16_mot_minh"], counters: { x16_danh: 1 }, happy: -2 }, "Sự nghiệp của bạn, con chó ở nhà"),
-             C("Chỉ nhận nếu có chó đi cùng", { flags: ["x16_ca_hai"], rel: 2 }, "Trung thành, đài có thể đổi ý")]),
+          card("x16_day_mot_minh", "Lời mời không có chó", (c) => `${f(c, "x16_tron_com") ? "Hãng thức ăn hạt vừa phát hiện bao bì của họ đựng toàn cơm nguội, đòi lại cả tiền quảng cáo. " : ""}Một đài truyền hình mời bạn dẫn chương trình riêng, không có chó. Họ nói giọng bạn dễ nghe, và bạn dịch tiếng sủa hay hơn bất kỳ ai từng làm nghề này, nếu nghề này có thật. Con chó nhìn bạn từ góc phòng.`,
+            (c) => { const lo = f(c, "x16_tron_com") ? { money: -0.3 } : {};
+              return [C("Nhận lời, đi một mình", { ...lo, flags: ["x16_mot_minh"], counters: { x16_danh: 1 }, happy: -2 }, "Sự nghiệp của bạn, con chó ở nhà"),
+                C("Chỉ nhận nếu có chó đi cùng", { ...lo, flags: ["x16_ca_hai"], rel: 2 }, "Trung thành, đài có thể đổi ý")]; }),
         ],
         [
           card("x16_ket", "Lễ trao danh hiệu", (c, k) => `${f(c, "x16_cong_bo") ? "Dù đoạn phim đã lộ, lễ trao danh hiệu vẫn diễn ra, vì con chó đã cứu cả khu phố thật." : "Lễ trao danh hiệu diễn ra vào sáng Chủ nhật."} ${cap(dogName(c))} đeo nơ, bạn cầm bài phát biểu viết sẵn. ${k.gag()} Trong túi áo, ${k.scar("no") || "món nợ cũ"} vẫn chờ ngày được trả, và tiền danh tiếng có thể trả nó.`,
@@ -452,7 +458,7 @@ export const ABS_11: WeirdBranch[] = [
 
   /* ---------------------------------------------------------------- X17 */
   weird("X17", "abs", ["ky", "danh"],
-    (c) => c.age >= 20 && (c.reputation >= 70 || n(c, "kind") >= 5 || f(c, "saved_student") || c.pressure.danh >= 5),
+    (c) => c.age >= 20 && c.age <= 70 && (c.reputation >= 70 || n(c, "kind") >= 5 || f(c, "saved_student") || c.pressure.danh >= 5),
     () => "Để cả con phố đổi theo tên mình",
     () => ({ title: "Tấm biển tên phố mới", text: `Sáng nay, công nhân tháo tấm biển cũ ở đầu phố nhà bạn và treo lên một tấm biển mới mang đúng họ tên bạn. Hội đồng giải thích: cần đặt tên phố theo một người tốt còn sống, và tên bạn được nhiều phiếu nhất vì dễ đọc. "Từ giờ," bà trưởng hội khu phố vỗ vai bạn, "cả phố này soi vào bạn mà sống."` }),
     season({ id: "w_X17", vn: "Con phố mang tên tôi", color: "#cc8a1e", years: [6, 11], weird: "abs",
@@ -528,8 +534,8 @@ export const ABS_11: WeirdBranch[] = [
             [C("Kể thật chuyện bị cắn và câu chửi", { flags: ["x18_ke_that"], happy: 3, counters: { x18_khoa_hoc: 1 } }, "Cả hội trường cười, bạn thành người đáng nhớ"),
              C("Nói như một nhà khoa học", { flags: ["x18_gia_khoa_hoc"], know: 2 }, "Nghe trang trọng, câu hỏi sau khó hơn câu trước")]),
           card("x18_mo_loi_moi", "Lời mời vào rừng", (c, k) => `${cap(k.npc("giao_su"))} mời bạn theo nhóm khảo sát một mùa, không lương, có cơm và có lều. "Bạn có đôi mắt thấy con vật ở chỗ người khác chỉ thấy lá," bà nói, "và cái miệng mà côn trùng nhớ được."`,
-            [C("Theo nhóm khảo sát", { flags: ["x18_khao_sat"], know: 3, money: -0.1, counters: { x18_khoa_hoc: 1 } }, "Học được nghề, mất một mùa thu nhập"),
-             C("Cảm ơn, xin về làm việc cũ", { flags: ["x18_ve_viec_cu"], money: 0.05 }, "Ổn định, cái tên vẫn bám theo bạn")]),
+            (c) => [C("Theo nhóm khảo sát", { flags: ["x18_khao_sat"], know: 3, money: -0.1, counters: { x18_khoa_hoc: 1 } }, "Học được nghề, mất một mùa thu nhập"),
+             C(c.has_job ? "Cảm ơn, xin về làm việc cũ" : "Cảm ơn, xin ở nhà lo việc nhà", { flags: ["x18_ve_viec_cu"], money: 0.05 }, "Ổn định, cái tên vẫn bám theo bạn")]),
         ],
         [
           card("x18_kd_tay_buon", "Người hỏi mua bọ", (c, k) => `${cap(k.npc("tay_buon"))} tìm đến tận nhà, trả giá gấp mười cho một cặp Khigio khigio còn sống. ${k.gag()} Loài này vừa vào danh sách cần bảo vệ, ai mua bán nó sẽ bị phạt rất nặng.`,
@@ -540,7 +546,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Nhờ người viết hộ, chỉ ký tên", { flags: ["x18_ky_ten"], counters: { x18_khoa_hoc: -1 } }, "Nhanh gọn, sau này bị hỏi sẽ khó trả lời")]),
         ],
         [
-          card("x18_cl_manh_dat", "Mảnh đất có tổ bọ", (c, k) => `Bạn dẫn đoàn khảo sát về đúng chỗ con bọ đã cắn mình, và nhận ra đó là mảnh đất của ${k.scar("nguoi") || "một người quen cũ"}. Người đó sắp bán đất, và chỉ chịu nghe bạn nếu bạn đem ra đổi một thứ: ${k.scar("do") || "lời hứa ngày cũ"}.`,
+          card("x18_cl_manh_dat", "Mảnh đất có tổ bọ", (c, k) => `Bạn dẫn đoàn khảo sát về đúng chỗ con bọ đã cắn mình, và nhận ra đó là mảnh đất của ${k.scar("nguoi") || "một người quen cũ"}. Người đó sắp bán đất, và chỉ chịu nghe bạn nếu bạn nhường lại thứ mang theo từ đời cũ: ${k.scar("do") || "lời hứa ngày cũ"}.`,
             [C("Đổi thứ ấy để giữ khu rừng", { flags: ["x18_giu_rung"], counters: { x18_khoa_hoc: 2 }, happy: 2 }, "Loài bọ còn chỗ sống, bạn mất một thứ của đời cũ"),
              C("Để người đó bán đất", { flags: ["x18_mat_rung"], happy: -3 }, "Giữ đồ, loài bọ mất tổ"),
              C("Rủ người đó cùng lập khu bảo tồn", { flags: ["x18_bao_ton"], rel: 3, money: -0.2, counters: { x18_khoa_hoc: 1 } }, "Tốn tiền và giấy tờ, cả hai cùng đứng tên", { tier: "sovereign" })]),
@@ -586,7 +592,7 @@ export const ABS_11: WeirdBranch[] = [
             [C("Nấu kiểu nhà mình, đặt tên thật kêu", { flags: ["x19_nau_nha"], counters: { x19_tai: 2 }, happy: 2 }, "Khách khen lạ miệng, mỗi món một lời nói dối"),
              C("Chỉ huy phụ bếp, tự mình chỉ nếm", { flags: ["x19_chi_huy"], counters: { x19_tai: 1 }, know: 2 }, "Đỡ lộ tay nghề, phụ bếp bắt đầu nghi")]),
           card("x19_mo_phu_bep", "Tay trái hay tay phải", () => `Một phụ bếp trẻ đứng cạnh bạn suốt buổi, nhìn tay bạn thái hành. Cuối buổi người ấy nói nhỏ: "Đầu bếp thật thái hành bằng tay trái." Bạn thuận tay phải.`,
-            [C("Nhờ người ấy giữ bí mật", { flags: ["x19_dong_loa"], money: -0.05, rel: 2 }, "Có đồng minh trong bếp, có người nắm thóp bạn"),
+            [C("Nhờ người ấy giữ bí mật", { flags: ["x19_dong_loa"], money: -0.05, rel: 2 }, "Có đồng minh trong bếp, nợ người ấy một ân tình"),
              C("Tập thái hành bằng tay trái", { flags: ["x19_tay_trai"], health: -1, counters: { x19_tai: 1 } }, "Diễn giỏi hơn, ngón cái băng suốt tuần")]),
         ],
         [
@@ -600,10 +606,11 @@ export const ABS_11: WeirdBranch[] = [
         [
           card("x19_cl_bep_that", "Người đầu bếp thật trở về", (c, k) => `${cap(k.npc("bep_that"))} xuất hiện ở cửa bếp, vừa đi xa về, mặt không cảm xúc. Đứng sau lưng là ${k.scar("nguoi") || "một người quen cũ"}, người đã nhận ra bạn từ tấm ảnh trên báo. Người đầu bếp nếm một thìa nước dùng của bạn rồi nói: "Món này có vị của ${k.scar("do") || "một thứ rất cũ"}. Tôi không nấu được thế."`,
             [C("Thú nhận tất cả với người ấy", { flags: ["x19_thu_nhan"], counters: { x19_tai: 1 }, rel: 2 }, "Có thể được tha, có thể bị kiện"),
+             C("Chối, bảo người ấy nhận nhầm", { flags: ["x19_choi"], pressure: { danh: 2 }, happy: -1 }, "Giữ vai thêm ít lâu, gây thù với người thật"),
              C("Đề nghị hai người nấu chung một bữa", { flags: ["x19_nau_chung"], counters: { x19_tai: 2 }, happy: 2 }, "Hai người một bếp, khách không biết ai nấu", { tier: "sovereign" })]),
         ],
         [
-          card("x19_day_bao", "Hai bữa tiệc cùng giờ", (c, k) => `${k.gag()} Một tờ báo ẩm thực đăng bài: người đầu bếp nổi tiếng nấu hai bữa tiệc cùng giờ ở hai nơi. ${f(c, "x19_thu_nhan") || f(c, "x19_nau_chung") ? "Người đầu bếp thật gọi điện, hỏi bạn muốn cùng ra mặt hay để mình người ấy chịu." : "Ông chủ tiệc gọi điện, giọng lạnh tanh, đòi gặp bạn ngay tối nay."}`,
+          card("x19_day_bao", "Hai bữa tiệc cùng giờ", (c, k) => `${k.gag()} Một tờ báo ẩm thực đăng bài: người đầu bếp nổi tiếng nấu hai bữa tiệc cùng giờ ở hai nơi. ${f(c, "x19_thu_nhan") || f(c, "x19_nau_chung") ? "Người đầu bếp thật gọi điện, hỏi bạn muốn cùng ra mặt hay để mình người ấy chịu." : "Ông chủ tiệc gọi điện, giọng lạnh tanh, đòi gặp bạn ngay tối nay."}${f(c, "x19_dong_loa") ? " Người phụ bếp năm nào nhắn: nếu cần, người ấy sẵn sàng làm chứng là bạn nấu thật." : ""}`,
             [C("Ra mặt trả lời báo chí", { flags: ["x19_ra_mat"], happy: -3, counters: { x19_tai: 1 } }, "Đối diện, mất tấm mặt nạ"),
              C("Tắt điện thoại, trốn một tuần", { flags: ["x19_tron"], pressure: { danh: 2 }, happy: -2 }, "Chưa phải trả lời, tin đồn lớn dần")]),
           card("x19_day_boi_thuong", "Tờ giấy đòi bồi thường", (c, k) => `${cap(k.npc("chu_tiec"))} gửi tới một tờ giấy đòi bồi thường, cộng cả tiền mời hội đồng thẩm định. Nhưng ở cuối thư có một dòng viết tay: khách vẫn hỏi món tủ của bạn.`,
@@ -654,7 +661,7 @@ export const ABS_11: WeirdBranch[] = [
              C("Gọi người hứa hôn đến cùng giúp", { flags: ["x20_goi_nguoi_yeu"], counters: { x20_cu: 1 }, rel: 1 }, "Đúng mực, người hứa hôn bắt đầu mệt")]),
         ],
         [
-          card("x20_cl_nhan_ra", "Người kia đã biết từ trước", (c, k) => `${cap(k.scar("nguoi") || "một người quen cũ")} đến chơi, nhìn người kia rồi sững lại: hai người từng quen nhau, từ hồi bạn còn giữ ${k.scar("do") || "những món đồ cũ"}. Hóa ra người kia không ký nhầm hoàn toàn: người đó đã nhận ra bạn từ trước khi đặt bút.`,
+          card("x20_cl_nhan_ra", "Người kia đã biết từ trước", (c, k) => `${cap(k.scar("nguoi") || "một người quen cũ")} đến chơi, nhìn người kia rồi sững lại: hai người từng quen nhau, từ cái thời gắn với ${k.scar("do") || "những món đồ cũ"}. Hóa ra người kia không ký nhầm hoàn toàn: người đó đã nhận ra bạn từ trước khi đặt bút.`,
             [C("Hỏi thẳng vì sao người kia im lặng", { flags: ["x20_hoi_thang"], counters: { x20_gan: 1 }, know: 2 }, "Biết sự thật, không quay lại được"),
              C("Giả vờ không nghe thấy", { flags: ["x20_lo_di"], happy: -1, counters: { x20_cu: 1 } }, "Yên ổn bề ngoài, trong lòng thì không")]),
         ],
