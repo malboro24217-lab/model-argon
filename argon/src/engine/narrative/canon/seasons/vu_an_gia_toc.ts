@@ -4,6 +4,7 @@
  */
 import type { SeasonDef } from "../Season.ts";
 import { C, cap, card, ending, land } from "../kit.ts";
+import { finale } from "./gate.ts";
 
 const L_LUAT = land("hoc_luat", "Bạn đọc luật nhiều tới mức đi thi luôn, và từ đó họ hàng gọi bạn bằng chức danh mỗi khi có chuyện.", { custom: "become:lawyer", know: 5 });
 const L_PHAN = land("nhan_phan", "Bạn nhận phần thừa kế, dùng một phần khép lại chuyện cũ, rồi ký vào biên bản cuối cùng.", { money: 1.5, custom: "repay:0.5", happy: 3 });
@@ -110,11 +111,11 @@ export const VU_AN_GIA_TOC: SeasonDef = {
       card("va_ket_toa", "Phiên tòa đông như đám cưới", (c, k) => `${verdict(c) === "hoa"
           ? `Ngày hẹn xử, cả họ vẫn kéo tới tòa, chật như đám cưới. ${VERDICT.hoa(k)} Trên bậc thềm, anh ta vẫn kịp nhắc chuyện riêng của bạn, như một lời chào: ${k.scar("no") || "món nợ cũ"}.`
           : `Ngày xử, phòng tòa chật như đám cưới. ${cap(k.npc("anh_ho"))} mở màn bằng chuyện riêng của bạn: ${k.scar("no") || "món nợ cũ"}, rồi nói người đang mang chuyện đó thì có lý do lấy giấy tờ nhà. ${has(c, "va_thue_ls") ? "Luật sư của bạn bẻ lại trong đúng hai câu." : has(c, "va_tu_hoc_luat") ? "Bạn tự đứng dậy, trích đúng điều luật đã thuộc lúc ba giờ sáng." : "Bạn đứng dậy, trong tay chỉ có sự thật."} ${VERDICT[verdict(c)](k)}`} ${k.gag()}`,
-        (c) => [
-          ending(L_LUAT, "Đi thi vào nghề luật, làm cho ra lẽ", "Bắt đầu một nghề mới, cả họ thành khách hàng"),
-          ending(L_PHAN, "Nhận phần của mình, khép hồ sơ", phanHint(c)),
-          ...(has(c, "va_dot_so") || (c.counters.va_hoa ?? 0) >= 4 ? [ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về")] : []),
-        ], (c) => c.age <= 50),
+        // Ra riêng chỉ mở thêm khi đã đốt sổ hay giữ hòa khí (hoặc khi chưa đủ tuổi thi luật, để luôn có 2 lựa chọn).
+        (c) => finale(c.age,
+          [ending(L_LUAT, "Đi thi vào nghề luật, làm cho ra lẽ", "Bắt đầu một nghề mới, cả họ thành khách hàng")],
+          [ending(L_PHAN, "Nhận phần của mình, khép hồ sơ", phanHint(c)), ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về")],
+          has(c, "va_dot_so") || (c.counters.va_hoa ?? 0) >= 4 ? 3 : 2), (c) => c.age <= 50),
       card("va_ket_hoa_giay", "Giàn hoa giấy mọc lại", (c, k) => `${VERDICT[verdict(c)](k)} Trong lá đơn năm ấy, chính chuyện riêng của bạn từng bị đem ra làm cớ buộc tội: ${k.scar("no") || "món nợ cũ"}. Giờ giàn hoa giấy trước căn nhà cũ đã đâm chồi lại, và bạn muốn khép chuyện đó cho xong. ${k.gag()}`,
         (c) => [
           ending(L_PHAN, "Nhận phần thừa kế, trả dứt chuyện cũ", phanHint(c)),

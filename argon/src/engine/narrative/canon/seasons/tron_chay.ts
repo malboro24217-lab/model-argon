@@ -4,14 +4,16 @@
  */
 import type { SeasonDef } from "../Season.ts";
 import { C, cap, card, ending, land } from "../kit.ts";
+import { finale } from "./gate.ts";
 
 const L_XE = land("xe_chao_hop_phap", "Xe cháo khuya được cấp chỗ đứng hợp pháp, có số riêng, và tấm bảng ghi cả tên thật lẫn chữ “Lâm”.", { custom: "become:street_vendor", happy: 6 });
 const L_VE = land("ve_tra_no", "Bạn về lại chốn cũ bằng tên thật, trả sạch món nợ, và thấy nhẹ như vừa đặt ba lô xuống.", { money: -1, custom: "repay:1", happy: 8 });
-const L_SANG = land("sang_xe", "Bạn sang lại xe cháo cho người học việc, cầm một khoản đủ dưỡng già, và lần đầu tiên sau nhiều năm ký tên thật vào giấy tờ.", { money: 1, happy: 4 });
+const L_SANG = land("sang_xe", "Bạn sang lại xe cháo cho người học việc, cầm một khoản kha khá, và lần đầu tiên sau nhiều năm ký tên thật vào giấy tờ.", { money: 1, happy: 4 });
 /** long_hauler nhận tới 50 tuổi (PATHS), street_vendor tới 70: landing nghề chỉ mở khi tuổi ≤ trần + 5. */
 const L_LAI = land("lai_xe_dem", "Bạn nhận lái xe tải đường dài. Không ở đâu quá ba ngày, và lần này là vì thích thế.", { custom: "become:long_hauler", happy: 3 });
 
 const has = (c: { flags: Set<string> }, f: string) => c.flags.has(f);
+const sang = ending(L_SANG, "Sang lại xe cháo, cầm tiền, dùng tên thật", "Có một khoản, rời khỏi nồi cháo");
 
 export const TRON_CHAY: SeasonDef = {
   id: "tron_chay", vn: "Kẻ trốn chạy", color: "#4f6377", years: [8, 14],
@@ -86,17 +88,20 @@ export const TRON_CHAY: SeasonDef = {
     /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng (host bắn theo thứ tự khai báo). */
     [
       card("tc_ket_nga_ba", "Ngã ba lúc rạng sáng", (c, k) => `${has(c, "tc_lo_ten") ? "Tên thật của bạn đã nằm trong sổ bãi giữ xe từ lâu, và chẳng ai tới tìm." : "Bạn đã sống bằng tên Lâm lâu tới mức tên thật nghe như của người khác."} Còn một chuyện của đời cũ vẫn chờ lời kết: ${k.scar("no") || "món nợ cũ"}. Một tài xế quen ở chợ đêm cần người thay ca, chạy suốt chiều dài đất nước. ${k.gag()}`,
-        (c) => [
-          ending(L_LAI, "Cầm vô lăng, đi tiếp mà không phải trốn", "Đi mãi, nhưng lần này là tự chọn"),
-          ending(L_XE, "Ở lại, xin giấy phép cho xe cháo", "Đứng yên một chỗ, bằng tên thật"),
-          ...(has(c, "tc_lo_mat") || has(c, "tc_ra_mat") || has(c, "tc_tra_bot") ? [ending(L_VE, "Về chốn cũ, trả nợ cho xong", "Mất gần hết tiền, được ngủ yên")] : []),
-        ], (c) => c.age <= 55),
+        (c) => {
+          const ve = ending(L_VE, "Về chốn cũ, trả nợ cho xong", "Mất gần hết tiền, được ngủ yên");
+          // Đã ra mặt / lộ mặt / trả bớt thì đường về trả nợ đứng trước; nếu không, nó chỉ hiện khi thiếu lựa chọn nghề.
+          const ra = has(c, "tc_lo_mat") || has(c, "tc_ra_mat") || has(c, "tc_tra_bot");
+          return finale(c.age,
+            [ending(L_LAI, "Cầm vô lăng, đi tiếp mà không phải trốn", "Đi mãi, nhưng lần này là tự chọn"),
+             ending(L_XE, "Ở lại, xin giấy phép cho xe cháo", "Đứng yên một chỗ, bằng tên thật")],
+            ra ? [ve, sang] : [sang, ve]);
+        }, (c) => c.age <= 55),
       card("tc_ket_ten_that", "Tên thật", (c, k) => `Một sáng, bạn nhận ra mình không còn sợ tiếng gõ cửa nữa. ${cap(k.scar("no") || "món nợ cũ")}: chuyện đó vẫn chưa xong, và chỉ có tên thật của bạn mới khép nó lại được. ${k.gag()}`,
-        (c) => [
-          ending(L_VE, "Về chốn cũ, trả nợ bằng tên thật", "Mất gần hết tiền, được ngủ yên"),
-          c.age <= 75 ? ending(L_XE, "Ở lại, treo tên thật lên xe cháo", "Giữ được chỗ đứng, gửi tiền trả dần")
-            : ending(L_SANG, "Sang lại xe cháo, nghỉ ngơi bằng tên thật", "Có một khoản dưỡng già, rời khỏi nồi cháo"),
-        ]),
+        (c) => finale(c.age,
+          [ending(L_XE, "Ở lại, treo tên thật lên xe cháo", "Giữ được chỗ đứng, gửi tiền trả dần")],
+          [ending(L_VE, "Về chốn cũ, trả nợ bằng tên thật", "Mất gần hết tiền, được ngủ yên"), sang],
+          2)),
     ],
   ],
 };
