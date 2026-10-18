@@ -35,7 +35,7 @@ export interface SeasonKit {
 export interface BeatCard { id: string; build: (c: FactContext, k: SeasonKit) => StoryletView; when?: (c: FactContext) => boolean }
 /** Người mới của mùa. label: "bà chủ trọ"; tên do host đặt. */
 export interface NewCast { key: string; role: CastRole; label: string }
-/** Một chung kết: thay đổi bền (xem isDurable), effects luôn có custom "season_end". */
+/** Một chung kết: thay đổi bền (xem isDurable). effects luôn có đúng một custom "season_end:<id>" (land() tự thêm), host đọc bằng landingOf. */
 export interface Landing { id: string; line: string; effects: Effect }
 export interface SeasonDef {
   id: string; vn: string; color: string; years: [number, number]; weird?: "sf" | "abs";
@@ -80,14 +80,20 @@ export function addCustom(e: Effect, part: string): Effect {
   return parts.includes(part) ? e : { ...e, custom: [...parts, part].join("|") };
 }
 
+/** Id landing trong custom "season_end:<id>" của một lựa chọn chung kết, hoặc null. Host dùng để ghi chung kết của mùa. */
+export function landingOf(e: Effect): string | null {
+  const p = (e.custom ?? "").split("|").find((x) => x.startsWith("season_end:"));
+  return p ? p.slice("season_end:".length) : null;
+}
+
 const unknown = (v: string, id: string): boolean => !v || v === id || v === "ai đó";
 /**
- * Dựng SeasonKit từ `names` của host (xem hợp đồng tên ở đầu file). `ordinal` = thứ tự thẻ trong mùa,
- * để gag đi lần lượt qua các dòng khi các thẻ nối nhau ra.
+ * Dựng SeasonKit từ `names` của host (xem hợp đồng tên ở đầu file). `gagFrom` = số lần gag đã hiện trước thẻ này
+ * (xem gagStart), để thẻ gọi gag thứ k hiện lines[k % n].
  */
-export function seasonKitFromNames(def: SeasonDef, names: (id: string) => string, ordinal: number): SeasonKit {
+export function seasonKitFromNames(def: SeasonDef, names: (id: string) => string, gagFrom: number): SeasonKit {
   const labels = new Map((def.reset.cast ?? []).map((m) => [m.key, m.label]));
-  let g = ordinal;
+  let g = gagFrom;
   const get = (id: string) => { const v = names(id); return unknown(v, id) ? "" : v; };
   return {
     N: names,
@@ -98,20 +104,38 @@ export function seasonKitFromNames(def: SeasonDef, names: (id: string) => string
   };
 }
 
+/** Số lần một thẻ gọi k.gag() với ctx này (0 nếu `when` sai). Build thuần nên dựng thử được. */
+function gagCalls(card: BeatCard, c: FactContext): number {
+  let n = 0;
+  const probe: SeasonKit = { N: () => "", scar: () => "", npc: () => "", noi: "", gag: () => { n++; return ""; } };
+  try { if (card.when && !card.when(c)) return 0; card.build(c, probe); } catch { return 0; }
+  return n;
+}
+/**
+ * Số dòng gag đã hiện trước thẻ (bi, ci) trong mùa: cộng số lần gọi gag của mọi thẻ đứng trước nó theo thứ tự mùa
+ * (dựng thử với cùng ctx, bỏ thẻ có `when` sai). Ở nhịp chung kết chỉ một thẻ ra, nên không cộng các thẻ chung kết khác.
+ * Trong một nhịp, host cho mọi thẻ khả thi ra trước khi sang nhịp sau; thứ tự trong nhịp coi như thứ tự khai báo.
+ */
+export function gagStart(def: SeasonDef, bi: number, ci: number, c: FactContext): number {
+  let n = 0;
+  def.beats.forEach((beat, b) => beat.forEach((card, i) => {
+    if (b < bi || (b === bi && b < 4 && i < ci)) n += gagCalls(card, c);
+  }));
+  return n;
+}
+
 /**
  * Biên dịch một mùa thành Storylet. Cổng: đúng mùa, đúng nhịp, đã tới season_next, cộng `when` của thẻ.
  * Mỗi thẻ ra một lần mỗi đời (once, maxPerLife 1).
  */
 export function compileSeason(def: SeasonDef): Storylet[] {
   const out: Storylet[] = [];
-  let ordinal = 0;
   def.beats.forEach((beat, bi) => beat.forEach((card, ci) => {
-    const ord = ordinal++;
     out.push({
       id: `ss_${def.id}_${bi}_${ci}`, category: "arc", urgency: 85, cooldownYears: 99, once: true, maxPerLife: 1, tension: 6 + bi,
       prerequisites: (c) => c.season === def.id && c.season_beat === bi && (c.counters.season_next ?? 0) <= c.age && (!card.when || card.when(c)),
       specificity: () => 9,
-      build: (c, names) => card.build(c, seasonKitFromNames(def, names, ord)),
+      build: (c, names) => card.build(c, seasonKitFromNames(def, names, gagStart(def, bi, ci, c))),
       meta: { kind: "season", season: [def.id] },
     });
   }));

@@ -13,10 +13,11 @@
  */
 import {
   createRng, PATHS, STORYLETS, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, PATH_STORYLETS, TURNING_STORYLETS,
-  SEASONS, SEASON_STORYLETS, BEATS, compileSeason, seasonLength, beatGap, isDurable, seasonKitFromNames,
+  SEASONS, SEASON_STORYLETS, BEATS, compileSeason, seasonLength, beatGap, isDurable, seasonKitFromNames, landingOf,
   type SeasonDef, type SeasonKit, type FactContext, type Effect, type StoryletView,
 } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
+import { land, ending } from "./engine/narrative/canon/kit.ts";
 
 let fails = 0;
 const seen = new Set<string>();
@@ -64,7 +65,8 @@ function fakeKit(def: SeasonDef, empty: boolean, use: Use, start: number): Seaso
 }
 /** Cặn của vết rỗng hoặc chỗ trống chưa điền. */
 const BROKEN = /[{}]|undefined|NaN|null|\[object|\s[.,!?;:]|\s{2}|\(\s*\)|""|^\s|\s$/;
-const VN = /[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i;
+/** Có dấu tiếng Việt: mọi dấu thanh/mũ sau khi tách NFD, hoặc đ. */
+const hasVN = (s: string): boolean => /[\u0300-\u036f]|đ/i.test(s.normalize("NFD"));
 const CUSTOM_OK = new Set([
   // host (doi-nguoi/living.js customEffect)
   "apologize", "become", "borrow", "confess_hook", "explode_hook", "have_child", "job_lose", "job_lose_maybe", "job_new", "job_switch",
@@ -74,6 +76,8 @@ const CUSTOM_OK = new Set([
 ]);
 const marks = (e: Effect | undefined): boolean => !!e && !!(e.buy || e.sell || e.lifestyle || e.deposit || e.withdraw || e.lend || e.give || e.insure || e.uninsure || e.support || e.flags?.length || e.unflags?.length || e.later || e.memory || e.secret || e.promise || e.close_doors?.length || e.trust || e.custom || e.game || e.plant || e.income_mult !== undefined || (e.money !== undefined && e.money !== 0) || (e.counters && Object.keys(e.counters).length) || (e.gamble && (marks(e.gamble.win) || marks(e.gamble.lose))));
 const customParts = (e: Effect): string[] => (e.custom ? e.custom.split("|") : []);
+/** Các phần season_end / season_end:<landing> trong custom. */
+const endParts = (e: Effect): string[] => customParts(e).filter((p) => p === "season_end" || p.startsWith("season_end:"));
 function walk(e: Effect, where: string): void {
   for (const part of customParts(e)) {
     const k = part.split(":")[0]!;
@@ -87,8 +91,12 @@ const textOk = (s: string | undefined, where: string, max: number) => {
   if (!s) { bad(`${where}: rỗng`); return; }
   if (s.length > max) bad(`${where}: dài ${s.length} > ${max}`);
   if (BROKEN.test(s)) bad(`${where}: chữ hỏng (ngoặc nhọn, undefined, hay vết rỗng để lại khoảng trắng): «${s}»`);
-  if (/^\p{Ll}|[.!?]\s+\p{Ll}/u.test(s)) bad(`${where}: câu bắt đầu bằng chữ thường (vết/nhãn người mới đứng đầu câu? dùng cap()): «${s}»`);
+  if (/^\p{Ll}|(?<!\.)\.\s+\p{Ll}/u.test(s)) bad(`${where}: câu bắt đầu bằng chữ thường (vết/nhãn người mới đứng đầu câu? dùng cap()): «${s}»`);
 };
+
+/** Hệ số thu nhập của mùa: > 0 và ≤ 50 (S39 "thu nhập ×50" là trần). */
+const incomeOk = (x: number): boolean => x > 0 && x <= 50;
+ok(incomeOk(50) && !incomeOk(51) && !incomeOk(0) && !incomeOk(-1) && incomeOk(0.5), "rules.income: 50 qua, 51 / 0 / âm trượt");
 
 const allCardIds = new Set<string>();
 const seasonIds = new Set<string>();
@@ -98,11 +106,11 @@ function checkSeason(def: SeasonDef): void {
   const S = `mùa ${def.id}`;
   if (!/^[a-z0-9_]+$/.test(def.id)) bad(`${S}: id chỉ gồm a-z 0-9 _`);
   if (seasonIds.has(def.id)) bad(`${S}: id mùa trùng`); seasonIds.add(def.id);
-  if (!def.vn || !VN.test(def.vn) || def.vn.length > 40) bad(`${S}: vn rỗng, không dấu hoặc > 40 ký tự`);
+  if (!def.vn || !hasVN(def.vn) || def.vn.length > 40) bad(`${S}: vn rỗng, không dấu hoặc > 40 ký tự`);
   if (!/^#[0-9a-f]{6}$/i.test(def.color)) bad(`${S}: color phải dạng #rrggbb`);
   const [y0, y1] = def.years;
   if (!(Number.isInteger(y0) && Number.isInteger(y1) && y0 >= 5 && y0 <= y1 && y1 <= 20 && y0 <= 85 - 72)) bad(`${S}: years [${y0}, ${y1}] phải là số nguyên, 5 ≤ đầu ≤ cuối ≤ 20, đầu ≤ 13`);
-  if (def.rules.income !== undefined && !(def.rules.income > 0 && def.rules.income <= 5)) bad(`${S}: rules.income phải trong (0, 5]`);
+  if (def.rules.income !== undefined && !incomeOk(def.rules.income)) bad(`${S}: rules.income phải > 0 và ≤ 50, có ${def.rules.income}`);
   if (def.reset.cash !== undefined && !(def.reset.cash >= 0 && def.reset.cash <= 10)) bad(`${S}: reset.cash phải trong [0, 10] lần thu nhập`);
   if (def.rules.yearly) walk(def.rules.yearly, `${S} rules.yearly`);
   if (def.reset.effects) walk(def.reset.effects, `${S} reset.effects`);
@@ -119,12 +127,13 @@ function checkSeason(def: SeasonDef): void {
 
   if (def.landings.length < 1) bad(`${S}: cần ≥ 1 landing`);
   if (new Set(def.landings.map((l) => l.id)).size !== def.landings.length) bad(`${S}: id landing trùng`);
-  const landingJson = new Map(def.landings.map((l) => [JSON.stringify(l.effects), l.id]));
+  const landingIds = new Set(def.landings.map((l) => l.id));
   const landingUsed = new Set<string>();
   for (const l of def.landings) {
     textOk(l.line, `${S} landing ${l.id}`, 200);
     if (!isDurable(l.effects)) bad(`${S} landing ${l.id}: effects không bền (become:, migrate_now, marry, have_child, buy/sell, income_mult, |money| ≥ 1…)`);
-    if (!customParts(l.effects).includes("season_end")) bad(`${S} landing ${l.id}: thiếu season_end (dùng land())`);
+    const ep = endParts(l.effects);
+    if (ep.length !== 1 || ep[0] !== `season_end:${l.id}`) bad(`${S} landing ${l.id}: custom phải có đúng một season_end:${l.id} (dùng land())`);
     walk(l.effects, `${S} landing ${l.id}`);
   }
 
@@ -137,16 +146,17 @@ function checkSeason(def: SeasonDef): void {
   const rng = createRng(4242);
   const ctxs: FactContext[] = [];
   for (let i = 0; i < 200; i++) ctxs.push(randomCtx(rng));
-  let gagCards = 0;
+  let gagCards = 0, finaleGag = false;
   const titles = new Map<string, string>();
   def.beats.forEach((beat, bi) => {
     const beatUse: Use = { scar: new Set(), gag: false, npcBad: new Set() };
-    let alwaysOn = 0;
+    let noWhen = 0;
     beat.forEach((card, ci) => {
       const W = `${S} ${BEATS[bi]} ${card.id}`;
       if (!/^[a-z0-9_]+$/.test(card.id)) bad(`${W}: id thẻ chỉ gồm a-z 0-9 _`);
       if (allCardIds.has(card.id)) bad(`${W}: id thẻ trùng trên toàn kho`); allCardIds.add(card.id);
       const use: Use = { scar: new Set(), gag: false, npcBad: new Set() };
+      if (!card.when) noWhen++;
       let fires = 0;
       ctxs.forEach((c0, i) => {
         const c: FactContext = { ...c0, season: def.id, season_beat: bi, counters: { ...c0.counters, season_next: c0.age } };
@@ -162,38 +172,39 @@ function checkSeason(def: SeasonDef): void {
         if (v2 && JSON.stringify(v2) !== JSON.stringify(v)) bad(`${W}: build không tất định (cùng ctx, khác kết quả)`);
         textOk(v.title, `${W} title`, 60);
         textOk(v.text, `${W} text`, 600);
-        if (!VN.test(v.title + v.text)) bad(`${W}: chữ không có dấu tiếng Việt`);
+        if (!hasVN(v.title + v.text)) bad(`${W}: chữ không có dấu tiếng Việt`);
         if (!titles.has(v.title)) titles.set(v.title, card.id);
         else if (titles.get(v.title) !== card.id) bad(`${W}: tiêu đề «${v.title}» trùng thẻ ${titles.get(v.title)}`);
         if (v.choices.length < 2 || v.choices.length > 3) bad(`${W}: cần 2–3 lựa chọn, có ${v.choices.length}`);
         if (!(v.def >= 0 && v.def < v.choices.length)) bad(`${W}: def ngoài khoảng`);
         if (!v.choices.some((ch) => marks(ch.effects))) bad(`${W}: không lựa chọn nào để lại dấu`);
+        const finalIds = new Set<string>();
         v.choices.forEach((ch, k) => {
           const WC = `${W}#${k}`;
           textOk(ch.label, `${WC} label`, 60);
           if (ch.hint !== undefined) textOk(ch.hint, `${WC} hint`, 70);
           if (!ch.effects) { bad(`${WC}: thiếu effects`); return; }
           walk(ch.effects, WC);
-          const ends = customParts(ch.effects).includes("season_end") || JSON.stringify(ch.effects.gamble ?? {}).includes("season_end");
+          const ep = endParts(ch.effects);
+          const ends = ep.length > 0 || JSON.stringify(ch.effects.gamble ?? {}).includes("season_end");
           if (bi === 4) {
-            const lid = landingJson.get(JSON.stringify(ch.effects));
             if (!isDurable(ch.effects)) bad(`${WC}: lựa chọn chung kết phải bền (isDurable)`);
-            if (!customParts(ch.effects).includes("season_end")) bad(`${WC}: lựa chọn chung kết phải có custom season_end`);
-            if (lid === undefined) bad(`${WC}: lựa chọn chung kết phải là một landing đã khai báo trong def.landings (dùng ending(landing, nhãn))`);
-            else landingUsed.add(lid);
+            const lid = ep.length === 1 && ep[0]!.startsWith("season_end:") ? ep[0]!.slice("season_end:".length) : undefined;
+            if (lid === undefined || !landingIds.has(lid)) bad(`${WC}: lựa chọn chung kết phải có đúng một season_end:<id> của landing khai báo trong def.landings (dùng ending(landing, nhãn)), có «${ep.join("|")}»`);
+            else { landingUsed.add(lid); if (finalIds.has(lid)) bad(`${WC}: hai lựa chọn của cùng thẻ chung kết đáp cùng landing ${lid}`); finalIds.add(lid); }
           } else if (ends) bad(`${WC}: season_end chỉ được ở nhịp chung_ket`);
         });
       });
       if (!fires) bad(`${W}: when không đúng ở ctx nào trong 200 — thẻ không bao giờ ra`);
-      if (fires === ctxs.length) alwaysOn++;
       for (const k of use.npcBad) bad(`${W}: k.npc("${k}") không có trong reset.cast`);
-      if (use.gag) gagCards++;
+      // Nhịp chung kết chỉ ra đúng một thẻ: cả nhịp tính tối đa một lần gag, và thẻ nào cũng phải dùng vết nợ.
+      if (use.gag && !(bi === 4 && finaleGag)) { gagCards++; if (bi === 4) finaleGag = true; }
+      if (bi === 4 && !use.scar.has("no")) bad(`${W}: thẻ chung kết phải dùng vết nợ hay lời hứa (k.scar("no")) — mỗi mùa chỉ một thẻ chung kết ra`);
       for (const s of use.scar) beatUse.scar.add(s);
       void ci;
     });
-    if (bi === 4 && !alwaysOn) bad(`${S}: nhịp chung_ket cần ≥ 1 thẻ luôn ra được (không when, hoặc when luôn đúng), nếu không mùa có thể không hạ cánh`);
+    if (bi === 4 && !noWhen) bad(`${S}: nhịp chung_ket cần ≥ 1 thẻ không có when, nếu không mùa có thể không hạ cánh`);
     if (bi === 2 && beatUse.scar.size === 0) bad(`${S}: nhịp cu_lat phải dùng ít nhất 1 vết (k.scar)`);
-    if (bi === 4 && !beatUse.scar.has("no")) bad(`${S}: nhịp chung_ket phải dùng vết nợ hay lời hứa (k.scar("no"))`);
   });
   if (gagCards < 3) bad(`${S}: gag phải lặp ≥ 3 lần mỗi mùa — chỉ ${gagCards} thẻ gọi k.gag()`);
   for (const l of def.landings) if (!landingUsed.has(l.id)) bad(`${S}: landing ${l.id} không thẻ chung kết nào dùng`);
@@ -243,6 +254,26 @@ ok(SEASON_STORYLETS.length === SEASONS.flatMap(compileSeason).length, "SEASON_ST
   ok(kFull.scar("no") === "món nợ cũ" && kFull.noi === "Bến Đá" && (!m || kFull.npc(m.key) === "Tư Lành"), "kit: lấy tên từ names");
   ok(kFull.gag() === def.gag.lines[1 % def.gag.lines.length] && kFull.gag() === def.gag.lines[2 % def.gag.lines.length], "kit: gag lần lượt từ thứ tự thẻ");
 }
+
+/* gag đi lần lượt: thẻ gọi gag thứ k (theo thứ tự mùa, với cùng ctx) hiện lines[k % n] */
+{
+  const def = SEASONS.find((d) => d.id === "fixture")!;
+  const st = compileSeason(def);
+  const c0 = randomCtx(createRng(7));
+  const shown: number[] = [];
+  def.beats.forEach((beat, bi) => beat.forEach((_card, ci) => {
+    const s = st.find((x) => x.id === `ss_${def.id}_${bi}_${ci}`)!;
+    const c: FactContext = { ...c0, age: 40, season: def.id, season_beat: bi, counters: { ...c0.counters, season_next: 40 } };
+    if (bi === 4 && ci > 0) return; // chỉ một thẻ chung kết ra
+    if (!s.prerequisites(c)) return;
+    const text = s.build(c, () => "ai đó").text;
+    def.gag.lines.forEach((l, i) => { if (text.includes(l)) shown.push(i); });
+  }));
+  ok(shown.length >= 3 && shown.every((x, k) => x === k % def.gag.lines.length), `gag mùa mẫu theo thứ tự 0,1,2,… (thấy ${shown.join(",")})`);
+}
+ok(landingOf({ custom: "become:singer|season_end:ca_si" }) === "ca_si" && landingOf({ custom: "season_end" }) === null && landingOf({}) === null, "landingOf đọc id landing");
+ok(land("x", "Dòng.", { money: 2 }).effects.custom === "season_end:x" && land("y", "Dòng.", { custom: "marry" }).effects.custom === "marry|season_end:y", "land thêm season_end:<id>");
+{ const l = land("z", "Dòng.", { money: 2 }); ok(ending(l, "Chọn").effects === l.effects, "ending dùng nguyên effects của landing"); }
 
 if (fails) { console.log(`${fails} FAIL`); process.exit(1); }
 console.log(`canon-content-test: OK (${ALL_SEASONS.length} mùa, ${compiled.length} thẻ)`);

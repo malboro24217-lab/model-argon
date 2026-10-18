@@ -28,10 +28,13 @@
  *  - Mùa thường 13–17 thẻ, 2–3 người mới; mùa kỳ dị 7–10 thẻ, 1–2 người mới. Nhịp nào cũng ≥ 1 thẻ.
  *  - Vết và người mới CHỈ lấy qua k: k.scar("nguoi" | "do" | "no") có thể là "" → luôn viết `k.scar("do") || "chữ dự phòng"`.
  *    k.npc(key) chỉ với key có trong reset.cast. Không dùng `{...}` trong chữ.
- *  - Nhịp cu_lat dùng ≥ 1 vết; nhịp chung_ket dùng k.scar("no").
- *  - Thẻ chung kết: MỌI lựa chọn là ending(landing, nhãn). Landing khai báo trong `landings`, phải bền (isDurable).
+ *  - Nhịp cu_lat dùng ≥ 1 vết.
+ *  - Thẻ chung kết: MỌI lựa chọn là ending(landing, nhãn), mỗi lựa chọn một landing khác nhau. land(id, …) tự gắn
+ *    custom "season_end:<id>"; landing khai báo trong `landings`, phải bền (isDurable) và được ít nhất một thẻ dùng.
  *    Nhịp khác không được kết mùa. Nhịp chung_ket cần ≥ 1 thẻ không có `when`.
- *  - Câu không được bắt đầu bằng chữ thường: vết/người mới đứng đầu câu thì bọc cap(...).
+ *  - Chỉ MỘT thẻ chung kết ra mỗi mùa: thẻ chung kết nào cũng phải dùng k.scar("no"); gag ở nhịp này tính tối đa 1 lần.
+ *  - Gag: thẻ gọi k.gag() thứ k (theo thứ tự khai báo trong mùa) hiện lines[k % n], nên dòng 0 là lần đầu.
+ *  - Câu (sau ". ") không được bắt đầu bằng chữ thường: vết/người mới đứng đầu câu thì bọc cap(...).
  *  - Mỗi thẻ 2–3 lựa chọn, ≥ 1 lựa chọn để lại dấu. Tiêu đề và nhãn ≤ 60 ký tự, hint ≤ 70.
  */
 import type { Choice, Effect, FactContext, StoryletView } from "../types.ts";
@@ -57,9 +60,9 @@ export function card(id: string, title: Txt, text: (c: FactContext, k: SeasonKit
 /** Viết hoa chữ đầu: dùng khi vết hay nhãn người mới đứng đầu câu (`${cap(k.npc("chu_tro"))} đưa chìa khóa.`). */
 export const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** Một chung kết. Tự thêm custom "season_end" (nối bằng "|"). */
-export const land = (id: string, line: string, effects: Effect): Landing => ({ id, line, effects: addCustom(effects, "season_end") });
+/** Một chung kết. Tự thêm custom "season_end:<id>" (nối bằng "|"); host đọc id bằng landingOf. */
+export const land = (id: string, line: string, effects: Effect): Landing => ({ id, line, effects: addCustom(effects, `season_end:${id}`) });
 
-/** Lựa chọn của thẻ chung kết: đáp xuống `l`. effects là đúng effects của landing (đã có season_end). */
+/** Lựa chọn của thẻ chung kết: đáp xuống `l`. effects là nguyên effects của landing (đã có season_end:<id>). */
 export const ending = (l: Landing, label: string, hint?: string, extra: Partial<Choice> = {}): Choice =>
-  C(label, addCustom(l.effects, "season_end"), hint, extra);
+  C(label, l.effects, hint, extra);

@@ -13,7 +13,7 @@ export const FIXTURE_SEASON: SeasonDef = {
   rules: { income: 0.8, flags: ["w_fixture"] },
   reset: { cash: 1, cast: [{ key: "ba_chu_nha", role: "neighbor", label: "bà chủ nhà" }, { key: "quan_doi_dien", role: "rival", label: "chủ quán đối diện" }] },
   gag: { key: "tam_bien", lines: [
-    "Tấm biển quán lại rơi xuống, lần này trúng ngay chậu ớt.",
+    "Tấm biển quán vừa treo đã rơi xuống, trúng ngay chậu ớt.",
     "Gió thổi nhẹ thôi mà tấm biển cũng rơi, khách quen vỗ tay.",
     "Tấm biển rơi đúng lúc có người hỏi tên quán.",
     "Bạn đóng thêm hai cây đinh. Tấm biển vẫn rơi, như có hẹn.",
