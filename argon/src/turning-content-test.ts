@@ -12,7 +12,7 @@ for(const d of TURNING_CATALOG){
   assert(b.after.length>=45,'follow-up has an authored situation: '+d.id);
  }
 }
-assert.deepEqual(counts,{c:50,a:50,m:50,l:50});
+assert.deepEqual(counts,{c:46,a:50,m:50,l:50}); // c05, c14, c27, c39 nâng thành mầm canon event (Task 6b)
 for(let i=0;i<30000;i++){
  const c=randomCtx(r);
  for(const s of TURNING_POINTS){
@@ -26,5 +26,5 @@ for(let i=0;i<30000;i++){
   const fx=v.choices.map(b=>JSON.stringify(b.effects));assert(new Set(fx).size===3,'routes have distinct durable outcomes');
  }
 }
-assert.equal(hits.size,200,'all opening events reachable in valid random contexts: missing '+TURNING_POINTS.filter(s=>!hits.has(s.id)).map(s=>s.id));
-console.log('PASS turning-content: 200 reachable roots, 600 authored routes, 30000 contexts');
+assert.equal(hits.size,196,'all opening events reachable in valid random contexts: missing '+TURNING_POINTS.filter(s=>!hits.has(s.id)).map(s=>s.id));
+console.log('PASS turning-content: 196 reachable roots, 588 authored routes, 30000 contexts');

@@ -3,6 +3,7 @@ import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, pla
 import { randomCtx } from "./fuzz-ctx.ts";
 import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, type CanonSeed, type WeirdBranch } from "./engine/index.ts";
 import { FIXTURE_SEASON } from "./engine/narrative/canon/seasons/_fixture.ts";
+import { CANON_SEEDS, TURNING_CATALOG } from "./engine/index.ts";
 
 let fails = 0;
 const ok = (cond: boolean, msg: string) => { if (!cond) { fails++; console.log("FAIL " + msg); } };
@@ -253,6 +254,93 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     ok(ch.effects.money === -0.2 && ch.effects.custom === "canon:tien|season:tron_chay|move_city" && ch.effects.flags!.includes("x"), "canonView: gộp effects của cửa (custom nối |, cờ cộng)");
     const evK = gen(base({ pressure: P({ ky: 12 }) }), "ky", [], 4, [], [W1, W2, W3])!;
     ok(canonView(evK).choices.every((c) => c.effects.flags!.includes(`canon_${evK.seed}`) && (c.effects.custom ?? "").startsWith("canon:ky|")), "canonView: trục ky dùng canon_<triggerId>");
+  }
+}
+
+/* ---- Task 6b: 8 mầm đợt A ---- */
+{
+  const NORMAL = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"];
+  const NEEDS_INDEP = new Set(["tron_chay", "xu_nguoi"]);
+  ok(eq(CANON_SEEDS.map((s) => s.id), ["no_cu", "troi_cho", "phan_boi", "noi_tieng", "di_chuc", "nam_cuoi", "ve_xa", "nuoc_len"]), "mầm: đúng 8 id");
+  for (const a of AXES) if (a !== "ky") ok(CANON_SEEDS.some((s) => s.axes.includes(a)), `mầm: trục ${a} có ≥ 1 mầm`);
+  ok(!CANON_SEEDS.some((s) => s.axes.includes("ky")), "mầm: trục ky không có mầm");
+  ok(!TURNING_CATALOG.some((d) => ["tp_c05", "tp_c14", "tp_c27", "tp_c39"].includes(d.id)), "mầm: c05/c14/c27/c39 đã gỡ khỏi TURNING_CATALOG");
+  for (const sd of CANON_SEEDS) {
+    ok(!!sd.ages && sd.axes.length >= 1 && sd.axes.length <= 2, `${sd.id}: có tuổi, 1–2 trục`);
+    ok(sd.doors.length >= 4, `${sd.id}: ≥ 4 cửa`);
+    ok(new Set(sd.doors.map((d) => d.kind)).size >= 3, `${sd.id}: ≥ 3 kiểu cửa`);
+    const ss = new Set(sd.doors.map((d) => d.season));
+    ok(ss.size >= 2 && [...ss].every((x) => NORMAL.includes(x)), `${sd.id}: ≥ 2 mùa, chỉ mùa thường`);
+    for (const d of sd.doors) {
+      ok(d.hint.length > 0 && d.hint.length <= 70, `${sd.id}/${d.kind}: hint ≤ 70`);
+      if (NEEDS_INDEP.has(d.season)) ok(!!d.when, `${sd.id}/${d.kind}: cửa ${d.season} phải có when (independent)`);
+    }
+  }
+
+  /* fuzz: chữ sạch, đọc chỗ trống, người phụ thuộc không có cửa tron_chay/xu_nguoi */
+  const BROKEN = /[{}]|undefined|NaN|null|\[object|\s[.,!?;:]|\s{2}|""|^\s|\s$/;
+  const LOWER = /^\p{Ll}|(?<!\.)\.\s+\p{Ll}/u;
+  const seenBad = new Set<string>();
+  const txt = (t: string, where: string, max: number) => {
+    const bad = !t || t.length > max || BROKEN.test(t) || LOWER.test(t);
+    const key = where.replace(/#\d+/, "");
+    if (bad && !seenBad.has(key)) { seenBad.add(key); ok(false, `${where}: chữ hỏng hoặc quá ${max} ký tự «${t}»`); }
+  };
+  const NAMES: Record<string, string> = { cast_creditor: "ông Tư Sẹo", cast_sibling: "Thảo", cast_spouse: "Minh", cast_father: "ông Bảy", cast_mother: "bà Năm", n_cu: "Sáu Lành" };
+  const names = (place: string) => (id: string) => (id === "place" ? place : NAMES[id] ?? "Hòa");
+  const LABEL: Record<string, string> = { debt: "tờ giấy nợ trong áo bố", promise: "lời hứa lo cho em", object: "chiếc đồng hồ của ông ngoại", animal: "con vẹt biết mật khẩu",
+    place: "bếp ăn ở chỗ tạm cư", skill: "nghề sửa đồng hồ", secret: "chuyện thi hộ năm lớp chín", person: "người bạn cũ" };
+  const LONG = "chiếc hộp gỗ sơn mài ông ngoại để lại trên gác xép năm ấy";
+  const r = createRng(60606);
+  const inAge = (lo: number, hi: number): FactContext => { for (;;) { const c = randomCtx(r); if (c.age >= lo && c.age <= hi) return c; } };
+  const check = (ev: NonNullable<ReturnType<typeof generateCanon>>, c: FactContext, N: (id: string) => string, where: string) => {
+    txt(ev.title, `${where} title`, 60); txt(ev.text, `${where} text`, 600);
+    ev.doors.forEach((d) => { txt(d.label, `${where} cửa ${d.kind}`, 60); txt(d.hint, `${where} hint ${d.kind}`, 70); });
+    ok(new Set(ev.doors.map((d) => d.kind)).size === ev.doors.length, `${where}: cửa khác kiểu`);
+    if (!c.independent) ok(ev.doors.every((d) => !NEEDS_INDEP.has(d.season)), `${where}: người chưa tự lập không có cửa tron_chay/xu_nguoi`);
+    const all = ev.title + " " + ev.text;
+    if (ev.slots.who) ok(all.toLowerCase().includes(N(ev.slots.who).toLowerCase()), `${where}: chữ đọc chỗ who «${ev.text}»`);
+    const w = ev.slots.what;
+    if (w && (w.kind !== "asset" || c.age >= 16)) ok(all.toLowerCase().includes(w.label.toLowerCase()), `${where}: chữ đọc chỗ what (${w.kind}) «${ev.text}»`);
+    for (const ch of canonView(ev).choices) if (ch.effects.memory) ok(ch.effects.memory.npc === ev.slots.who, `${where}: memory gắn người ở chỗ who`);
+  };
+
+  for (const sd of CANON_SEEDS) {
+    const [lo, hi] = sd.ages!;
+    /* test kế hoạch: mỗi trục của mầm, 50 randomCtx đúng tuổi, pressure trục = 12 → biến cố 3 cửa ≥ 60% */
+    for (const ax of sd.axes) {
+      let good = 0;
+      for (let i = 0; i < 50; i++) {
+        const c = inAge(lo, hi); c.pressure = P({ [ax]: 12 });
+        const N = names(i % 5 === 0 ? "" : "Phố Mới");
+        const ev = generateCanon(c, ax, [], createRng(i + 1), N, [sd], []);
+        if (ev && ev.seed === sd.id && ev.doors.length === 3) good++;
+        if (ev) check(ev, c, N, `${sd.id}/${ax}#${i}`);
+      }
+      ok(good >= 30, `${sd.id}/${ax}: ${good}/50 ra biến cố 3 cửa (cần ≥ 60%)`);
+    }
+    /* vật gài của người chơi điền chỗ trống, và chữ đọc được nó (kể cả nhãn dài) */
+    for (const kind of sd.what?.plants ?? []) for (const label of [LABEL[kind]!, LONG]) for (let i = 0; i < 6; i++) {
+      const c = inAge(lo, hi); c.pressure = P({ [sd.axes[0]!]: 12 });
+      c.cast = { ...c.cast, creditor: "n_cu" }; c.roles = { ...c.roles, n_cu: ["creditor"] };
+      const plants: Plant[] = [{ kind, key: "vat", label, age: Math.max(0, c.age - 7), weight: 3 }];
+      if (sd.who?.plants) plants.push({ kind: sd.who.plants[0]!, key: "nguoi", label: LABEL[sd.who.plants[0]!]!, npc: "n_cu", age: Math.max(0, c.age - 9), weight: 2 });
+      const N = names("Phố Mới");
+      const ev = generateCanon(c, sd.axes[0]!, plants, createRng(100 + i), N, [sd], []);
+      ok(!!ev && ev.slots.fromPlayer >= 1 && ev.slots.what?.label === label, `${sd.id}: vật gài ${kind} điền chỗ what`);
+      if (ev) { check(ev, c, N, `${sd.id}/gài ${kind}#${i}`); if (sd.who?.plants) ok(ev.slots.who === "n_cu", `${sd.id}: người gài điền chỗ who`); }
+    }
+  }
+  /* cả kho: mọi trục thường, tuổi 8–72 → luôn dựng được biến cố */
+  for (const ax of AXES) {
+    if (ax === "ky") continue;
+    let good = 0;
+    for (let i = 0; i < 50; i++) {
+      const c = inAge(8, 72); c.pressure = P({ [ax]: 12 });
+      const ev = generateCanon(c, ax, [], createRng(500 + i), names("Phố Mới"), CANON_SEEDS, []);
+      if (ev && ev.doors.length === 3) good++;
+    }
+    ok(good >= 30, `kho mầm, trục ${ax}: ${good}/50 ra biến cố 3 cửa`);
   }
 }
 

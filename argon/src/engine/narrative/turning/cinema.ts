@@ -16,10 +16,6 @@ E('c04','Người chú từ phương xa','{person} có chỗ ở thành phố v�
 B('Xách túi đi cùng','Đổi nơi sống, thiếu chỗ dựa','Bạn đã quen phố. Người chú muốn bạn nhận việc trong cửa hàng của ông.','Nhận quản lý quầy','Tìm đường học nghề riêng','build', ['build','probe']),
 B('Ở lại, giữ liên lạc','Giữ nhà, có cửa về sau','Một bưu kiện tới: dụng cụ nghề và lời mời bán hàng từ xa.','Mở điểm nhận hàng','Dùng dụng cụ tự học','bond', ['build','probe']),
 B('Xin đi thử một mùa','Thử đời mới, có ngày về','Ngày về tới gần, người cùng phòng rủ bạn thuê chỗ chung lâu dài.','Ở thêm với bạn mới','Về nhà mở đường trao đổi','probe', ['bond','build'])]),
-E('c05','Đêm nước lên','Nước dâng sát thềm. {person} giữ chìa khóa chiếc xe duy nhất còn nổ máy.','adult,neighbor',[
-B('Theo xe lên thành phố','Thoát lũ, dựng lại từ đầu','Ở chỗ tạm cư, một bếp ăn cần người điều phối.','Dựng bếp thành việc làm','Chia ca để học nghề','build', ['build','deal']),
-B('Ở lại giữ đồ chung','Giữ xóm, mang trách nhiệm','Xóm muốn bạn trông kho phòng lũ mới. Một hộ phản đối mức đóng góp.','Mở họp quyết mức góp','Giao kho cho nhóm luân phiên','care', ['build','bond']),
-B('Rủ mọi người chở từng lượt','Cứu đồ, nợ nhiều ân tình','Chiếc xe hỏng sau chuyến cuối. Những người từng đi xe hỏi ai trả tiền.','Cùng góp sửa chiếc xe','Bàn giao xe và sổ chuyến','deal', ['deal','bond'])]),
 E('c06','Cuộc thi trên tỉnh','{person} chọn bài của bạn gửi dự thi. Gia đình chưa từng thấy tên bạn trên một tấm vé.','kid,school,mentor',[
 B('Đi thi bằng bài của mình','Giữ giọng riêng, dễ hụt giải','Một giám khảo gửi lại bài đầy ghi chú và lời mời học tiếp.','Theo học với người ấy','Tự làm số báo lớp','probe', ['probe','build']),
 B('Nhờ cả lớp dựng tiết mục','Có đồng đội, chia hào quang','Tiết mục được mời diễn tiếp. Cả nhóm tranh nhau người đứng giữa.','Luân phiên người dẫn','Lui về làm hậu trường','bond', ['bond','build']),
@@ -52,10 +48,6 @@ E('c13','Tên bạn trên biên bản','{person} đưa bản nhận lỗi để 
 B('Nhận phần lỗi của mình','Giữ nghề, bị soi kỹ','Bạn được giao sửa quy trình gây lỗi. Người từng ký biên bản muốn tham gia.','Cùng sửa và ghi công','Xin người ngoài kiểm lại','truth', ['build','probe']),
 B('Yêu cầu xem chứng cứ','Có thể minh oan, mất lòng','Đồng nghiệp đưa bạn bản sao. Họ cũng cần bạn làm chứng trong vụ khác.','Làm chứng bằng điều đã thấy','Nhờ đại diện bảo vệ cả hai','probe', ['build','care']),
 B('Rời việc và mang tay nghề','Tự do, phải dựng lại','Khách cũ tìm tới, muốn thuê bạn làm riêng nhưng không muốn công khai.','Nhận hợp đồng minh bạch','Tìm khách không ràng buộc','exit', ['deal','probe'])]),
-E('c14','Vé làm việc ở nước ngoài','{person} giới thiệu một hợp đồng xa nhà. Dòng chữ về nơi giữ giấy tờ bị gạch đi.','adult,friend',[
-B('Chuẩn bị đi sau khi xác minh','Mở thị trường, xa người quen','Hồ sơ tới bước mới. Bạn được nhờ cùng kiểm hợp đồng cho người tiếp theo.','Giúp kiểm hợp đồng cho bạn','Chỉ chia sẻ kinh nghiệm','probe', ['probe','probe']),
-B('Ở lại học tay nghề','Ít tiền ngay, có nền riêng','Một xưởng nước ngoài đặt hàng tại chỗ, cần người phiên dịch kỹ thuật.','Nhận thử đơn đầu','Rủ thầy nghề cùng làm','build', ['bond','bond']),
-B('Rủ nhóm đàm phán lại','Có tiếng nói, có thể mất vé','Nhóm đạt hợp đồng mới nhưng muốn bạn đứng ra chịu trách nhiệm chung.','Đại diện với giới hạn rõ','Luân phiên người đại diện','defy', ['exit','bond'])]),
 E('c15','Đám cưới đã đặt cỗ','Gia đình đặt cỗ trước khi hỏi ý bạn. {person} mang danh sách khách tới xin kiểm lại.','adult,single,sibling',[
 B('Gặp người được mai mối','Có thể hợp, chịu áp lực','Người ấy cũng muốn thoát sức ép. Hai bạn có thể thành đồng minh trước.','Hẹn hò theo lịch riêng','Cùng nói rõ với gia đình','bond', ['bond','truth']),
 B('Tuyên bố hoãn đám cưới','Giữ quyền chọn, chịu tiếng','Một họ hàng trả hộ tiền cọc và nhờ bạn giúp con họ có quyền chọn tương tự.','Đứng cùng người em','Hoàn tiền rồi rút khỏi tranh cãi','defy', ['bond','exit']),
@@ -104,10 +96,6 @@ E('c26','Tên bạn trong danh sách ứng viên','{person} hỏi bạn có nh�
 B('Ra tranh bằng một việc cụ thể','Có tiếng nói, chịu soi xét','Việc đầu làm được. Những người giúp vận động muốn phần ưu tiên.','Giữ tiêu chí đã hứa','Mời họ cùng chịu giám sát','defy', ['defy','bond']),
 B('Giúp một người khác ra tranh','Có đồng minh, ít quyền quyết','Người ấy thắng rồi mời bạn quản khoản quỹ khó nhất.','Nhận với sổ công khai','Giữ vai người giám sát','bond', ['truth','bond']),
 B('Lập nhóm dân tự làm việc ấy','Làm ngay, thiếu danh chính','Nhóm làm xong, vị đại diện muốn gắn tên mình vào kết quả.','Chia công bằng bản ghi','Giữ nhóm độc lập tiếp','build', ['deal','build'])]),
-E('c27','Một năm còn lại','Một kết quả kiểm tra khiến bạn tưởng chỉ còn một năm. {person} cầm vé chuyến đi bạn từng hoãn.','adult,friend',[
-B('Đi ngay khi còn sức','Sống điều muốn, xáo trộn đời','Kết quả được đính chính. Chuyến đi đã cho bạn một nghề mới để thử.','Theo nghề mới một mùa','Mang trải nghiệm về việc cũ','show', ['bond','bond']),
-B('Thu xếp điều còn dang dở','Giữ người thân, nhìn lại','Kết quả được đính chính. Người bạn vừa làm lành vẫn muốn gặp mỗi tuần.','Giữ cuộc hẹn ấy','Cùng mở việc nhỏ từng hứa','care', ['bond','build']),
-B('Xin kiểm tra lại rồi quyết','Có căn cứ, chậm một nhịp','Kết quả được đính chính. Bạn có khoản tiền dành cho chuyến đi chưa dùng.','Đặt ngày đi thật','Dùng tiền học điều mới','probe', ['bond','probe'])]),
 E('c28','Lá thư không ghi người gửi','{person} chuyển tới một lá thư về người cũ và một đứa trẻ. Bên trong có ảnh nhưng thiếu ngày chụp.','adult,friend',[
 B('Tìm hiểu trước khi nhận lời','Có sự thật, chuyện lan rộng','Sự thật rõ hơn. Người chăm trẻ hỏi bạn có muốn giữ liên lạc.','Giữ một cuộc hẹn đều','Giúp rồi tôn trọng khoảng cách','probe', ['bond','care']),
 B('Giúp trẻ trước, hỏi chuyện sau','Giúp được ngay, dễ mang kỳ vọng','Người chăm trẻ muốn ghi tên bạn vào danh sách liên hệ của trường.','Nhận vai có giới hạn rõ','Tìm người giám hộ phù hợp','care', ['exit','probe']),
@@ -152,10 +140,6 @@ E('c38','Tay nghề sau tai nạn','Sau một tai nạn, công việc cũ trở 
 B('Học lại cách làm với dụng cụ mới','Giữ nghề, phải kiên nhẫn','Một người khác gặp khó tương tự xin bạn hướng dẫn.','Mở buổi dạy cách thích nghi','Nhận một người học việc','probe', ['care','probe']),
 B('Chuyển sang dạy nghề','Giữ kinh nghiệm, xa bàn làm','Học trò muốn dùng tên bạn cho sản phẩm đầu tiên.','Cho tên kèm chuẩn nghề','Khuyến khích họ mang tên riêng','care', ['bond','bond']),
 B('Nhận việc hậu trường mới','Có đường khác, mất danh cũ','Việc mới cần người hiểu cả khách lẫn thợ. Bạn được mời điều phối.','Nhận điều phối một dự án','Giữ vai tư vấn theo giờ','build', ['build','bond'])]),
-E('c39','Ba bản di chúc','{person} muốn bạn quyết cách chia đồ đạc. Trên bàn có ba bản viết tay, mỗi bản gạch một tên.','old,child',[
-B('Chia đều, nói rõ khi còn sống','Rõ phần, chưa chắc rõ lòng','Một người con muốn đổi phần tiền lấy quyền giữ nhà chung.','Mở cuộc họp đổi phần','Giữ phần và lập lịch dùng nhà','truth', ['build','build']),
-B('Giữ quỹ cho việc chung','Có di sản, cần người trông','Các con đề nghị dùng quỹ lập một xưởng học nghề mang tên gia đình.','Lập quỹ có người độc lập','Thử một lớp trước','care', ['care','bond']),
-B('Chia theo điều mỗi người cần','Có thể đỡ người yếu, dễ so bì','Người nhận ít đề nghị góp công để được phần trong việc chung.','Ghi cả công chăm sóc','Tách quà tặng khỏi di sản','deal', ['care','care'])]),
 E('c40','Lời thú nhận còn một nửa','{person} bật máy ghi âm để nghe câu chuyện bạn vẫn tránh. Bạn có thể dừng trước tên cuối cùng.','old,child',[
 B('Kể hết với người liên quan','Khép bí mật, làm đau người','Người nghe muốn gặp người còn lại trong câu chuyện.','Giúp họ gặp nhau','Viết rõ phần mình biết','truth', ['care','build']),
 B('Viết thư, cho mở sau','Giữ hôm nay, để câu hỏi lại','Người con xin đọc thư khi bạn còn có thể trả lời.','Mở thư cùng nhau','Sửa thư thành lời kể có chứng','probe', ['build','truth']),
