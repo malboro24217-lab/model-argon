@@ -404,6 +404,8 @@ async function t8b() {
         assert(auto.length > 0 && auto.every(m => !m.alt_indices.length), 'marks of the auto-played years are not offered for forks (review I-4)'); }
       assert(Math.abs(post - (captured - yearlyAt)) < 1, 'money −1 applied to the new life after the swap: ' + post + ' vs ' + (captured - yearlyAt));
       runToDeath(P); assert(!P.alive && P.age > T, 'swapped life plays on to death (' + P.age + ')');
+      { const m = P.lw.cz.marks.find(x => x.key && x.age >= P.lw.swap.age && x.alt_indices && x.alt_indices.length && P.choices.some(c => c.key === x.key));   // tạm khóa: rẽ sau đổi chỗ trả null ngay, không tua lại
+        if (m) assert.strictEqual(resumeFrom(P, { key: m.key, index: m.alt_indices[0] }), null, 'fork after swap_other is refused (mitigation, p3 seed 1337)'); }
       const R = replayLife(P.seed, P.choices, null, P.actLog || []);
       assert.strictEqual(hist(R), hist(P), 'replay of the swapped life matches history');
       assert.strictEqual(Math.round(R.savings), Math.round(P.savings), 'replay savings');
