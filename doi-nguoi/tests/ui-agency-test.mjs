@@ -19,6 +19,8 @@ fake.limits = async () => ({}); window.claude = { use: async n => n === "sample"
 </script>`;
 const html = "<!doctype html><html><head><meta charset=utf-8>" + mock + "</head><body>" + fs.readFileSync(new URL("../index.html", import.meta.url), "utf8") + "</body></html>";
 await page.setContent(html, { waitUntil: "load" }); await page.waitForTimeout(400);
+// hạt giống cố định (như canon-play): đời này sống quá 20 tuổi; trước đây Math.random có lúc cho một đời chết sớm và test hết giờ chờ #age
+await page.evaluate(() => { const o = Math.random; Math.random = () => { Math.random = o; return 11 / 2 ** 32; }; });
 await page.click("#born"); await page.waitForTimeout(300); await page.click("#go"); await page.waitForTimeout(200);
 await page.click('#speed [data-s="16"]');
 const age = async () => parseInt(await page.textContent("#age"), 10);
@@ -55,7 +57,8 @@ assert(/tôi làm theo cách của tôi/.test(await page.textContent("#log")), "
 await page.click("#actOk");
 
 // 4. AI failure → message, no card
-await page.evaluate(() => { window.__fail = true; }); await page.click("#pause").catch(() => {}); await clearPending();
+// dừng hẳn (không bấm bật/tắt): đồng hồ chạy thì năm sau có cảnh mới, và lỗi của lần gõ trước bị xóa theo cảnh cũ (21c), làm test chập chờn
+await page.evaluate(() => { window.__fail = true; G.paused = true; render(); }); await clearPending();
 await page.fill("#wantIn", "bay lên mặt trăng"); await page.press("#wantIn", "Enter"); await page.waitForTimeout(800);
 assert(/chưa trả lời/.test(await page.textContent("#wantMsg")), "error message"); assert(!(await page.$("#actcard")), "no card on error");
 await page.evaluate(() => { window.__fail = false; });
