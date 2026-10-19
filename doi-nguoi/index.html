@@ -39866,7 +39866,8 @@ function renderWant(L){const w=document.getElementById("want");if(!w)return;cons
   w.hidden=!!G.autoDecide||!L.alive||(ai==="off"&&!pend&&isPhone());
   w.classList.toggle("incard",pend);w.classList.toggle("busy",!!G.acting);
   const inp=document.getElementById("wantIn"),go=document.getElementById("wantGo");
-  document.getElementById("wantLead").textContent=pend?"Bạn muốn làm theo cách khác?":"Tôi muốn";
+  const pp=L.pending,forced=pend&&(!!pp.canon||pp.choices.some(c=>c._fx&&Argon.landingOf(c._fx)!==null));   // canon event và chung kết mùa: câu gõ vẫn đi qua đúng một cửa (8b, I1)
+  document.getElementById("wantLead").textContent=pend?(forced?"Bạn muốn đối mặt theo cách khác?":"Bạn muốn làm theo cách khác?"):"Tôi muốn";
   inp.placeholder=pend?"Nhập hành động hoặc lời bạn muốn nói…":L.age<18?"đi học thêm, làm lành với bạn, tập một môn…":"mở quán phở, làm lành với bố, đi học lại…";
   document.getElementById("wantRow").hidden=ai==="off"&&!pend;inp.hidden=go.hidden=ai==="off";  // trong thẻ vẫn giữ câu hỏi, chỉ thay ô nhập bằng lời giải thích
   const off=document.getElementById("wantOff");off.hidden=ai!=="off";
@@ -39880,8 +39881,7 @@ function renderWant(L){const w=document.getElementById("want");if(!w)return;cons
   retry.hidden=!(k2==="err"&&!G.acting&&!inp.disabled&&inp.value.trim());
   document.getElementById("wantErr").hidden=!msg.textContent&&retry.hidden;
   const hint=document.getElementById("wantHint");hint.hidden=!!msg.textContent||ai==="off";
-  const pp=L.pending,forced=!!pp&&!G.card&&(!!pp.canon||pp.choices.some(c=>c._fx&&Argon.landingOf(c._fx)!==null));   // canon event và chung kết mùa: câu gõ vẫn đi qua đúng một cửa (8b, I1)
-  hint.textContent=pend?(forced?"Gõ một hành động hay một câu nói. Ngã rẽ này không tránh được: người kể chuyện sẽ kể cách của bạn và đưa nó về một trong các ngả trên.":"Gõ một hành động hay một câu nói, như một lựa chọn thứ tư. Người kể chuyện AI sẽ kể chuyện gì xảy ra."):"Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.";
+  hint.textContent=pend?(forced?"Biến cố này không tránh được: người kể chuyện sẽ kể cách của bạn và đưa nó vào cửa gần nhất ở trên.":"Gõ một hành động hay một câu nói, như một lựa chọn thứ tư. Người kể chuyện AI sẽ kể chuyện gì xảy ra."):"Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.";
   if((wasHidden!==w.hidden||wasIn!==pend)&&G.measureDock)G.measureDock()}
 /* Ô tự nhập nằm trong thẻ quyết định khi có cảnh đang chờ, ngoài thẻ thì về chỗ cũ (#wantHome).
    Chuyển chính nút form chứ không dựng lại: giữ chữ đã gõ, vị trí con trỏ và tiêu điểm qua mỗi lần render(). */
