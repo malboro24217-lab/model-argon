@@ -511,13 +511,14 @@ async function t8b() {
 
   // 8b.15 (21b) Chung kết: ghi chú giao diện (thẻ chung kết), không phải quyết định, không ghi khi tua lại.
   { const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(P, 'lam_lai');
-    const land = seasonDef('lam_lai').landings[0], c0 = P.choices.length, d0 = P.lw.decisions, h0 = P.lw.history.length;
+    // Từ Task 20 (canon nổ từ 25 tuổi, mùa không bị cắt) đời 32 tuổi có thể đã đáp một mùa: chỉ đếm ghi chú mới.
+    const land = seasonDef('lam_lai').landings[0], c0 = P.choices.length, d0 = P.lw.decisions, h0 = P.lw.history.length, nn0 = (P.uiNotes || []).length;
     applyEffect(P, land.effects);
-    const n = (P.uiNotes || []).filter(x => x.kind === 'landing');
+    const n = (P.uiNotes || []).slice(nn0).filter(x => x.kind === 'landing');
     assert.strictEqual(n.length, 1, 'one landing note'); assert.strictEqual(n[0].line, land.line); assert.strictEqual(n[0].vn, seasonDef('lam_lai').vn);
     assert(P.choices.length === c0 && P.lw.decisions === d0 && P.lw.history.length === h0, 'not a decision');
-    const Q = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(Q, 'lam_lai'); Q.replay = true; applyEffect(Q, land.effects); Q.replay = false;
-    assert(!(Q.uiNotes || []).length, 'no note while replaying'); }
+    const Q = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(Q, 'lam_lai'); const qn0 = (Q.uiNotes || []).length; Q.replay = true; applyEffect(Q, land.effects); Q.replay = false;
+    assert.strictEqual((Q.uiNotes || []).length, qn0, 'no note while replaying'); }
 
 
   // 8b.16 (góp ý 19/10, luật dữ liệu thật) Câu kết của mọi mùa: không rỗng, không undefined, mọi tên riêng là người / vật có thật trong đời đó.
@@ -531,7 +532,7 @@ async function t8b() {
       const h = seasonsEndHTML(P), n = (h.match(/<li class="sm"/g) || []).length;
       if (n && (h.match(/class="sm-l"/g) || []).length !== n) bad.push('row without ending line, seed ' + P.seed);
       if (/undefined|NaN/.test(h)) bad.push('undefined in end list, seed ' + P.seed); }
-    assert(rows > 100, 'many cut / dang dở / lapsed seasons checked (' + rows + ')');
+    assert(rows > 40, 'many cut / dang dở / lapsed seasons checked (' + rows + ')');   // từ Task 20 mùa gần như không bị cắt (cut 0/120 đời): còn dang dở và tự khép lại, khoảng 70 dòng
     assert.deepStrictEqual(bad.slice(0, 5), [], 'ending lines'); }
   // Thiếu dữ liệu → câu trung tính, không bịa người hay vật.
   { const P = lives[3], se = { id: 'lam_lai', from: P.age + 1, cast: {}, scars: {} };
@@ -546,17 +547,17 @@ async function t8b() {
 
   // 8b.17 (góp ý 19/10) Dòng "↩ Có liên quan…": dưới tiêu đề, thu gọn; mọi lựa chọn được trích là lựa chọn có thật của đời đó.
   { const seen = [], oScene = scene;
-    scene = function (L, o) { if (o && o.causes && o.causes.length && L.t8bCause) seen.push({ L, o, html: becauseHTML(L, o) }); return oScene(L, o); };
+    scene = function (L, o) { if (o && o.causes && o.causes.length && L.t8bCause) seen.push({ L, o, html: becauseHTML(L, o), quoted: o.causes.map(m => m.choice) }); return oScene(L, o); };   // quoted: chữ lúc hiện thẻ (remark của S04/S28/S40 có thể sửa dấu mốc về sau)
     try { for (let i = 0; i < 12; i++) { const P = createLife(8800 + i * 7, { auto: true }); P.t8bCause = true; G.life = P; runToDeath(P); } } finally { scene = oScene; }
     assert(seen.length > 50, 'cause lines checked: ' + seen.length);
-    for (const { L, o, html } of seen) {
+    for (const { L, o, html, quoted } of seen) {
       assert(/^<details class="because"[^>]*><summary><span class="because-mark"[^>]*>↩<\\/span><span class="because-s">Có liên quan đến (lựa chọn|chuyện) năm \\d+ tuổi/.test(html) && html.includes('Xem lại'), 'short collapsed line: ' + html.slice(0, 160));
       for (const m of o.causes) {
         assert(L.lw.cz.marks.includes(m), 'cause mark belongs to this life');
         if (m.choice) { assert(L.choices.some(c => c.key === m.key), 'quoted choice was made in this life: ' + m.key);
           if (m.altLabels && !m.remark) assert.strictEqual(m.altLabels[m.choice_index], m.choice, 'quoted text is the label that was chosen'); }
       }
-      for (const [, q] of html.matchAll(/bạn đã chọn (“[^”]*”)/g)) assert(o.causes.some(m => '“' + esc(m.choice) + '”' === q), 'quoted text comes from a cause mark: ' + q);
+      for (const [, q] of html.matchAll(/bạn đã chọn (“[^”]*”)/g)) assert(quoted.some(c => '“' + esc(c) + '”' === q), 'quoted text comes from a cause mark: ' + q);
     }
     const P = lives[0], w = { age: 7, title: 'Đời đưa đẩy', choice: '', consequences: [] };
     assert.strictEqual(becauseShort(P, [w]), 'Có liên quan đến chuyện năm 7 tuổi', 'no choice → neutral wording'); }
