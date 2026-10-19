@@ -816,6 +816,7 @@ function deathQ(L){if(L.longevity&&L.age>=125)return 1;const x=typeof bioAge==="
   return Math.min(q,1)}
 
 function stepYear(L){
+  if(L.replay&&L.replayActs)replayUiOps(L); // thao tác giao diện trước năm đầu (vd. Độ điên lúc 0 tuổi) cũng phải được áp lại
   if(!L.alive||L.pending||L.storyDue)return;
   rekeyYear(L,L.age+1);
   // 1. năm này có qua khỏi không?
@@ -39226,7 +39227,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   if(G.card)renderActCard(L,dec);
   else if(G.storyLoading&&L.storyDue)dec.innerHTML=`<div class="decision"><div class="dhead"><b>Chuyện đang dở</b><span>${L.age} tuổi</span></div><h3>${esc(L.storyDue.title)}</h3><p class="note">Chuyện đang tiếp diễn…</p></div>`;
   else if(L.pending){const p=L.pending;const key=p.key||p.id+L.age;
-    const states=p.choices.map(c=>choiceState(L,c,g));const yearly=Math.max(300,householdIncome(L));
+    const states=p.choices.map(c=>choiceState(L,c,g));const yearly=typeof seasonYearlyBase==="function"?seasonYearlyBase(L):Math.max(300,householdIncome(L));
     const m=p.matrix?(p.fog?fogMatrix(L,p.matrix,key):p.matrix):null;
     const ddCost=35;const canDD=L.ar&&p.fog&&!L.ar.dd[key]&&g.tier!=="autopilot";
     const nOk=states.filter(s=>s==="show").length;
@@ -39249,7 +39250,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
         const tl=document.getElementById("timerLeft");if(tl)tl.textContent=Math.ceil(left*total/1000);
         if(left<=0){clearInterval(G.timerIv);G.timerKey=null;const pickI=timerPick(L,p,argonGate(L));log(L,"Bạn không kịp nghĩ. Bạn làm điều dễ nhất.","bad");resolve(L,pickI);render()}},250)}
     const ddb=document.getElementById("dd");if(ddb)ddb.onclick=()=>{if(uiOp(L,{t:"dd",key,cost:ddCost}))render()};
-    if(p.canon&&typeof canonAiRewrite==="function")canonAiRewrite(L,p,dec.querySelector(".decision"))}
+    if(p.canon&&!G.autoDecide&&typeof canonAiRewrite==="function")canonAiRewrite(L,p,dec.querySelector(".decision"))}
   else if(narratorWaiting(L))dec.innerHTML=`<div class="decision micro"><div class="dhead"><b>Người kể chuyện đang viết một tình huống cho tuổi ${L.nextAi}…</b></div><p class="note">Lần đầu, trình duyệt sẽ hỏi bạn có cho phép trang này dùng Claude không. Có thể tắt AI kể chuyện trong menu để chơi với kịch bản sẵn.</p></div>`;
   else if(!document.querySelector("#dec #qy"))dec.innerHTML="";
   renderLog(L);
@@ -39320,7 +39321,7 @@ function renderCodex(){const L=G.life,c=document.getElementById("codex");if(!c||
 
 /* ---------- Kết thúc ---------- */
 function ending(){
-  stop(); leaveBoard(); clearInterval(G.timerIv); { const t = document.getElementById("toast"); if (t) t.remove(); }
+  stop(); leaveBoard(); clearInterval(G.timerIv); { const t = document.getElementById("toast"); if (t) t.remove(); const lc = document.getElementById("landing-card"); if (lc) lc.classList.remove("show"); }
   const L = G.life; const meta = metaOnDeath(L); const kids = L.kids.filter(k => k.alive).length;
   const avgH = Math.round(L.map.filter(m => !m.end).reduce((s, m) => s + m.h, 0) / Math.max(1, L.map.filter(m => !m.end).length));
   store.add({ name: L.name, country: L.birthC.n, age: L.age, cause: L.cause, date: Date.now() });

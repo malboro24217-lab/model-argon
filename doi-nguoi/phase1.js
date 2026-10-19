@@ -36,7 +36,7 @@ function becauseHTML(L, p) {
     return `<li><b>Năm ${m.age} tuổi${m.title ? ` · ${esc(m.title)}` : ""}:</b> ${m.choice ? `bạn đã chọn “${esc(m.choice)}”.` : "bạn để mọi chuyện trôi."}`
       + ev.map(c => `<span class="because-ev">→ ${c.age} tuổi: ${esc(c.text)}</span>`).join("") + `</li>`;
   }).join("");
-  return `<details class="because" data-k="${esc(key)}"${open ? " open" : ""} ontoggle="if(window.G)G.becauseOpen=this.open?this.dataset.k:(G.becauseOpen===this.dataset.k?null:G.becauseOpen)"><summary><span class="because-mark" aria-hidden="true">↩</span><span class="because-s">${esc(becauseShort(L, p.causes))}</span><span class="because-more">Xem lại</span></summary><ul class="because-body">${rows}</ul></details>`;
+  return `<details class="because" data-k="${esc(key)}"${open ? " open" : ""} ontoggle="if(typeof G!=='undefined'&&G)G.becauseOpen=this.open?this.dataset.k:(G.becauseOpen===this.dataset.k?null:G.becauseOpen)"><summary><span class="because-mark" aria-hidden="true">↩</span><span class="because-s">${esc(becauseShort(L, p.causes))}</span><span class="because-more">Xem lại</span></summary><ul class="because-body">${rows}</ul></details>`;
 }
 
 /* ---------- 2. "Họ sẽ nhớ điều này" ---------- */
@@ -524,7 +524,7 @@ function resumeFrom(L, fork) {
     const idx = L.choices.findIndex(c => c.key === fork.key); if (idx < 0 || fork.index == null) return null;
     choices = L.choices.slice(0, idx + 1);
     const keys = new Set(choices.map(c => c.key));
-    acts = acts0.filter(a => a.kind === "meta" || a.age < forkAge || (a.age === forkAge && (a.kind === "ai" || a.kind === "story" || (a.kind === "ui" && a.at <= idx) || (a.kind === "scene" && keys.has(a.key)))));
+    acts = acts0.filter(a => a.kind === "meta" || a.age < forkAge || (a.age === forkAge && (a.kind === "ai" || a.kind === "story" || (a.kind === "ui" && a.at <= idx) || ((a.kind === "scene" || a.kind === "canon_text") && keys.has(a.key)))));
   }
   acts = JSON.parse(JSON.stringify(acts));
   const script = replayScript(choices, acts);

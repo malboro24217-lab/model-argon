@@ -160,7 +160,7 @@ function canonName(L, id) {
     if (!se) return "";
     return Argon.scarText(se.scars, id.slice(5), x => castName(L, x), x => { const m = L.lw.cast.get(x); return !!m && m.alive; });
   }
-  if (id.startsWith("npc:")) { const cid = se && se.cast[id.slice(4)]; const m = cid && L.lw.cast.get(cid); return m ? m.name : ""; }
+  if (id.startsWith("npc:")) { const cid = se && se.cast[id.slice(4)]; const m = cid && L.lw.cast.get(cid); return m && m.alive ? m.name : ""; }   // đã mất: kit dùng nhãn, không gọi tên người đã chết như còn sống
   return "";
 }
 function isCanonKey(id) { return typeof id === "string" && (id === "place" || id.startsWith("scar:") || id.startsWith("npc:")); }
@@ -363,7 +363,7 @@ function canonAiPrompt(L, sc) {
   const doors = sc.choices.map((c, i) => ({ nhan: c.label, goi_y: c.hint || "", mo_mua: (seasonDef(sc.canon.seasons[i]) || {}).vn || "" }));
   const vet = lw.plants.slice(-6).map(p => p.label || p.key);
   const ctx = { nuoc: L.c.n, tuoi: L.age, gioi: L.sex === "M" ? "nam" : "nữ", nghe: L.retired ? "đã nghỉ hưu" : (L.job || "chưa đi làm"), hon_nhan: L.married ? "đã kết hôn" : L.widowed ? "góa" : "độc thân",
-    cho_trong: sc.canon.ctx || {}, vat_gai: vet, mua_dang_chay: se ? (seasonDef(se.id) || {}).vn || "" : "", tieu_de: sc.title, doan_mo: sc.text, cua: doors };
+    cho_trong: sc.canon.ctx || {}, vat_gai: vet, vet_cua_mua: se && se.scars ? Object.values(se.scars).filter(Boolean).map(x => x.label).filter(Boolean) : [], mua_dang_chay: se ? (seasonDef(se.id) || {}).vn || "" : "", tieu_de: sc.title, doan_mo: sc.text, cua: doors };
   return `Bạn là biên kịch của một trò chơi mô phỏng cuộc đời. Đây là một biến cố lớn (canon event) của nhân vật, dựng từ chính những gì đời họ đã gieo. Hãy viết lại tiêu đề, đoạn mở và nhãn của từng cửa bằng tiếng Việt có dấu, giọng điện ảnh nhưng cụ thể, đúng nước và hoàn cảnh. Giữ nguyên ý nghĩa của từng cửa và thứ tự cửa (cửa i vẫn dẫn tới đúng mùa mo_mua của nó), giữ tên người trong cho_trong nếu có. Không dùng người thật, tổ chức thật, thương hiệu thật, tôn giáo cụ thể; không nội dung tình dục; chuyện phạm pháp chỉ kể hậu quả.
 
 Trả lời CHỈ bằng một object JSON, không có chữ nào khác:
@@ -476,7 +476,7 @@ function canonSwap(L, e) {
 function swapOther(L, scars, before, rec) {
   const prev = L.lw.cz.marks.filter(m => /^canon_/.test(m.storylet) && m.key && m.age < before && m.alt_indices && m.alt_indices.length).pop();
   if (!prev) return false;
-  const n = Object.keys(prev.altLabels || {}).length, k = otherDoor(n, prev.choice_index);
+  const n = Object.keys(prev.altLabels || {}).length, k = otherDoor(n, prev.door ?? prev.choice_index);   // gõ tay: cửa thật nằm ở prev.door
   const alt = prev.alt_indices.includes(k) ? k : prev.alt_indices[0];
   const A = L.age, src = L.replay ? { ...L, actLog: L.replayActs || [] } : L;
   const was = typeof NAR !== "undefined" ? NAR.enabled : false;
@@ -500,6 +500,8 @@ function swapOther(L, scars, before, rec) {
   L.curMark = null; L.pending = null; L.codex = codex;
   if (rec) { L.lw.canon.seasons.push({ ...rec, swapped: true }); L.lw.canon.seasons.sort((a, b) => a.from - b.from); }
   L.lw.swap = { age: A, fork: prev.age, key: prev.key, index: alt };
+  // Các năm bản kia tự chơi (sau chỗ rẽ, tới nay) không có trong L.choices: không đưa dấu ấn của chúng vào "Thử lại" / "Cuộc đời suýt có".
+  { const ms = L.lw.cz.marks, fi = ms.findIndex(m => m.key === prev.key); for (let i = fi + 1; fi >= 0 && i < ms.length; i++) ms[i].alt_indices = []; }   // mọi dấu ấn bản kia tự chơi sau chỗ rẽ
   log(L, "Bạn đổi chỗ với bản kia.", "other big");
   return true;
 }
@@ -584,14 +586,16 @@ function seasonBeatReached(L, se) {
 function seasonEndLine(L, se, reason) {
   if (!L || !L.lw || !se) return "";
   const phase = SEASON_PHASE_VN[seasonBeatReached(L, se)];
-  // Người: người mới đầu tiên của mùa (tên + nhãn), không có thì người mang vết.
-  let name = "", label = "";
+  // Người: người mới đầu tiên của mùa (tên + nhãn), không có thì người mang vết. "đi cùng / cùng với" chỉ nói về người còn sống.
+  let name = "", label = "", alive = false;
   const cid = se.cast && Object.values(se.cast)[0], m = cid && L.lw.cast.get(cid);
-  if (m && m.name) { name = m.name; label = m.label || ""; }
-  else if (se.scars && se.scars.nguoi && se.scars.nguoi.npc) { const n = castName(L, se.scars.nguoi.npc); if (n && n !== "ai đó") name = n; }
-  const sc = se.scars || {}, no = sc.no && sc.no.label ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
-  const thing = sc.do && sc.do.label && sc.do.key !== "job" ? sc.do.label : "";
-  const v = strHash(se.id + "@" + se.from) % 2, pickWho = name && (v === 0 || (!no && !thing));
+  if (m && m.name) { name = m.name; label = m.label || ""; alive = !!m.alive; }
+  else if (se.scars && se.scars.nguoi && se.scars.nguoi.npc) { const pm = L.lw.cast.get(se.scars.nguoi.npc); if (pm && pm.name) { name = pm.name; alive = !!pm.alive; } }
+  // Vết chọn lúc VÀO mùa; chỉ nhắc nếu lúc RA mùa nó vẫn còn thật: nợ / lời hứa chưa xong, đồ vẫn còn giữ.
+  const sc = se.scars || {};
+  const no = sc.no && sc.no.label && scarStillOpen(L, sc.no) ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
+  const thing = sc.do && sc.do.label && sc.do.key !== "job" && scarStillHeld(L, sc.do) ? sc.do.label : "";
+  const v = strHash(se.id + "@" + se.from) % 2, whoOk = reason === "cut" ? !!name : !!name && alive, pickWho = whoOk && (v === 0 || (!no && !thing));
   // Chỉ nói điều có thật trong đời này (người mới của mùa, vết, nhịp); thiếu dữ liệu thì câu trung tính, không bịa thêm.
   const whoTxt = name ? `${name}${label ? ` (${label})` : ""}` : "";
   if (reason === "cut") {
@@ -640,4 +644,19 @@ function seasonMoneyYearly(L) {
   if (L.lw && L.lw.season) return Math.max(300, householdIncome(L));
   const last = L.lw && L.lw.canon && L.lw.canon.seasons[L.lw.canon.seasons.length - 1];
   return seasonYearlyBase(L) * (last && last.to === L.age && last.mult ? last.mult : 1);
+}
+
+/** Vết "nợ / lời hứa" còn mở lúc này: lời hứa chưa giữ hay bội (kept === null), còn nợ ngân hàng, hay vật gài nợ / hứa còn trong sổ (chưa dùng, chưa trả). */
+function scarStillOpen(L, x) {
+  const key = String((x && x.key) || ""); if (!key) return false;
+  if (key.startsWith("promise:")) { const to = key.slice(8); return L.lw.promises.some(p => p.to === to && p.kept === null); }
+  if (key === "bank") { const d = (L.ar && L.ar.state.capitals.capitalAssets.debt) || 0; return d > 0 || (L.debt || 0) > 0; }
+  return L.lw.plants.some(p => p.key === key && !p.used && !p.spent && !p.paid);
+}
+/** Vết "đồ" còn giữ lúc này: vật gài còn trong sổ, hoặc tài sản loại đó vẫn còn sở hữu. */
+function scarStillHeld(L, x) {
+  const key = String((x && x.key) || ""); if (!key) return false;
+  if (L.lw.plants.some(p => p.key === key && !p.used && !p.spent)) return true;
+  const h = typeof holdingsOf === "function" ? holdingsOf(L) : null;
+  return !!(h && h.assets.some(a => a.kind === key));
 }

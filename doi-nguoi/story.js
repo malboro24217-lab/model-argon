@@ -35,7 +35,7 @@ function scene(L,o){L.pending=o}
 function later(L,years,fn){(L.queue=L.queue||[]).push({at:L.age+years,fn})}
 function runQueue(L){if(!L.queue||L.pending)return;const due=L.queue.filter(x=>x.at<=L.age);if(!due.length)return;
   L.queue=L.queue.filter(x=>x.at>L.age);due[0].fn(L);for(const x of due.slice(1))L.queue.push({at:L.age+1,fn:x.fn})}
-function unit(L){return Math.max(200,Math.round((L.income>0?L.income:incomeAt(L.c,.5))*.15))}
+function unit(L){return Math.max(200,Math.round((L.income>0?L.income/(typeof seasonIncomeMult==="function"?seasonIncomeMult(L):1):incomeAt(L.c,.5))*.15))} // R24: đơn vị cược tính trên lương gốc
 const pdMatrix=(u,who)=>({who,me:["Hợp tác","Phản bội"],them:["Hợp tác","Phản bội"],cells:[[[2*u,2*u],[0,3*u]],[[3*u,0],[u/2,u/2]]],unit:"$ PPP"});
 
 /* ---- Phong cách chơi ---- */

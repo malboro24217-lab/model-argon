@@ -75,8 +75,8 @@ function seasonBanner(L) {
   const { s, def } = now, E = typeof esc === "function" ? esc : (x => String(x));
   const n = Number.isInteger(s.n) && s.n > 0 ? s.n : ((L.lw.canon && L.lw.canon.seasons) || []).length + 1;
   const from = Number.isFinite(s.from) ? s.from : L.age, end = Number.isFinite(s.end) && s.end > from ? s.end : null;
-  // Năm vào mùa là "năm 1" (không có "năm 0"); không vượt quá độ dài mùa.
-  const len = end ? end - from : 0, yr = Math.max(1, Math.min(len || Infinity, L.age - from + 1));
+  // Đếm cả hai đầu: năm vào mùa là "năm 1", năm "end" (chung kết bị ép từ tuổi này) là "năm N/N"; không có "năm 0", không lặp "N/N".
+  const len = end ? end - from + 1 : 0, yr = Math.max(1, Math.min(len || Infinity, L.age - from + 1));
   const bi = L.lw.counters && L.lw.counters.season_beat;
   const beat = typeof Argon !== "undefined" && Argon.BEATS && Argon.BEAT_VN && Number.isInteger(bi) ? Argon.BEAT_VN[Argon.BEATS[Math.min(bi, Argon.BEATS.length - 1)]] || "" : "";
   // Nhãn loại nhánh: điện thoại chỉ hiện phần ngắn ("viễn tưởng" / "phi lý") để mùa kỳ dị không chỉ khác nhau ở màu.
@@ -119,8 +119,12 @@ function weirdMenu(L) {
 /* Thẻ chung kết: mỗi ghi chú hiện đúng một lần (đánh dấu shown trên ghi chú, không đụng mô phỏng). Không chặn đồng hồ, không nhận phím. */
 function seasonNotes(L) {
   if (typeof document === "undefined" || !document.body || !L || !Array.isArray(L.uiNotes)) return;
-  const note = L.uiNotes.find(x => x && !x.shown && x.kind === "landing"); if (!note) return;
-  note.shown = true;
+  // Ghi chú cũ (quá 1 năm) hay đời đã hết: đánh dấu đã xem, không hiện (không để thẻ chung kết cũ đè lên màn kết).
+  for (const x of L.uiNotes) if (x && !x.shown && (L.alive === false || x.age < L.age - 1)) x.shown = true;
+  if (L.alive === false) { const el0 = document.getElementById("landing-card"); if (el0) el0.classList.remove("show"); return; }
+  const fresh = L.uiNotes.filter(x => x && !x.shown && x.kind === "landing"); if (!fresh.length) return;
+  for (const x of fresh) x.shown = true;
+  const note = fresh[fresh.length - 1];   // nhiều chung kết trong một lần vẽ: hiện cái mới nhất, không nháy qua từng cái
   const E = typeof esc === "function" ? esc : (x => String(x));
   let el = document.getElementById("landing-card");
   if (!el) { el = document.createElement("div"); el.id = "landing-card"; el.className = "landing-card"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); document.body.appendChild(el); el.onclick = () => el.classList.remove("show"); }

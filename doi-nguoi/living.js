@@ -36,7 +36,9 @@ function livingInit(L) {
 const REAL_NAMES = new Set(["joseph kabila", "laurent kabila", "felix tshisekedi", "nelson mandela", "jacob zuma", "cyril ramaphosa", "barack obama", "michelle obama", "donald trump", "joe biden", "kamala harris", "bill clinton", "hillary clinton", "george bush",
   "vladimir putin", "xi jinping", "mao zedong", "kim jong un", "kim jong il", "kim il sung", "shinzo abe", "narendra modi", "indira gandhi", "rahul gandhi", "imran khan", "angela merkel", "emmanuel macron", "boris johnson",
   "elon musk", "jeff bezos", "bill gates", "mark zuckerberg", "taylor swift", "michael jackson", "lionel messi", "cristiano ronaldo", "mohamed salah", "jackie chan", "bruce lee", "ho chi minh", "vo nguyen giap", "lee kuan yew",
-  "fidel castro", "raul castro", "hugo chavez", "jair bolsonaro", "paul kagame", "william ruto", "yoweri museveni", "abiy ahmed", "muhammadu buhari", "bola tinubu", "recep erdogan", "lee jae myung", "moon jae in", "park chung hee"]);
+  "fidel castro", "raul castro", "hugo chavez", "jair bolsonaro", "paul kagame", "william ruto", "yoweri museveni", "abiy ahmed", "muhammadu buhari", "bola tinubu", "recep erdogan", "lee jae myung", "moon jae in", "park chung hee",
+  "pham hung", "pham tuan", "pham van dong", "vo van kiet", "le duan", "vu linh", "hugo sanchez", "javier fernandez", "sean kelly", "pedro sanchez", "fernando alonso", "carlos alcaraz", "rafael nadal",
+  "andres iniesta", "sergio ramos", "luis suarez", "diego maradona", "pablo picasso", "salvador dali", "wang yi", "li qiang", "li keqiang", "zhang yimou", "yao ming", "jet li", "son heung min", "park ji sung", "kim yuna", "yuki tsunoda", "ichiro suzuki"]);
 function nameKey(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toLowerCase().replace(/[^a-z]+/g, " ").trim(); }
 /** true nếu họ tên trùng một người thật nổi tiếng (bất kể thứ tự họ / tên). */
 function nameBlocked(name) { const k = nameKey(name); if (!k) return false; return REAL_NAMES.has(k) || REAL_NAMES.has(k.split(" ").reverse().join(" ")); }
@@ -353,7 +355,7 @@ function microScene(L, ctx) {
 function livingFollowUp(L) { if (!L.lw || L.pending || !L.alive) return; if (typeof storyCheck === "function") { storyCheck(L); if (L.storyDue || L.pending) return; } if (L.age < 6) return; microScene(L, null); }
 /* ---- Thói quen trôi theo năm ---- */
 function habitYear(L) {
-  const c = L.lw.counters, yi = Math.max(300, householdIncome(L));
+  const c = L.lw.counters, yi = typeof seasonYearlyBase === "function" ? seasonYearlyBase(L) : Math.max(300, householdIncome(L));   // R24
   const sm = c.smoke || 0, dr = c.drink || 0, ex = c.exercise || 0, rd = c.read || 0, sv = c.save || 0, gb = c.gamble || 0;
   if (sm > 0) { c.smoke = sm + 0.3; addSt(L, "health", -0.15 * Math.min(sm, 12)); }
   if (dr >= 2) { c.drink = dr + 0.2; addSt(L, "health", -0.12 * (dr - 2)); addSt(L, "rel", -0.1 * (dr - 2)); }
