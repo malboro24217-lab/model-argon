@@ -217,13 +217,13 @@ for (let i = 0; i < 30; i++) { const P = lives[i]; G.life = P; const R = replayL
   const a = JSON.stringify(P.lw.history), b = JSON.stringify(R.lw.history);
   if (a !== b || Math.round(R.savings) !== Math.round(P.savings)) { mism++; if (mism < 3) console.log('replay mismatch seed', P.seed, a.length, b.length); } }
 assert.strictEqual(mism, 0, 'replay matches history and savings on 30 lives');
-// Task 20: vào mùa có reset.cash thì phần tiền riêng vượt mức đặt lại chỉ mất một nửa (Argon.resetCashDelta); nợ không đổi.
+// Task 20: vào mùa có reset.cash thì phần tiền riêng vượt mức đặt lại chỉ mất (1 − RESET_CASH_KEEP) (Argon.resetCashDelta; 0.75 từ cân chỉnh tiền 2026-10-19); nợ không đổi.
 { const P = grow(4409, 34, P => canonIndependent(P) && P.lw.season === null && P.income > 0);
   const target = def('lam_lai').reset.cash * Math.max(300, householdIncome(P));
   P.savings = target + 10 * Math.max(300, householdIncome(P)); const own0 = moneyFacts(P).own_cash, debt0 = factContext(P).debt;
   enterSeason(P, 'lam_lai');
   const own1 = moneyFacts(P).own_cash;
-  assert(own0 > target && near(own1, target + (own0 - target) * Argon.RESET_CASH_KEEP, 0.01), 'reset.cash keeps half the excess: ' + own0 + ' -> ' + own1);
+  assert(own0 > target && near(own1, target + (own0 - target) * Argon.RESET_CASH_KEEP, 0.01), 'reset.cash keeps RESET_CASH_KEEP of the excess: ' + own0 + ' -> ' + own1);
   assert(near(factContext(P).debt, debt0, 0.001), 'reset.cash leaves debt alone'); }
 // Task 20: đang trong mùa thì canon event mới chờ chung kết (không cắt mùa), trừ lần ép nổ ở FORCE_SECOND_AT.
 { const P = grow(5501, 40, P => P.lw.season === null && P.lw.canon.n >= 1);
@@ -380,7 +380,7 @@ async function t8b() {
     assert(base, 'a life whose first canon event leaves room for S22');
     const X = (base.lw.canon.seasons.find(s => s.from === first) || base.lw.season).id;
     let swapped = 0, captured = null, yearlyAt = 0, post = null, marksAtSwap = 0;
-    const origSwap = swapOther; swapOther = function (L, ...a) { const r = origSwap(L, ...a); if (r && !L.replay) { captured = L.savings; yearlyAt = seasonYearlyBase(L); marksAtSwap = L.lw.cz.marks.length; swapped++; } return r; };
+    const origSwap = swapOther; swapOther = function (L, ...a) { const r = origSwap(L, ...a); if (r && !L.replay) { captured = L.savings; yearlyAt = seasonLossYearly(L);   /* R29 (đề xuất): khoản âm trong mùa hệ số < 1 tính trên lương thực */ marksAtSwap = L.lw.cz.marks.length; swapped++; } return r; };
     // Canon event thứ hai (nhánh S22, một cửa) lúc T; chung kết "Đổi chỗ" lúc T + 1. Bản kia không có cờ của mùa X nên không gặp lại cảnh này.
     const s22ev = L => ({ id: 'canon_S22_' + L.age, seed: 'S22', axis: 'ky', age: L.age, slots: { fromPlayer: 0 }, title: 'Bản kia gõ cửa gương', text: 'Hình phản chiếu của bạn bước ra khỏi gương.', doors: [{ kind: 'ky', label: 'Bắt tay bản kia', hint: '', season: 'w_S22', weird: 'S22' }] });
     const fired = new WeakSet();

@@ -18,7 +18,7 @@ const banY = (c: { flags: Set<string> }) => ending(L_BAN_Y, "Bán cái tên “G
 
 export const LAM_LAI: SeasonDef = {
   id: "lam_lai", vn: "Làm lại từ số 0", color: "#6f8f4e", years: [8, 20],
-  rules: { income: 0.6, flags: ["w_lam_lai"] },
+  rules: { income: 0.8, flags: ["w_lam_lai"] },   // 0.6 → 0.8: cân chỉnh tiền 2026-10-19 (R24 cho phép chỉnh hệ số riêng)
   reset: {
     cash: 0,
     cast: [

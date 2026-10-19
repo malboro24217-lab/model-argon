@@ -122,7 +122,9 @@ function argonYear(L) {
   // Bảo hiểm sức khỏe trả lại một phần viện phí của các cú ốm trong năm
   for (const r of reports) if (r.shock && r.shock.kind === "health" && r.shock.liquid < 0 && s.holdings && Argon.hasPolicy(s.holdings, "health")) { const p = Argon.healthPayout(s.holdings, marketCtx(L), -r.shock.liquid); s.capitals = Argon.applyDelta(s.capitals, { liquid: p }); if (!A.indep) { L.savings += p; A.syncedSavings = L.savings; } }
   // 2b. Vỡ nợ: nợ không thể lớn vô hạn. Quá 5 năm thu nhập thì chủ nợ siết, xóa bớt, và đời bạn mang dấu.
-  { const a = s.capitals.capitalAssets, yi = Math.max(300, householdIncome(L));
+  // Đề xuất R30 (ledger 2026-10-19-canon-tuning.md, chờ Tùng): "năm thu nhập" ở đây là lương gốc (seasonYearlyBase, cùng đơn vị R24 dùng cho borrow / repay),
+  // không phải lương đã nhân hệ số mùa; ngoài mùa hai số bằng nhau.
+  { const a = s.capitals.capitalAssets, yi = typeof seasonYearlyBase === "function" ? seasonYearlyBase(L) : Math.max(300, householdIncome(L));
     if (a.debt > 5 * yi) { a.liquid = 0; const seized = seizeOnDefault(L, 1.5 * yi); a.debt = Math.min(a.debt, 1.5 * yi); L.bankrupt = (L.bankrupt || 0) + 1; log(L, `Vỡ nợ. Chủ nợ siết ${seized.length ? seized.join(", ") : "hết những gì còn lại"}, phần nợ còn lại bị khoanh. Từ nay ai cũng biết.`, "bad big"); addSt(L, "happy", -15); addSt(L, "rel", -8); if (L.lw) { L.lw.sflags.add("bankrupt"); closeDoorNow(L, "partner_circle"); } } }
   // 3. Lấy về
   L.st.health = s.capitals.bioEnergy.value;

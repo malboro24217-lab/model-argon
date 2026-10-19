@@ -64,8 +64,8 @@ ok(seasonLength(probe, 30, 0) === 8 && seasonLength(probe, 30, 0.99999) === 20, 
 ok(seasonLength(probe, 75, 0.99999) === 10, "seasonLength kết thúc ≤ 85");
 ok(seasonLength(probe, 83, 0.5) === 5, "seasonLength tối thiểu 5");
 /* resetCashDelta (Task 20): thấp hơn mức đặt lại thì lên thẳng mức đó; cao hơn thì chỉ mất (1 − RESET_CASH_KEEP) phần vượt */
-ok(RESET_CASH_KEEP === 0.5 && resetCashDelta(100, 20) === 80 && resetCashDelta(100, -50) === 150, "resetCashDelta: dưới mức → lên mức");
-ok(resetCashDelta(0, 1000) === -500 && resetCashDelta(200, 1000) === -400 && resetCashDelta(100, 100) === 0, "resetCashDelta: trên mức → giữ một nửa phần vượt");
+ok(RESET_CASH_KEEP === 0.75 && resetCashDelta(100, 20) === 80 && resetCashDelta(100, -50) === 150, "resetCashDelta: dưới mức → lên mức");
+ok(resetCashDelta(0, 1000) === -250 && resetCashDelta(200, 1000) === -200 && resetCashDelta(100, 100) === 0, "resetCashDelta: trên mức → giữ 3/4 phần vượt (cân chỉnh tiền 2026-10-19)");
 
 /* ------------------------------------------------------------------ kiểm từng mùa */
 

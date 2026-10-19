@@ -30,7 +30,7 @@ const cuoi = (c: Ctx) => ending(L_CUOI,
 
 export const XU_NGUOI: SeasonDef = {
   id: "xu_nguoi", vn: "Làm lại ở xứ người", color: "#3d7f8c", years: [10, 20],
-  rules: { income: 0.8, flags: ["w_xu_nguoi"] },
+  rules: { income: 1, flags: ["w_xu_nguoi"] },   // 0.8 → 1: cân chỉnh tiền 2026-10-19; di cư (p × 0.6 ở nước mới) đã là cú hạ lương của mùa
   reset: {
     cash: 0.5, effects: { custom: "migrate_now" },
     cast: [

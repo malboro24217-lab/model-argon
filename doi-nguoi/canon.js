@@ -60,7 +60,7 @@ function canonFacts(L, cast, opinion) {
 function canonOwnOnly(L, e, dropMoves) {
   if (canonIndependent(L)) return e;
   const out = { ...e };
-  if (e.money) { const amt = seasonYearlyBase(L) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
+  if (e.money) { const amt = (e.money < 0 ? seasonLossYearly(L) : seasonYearlyBase(L)) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
   if (e.custom) {
     const keep = e.custom.split("|").filter(p => !/^(repay|borrow|restructure|migrate_now|migrate)(:|$)/.test(p) && !(dropMoves && /^(move_city|job_[a-z_]*|become)(:|$)/.test(p)));
     if (keep.length) out.custom = keep.join("|"); else delete out.custom;
@@ -641,6 +641,15 @@ function migrateSure(L) {
 function seasonYearlyBase(L) {
   const h = householdIncome(L), m = seasonIncomeMult(L);
   return Math.max(300, m !== 1 && earnsOwnLiving(L) ? h / m : h);
+}
+/**
+ * Đơn vị cho khoản money:<x> ÂM (thẻ, luật năm của mùa). Đề xuất R29 (ledger 2026-10-19-canon-tuning.md, chờ Tùng): "lỗ cố định" của R24
+ * là khoản tuyệt đối (repay, mua bán, chi phí sống); khoản lỗ tính theo năm thu nhập đi theo thu nhập thật của đời đó. Trong mùa hệ số < 1
+ * là min(gốc, thực) = lương thực của mùa; ngoài mùa và mùa hệ số ≥ 1 vẫn là lương gốc như R24. Khoản dương, chung kết (mùa đã đóng) không đổi.
+ */
+function seasonLossYearly(L) {
+  const b = seasonYearlyBase(L);
+  return seasonIncomeMult(L) < 1 ? Math.max(300, Math.min(b, householdIncome(L))) : b;
 }
 /** Một năm thu nhập CÓ hệ số mùa, cho custom money_season:<x>. Trong mùa: thu nhập hiện tại; ở chung kết (mùa vừa kết năm nay): gốc × hệ số mùa ấy. */
 function seasonMoneyYearly(L) {

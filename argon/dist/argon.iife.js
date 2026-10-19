@@ -21617,7 +21617,7 @@ var Argon = (() => {
   }
 
   // src/engine/narrative/canon/Season.ts
-  var BEATS = ["mo_man", "khoi_dong", "cu_lat", "day", "chung_ket"], BEAT_VN = { mo_man: "M\u1EDF m\xE0n", khoi_dong: "Bi\u1EBFn c\u1ED1 kh\u1EDFi \u0111\u1ED9ng", cu_lat: "C\xFA l\u1EADt", day: "\u0110\xE1y", chung_ket: "Chung k\u1EBFt" }, SEASON_END_MAX = 85, RESET_CASH_KEEP = 0.5;
+  var BEATS = ["mo_man", "khoi_dong", "cu_lat", "day", "chung_ket"], BEAT_VN = { mo_man: "M\u1EDF m\xE0n", khoi_dong: "Bi\u1EBFn c\u1ED1 kh\u1EDFi \u0111\u1ED9ng", cu_lat: "C\xFA l\u1EADt", day: "\u0110\xE1y", chung_ket: "Chung k\u1EBFt" }, SEASON_END_MAX = 85, RESET_CASH_KEEP = 0.75;
   function resetCashDelta(target, own) {
     return own > target ? -(own - target) * (1 - RESET_CASH_KEEP) : target - own;
   }
@@ -21733,7 +21733,8 @@ var Argon = (() => {
     vn: "K\u1EBB tr\u1ED1n ch\u1EA1y",
     color: "#4f6377",
     years: [8, 14],
-    rules: { income: 0.6, flags: ["w_tron_chay", "w_ten_gia"] },
+    rules: { income: 0.8, flags: ["w_tron_chay", "w_ten_gia"] },
+    // 0.6 → 0.8: cân chỉnh tiền 2026-10-19
     reset: {
       cash: 0.2,
       effects: { custom: "move_city|borrow:0.5" },
@@ -22276,7 +22277,8 @@ var Argon = (() => {
     vn: "L\xE0m l\u1EA1i t\u1EEB s\u1ED1 0",
     color: "#6f8f4e",
     years: [8, 20],
-    rules: { income: 0.6, flags: ["w_lam_lai"] },
+    rules: { income: 0.8, flags: ["w_lam_lai"] },
+    // 0.6 → 0.8: cân chỉnh tiền 2026-10-19 (R24 cho phép chỉnh hệ số riêng)
     reset: {
       cash: 0,
       cast: [
@@ -22451,7 +22453,8 @@ var Argon = (() => {
     vn: "L\xE0m l\u1EA1i \u1EDF x\u1EE9 ng\u01B0\u1EDDi",
     color: "#3d7f8c",
     years: [10, 20],
-    rules: { income: 0.8, flags: ["w_xu_nguoi"] },
+    rules: { income: 1, flags: ["w_xu_nguoi"] },
+    // 0.8 → 1: cân chỉnh tiền 2026-10-19; di cư (p × 0.6 ở nước mới) đã là cú hạ lương của mùa
     reset: {
       cash: 0.5,
       effects: { custom: "migrate_now" },

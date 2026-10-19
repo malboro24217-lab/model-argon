@@ -3,6 +3,7 @@
      weird = 0 (Đời thật) | 1 (Phim) | 2 (Mơ): đặt L.weird ngay sau khi sinh (cả lúc tua lại, nếu có).
    Chạy 3 lần (0/1/2) để có weirdLifeShare cho cả ba mức. Đặt CANON_STATS_NO_BASELINE=1 để bỏ lượt đo baseline (nhanh gấp đôi khi cân chỉnh).
    Đời thứ i dùng seed i*7919+17 (giống divergence.js), nên các lần chạy so sánh được với nhau.
+   CANON_STATS_SEED_OFFSET=<n> cộng n vào mọi seed (bộ seed thứ hai, để xác nhận một lần cân chỉnh không chỉ khớp bộ seed đầu).
 
    Cách đo (ghi rõ để người sau không phải đoán):
    - Dữ liệu host (Task 7): L.lw.canon = { n, last, seasons: [{id, from, to, reason, landing}] }, L.lw.season, L.lw.plants,
@@ -34,6 +35,7 @@
 import fs from 'node:fs'; // argon/package.json có "type": "module", nên dùng import (require sẽ lỗi)
 eval(fs.readFileSync(process.argv[2], 'utf8') + '\n;(' + function () {
   const NL = +(process.argv[3] || 200), WEIRD = process.argv[4] === undefined ? 1 : +process.argv[4];
+  const SEED_OFFSET = +(process.env.CANON_STATS_SEED_OFFSET || 0);   // bộ seed thứ hai để xác nhận (cân chỉnh tiền 2026-10-19 dùng 1000003)
   if (![0, 1, 2].includes(WEIRD)) { console.log(JSON.stringify({ ok: false, error: 'weird phải là 0, 1 hoặc 2' })); return; }
 
   // --- đặt L.weird lúc sinh (cả khi tua lại) ---
@@ -65,7 +67,7 @@ eval(fs.readFileSync(process.argv[2], 'utf8') + '\n;(' + function () {
     const out = { lives: 0, noCanon: false, canonN: [], canonN60: [], ageAt: [], over4: 0, minGap: null, adultYears: 0, adultInSeason: 0,
       events: 0, fromPlayer: 0, fallback: 0, mismatch: 0, tuples: new Set(), tuplesNoSeason: new Set(), weird: 0, choices: [], broke: 0, stuck: 0, byAxis: {}, seeds: {}, ends: {}, weirdEvents: 0, under17: 0, fresh: 0 };
     for (let i = 0; i < NL; i++) {
-      const L = createLife(i * 7919 + 17, { auto: true }); G.life = L;
+      const L = createLife(i * 7919 + 17 + SEED_OFFSET, { auto: true }); G.life = L;
       if (!L.lw || !L.lw.canon) { out.noCanon = true; return out; }
       recorded = [];
       const plantSnap = {};          // tuổi -> mầm có trước năm đó
@@ -121,7 +123,7 @@ eval(fs.readFileSync(process.argv[2], 'utf8') + '\n;(' + function () {
   }
   const sixty = m.canonN60;
   const res = {
-    ok: true, lives: m.lives, weird: WEIRD,
+    ok: true, lives: m.lives, weird: WEIRD, seedOffset: SEED_OFFSET,
     canonPerLife: { min: Math.min(...m.canonN), p50: q(m.canonN, .5), max: Math.max(...m.canonN), shareTwoPlusAt60: share(sixty.filter(x => x >= 2).length, sixty.length) },
     canonPerLifeAt60: { lives: sixty.length, min: sixty.length ? Math.min(...sixty) : null, p50: q(sixty, .5), max: sixty.length ? Math.max(...sixty) : null },
     livesOver4: m.over4, minGapYears: m.minGap,
