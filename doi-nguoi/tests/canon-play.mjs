@@ -269,9 +269,9 @@ async function playLife(browser, html, seed, weird) {
     for (const l of otherEnd) S.otherSelf.push({ age: "end", text: l });
     if (otherEnd.length) await shot("other-self", `Bản kia của bạn (màn kết): ${otherEnd.join(" / ")}`, { full: true });
     await click("#tombBtn");
-    S.tombSeasonsLine = await page.evaluate(() => { try { const L = G.life, d = tombstoneData(L, G.cf); if (!d.seasons || !d.seasons.length) return null;
-      const c = document.createElement("canvas").getContext("2d"), base = { ...d, seasons: [] }, fits = P => _drawTomb(c, base, L.seed, P) <= TOMB.H - 200;
-      const P = TOMB_PRESETS.find(fits) || TOMB_PRESETS[TOMB_PRESETS.length - 1]; return _drawTomb(c, d, L.seed, P) <= TOMB.H - 200; } catch (e) { return "?" + e.message; } });
+    // Task 8b: tombstoneCanvas tự thử các preset (kể cả preset chỉ dành cho dòng mùa) và ghi cv.tombPreset; noSeasons = đã bỏ dòng "Các mùa".
+    S.tombSeasonsLine = await page.evaluate(async () => { try { const L = G.life, d = tombstoneData(L, G.cf); if (!d.seasons || !d.seasons.length) return null;
+      const cv = await tombstoneCanvas(L, G.cf); return !!(cv.tombPreset && !cv.tombPreset.noSeasons); } catch (e) { return "?" + e.message; } });
     if (S.tombSeasonsLine === false) S.notes.push(`Tấm bia bỏ dòng "Các mùa" (${S.seasons.length} mùa) vì bố cục không còn chỗ`);
     try { await page.waitForSelector(".tomb-img", { timeout: 15000 }); await shot("tomb", "Tấm bia", { el: ".tomb-sheet", wait: 300 }); }
     catch { S.failures.push("Tấm bia không vẽ ra"); await shot("tomb", "Tấm bia (không vẽ ra)"); }
