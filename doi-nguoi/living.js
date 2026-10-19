@@ -99,7 +99,7 @@ function applyEffect(L, e, npcId) {
   for (const k of ["health", "happy", "know", "rel"]) if (e[k]) addSt(L, k, e[k]);
   if (e.bw) { s.capitals = Argon.applyDelta(s.capitals, { bandwidth: e.bw }); L.st.bw = s.capitals.cognitiveBandwidth.value; }
   if (e.agency) { s.capitals = Argon.applyDelta(s.capitals, { agency: e.agency }); }
-  if (e.money) L.savings += yearly * e.money;
+  if (e.money) L.savings += (e.money < 0 ? seasonLossYearly(L) : yearly) * e.money;   // R29 (đề xuất): khoản âm trong mùa hệ số < 1 tính trên lương thực
   if (e.income_mult && L.income > 0) L.income *= e.income_mult;
   if (e.trust) { const npc = ctxNpc(e.trust.npc); if (npc) Argon.propagate(s.graph, npc.id, e.trust.delta, s.tick); }
   if (e.memory) { const npc = ctxNpc(e.memory.npc); if (npc) { Argon.addMemory(L.lw.mem, npc.id, e.memory.tag, L.age, e.memory.weight, e.memory.note ? (/năm (bạn )?\d+ tuổi/.test(e.memory.note) ? e.memory.note : `${e.memory.note} (năm bạn ${L.age} tuổi)`) : "", e.memory.decayPerYear); stampP(L, Argon.prov.memory(npc.id, e.memory.tag)); if (L.curMark && Math.abs(e.memory.weight) >= 0.25) L.lw.cz.origin.set(Argon.prov.opinion(npc.id), L.curMark.id); } }

@@ -52,8 +52,10 @@ export const SEASON_END_MAX = 85;
  * Phần tiền riêng vượt mức reset.cash vẫn còn lại khi vào mùa (Task 20). Trước đây vào mùa là xóa sạch phần vượt
  * (tiền "về mức X lần thu nhập"), nhưng nợ thì giữ nguyên, nên người đang có của để dành mà vào Làm lại từ số 0 / Xứ người
  * mất đệm trả nợ và tỉ lệ vỡ nợ tăng ~+9 điểm so với đời không có canon. Giữ lại phần này: tiền "gửi lại", không mang theo người.
+ * Cân chỉnh tiền 2026-10-19 (ledger 2026-10-19-canon-tuning.md §Cân chỉnh tiền): 0.5 → 0.75, vì sau khi ghép Task 20 × 8b × 20d
+ * đời ở trong mùa lâu hơn và phá sản vượt baseline +10,5 điểm; reset.cash là nguồn đo được thứ hai (sau lỗ trong mùa hệ số < 1).
  */
-export const RESET_CASH_KEEP = 0.5;
+export const RESET_CASH_KEEP = 0.75;
 /** Số tiền cộng vào tiền riêng khi vào mùa có reset.cash: lên thẳng mức đặt lại nếu đang thấp hơn; nếu cao hơn thì chỉ mất (1 − RESET_CASH_KEEP) phần vượt. */
 export function resetCashDelta(target: number, own: number): number {
   return own > target ? -(own - target) * (1 - RESET_CASH_KEEP) : target - own;

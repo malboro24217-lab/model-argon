@@ -17,7 +17,7 @@ const sang = ending(L_SANG, "Sang lại xe cháo, cầm tiền, dùng tên thậ
 
 export const TRON_CHAY: SeasonDef = {
   id: "tron_chay", vn: "Kẻ trốn chạy", color: "#4f6377", years: [8, 14],
-  rules: { income: 0.6, flags: ["w_tron_chay", "w_ten_gia"] },
+  rules: { income: 0.8, flags: ["w_tron_chay", "w_ten_gia"] },   // 0.6 → 0.8: cân chỉnh tiền 2026-10-19
   reset: {
     cash: 0.2, effects: { custom: "move_city|borrow:0.5" },
     cast: [

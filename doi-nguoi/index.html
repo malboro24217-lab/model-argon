@@ -22848,7 +22848,7 @@ var Argon = (() => {
   }
 
   // src/engine/narrative/canon/Season.ts
-  var BEATS = ["mo_man", "khoi_dong", "cu_lat", "day", "chung_ket"], BEAT_VN = { mo_man: "M\u1EDF m\xE0n", khoi_dong: "Bi\u1EBFn c\u1ED1 kh\u1EDFi \u0111\u1ED9ng", cu_lat: "C\xFA l\u1EADt", day: "\u0110\xE1y", chung_ket: "Chung k\u1EBFt" }, SEASON_END_MAX = 85, RESET_CASH_KEEP = 0.5;
+  var BEATS = ["mo_man", "khoi_dong", "cu_lat", "day", "chung_ket"], BEAT_VN = { mo_man: "M\u1EDF m\xE0n", khoi_dong: "Bi\u1EBFn c\u1ED1 kh\u1EDFi \u0111\u1ED9ng", cu_lat: "C\xFA l\u1EADt", day: "\u0110\xE1y", chung_ket: "Chung k\u1EBFt" }, SEASON_END_MAX = 85, RESET_CASH_KEEP = 0.75;
   function resetCashDelta(target, own) {
     return own > target ? -(own - target) * (1 - RESET_CASH_KEEP) : target - own;
   }
@@ -22964,7 +22964,8 @@ var Argon = (() => {
     vn: "K\u1EBB tr\u1ED1n ch\u1EA1y",
     color: "#4f6377",
     years: [8, 14],
-    rules: { income: 0.6, flags: ["w_tron_chay", "w_ten_gia"] },
+    rules: { income: 0.8, flags: ["w_tron_chay", "w_ten_gia"] },
+    // 0.6 → 0.8: cân chỉnh tiền 2026-10-19
     reset: {
       cash: 0.2,
       effects: { custom: "move_city|borrow:0.5" },
@@ -23507,7 +23508,8 @@ var Argon = (() => {
     vn: "L\xE0m l\u1EA1i t\u1EEB s\u1ED1 0",
     color: "#6f8f4e",
     years: [8, 20],
-    rules: { income: 0.6, flags: ["w_lam_lai"] },
+    rules: { income: 0.8, flags: ["w_lam_lai"] },
+    // 0.6 → 0.8: cân chỉnh tiền 2026-10-19 (R24 cho phép chỉnh hệ số riêng)
     reset: {
       cash: 0,
       cast: [
@@ -23682,7 +23684,8 @@ var Argon = (() => {
     vn: "L\xE0m l\u1EA1i \u1EDF x\u1EE9 ng\u01B0\u1EDDi",
     color: "#3d7f8c",
     years: [10, 20],
-    rules: { income: 0.8, flags: ["w_xu_nguoi"] },
+    rules: { income: 1, flags: ["w_xu_nguoi"] },
+    // 0.8 → 1: cân chỉnh tiền 2026-10-19; di cư (p × 0.6 ở nước mới) đã là cú hạ lương của mùa
     reset: {
       cash: 0.5,
       effects: { custom: "migrate_now" },
@@ -36961,7 +36964,9 @@ function argonYear(L) {
   // Bảo hiểm sức khỏe trả lại một phần viện phí của các cú ốm trong năm
   for (const r of reports) if (r.shock && r.shock.kind === "health" && r.shock.liquid < 0 && s.holdings && Argon.hasPolicy(s.holdings, "health")) { const p = Argon.healthPayout(s.holdings, marketCtx(L), -r.shock.liquid); s.capitals = Argon.applyDelta(s.capitals, { liquid: p }); if (!A.indep) { L.savings += p; A.syncedSavings = L.savings; } }
   // 2b. Vỡ nợ: nợ không thể lớn vô hạn. Quá 5 năm thu nhập thì chủ nợ siết, xóa bớt, và đời bạn mang dấu.
-  { const a = s.capitals.capitalAssets, yi = Math.max(300, householdIncome(L));
+  // Đề xuất R30 (ledger 2026-10-19-canon-tuning.md, chờ Tùng): "năm thu nhập" ở đây là lương gốc (seasonYearlyBase, cùng đơn vị R24 dùng cho borrow / repay),
+  // không phải lương đã nhân hệ số mùa; ngoài mùa hai số bằng nhau.
+  { const a = s.capitals.capitalAssets, yi = typeof seasonYearlyBase === "function" ? seasonYearlyBase(L) : Math.max(300, householdIncome(L));
     if (a.debt > 5 * yi) { a.liquid = 0; const seized = seizeOnDefault(L, 1.5 * yi); a.debt = Math.min(a.debt, 1.5 * yi); L.bankrupt = (L.bankrupt || 0) + 1; log(L, `Vỡ nợ. Chủ nợ siết ${seized.length ? seized.join(", ") : "hết những gì còn lại"}, phần nợ còn lại bị khoanh. Từ nay ai cũng biết.`, "bad big"); addSt(L, "happy", -15); addSt(L, "rel", -8); if (L.lw) { L.lw.sflags.add("bankrupt"); closeDoorNow(L, "partner_circle"); } } }
   // 3. Lấy về
   L.st.health = s.capitals.bioEnergy.value;
@@ -37262,7 +37267,7 @@ function applyEffect(L, e, npcId) {
   for (const k of ["health", "happy", "know", "rel"]) if (e[k]) addSt(L, k, e[k]);
   if (e.bw) { s.capitals = Argon.applyDelta(s.capitals, { bandwidth: e.bw }); L.st.bw = s.capitals.cognitiveBandwidth.value; }
   if (e.agency) { s.capitals = Argon.applyDelta(s.capitals, { agency: e.agency }); }
-  if (e.money) L.savings += yearly * e.money;
+  if (e.money) L.savings += (e.money < 0 ? seasonLossYearly(L) : yearly) * e.money;   // R29 (đề xuất): khoản âm trong mùa hệ số < 1 tính trên lương thực
   if (e.income_mult && L.income > 0) L.income *= e.income_mult;
   if (e.trust) { const npc = ctxNpc(e.trust.npc); if (npc) Argon.propagate(s.graph, npc.id, e.trust.delta, s.tick); }
   if (e.memory) { const npc = ctxNpc(e.memory.npc); if (npc) { Argon.addMemory(L.lw.mem, npc.id, e.memory.tag, L.age, e.memory.weight, e.memory.note ? (/năm (bạn )?\d+ tuổi/.test(e.memory.note) ? e.memory.note : `${e.memory.note} (năm bạn ${L.age} tuổi)`) : "", e.memory.decayPerYear); stampP(L, Argon.prov.memory(npc.id, e.memory.tag)); if (L.curMark && Math.abs(e.memory.weight) >= 0.25) L.lw.cz.origin.set(Argon.prov.opinion(npc.id), L.curMark.id); } }
@@ -39134,7 +39139,7 @@ function canonFacts(L, cast, opinion) {
 function canonOwnOnly(L, e, dropMoves) {
   if (canonIndependent(L)) return e;
   const out = { ...e };
-  if (e.money) { const amt = seasonYearlyBase(L) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
+  if (e.money) { const amt = (e.money < 0 ? seasonLossYearly(L) : seasonYearlyBase(L)) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
   if (e.custom) {
     const keep = e.custom.split("|").filter(p => !/^(repay|borrow|restructure|migrate_now|migrate)(:|$)/.test(p) && !(dropMoves && /^(move_city|job_[a-z_]*|become)(:|$)/.test(p)));
     if (keep.length) out.custom = keep.join("|"); else delete out.custom;
@@ -39714,6 +39719,15 @@ function migrateSure(L) {
 function seasonYearlyBase(L) {
   const h = householdIncome(L), m = seasonIncomeMult(L);
   return Math.max(300, m !== 1 && earnsOwnLiving(L) ? h / m : h);
+}
+/**
+ * Đơn vị cho khoản money:<x> ÂM (thẻ, luật năm của mùa). Đề xuất R29 (ledger 2026-10-19-canon-tuning.md, chờ Tùng): "lỗ cố định" của R24
+ * là khoản tuyệt đối (repay, mua bán, chi phí sống); khoản lỗ tính theo năm thu nhập đi theo thu nhập thật của đời đó. Trong mùa hệ số < 1
+ * là min(gốc, thực) = lương thực của mùa; ngoài mùa và mùa hệ số ≥ 1 vẫn là lương gốc như R24. Khoản dương, chung kết (mùa đã đóng) không đổi.
+ */
+function seasonLossYearly(L) {
+  const b = seasonYearlyBase(L);
+  return seasonIncomeMult(L) < 1 ? Math.max(300, Math.min(b, householdIncome(L))) : b;
 }
 /** Một năm thu nhập CÓ hệ số mùa, cho custom money_season:<x>. Trong mùa: thu nhập hiện tại; ở chung kết (mùa vừa kết năm nay): gốc × hệ số mùa ấy. */
 function seasonMoneyYearly(L) {
