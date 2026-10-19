@@ -12,7 +12,7 @@ Thay cho hướng "200 bước ngoặt, mỗi lựa chọn một cảnh hậu qu
   - một mùa phim mới;
   - một lần đổi đời thật;
   - một vũ trụ song song: luật riêng, màu riêng, và dòng "Bản kia của bạn".
-- **Đổi 100% hoàn cảnh, mang theo 3 vết.** Nghề, nơi ở, mức tiền, dàn nhân vật, luật, kho thẻ, màu giao diện đều đổi, và kịch bản đặt lại chỉ số. Từ đời cũ chỉ mang theo đúng ba thứ: **một người**, **một kỹ năng hoặc đồ vật**, **một món nợ hoặc lời hứa**.
+- **Đổi tình thế thật, mang theo 3 vết.** Mỗi Mùa có dàn nhân vật, luật, kho thẻ và màu giao diện riêng, cộng **ít nhất một thay đổi tình thế có tác dụng thật, phù hợp với tiền đề và được sử dụng trong diễn biến** (ruling R25 của Tùng, thay cho "đổi 100% hoàn cảnh"; chi tiết ở §5). Từ đời cũ chỉ mang theo đúng ba thứ: **một người**, **một kỹ năng hoặc đồ vật**, **một món nợ hoặc lời hứa**.
 - **Dùng lại 200 thẻ của Codex** làm giai đoạn gài, làm nguồn để nâng thành canon event, và làm cảnh phụ trong mùa.
 - **Có nhánh khoa học viễn tưởng và phi lý cực độ:** 50 nhánh mỗi loại (§7).
 
@@ -96,7 +96,14 @@ Phía host (`doi-nguoi/`) thêm `canon.js`, gồm:
 ## 5. Mùa
 - **Khung mùa:** đợt A có 5, toàn bộ khoảng 18 thường cộng 100 nhánh kỳ dị (§7). Mỗi khung khai báo:
   - `rules`: hệ số thu nhập, rủi ro, quan hệ, sức khỏe; hằng số hạnh phúc; cờ thế giới (vd. `no_privacy`);
-  - `reset`: chỉ số đặt lại lúc vào mùa (tiền về mức X lần thu nhập, nghề đặt về trạng thái "chưa có", nơi ở, dàn nhân vật chính 2–3 người mới có tên);
+  - `reset`: những gì đổi lúc vào mùa: dàn nhân vật chính 2–3 người mới có tên, cộng các thay đổi mùa tự khai báo (tiền về mức X lần thu nhập, vay hay xóa nợ, chuyển đi nơi khác, ra nước ngoài…);
+  - **chuẩn thay đổi tình thế (ruling R25, thay cho "đổi 100% hoàn cảnh"):**
+    - mỗi Mùa có ít nhất một thay đổi tình thế có tác dụng thật, phù hợp với tiền đề và được sử dụng trong diễn biến;
+    - thay đổi hợp lệ: việc làm, nơi ở, tiền hay nợ, một mối quan hệ, một nghĩa vụ, quyền tiếp cận (được hay mất một thứ), hoặc một luật riêng của mùa (`rules.income`, `rules.yearly`);
+    - không có luật "phải đổi 2 trong 4 thứ". Host **không** tự đổi nghề hay tiền khi nội dung không khai báo;
+    - cờ chỉ được tính là thay đổi khi có tình huống hay luật về sau đọc nó và dùng nó;
+    - khai báo ở `reset`, ở luật mùa, hoặc ở hiệu ứng của thẻ mở màn. Dàn nhân vật mới và cờ thế giới `rules.flags` không tính (mùa nào cũng có, và không ai đọc cờ thế giới);
+    - bộ kiểm `canon-content-test` bắt phần kiểm được bằng máy; phần "phù hợp tiền đề" và "dùng có ý nghĩa" đánh giá bằng đọc và chơi thử. Bảng phân lớp 105 mùa: `argon/docs/canon/season-change-audit.md`;
   - `beats`: 5 nhịp, mỗi nhịp 2–4 thẻ có chỗ trống (`{scar_nguoi}`, `{scar_do}`, `{scar_no}`, `{noi}`, `{npc_moi_1}`…);
   - `gag`: một gag lặp lại, tối thiểu 3 lần mỗi mùa;
   - `landings`: các chung kết, mỗi cái là một thay đổi bền: `become:<path>`, `migrate`, `marry`/`spouse_leave`, tiền ×k, `have_child`;

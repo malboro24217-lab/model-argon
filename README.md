@@ -36,12 +36,14 @@ node doi-nguoi/tests/fork-test.js         # "Thử lại từ năm N": đời r�
 node doi-nguoi/tests/replay-test.js       # tất định: 200 đời có sương mù, AI, tiền, perk; vẽ giao diện không đổi đời; tua lại khớp 100%; đời giả định giữ nguyên các năm trước (ledger 2026-10-18-tat-dinh)
 node doi-nguoi/tests/canon-test.js        # canon event và Mùa: 120 đời tự chơi (≥ 2 canon event ở đời tới 60, tối đa 4, cách nhau ≥ 8 năm), cắt mùa, người phụ thuộc, hệ số thu nhập, tua lại (khoảng 1,5 phút)
 node doi-nguoi/tests/canon-ui-test.js     # màn kết "Các mùa của đời bạn" (dang dở, bị cắt ngang), banner, màu mùa đủ tương phản ở cả 105 mùa
+node doi-nguoi/tests/season-entry-test.js # R25: vào mùa, host không tự đổi nghề hay tiền khi mùa không khai báo (cả 105 mùa)
 node doi-nguoi/tests/canon-play.mjs --weird 0,1,2 --seeds 11,22 --out /tmp/canon-play   # chơi thật trên Chromium như người chơi, chụp biến cố, banner mùa, thẻ mùa, chung kết, màn kết, Tấm bia; bảng ảnh ở <out>/index.html, summary.json mỗi đời; thêm --width 1366 --dark cho máy tính; thoát 1 nếu lỗi console, lộ undefined/NaN/null hay id vai, banner lệch mùa, kỳ dị ở Độ điên 0
 node doi-nguoi/tests/ui-agency-test.mjs   # cần playwright-core và Chromium; sửa đường dẫn import ở dòng 2 cho đúng máy
 node doi-nguoi/tests/ui-test.mjs
 cd argon && node --experimental-strip-types src/agency-test.ts && node --experimental-strip-types src/narrative-test.ts && node --experimental-strip-types src/holdings-test.ts
 cd argon && node --experimental-strip-types src/canon-test.ts           # áp lực, vật gài, 3 vết, generator, 8 mầm, ánh xạ thẻ Codex
-cd argon && node --experimental-strip-types src/canon-content-test.ts   # mọi mùa, mầm và nhánh kỳ dị: cấu trúc, chữ, cổng tuổi, probe quy tắc 9 (dưới một phút)
+cd argon && node --experimental-strip-types src/canon-content-test.ts   # mọi mùa, mầm và nhánh kỳ dị: cấu trúc, chữ, cổng tuổi, probe quy tắc 9, thay đổi tình thế R25 (khoảng một phút)
+node --experimental-strip-types argon/tools/season-change-audit.js     # bảng phân lớp 105 mùa theo R25 (đạt / chỉ bằng lời kể / mâu thuẫn); --md argon/docs/canon/season-change-audit.md để cập nhật bảng
 cd argon && npx tsc --noEmit
 ```
 Các dòng `cd argon && …` chạy từ thư mục gốc của repo.

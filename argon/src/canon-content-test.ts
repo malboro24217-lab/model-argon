@@ -20,7 +20,9 @@
  *  mùa dựng ra ghi ở PREMISE, cụm từ nói về người khác ghi ở NOT_ASSERT (đều kèm lý do). Kèm luật: dòng landing hay hint
  *  chung kết hứa trả nợ / khép chuyện cũ thì effects phải có repay:<x>. Xem chú thích trên probeFacts.
  * Cộng các kiểm đơn vị cho seasonLength, beatGap, isDurable, compileSeason, seasonKitFromNames.
- * FAIL_ALL=1 in hết mọi FAIL (mặc định 200 dòng đầu); PROBE_STATS=1 in số lần dựng của probe quy tắc 9.
+ * R25 (Task 20d): mỗi mùa khai báo thay đổi tình thế lúc vào mùa, cờ của reset được đọc, trần số cờ không ai đọc, chung kết
+ *  không cho người chưa tự lập di cư hay người dưới 18 tuổi chuyển đi một mình. Xem chú thích ở khối R25 cuối file.
+ * FAIL_ALL=1 in hết mọi FAIL (mặc định 200 dòng đầu); PROBE_STATS=1 in số lần dựng của probe quy tắc 9 và số cờ không ai đọc.
  */
 import {
   createRng, PATHS, STORYLETS, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, PATH_STORYLETS, TURNING_STORYLETS,
@@ -30,6 +32,7 @@ import {
 } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
 import { land, ending } from "./engine/narrative/canon/kit.ts";
+import { readdirSync, readFileSync } from "node:fs";
 
 let fails = 0;
 const seen = new Set<string>();
@@ -561,12 +564,12 @@ const FACT_RULES: FactRule[] = [
  * dựng ở mở màn, thẻ khác vẫn bị dò).
  */
 const PREMISE: Record<string, { rules: string[]; variants?: string[]; cards?: string[]; why: string }> = {
-  tron_chay: { rules: ["nợ", "thuê nhà"], why: "mùa trốn nợ: dàn mới có gã đòi nợ (vai creditor), bạn bỏ đi và thuê một căn gác" },
+  tron_chay: { rules: ["nợ", "thuê nhà"], why: "mùa trốn nợ: đầu mùa reset.effects borrow:0.5 (R25, Task 20d) nên ai vào mùa cũng đang nợ; dàn mới có gã đòi nợ (vai creditor), bạn bỏ đi và thuê một căn gác" },
   lam_lai: { rules: ["thuê nhà"], variants: ["home"], why: "mùa bắt đầu trong một phòng trọ thuê, tiền về không (cả người có nhà riêng); người sống nhờ không vào được mùa (NEEDS_INDEPENDENT)" },
   xu_nguoi: { rules: ["thuê nhà"], why: "mùa sang nước khác: bạn thuê căn phòng dưới mái của bà chủ nhà" },
-  w_S07: { rules: ["việc"], cards: ["s07_day_quen_giong"], why: "nhánh ký hợp đồng lên trạm sao Hỏa: dàn mới có chỉ huy trạm (first_boss), ca trực là việc của mùa" },
-  w_S33: { rules: ["việc"], cards: ["s33_mo_phong", "s33_mo_dong_nghiep", "s33_kd_mang", "s33_cl_ban_sao", "s33_day_dong_nghiep"], why: "nhánh nhận việc làm người thật cho máy: dàn mới có chị giám sát (first_boss) và người đồng nghiệp, chỗ làm là của mùa" },
-  w_S50: { rules: ["không nợ"], why: "nhánh hệ thống xóa bạn khỏi mọi hồ sơ, xóa luôn sổ nợ: \"không còn nợ ai\" là tiền đề của mùa (chung kết repay hay lấy lại nợ)" },
+  w_S07: { rules: ["việc"], cards: ["s07_day_quen_giong"], why: "nhánh ký hợp đồng lên trạm sao Hỏa: thẻ mở màn s07_mo_buong cho mọi người một ca trực (job_switch, R25), dàn mới có chỉ huy trạm (first_boss)" },
+  w_S33: { rules: ["việc"], cards: ["s33_mo_phong", "s33_mo_dong_nghiep", "s33_kd_mang", "s33_cl_ban_sao", "s33_day_dong_nghiep"], why: "nhánh nhận việc làm người thật cho máy: s33_mo_phong cho mọi người việc văn phòng (job_switch:office, R25); dàn mới có chị giám sát (first_boss) và người đồng nghiệp" },
+  w_S50: { rules: ["không nợ"], why: "nhánh hệ thống xóa bạn khỏi mọi hồ sơ, xóa luôn sổ nợ: reset.effects repay:50 (R25) làm \"không còn nợ ai\" đúng thật; chung kết repay hay ghi lại nợ (borrow)" },
   w_X07: { rules: ["việc"], cards: ["x07_day_bua_com"], why: "nhánh bán bản quyền khuôn mặt cho hãng mì: hợp đồng với hãng là việc của mùa (dàn mới first_boss: chị đại diện của hãng)" },
   w_X22: { rules: ["hưu"], why: "nhánh giấy tờ cộng thêm ba mươi tuổi: sổ hưu, lương hưu theo tuổi trên giấy là tiền đề của mùa" },
   w_X37: { rules: ["nợ"], why: "nhánh thừa kế món nợ một triệu chiếc bánh của bà cô: giấy nợ trả bằng bánh là tiền đề của mùa (dàn mới có ông trưởng ban đòi bánh, vai creditor)" },
@@ -747,6 +750,117 @@ function probeFacts(): { hits: Map<string, string>; repay: Map<string, string>; 
   for (const [key, sample] of r.repay) bad(`${key} — «${sample}»`);
   ok(r.cards > 800 && r.builds > 20000, `probe quy tắc 9 dựng quá ít (${r.cards} thẻ, ${r.builds} lần dựng)`);
   if (process.env.PROBE_STATS) console.log(`probe quy tắc 9: ${r.cards} thẻ, ${r.seeds} mầm, ${r.builds} lần dựng, ${r.hits.size} vi phạm`);
+}
+
+/* ------------------------------------------------------------------ R25: thay đổi tình thế của mỗi mùa (Task 20d)
+ *
+ * Ruling R25 (Tùng): mỗi Mùa có ít nhất một thay đổi tình thế có tác dụng thật, phù hợp với tiền đề và được sử dụng
+ * trong diễn biến. Bộ kiểm chỉ bắt phần kiểm được bằng máy; "phù hợp tiền đề" và "dùng có ý nghĩa" phải đọc và chơi thử.
+ * Bảng phân lớp 105 mùa (đạt / chỉ bằng lời kể / mâu thuẫn): argon/docs/canon/season-change-audit.md, sinh bằng
+ * argon/tools/season-change-audit.js.
+ *  1. Mỗi mùa khai báo ít nhất một thay đổi lúc vào mùa: reset.cash, reset.effects, luật mùa (rules.income ≠ 1,
+ *     rules.yearly), hay một lựa chọn ở thẻ mở màn có hiệu ứng trạng thái (tiền, custom việc / nợ / nơi ở / quan hệ /
+ *     thời gian, mua / bán, hệ số thu nhập, lòng tin, lời hứa). Cờ thế giới rules.flags không tính: không ai đọc chúng.
+ *  2. Cờ / bộ đếm đặt ở reset.effects phải được một thẻ của mùa đọc (FactContext bọc Proxy ghi lại lượt đọc).
+ *  3. Cờ / bộ đếm do lựa chọn ở nhịp 0–3 đặt mà không thẻ nào cùng hay sau nhịp đó đọc, cũng không file nào khác nhắc
+ *     tới: tổng không được tăng quá DEAD_KEYS_MAX (lúc Task 20d có 1352; chỉ được giảm). Viết thẻ mới thì đọc lại cờ mình đặt.
+ *  4. Chung kết: landing migrate_now chỉ được mở khi migrateOk(c) (tự lập và còn nước để đi; host bỏ migrate_now với người
+ *     chưa tự lập); landing move_city không mở cho người dưới 18 tuổi ở những mùa người dưới 18 tuổi chơi tới chung kết được.
+ * Host (doi-nguoi/canon.js enterSeason) không tự đổi nghề hay tiền khi mùa không khai báo: chỉ reset.cash (người tự lập),
+ * reset.effects và hệ số rules.income. doi-nguoi/tests/season-entry-test.js kiểm điều đó trên cả 105 mùa.
+ */
+const DEAD_KEYS_MAX = 1352;
+{
+  const STATE_CUSTOM = /^(borrow|repay|restructure|job_new|job_lose|job_lose_maybe|job_switch|retire|become|study|move_city|migrate_now|return_home|marry|spouse_leave|have_child|age_skip|longevity|confess_hook|explode_hook|apologize|swap_other|remark)(:|$)/;
+  const declares = (e: Effect | undefined): boolean => !!e && ((e.money ?? 0) !== 0 || customParts(e).some((p) => STATE_CUSTOM.test(p))
+    || !!e.buy || !!e.sell || e.income_mult !== undefined || !!e.trust || !!e.promise || (!!e.gamble && (declares(e.gamble.win) || declares(e.gamble.lose))));
+  /** FactContext bọc Proxy: ghi "ctx:<trường>", "flag:<cờ>", "counter:<khóa>" mỗi lần `when` hay chữ của thẻ đọc. */
+  const track = (c: FactContext, rec: Set<string>): FactContext => {
+    const flags = new Set(c.flags), has0 = flags.has.bind(flags);
+    flags.has = (x: string) => { rec.add("flag:" + x); return has0(x); };
+    const counters = new Proxy({ ...c.counters }, { get: (t, k) => { if (typeof k === "string") rec.add("counter:" + k); return (t as Record<string, number>)[k as string]; } });
+    return new Proxy({ ...c, flags, counters } as FactContext, { get: (t, k) => { if (typeof k === "string" && k !== "flags" && k !== "counters") rec.add("ctx:" + k); return (t as unknown as Record<string, unknown>)[k as string]; } });
+  };
+  const keysOf = (e: Effect, out: Set<string>): Set<string> => {
+    for (const f of e.flags ?? []) out.add("flag:" + f);
+    for (const k of Object.keys(e.counters ?? {})) out.add("counter:" + k);
+    if (e.gamble) { keysOf(e.gamble.win, out); keysOf(e.gamble.lose, out); }
+    return out;
+  };
+  const kitOf = (def: SeasonDef): SeasonKit => fakeKit(def, false, { scar: new Set(), gag: false, npcBad: new Set() }, 0);
+  const view = (def: SeasonDef, card: SeasonDef["beats"][number][number], c: FactContext, rec?: Set<string>): StoryletView | null => {
+    const t = rec ? track(c, rec) : c;
+    try { if (card.when && !card.when(t)) return null; return card.build(t, kitOf(def)); } catch { return null; }
+  };
+  const rng = createRng(2520);
+  const ctxs: FactContext[] = [];
+  while (ctxs.length < 10) { const c = randomCtx(rng); if (c.age >= 8) ctxs.push(c); }
+
+  /* Văn bản nguồn: một khóa mà file khác (host, Codex, mùa khác) nhắc tới thì coi là có người đọc. */
+  const srcRoot = new URL("./", import.meta.url).pathname;
+  const files = new Map<string, string>();
+  const walk = (d: string) => { for (const e of readdirSync(d, { withFileTypes: true })) { const p = d + "/" + e.name; if (e.isDirectory()) walk(p); else if (/\.(ts|js)$/.test(e.name)) files.set(p, readFileSync(p, "utf8")); } };
+  walk(srcRoot + "engine");
+  for (const f of readdirSync(srcRoot + "../../doi-nguoi")) if (f.endsWith(".js")) files.set(f, readFileSync(srcRoot + "../../doi-nguoi/" + f, "utf8"));
+  const ownFile = (id: string) => [...files.keys()].find((f) => /\/canon\/(seasons|weird)\//.test(f) && files.get(f)!.includes(`id: "${id}"`));
+  const elsewhere = (key: string, own: string | undefined) => [...files].some(([f, s]) => f !== own && s.includes(`"${key}"`));
+
+  let dead = 0;
+  for (const def of ALL_SEASONS) {
+    const S = `R25 mùa ${def.id}`;
+    // 1. khai báo ít nhất một thay đổi lúc vào mùa
+    const first = def.beats[0].some((card) => ctxs.some((c) => view(def, card, { ...c, season: def.id, season_beat: 0 })?.choices.some((ch) => declares(ch.effects))));
+    const declared = def.reset.cash !== undefined || declares(def.reset.effects) || !!def.reset.effects?.flags?.length
+      || (def.rules.income !== undefined && def.rules.income !== 1) || (!!def.rules.yearly && Object.keys(def.rules.yearly).length > 0) || first;
+    if (!declared) bad(`${S}: không khai báo thay đổi tình thế nào lúc vào mùa (reset, rules.income / rules.yearly, hay hiệu ứng ở thẻ mở màn) — xem R25`);
+    // lượt đọc của mọi thẻ: không cờ, đủ cờ của mùa, một nửa số cờ
+    const setBy = new Map<string, { card: string; beat: number }>();
+    def.beats.forEach((beat, bi) => beat.forEach((card) => ctxs.forEach((c) => {
+      const v = view(def, card, { ...c, season: def.id, season_beat: bi });
+      if (v && bi < 4) for (const ch of v.choices) for (const k of keysOf(ch.effects, new Set())) if (!setBy.has(k)) setBy.set(k, { card: card.id, beat: bi });
+    })));
+    const resetKeys = keysOf(def.reset.effects ?? {}, new Set());
+    const all = [...setBy.keys(), ...resetKeys];
+    const reads = new Map<string, Set<string>>();
+    def.beats.forEach((beat, bi) => beat.forEach((card) => ctxs.forEach((c, i) => {
+      const modes = [new Set<string>(), new Set(all), new Set(all.filter((_, j) => (i + j) % 2 === 0))];
+      for (const on of modes) {
+        const flags = new Set(c.flags), counters: Record<string, number> = { ...c.counters, season_next: c.age };
+        for (const k of on) { if (k.startsWith("flag:")) flags.add(k.slice(5)); else counters[k.slice(8)] = 3; }
+        const rec = new Set<string>();
+        view(def, card, { ...c, flags, counters, season: def.id, season_beat: bi }, rec);
+        for (const r of rec) { if (!reads.has(r)) reads.set(r, new Set()); reads.get(r)!.add(`${card.id}@${bi}`); }
+      }
+    })));
+    const readAfter = (key: string, beat: number, except: string) => [...(reads.get(key) ?? [])].some((x) => { const [id, b] = x.split("@"); return id !== except && Number(b) >= beat; });
+    // 2. cờ / bộ đếm của reset.effects phải có thẻ đọc
+    for (const k of resetKeys) if (!readAfter(k, 0, "")) bad(`${S}: reset.effects đặt ${k} nhưng không thẻ nào của mùa đọc nó (R25: cờ chỉ tính khi được đọc và dùng)`);
+    // 3. cờ / bộ đếm do lựa chọn đặt mà không ai đọc (đếm chung, chặn trần)
+    const own = ownFile(def.id);
+    for (const [k, s] of setBy) if (!readAfter(k, s.beat, s.card) && !elsewhere(k.replace(/^(flag|counter):/, ""), own)) dead++;
+    // 4. chung kết: migrate_now cần migrateOk; move_city không cho người dưới 18 tuổi
+    const minorCanFinish = def.weird
+      ? WEIRD.some((b) => b.season.id === def.id && ctxs.concat(Array.from({ length: 60 }, (_, i) => weirdCtx(createRng(900 + i)))).some((c) => {
+        for (let a = 8; a + def.years[0] < 18; a++) { try { if (b.when({ ...c, age: a, independent: false, has_job: false }, { noi: "", fromPlayer: 0 })) return true; } catch { /* đã báo */ } }
+        return false;
+      }))
+      : def.years[0] + 8 < 18 && !["tron_chay", "xu_nguoi", "lam_lai"].includes(def.id);
+    for (const card of def.beats[4]) for (const c0 of ctxs) {
+      const probes: [Partial<FactContext>, string][] = [[{ independent: false, can_migrate: true }, "người chưa tự lập"], [{ independent: true, can_migrate: false }, "người không còn nước để đi"]];
+      if (minorCanFinish) for (let age = 8 + def.years[0]; age < 18; age++) probes.push([{ age, independent: false, has_job: false, married: false }, `người ${age} tuổi`]);
+      for (const [over, who] of probes) {
+        const c: FactContext = { ...c0, ...over, age: over.age ?? Math.max(20, c0.age), season: def.id, season_beat: 4, counters: { ...c0.counters, season_next: 0 } };
+        const v = view(def, card, c);
+        for (const ch of v?.choices ?? []) {
+          const parts = customParts(ch.effects);
+          if (parts.includes("migrate_now") && (!c.independent || !c.can_migrate)) bad(`${S} ${card.id}: landing ${landingOf(ch.effects)} có migrate_now nhưng vẫn mở cho ${who} (dùng migrateOk(c) trong kit.ts)`);
+          if (parts.includes("move_city") && c.age < 18) bad(`${S} ${card.id}: landing ${landingOf(ch.effects)} cho ${who} chuyển đi một mình (move_city)`);
+        }
+      }
+    }
+  }
+  if (dead > DEAD_KEYS_MAX) bad(`R25: ${dead} cờ / bộ đếm do lựa chọn đặt mà không thẻ nào đọc lại, trần là ${DEAD_KEYS_MAX} (đọc lại cờ mình đặt, hoặc bỏ cờ thừa)`);
+  if (process.env.PROBE_STATS) console.log(`R25: ${dead} cờ / bộ đếm không ai đọc (trần ${DEAD_KEYS_MAX})`);
 }
 
 if (fails) { console.log(`${fails} FAIL`); process.exit(1); }
