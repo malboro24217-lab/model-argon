@@ -1,5 +1,13 @@
 # Viết thẻ "bước ngoặt" (cho Codex)
 
+> **Đã thay (18/10/2026).** Hướng "bước ngoặt có hậu quả" trong tài liệu này đã được thay bằng canon event và Mùa. Lý do: đổi lựa chọn chỉ làm khoảng 2% số thẻ về sau khác đi.
+> - 200 thẻ Codex giờ là **thẻ gài** cho canon event: lựa chọn của chúng đẩy áp lực 8 trục và gieo vật gài (người, đồ vật, món nợ…), để canon event về sau dựng lại từ đó.
+> - Bảng ánh xạ nằm ở `argon/src/engine/narrative/canon/codexPlants.ts`. Thẻ hợp giọng cũng làm cảnh phụ trong mùa.
+> - Viết mùa và nhánh kỳ dị mới: dùng `argon/src/engine/narrative/canon/kit.ts` và theo `argon/docs/canon/authoring-rules.md`.
+> - Quyết định và lý do: `argon/docs/ledger/2026-10-18-canon-event.md`.
+>
+> Phần dưới giữ lại để tham khảo.
+
 Engine: `argon/src/engine/narrative/Fate.ts` (bản mẫu trong `scratchpad/fate/repo/`). Host: `doi-nguoi/living.js` → `fateScene`. Gói mẫu, 60 thẻ, chỉ để tham khảo hình dạng: `fate_pack.ts`.
 
 ## 1. Cơ chế nổ (đừng tự làm lại)
