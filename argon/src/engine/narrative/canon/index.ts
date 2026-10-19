@@ -1,8 +1,8 @@
-export { AXES, AXIS_VN, CANON_THRESHOLD, CANON_GAP, CANON_MAX, CANON_AGES, FORCE_FIRST_AT, FORCE_SECOND_AT, DISCHARGE, WEIRD_DOOR_AT, basePressure, pressureOf, dueAxis } from "./Pressure.ts";
+export { AXES, AXIS_VN, CANON_THRESHOLD, KY_THRESHOLD, CANON_GAP, CANON_MAX, CANON_AGES, FORCE_FIRST_AT, FORCE_SECOND_AT, DISCHARGE, WEIRD_DOOR_AT, AXIS_GAIN, AXIS_FATIGUE, axisFlag, axisFired, NEMESIS_AT, nemesisOf, basePressure, pressureOf, dueAxis } from "./Pressure.ts";
 export { strongestPlant, plantFlag } from "./Plants.ts";
 export { pickScars, scarText, type Scars } from "./Scars.ts";
 /* ---- Task 4: khung Mùa ---- */
-export { BEATS, BEAT_VN, SEASON_END_MAX, SEASON_MIN, seasonLength, beatGap, isDurable, addCustom, landingOf, gagStart, seasonKitFromNames, compileSeason } from "./Season.ts";
+export { BEATS, BEAT_VN, SEASON_END_MAX, SEASON_MIN, RESET_CASH_KEEP, resetCashDelta, seasonLength, beatGap, isDurable, addCustom, landingOf, gagStart, seasonKitFromNames, compileSeason } from "./Season.ts";
 export type { BeatName, SeasonKit, BeatCard, NewCast, Landing, SeasonDef } from "./Season.ts";
 import { compileSeason as compileSeasonFn, type SeasonDef as SeasonDefT } from "./Season.ts";
 import { SEASONS_NORMAL } from "./seasons/index.ts";
@@ -20,4 +20,4 @@ import { WEIRD_ALL } from "./weird/index.ts";
 export const WEIRD: WeirdBranchT[] = WEIRD_ALL;
 /** Mọi thẻ mùa (mùa thường và mùa của nhánh kỳ dị), host nối vào kho major (Task 7). */
 export const SEASON_STORYLETS = [...SEASONS, ...WEIRD.map((b) => b.season)].flatMap(compileSeasonFn);
-export { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TONE_PRESSURE, pressureFor, type CodexMap } from "./codexPlants.ts";
+export { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, ABS_SEASON_IDS, TONE_PRESSURE, ABSURD_KY, pressureFor, type CodexMap } from "./codexPlants.ts";

@@ -1,9 +1,9 @@
 /** Kiểm thử lớp canon event / Mùa (narrative/canon). Chạy: node --experimental-strip-types src/canon-test.ts */
-import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
+import { createRng, AXES, NEMESIS_AT, nemesisOf, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
-import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, isDurable, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
+import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, isDurable, seasonKitFromNames, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
 import { SEASONS_NORMAL } from "./engine/narrative/canon/seasons/index.ts";
-import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, CANON_SEEDS } from "./engine/index.ts";
+import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, ABS_SEASON_IDS, WEIRD, ABSURD_KY, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, CANON_SEEDS } from "./engine/index.ts";
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
 import { actorRole, ELEVATED_SEEDS } from "./engine/narrative/turning/kit.ts";
 
@@ -23,18 +23,29 @@ const P = (p: Partial<Record<Axis, number>>): Record<Axis, number> => ({ tien: 0
 
 /* ---- pressure ---- */
 ok(eq(AXES, ["tien", "tinh", "mau", "danh", "luat", "than", "dat", "ky"]), "thứ tự 8 trục");
-ok(eq(basePressure({ family_wealth: 0.1, gdp: 3000, sibling: true, rural: true }), { tien: 3, tinh: 0, mau: 1, danh: 0, luat: 0, than: 0, dat: 2, ky: 1 }), "nền nghèo nông thôn nước nghèo");
+ok(eq(basePressure({ family_wealth: 0.1, gdp: 3000, sibling: true, rural: true }), { tien: 3, tinh: 0, mau: 1, danh: 0, luat: 0, than: 0, dat: 2, ky: 2 }), "nền nghèo nông thôn nước nghèo");
 ok(basePressure({ family_wealth: 0.8, gdp: 50000, sibling: false, rural: false }).mau === 3, "nhà giàu");
 ok(eq(pressureOf({ pressure: { danh: 2 }, money: -0.5 }), { danh: 2 }), "pressure khai báo thắng phần suy ra");
 ok(pressureOf({ money: -0.2 }).tien === 1 && pressureOf({ custom: "borrow:0.3" }).tien === 1, "mất tiền/vay → Tiền");
 ok(pressureOf({ secret: { tag: "PAID_BRIBE", severity: 0.5, fuse_years: [3, 9] } }).mau === 1, "bí mật → Máu mủ");
 ok(pressureOf({ custom: "migrate_now" }).dat === 1 && pressureOf({ health: -8 }).than === 1, "di cư → Đất, sức khỏe → Thân");
 ok(dueAxis(ctx({ age: 30, pressure: P({ tien: 11, tinh: 12 }) })) === "tinh", "trục cao nhất vượt ngưỡng");
+ok(dueAxis(ctx({ age: 20, pressure: P({ tien: 8 }) })) === "tien" && dueAxis(ctx({ age: 20, pressure: P({ tien: 7 }) })) === null, "ngưỡng 8");
+ok(dueAxis(ctx({ age: 20, pressure: P({ luat: 3 }) })) === "luat" && dueAxis(ctx({ age: 20, pressure: P({ luat: 2 }) })) === null, "AXIS_GAIN: Luật ×3");
+ok(dueAxis(ctx({ age: 20, pressure: P({ tien: 9, danh: 5 }) })) === "danh", "AXIS_GAIN: Danh 5 × 2 thắng Tiền 9");
+ok(dueAxis(ctx({ age: 20, flags: new Set(["canon_ax_tien@12"]), canon_n: 1, last_canon_age: 12, pressure: P({ tien: 11 }) })) === null
+  && dueAxis(ctx({ age: 20, flags: new Set(["canon_ax_tien@12"]), canon_n: 1, last_canon_age: 12, pressure: P({ tien: 12 }) })) === "tien", "AXIS_FATIGUE: trục đã nổ một lần phải vượt 8 + 4");
+ok(dueAxis(ctx({ age: 20, weird: 1, pressure: P({ ky: 8 }) })) === null && dueAxis(ctx({ age: 20, weird: 1, pressure: P({ ky: 9 }) })) === "ky", "Kỳ giữ ngưỡng 10 (9 × 1.2)");
+ok(dueAxis(ctx({ age: 20, weird: 1, pressure: P({ ky: 8, tien: 8 }) })) === "tien", "Kỳ cao nhất nhưng chưa tới ngưỡng riêng → trục khác đạt ngưỡng nổ");
 ok(dueAxis(ctx({ age: 30, last_canon_age: 25, pressure: P({ tien: 20 }) })) === null, "cách < 8 năm");
-ok(dueAxis(ctx({ age: 35, canon_n: 0, pressure: P({ dat: 3 }) })) === "dat", "ép nổ lần đầu ở 35");
+ok(dueAxis(ctx({ age: 25, canon_n: 0, pressure: P({ dat: 3 }) })) === "dat" && dueAxis(ctx({ age: 24, canon_n: 0, pressure: P({ dat: 3 }) })) === null, "ép nổ lần đầu ở 25");
 ok(dueAxis(ctx({ age: 60, canon_n: 1, last_canon_age: 40, pressure: P({ than: 2 }) })) === "than", "ép nổ lần hai ở 60");
 ok(dueAxis(ctx({ age: 40, canon_n: 4, pressure: P({ tien: 30 }) })) === null, "tối đa 4");
-ok(dueAxis(ctx({ age: 30, weird: 0, pressure: P({ ky: 40 }) })) === null, "Độ điên 0: Kỳ không nổ");
+ok(dueAxis(ctx({ age: 40, canon_n: 1, last_canon_age: 30, season: "ngoi_sao", pressure: P({ tien: 30 }) })) === null, "đang trong mùa: chờ chung kết");
+ok(dueAxis(ctx({ age: 40, canon_n: 1, last_canon_age: 30, season: null, pressure: P({ tien: 30 }) })) === "tien", "hết mùa: nổ lại được");
+ok(dueAxis(ctx({ age: 60, canon_n: 1, last_canon_age: 45, season: "ngoi_sao", pressure: P({ than: 2 }) })) === "than", "ép nổ lần hai ở 60 cắt mùa đang chạy");
+ok(dueAxis(ctx({ age: 61, canon_n: 2, last_canon_age: 50, season: "ngoi_sao", pressure: P({ tien: 30 }) })) === null, "đủ 2 rồi: không ép, chờ mùa");
+ok(dueAxis(ctx({ age: 20, weird: 0, pressure: P({ ky: 40 }) })) === null, "Độ điên 0: Kỳ không nổ");
 ok(dueAxis(ctx({ age: 30, weird: 2, pressure: P({ ky: 6 }) })) === "ky", "Điên: Kỳ ×2");
 /* Độ điên 0 trên đường ép nổ: Kỳ bị loại hẳn khỏi so sánh */
 ok(dueAxis(ctx({ age: 35, canon_n: 0, weird: 0, pressure: P({ ky: 40 }) })) === "tien", "ép nổ, Độ điên 0, chỉ Kỳ cao → tien");
@@ -52,6 +63,12 @@ ok(strongestPlant([pl("debt", "a", 3, 30), pl("debt", "b", 3, 22), pl("debt", "c
 ok(plantFlag({ kind: "object", key: "dong_ho" }) === "plant:object:dong_ho", "plantFlag");
 const sc = (over: Partial<FactContext>): FactContext => { const o = ctx({ cast: {}, opinion: {}, asset_names: {}, job: "", debt: 0, ...over }); if (!over.nemesis) delete o.nemesis; return o; };
 ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống");
+/* nemesisOf: người sống có ý kiến thấp nhất, ≤ NEMESIS_AT; hòa thì id nhỏ hơn; người không còn trong c.cast bị bỏ qua */
+ok(NEMESIS_AT === -0.5, "NEMESIS_AT");
+ok(nemesisOf({ cast: { rival: "n2", bully: "n3" }, opinion: { n2: -0.6, n3: -0.9, n9: -1 } }) === "n3", "nemesisOf: thấp nhất trong người còn sống");
+ok(nemesisOf({ cast: { rival: "n2", bully: "n3" }, opinion: { n2: -0.7, n3: -0.7 } }) === "n2", "nemesisOf: hòa → id nhỏ hơn");
+ok(nemesisOf({ cast: { rival: "n2" }, opinion: { n2: -0.49 } }) === undefined && nemesisOf({ cast: { rival: "n2" }, opinion: { n2: -0.5 } }) === "n2", "nemesisOf: ngưỡng −0.5");
+ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
 {
   const base = { cast: { mother: "n1", rival: "n2", bully: "n3" }, opinion: { n1: 0.3, n2: -0.8, n3: 0.5 } };
   const c = sc({ ...base, nemesis: "n1" });
@@ -120,6 +137,17 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     trigger: () => ({ title: "Cửa cũ", text: "Cánh cửa mở ra năm khác." }), season: { ...FX, id: "w_ba_mua", weird: "abs" } };
   const gen = (c: FactContext, axis: Axis, plants: Plant[], seed = 7, seeds = [SEED], weird = [W1, W2]) => generateCanon(c, axis, plants, createRng(seed), N, seeds, weird);
 
+  /* ba cửa dẫn tới ba mùa khác nhau khi còn đủ mùa (Task 20) */
+  {
+    const DUP: CanonSeed = { ...SEED, doors: [
+      { kind: "doi_dau", label: () => "A", hint: "a", season: "lam_lai" },
+      { kind: "nhan_toi", label: () => "B", hint: "b", season: "lam_lai" },
+      { kind: "thoa_hiep", label: () => "C", hint: "c", season: "lam_lai" },
+    ] };
+    let bad = 0;
+    for (let k = 1; k <= 20; k++) { const ev = gen(base(), "tien", [debt], k, [DUP], []); if (!ev || new Set(ev.doors.map((d) => d.season)).size !== 3) bad++; }
+    ok(bad === 0, `cửa trùng mùa được thay bằng cửa chung khác mùa (lệch ${bad}/20)`);
+  }
   /* tất định */
   ok(JSON.stringify(gen(base(), "tien", [debt])) === JSON.stringify(gen(base(), "tien", [debt])), "canon: cùng ctx + rng seed → cùng biến cố");
   ok(JSON.stringify(gen(base({ pressure: P({ ky: 9, tien: 12 }) }), "tien", [debt], 3)) === JSON.stringify(gen(base({ pressure: P({ ky: 9, tien: 12 }) }), "tien", [debt], 3)), "canon: tất định cả khi có cửa kỳ dị");
@@ -130,8 +158,13 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     ok(!!s && s.what?.kind === "debt" && (s.fromPlayer ?? 0) >= 1, "fillSlots: plant debt của người chơi điền what");
     ok(s?.who === "cast_creditor", "fillSlots: không có plant người, không nemesis → creditor");
     const s2 = fillSlots(SEED, base({ nemesis: "n2" }), [debt]);
-    ok(s2?.who === "n2" && s2.fromPlayer === 1, "fillSlots: nemesis trước NPC theo vai");
-    const s3 = fillSlots(SEED, base({ nemesis: "n2" }), [debt, pl("person", "ban_cu", 2, 15, { npc: "n1" })]);
+    ok(s2?.who === "cast_creditor", "fillSlots: kẻ thù không mang vai mầm cần (rival ≠ creditor) → không ngồi chỗ who");
+    const RIVAL_OK: CanonSeed = { ...SEED, who: { roles: ["creditor", "rival"], plants: ["person"], required: false } };
+    const s2b = fillSlots(RIVAL_OK, base({ nemesis: "n2" }), [debt]);
+    ok(s2b?.who === "n2" && s2b.fromPlayer === 1, "fillSlots: nemesis trước NPC theo vai (khi mang vai mầm nhận)");
+    const NO_ROLES: CanonSeed = { ...SEED, who: { plants: ["person"], required: false } };
+    ok(fillSlots(NO_ROLES, base({ nemesis: "n2" }), [debt])?.who === "n2", "fillSlots: mầm không khai báo roles nhận kẻ thù ở mọi vai");
+    const s3 = fillSlots(RIVAL_OK, base({ nemesis: "n2" }), [debt, pl("person", "ban_cu", 2, 15, { npc: "n1" })]);
     ok(s3?.who === "n1" && s3.fromPlayer === 2, "fillSlots: plant người của người chơi thắng nemesis");
     const s4 = fillSlots(SEED, base({ asset_names: { house: "căn nhà gỗ" }, owns: new Set(["house"]) }), []);
     ok(s4?.what?.kind === "asset" && s4.what.label === "căn nhà gỗ" && s4.fromPlayer === 0, "fillSlots: không plant → tài sản");
@@ -247,7 +280,9 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     const hL = eL?.doors[0]?.hint ?? "";
     ok(hL.length > 0 && hL.length <= 70 && hL.endsWith("…"), "canon: hint kỳ dị tự sinh bị kẹp ≤ 70, kết bằng …");
     const eH = gen(base({ pressure: P({ ky: 12 }) }), "ky", [debt], 1, [SEED], [{ ...LONG, hint: "Một gợi ý riêng" }]);
-    ok(eH?.doors[0]?.hint === "Một gợi ý riêng", "canon: WeirdBranch.hint được dùng khi có");
+    ok(eH?.doors[0]?.hint === "Viễn tưởng: Một gợi ý riêng", "canon: WeirdBranch.hint được dùng khi có, kèm tiền tố Viễn tưởng");
+    const eP = gen(base({ pressure: P({ ky: 12 }) }), "ky", [debt], 1, [SEED], [{ ...LONG, hint: "Phi lý: đã có tiền tố" }]);
+    ok(eP?.doors[0]?.hint === "Phi lý: đã có tiền tố", "canon: hint đã có tiền tố thì giữ nguyên");
     ok(playedFlag("lam_lai") === "season_played_lam_lai", "playedFlag");
 
     ok(JSON.stringify(gen(base({ pressure: P({ ky: 12 }) }), "ky", [], 4, [], [W1, W2, W3])) === JSON.stringify(gen(base({ pressure: P({ ky: 12 }) }), "ky", [], 4, [], [W1, W2, W3])), "canon: trục ky tất định");
@@ -287,7 +322,10 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
   ok(planted.every(([, v]) => v.plant!.label === v.plant!.label.trim() && !/[{}]/.test(v.plant!.label)), "label sạch");
   const tagged = Object.keys(CODEX_SEASON_TAGS);
   ok(tagged.length >= 80, `≥ 80 fork có tag mùa (có ${tagged.length})`);
-  ok(Object.values(CODEX_SEASON_TAGS).every((t) => t.length >= 1 && t.every((id) => NORMAL_SEASON_IDS.includes(id))), "tag chỉ dùng mùa thường");
+  ok(Object.values(CODEX_SEASON_TAGS).every((t) => t.length >= 1 && t.every((id) => NORMAL_SEASON_IDS.includes(id) || ABS_SEASON_IDS.includes(id))), "tag chỉ dùng mùa thường hoặc mùa phi lý");
+  ok(ABS_SEASON_IDS.length === 50 && ABS_SEASON_IDS.every((id) => WEIRD.some((b) => b.kind === "abs" && b.season.id === id)), "50 id mùa phi lý là mùa thật của nhánh abs");
+  ok(Object.entries(CODEX_SEASON_TAGS).every(([f, t]) => !t.some((id) => ABS_SEASON_IDS.includes(id)) || f.startsWith("tp_a")), "chỉ thẻ phi lý tp_a* gắn mùa phi lý");
+  ok(Array.from({ length: 50 }, (_, i) => "tp_a" + String(i + 1).padStart(2, "0")).every((f) => ABS_SEASON_IDS.every((id) => CODEX_SEASON_TAGS[f]?.includes(id))), "mọi tp_a* là cảnh phụ của mọi mùa phi lý");
   ok(eq(NORMAL_SEASON_IDS, ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"]), "5 id mùa thường");
   ok(tagged.every((k) => TURNING_CATALOG.some((d) => d.id === k)), "mọi khóa tag là fork thật");
 
@@ -304,7 +342,7 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     d.routes.forEach((b, i) => {
       const key = d.id + "_" + i, fx = view.choices[i]!.effects, cx = CODEX_PLANTS[key];
       const want: Partial<Record<Axis, number>> = { ...TONE[b.tone] };
-      if (d.id.startsWith("tp_a")) want.ky = (want.ky ?? 0) + 2;
+      if (d.id.startsWith("tp_a")) want.ky = (want.ky ?? 0) + ABSURD_KY;
       if (!eq(fx.pressure, cx?.pressure ?? want)) pressureBad++;
       const echo = ids.has(d.id + "_echo_" + i);
       if (cx?.plant) {
@@ -501,6 +539,78 @@ ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống"
     }
     ok(good >= 30, `kho mầm, trục ${ax}: ${good}/50 ra biến cố 3 cửa`);
   }
+  /* chữ "trước mặt cả nhà" chỉ khi người ở chỗ who là người trong nhà (Task 20, chơi thử 21b: hàng xóm, bạn thuở nhỏ, đối thủ) */
+  {
+    const FAMILY_ONLY = /cả nhà ngồi lại|hỏi thẳng [^|]*trước mặt cả nhà|đặt lên bàn ba bản di chúc/i;
+    let leaks = 0, famSeen = 0, leakEx = "";
+    for (const id of ["phan_boi", "ve_xa", "di_chuc"]) {
+      const sd = CANON_SEEDS.find((x) => x.id === id)!;
+      for (const role of ["childhood_friend", "neighbor", "rival", "partner", "sibling"] as const) for (let i = 0; i < 40; i++) {
+        const c = ctx({ age: 30, independent: true, kids_alive: 0, flags: new Set(), cast: { [role]: "n_ai" }, roles: { n_ai: [role] }, opinion: { n_ai: 0.2 }, asset_names: {}, owns: new Set() });
+        delete c.nemesis; c.pressure = P({ [sd.axes[0]!]: 12 });
+        const plants: Plant[] = [{ kind: "person", key: "nguoi", label: "người quen cũ", npc: "n_ai", age: 20, weight: 3 }];
+        const ev = generateCanon(c, sd.axes[0]!, plants, createRng(700 + i), names("Phố Mới"), [sd], []);
+        if (!ev || ev.slots.who !== "n_ai") continue;
+        const all = [ev.title, ev.text, ...ev.doors.map((d) => d.label + " " + d.hint)].join(" | ");
+        if (role === "sibling") { if (FAMILY_ONLY.test(all)) famSeen++; }
+        else if (FAMILY_ONLY.test(all)) { leaks++; if (!leakEx) leakEx = `${id}/${role}: ${all}`; }
+      }
+    }
+    ok(leaks === 0, `chữ "cả nhà" với người ngoài nhà ở chỗ who: ${leaks} (vd. ${leakEx})`);
+    ok(famSeen > 0, "người trong nhà vẫn có câu “trước mặt cả nhà”");
+  }
+  /* ba cửa ra ba mùa khác nhau mỗi khi đời này còn đủ ba mùa mở (Task 20, phát hiện khi chơi thử 21b: hai cửa cùng vào vu_an_gia_toc).
+     42 000 lần gọi: randomCtx, mọi trục, Độ điên 0/1/2, 0–2 mùa đã chơi, cả kho mầm và 100 nhánh kỳ dị. */
+  {
+    const NORMAL = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], INDEP = new Set(["tron_chay", "xu_nguoi", "lam_lai"]);
+    const rr = createRng(4242);
+    let calls = 0, built = 0, dup = 0, example = "", hintBad = 0, hintEx = "";
+    for (let i = 0; i < 42000; i++) {
+      const c = randomCtx(rr); c.weird = (i % 3) as 0 | 1 | 2; calls++;
+      const played = new Set<string>(); for (let k = rr.int(3); k > 0; k--) played.add(rr.pick(NORMAL));
+      c.flags = new Set([...c.flags, ...[...played].map(playedFlag)]);
+      const ax = AXES[i % AXES.length]!; c.pressure = P({ [ax]: 12, ky: (i >> 3) % 9 });
+      const ev = generateCanon(c, ax, c.plants, createRng(9000 + i), names("Phố Mới"), CANON_SEEDS, WEIRD);
+      if (!ev) continue;
+      built++;
+      for (const d of ev.doors) if (d.weird && !(/^(Viễn tưởng|Phi lý): /.test(d.hint) && !d.hint.endsWith("…"))) { hintBad++; if (!hintEx) hintEx = `${d.weird}: ${d.hint}`; }
+      const open = NORMAL.filter((s) => !played.has(s) && (c.independent || !INDEP.has(s)) && (s !== "xu_nguoi" || c.can_migrate));
+      const distinct = new Set(ev.doors.map((d) => d.season)).size;
+      if (distinct < Math.min(3, ev.doors.length, open.length)) { dup++; if (!example) example = `${ev.id}: ${ev.doors.map((d) => d.season).join(", ")} (mở: ${open.join(", ")})`; }
+    }
+    ok(calls === 42000 && built > 20000, `cửa khác mùa: dựng được ${built}/42000 biến cố`);
+    ok(hintBad === 0, `hint cửa kỳ dị có tiền tố Viễn tưởng/Phi lý và không bị cắt (lệch ${hintBad}, vd. ${hintEx})`);
+    ok(dup === 0, `cửa khác mùa: ${dup} biến cố có hai cửa cùng mùa dù còn đủ mùa mở (vd. ${example})`);
+  }
+}
+
+/* ngoi_sao: chung kết cưới đúng "người hâm mộ số một" của mùa bằng marry:<tên>, chỉ khi đã quen người ấy và chưa có vợ/chồng
+   (Task 20, chơi thử 21b: "marry" trơn rút trúng tên người bạn đời cũ). */
+{
+  const NS = SEASONS_NORMAL.find((d) => d.id === "ngoi_sao")!;
+  const k = seasonKitFromNames(NS, (id) => (id === "npc:fan" ? "Lụa" : id.startsWith("npc:") ? "Người mới" : ""), 0);
+  const kNoFan = seasonKitFromNames(NS, () => "", 0);
+  const marryOf = (cc: FactContext, kk: typeof k) => NS.beats[4].flatMap((b) => b.build(cc, kk).choices).map((ch) => ch.effects.custom ?? "").filter((x) => /(^|\|)marry/.test(x));
+  const base = { age: 35, debt: 0, flags: new Set(["ns_quen_fan"]), counters: {} };
+  const m1 = marryOf(ctx({ ...base, married: false }), k);
+  ok(m1.length > 0 && m1.every((x) => x.split("|").includes("marry:Lụa")), `ngoi_sao: cưới bằng marry:<tên người hâm mộ> (${m1.join(" ; ")})`);
+  ok(marryOf(ctx({ ...base, married: true }), k).length === 0, "ngoi_sao: đã có vợ/chồng thì không có chung kết cưới");
+  ok(marryOf(ctx({ ...base, married: false, flags: new Set() }), k).length === 0, "ngoi_sao: chưa quen người hâm mộ thì không có chung kết cưới");
+  ok(marryOf(ctx({ ...base, married: false }), kNoFan).length === 0, "ngoi_sao: người hâm mộ không còn thì không có chung kết cưới");
+}
+
+/* Chơi thử 21b (Task 20): X33 dùng ngoặc kép “ ” chứ không dùng " ; tên mùa X22 không gắn một tuổi cố định (mở từ 25 đến 45 tuổi) */
+{
+  const x33 = WEIRD.find((b) => b.id === "X33")!, x22 = WEIRD.find((b) => b.id === "X22")!;
+  const k = seasonKitFromNames(x33.season, () => "", 0);
+  const texts: string[] = [x33.door({ noi: "Phố Mới", fromPlayer: 0 }, ctx({ age: 30 }), (x) => x), x33.trigger({ noi: "Phố Mới", fromPlayer: 0 }, ctx({ age: 30 }), (x) => x).text,
+    ...x33.season.gag.lines, ...x33.season.landings.map((l) => l.line)];
+  for (const married of [false, true]) for (const beat of x33.season.beats) for (const b of beat) {
+    const v = b.build(ctx({ age: 30, married, flags: new Set(["x33_ban_chu"]), counters: { x33_khong: 2 } }), k);
+    texts.push(v.title, v.text, ...v.choices.flatMap((ch) => [ch.label, ch.hint ?? ""]));
+  }
+  ok(texts.every((t) => !t.includes('"')), `X33: không còn ngoặc kép thẳng (${texts.filter((t) => t.includes('"')).slice(0, 2).join(" | ")})`);
+  ok(!/\d/.test(x22.season.vn), `X22: tên mùa không gắn tuổi cố định («${x22.season.vn}»)`);
 }
 
 /* R20: chung kết cưới một người có tên vẫn là thay đổi bền */

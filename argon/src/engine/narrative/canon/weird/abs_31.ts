@@ -182,16 +182,16 @@ const X32 = weird("X32", "abs", ["dat", "tien"],
 const L33_MC = land("mc_chu_khong", "Bạn thành MC của chương trình hỏi đáp mà mọi câu trả lời đều là không. Khán giả gọi đó là sự thật thà hiếm hoi trên sóng.", { custom: "become:tv_host", happy: 4 });
 const L33_GIAM_KHAO = land("giam_khao_chuyen_nghiep", "Bạn được mời làm trọng tài, giám khảo ở mọi cuộc thi cần một người dám nói không.", { custom: "become:referee", happy: 3 }); // gần nhất: nghề giám khảo
 const L33_SACH = land("sach_mot_van_chu_khong", "Cuốn sách của bạn chỉ có một chữ lặp lại suốt ba trăm trang, và nó bán chạy.", { custom: "become:writer", happy: 3 });
-const L33_CO = land("chu_co_dau_tien", "Lần đầu tiên sau bao nhiêu năm, bạn nói \"có\", với một lời cầu hôn.", { custom: "marry", happy: 8 });
+const L33_CO = land("chu_co_dau_tien", "Lần đầu tiên sau bao nhiêu năm, bạn nói “có”, với một lời cầu hôn.", { custom: "marry", happy: 8 });
 const L33_TIEN = land("ban_ky_luc", "Bạn bán quyền dùng chữ không của mình cho một hãng quảng cáo, đủ sống thoải mái vài năm.", { money: 2, happy: -2 });
 const L33_DI = land("thi_tran_khong_ai_hoi", "Bạn nói không với mọi lời mời và dọn đến một thị trấn nhỏ, nơi không ai hỏi bạn câu gì.", { custom: "move_city", happy: 4 });
 
 const X33 = weird("X33", "abs", ["danh", "ky"],
   (c) => c.age >= 18 && c.age <= 68 && (anyFlag(c, ["temper_tough", "temper2_tough"]) || c.traits.coop <= -2),
-  () => "Nói \"không\" thêm một lần nữa, trước đám đông",
+  () => "Nói “không” thêm một lần nữa, trước đám đông",
   (s) => ({
     title: "Kỷ lục chữ không",
-    text: `Một người cầm sổ đã đi theo bạn ba tháng, đếm từng chữ "không". Sáng nay ông ta đứng giữa ${s.noi || "chợ"}, giơ cao tờ giấy chứng nhận: chín nghìn tám trăm lẻ hai lần, nhiều nhất từng được ghi lại. "Bạn có đồng ý nhận danh hiệu này không?" Cả chợ nín thở chờ câu trả lời.`,
+    text: `Một người cầm sổ đã đi theo bạn ba tháng, đếm từng chữ “không”. Sáng nay ông ta đứng giữa ${s.noi || "chợ"}, giơ cao tờ giấy chứng nhận: chín nghìn tám trăm lẻ hai lần, nhiều nhất từng được ghi lại. “Bạn có đồng ý nhận danh hiệu này không?” Cả chợ nín thở chờ câu trả lời.`,
   }),
   season({
     id: "w_X33", vn: "Người nói Không", color: "#e8a33d", years: [5, 9], weird: "abs",
@@ -200,8 +200,8 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
     gag: { key: "chu_khong", lines: [
       "Ông đếm chữ gạch thêm một vạch vào sổ, lẩm bẩm con số mới như đọc bảng cửu chương.",
       "Một đứa trẻ hỏi bạn có muốn ăn kẹo không. Bạn nói không. Cả xóm vỗ tay.",
-      "Bạn lỡ nói \"có\" trong mơ. Sáng hôm sau ông đếm chữ hỏi lại ba lần cho chắc.",
-      "Người ta in chữ \"không\" của bạn lên áo phông, bán chạy hơn mọi áo có chữ \"có\".",
+      "Bạn lỡ nói “có” trong mơ. Sáng hôm sau ông đếm chữ hỏi lại ba lần cho chắc.",
+      "Người ta in chữ “không” của bạn lên áo phông, bán chạy hơn mọi áo có chữ “có”.",
     ] },
     landings: [L33_MC, L33_GIAM_KHAO, L33_SACH, L33_CO, L33_TIEN, L33_DI],
     beats: [
@@ -210,16 +210,16 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
         card("x33_mo_bi_ngo", "Giám khảo hội thi bí ngô", (c, k) => `Hội thi bí ngô to nhất vùng mời bạn làm giám khảo, với một nhiệm vụ duy nhất: nói không với mọi quả bí. Một trăm hai mươi quả xếp hàng, mỗi quả có một người chủ đang run. Hội kỷ lục gửi kèm giấy báo: người giữ danh hiệu được trả một khoản nhỏ mỗi năm, miễn chữ không vẫn còn được đếm. ${k.gag()}`,
           [C("Nhận lời, nói không cả trăm lần", { money: 0.1, counters: { x33_khong: 1 }, flags: ["x33_giam_khao"] }, "Có tiền công, mất một trăm hai mươi người quen"),
            C("Từ chối lời mời", { happy: 1, counters: { x33_khong: 1 }, flags: ["x33_tu_choi_moi"] }, "Đúng chất, và chính lời từ chối lên báo")]),
-        card("x33_mo_bua_com", "Bữa cơm không có chữ có", (c, k) => `Cả nhà biến bữa cơm thành một cuộc thử: ai cũng hỏi bạn những câu chỉ có thể trả lời là có. "Ăn thêm bát nữa không?" ${cap(k.npc("nguoi_dem"))} ngồi ở đầu bàn, bút đã mở nắp.`,
+        card("x33_mo_bua_com", "Bữa cơm không có chữ có", (c, k) => `Cả nhà biến bữa cơm thành một cuộc thử: ai cũng hỏi bạn những câu chỉ có thể trả lời là có. “Ăn thêm bát nữa không?” ${cap(k.npc("nguoi_dem"))} ngồi ở đầu bàn, bút đã mở nắp.`,
           (c) => [C("Giữ kỷ lục, kể cả ở nhà", { rel: -3, counters: { x33_khong: 1 }, flags: ["x33_cung_ca_nha"] }, "Kỷ lục nguyên vẹn, bữa cơm nguội ngắt"),
-           C("Nói \"có\" với người nhà, một lần thôi", { rel: 3, flags: ["x33_co_voi_nha"], ...momTrust(c, 0.1) }, "Ấm cả nhà, ông đếm chữ ghi chú bên lề")]),
+           C("Nói “có” với người nhà, một lần thôi", { rel: 3, flags: ["x33_co_voi_nha"], ...momTrust(c, 0.1) }, "Ấm cả nhà, ông đếm chữ ghi chú bên lề")]),
       ],
       /* khoi_dong */
       [
-        card("x33_kd_show", "Chương trình làm bạn gật đầu", (c, k) => `${cap(k.npc("nha_san_xuat"))} mang tới một kịch bản: mỗi tập, một người lạ tìm mọi cách khiến bạn nói "có". Ai thắng sẽ được một chiếc xe máy, còn bạn được trả theo số chữ không. ${f(c, "x33_co_voi_nha") ? "Cô đã nghe chuyện bữa cơm hôm nọ và coi đó là điểm yếu." : "Cô tin bạn là người duy nhất trên đời không có điểm yếu."}`,
+        card("x33_kd_show", "Chương trình làm bạn gật đầu", (c, k) => `${cap(k.npc("nha_san_xuat"))} mang tới một kịch bản: mỗi tập, một người lạ tìm mọi cách khiến bạn nói “có”. Ai thắng sẽ được một chiếc xe máy, còn bạn được trả theo số chữ không. ${f(c, "x33_co_voi_nha") ? "Cô đã nghe chuyện bữa cơm hôm nọ và coi đó là điểm yếu." : "Cô tin bạn là người duy nhất trên đời không có điểm yếu."}`,
           [C("Ký hợp đồng mười tập", { money: 0.4, counters: { x33_khong: 2 }, flags: ["x33_show"] }, "Tiền về đều, đời bạn thành một trò chơi"),
            C("Từ chối chương trình", { counters: { x33_khong: 1 }, flags: ["x33_tu_choi_show"] }, "Giữ đời mình, mất một khoản tiền đều"),
-           C("Đòi được nói \"có\" một lần mỗi tập", { flags: ["x33_doi_dieu_khoan"] }, "Khán giả bớt hứng, bạn giữ được mình", { tier: "sovereign" })]),
+           C("Đòi được nói “có” một lần mỗi tập", { flags: ["x33_doi_dieu_khoan"] }, "Khán giả bớt hứng, bạn giữ được mình", { tier: "sovereign" })]),
         card("x33_kd_thach_dau", "Kẻ thách đấu từ vùng bên", (c, k) => `Một người ở vùng bên tuyên bố mình mới là vua chữ không, và thách bạn đấu tay đôi trước chợ: hai người hỏi nhau đến khi một người gật đầu. ${k.gag()}`,
           [C("Nhận lời đấu", { gamble: { p: 0.5, win: { happy: 4, counters: { x33_khong: 3 }, flags: ["x33_thang_dau"], log: "Đối thủ gật đầu ở câu thứ bốn trăm, vì buồn ngủ." }, lose: { happy: -4, flags: ["x33_thua_dau"], log: "Bạn lỡ gật đầu khi có người hỏi giờ." } } }, "Thắng thì thành huyền thoại, thua thì thành trò cười"),
            C("Lờ đi, nói không với cả lời thách", { counters: { x33_khong: 1 }, flags: ["x33_lo_di"] }, "Giữ được danh, bị đồn là sợ")]),
@@ -227,26 +227,26 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
       /* cu_lat */
       [
         card("x33_cl_cau_hoi", "Câu hỏi không thể nói không", (c, k) => `Giữa buổi ghi hình ${f(c, "x33_show") ? "tập thứ bảy của chương trình" : "một chương trình địa phương"}, ${k.scar("nguoi") || "một người quen cũ"} bước lên sân khấu và hỏi đúng một câu: bạn còn giữ ${doTail(k, "món đồ năm xưa")}, hay không. Câu trả lời thật là còn. Nói không lúc này là nói dối trước mặt mọi người đang xem.`,
-          [C("Nói \"có\" trước ống kính", { happy: 5, rel: 3, counters: { x33_khong: -5 }, flags: ["x33_noi_co"] }, "Mất kỷ lục, được lại một người"),
-           C("Nói \"không\", dù sai sự thật", { happy: -3, counters: { x33_khong: 1 }, flags: ["x33_noi_doi"] }, "Giữ kỷ lục bằng một lời nói dối")]),
+          [C("Nói “có” trước ống kính", { happy: 5, rel: 3, counters: { x33_khong: -5 }, flags: ["x33_noi_co"] }, "Mất kỷ lục, được lại một người"),
+           C("Nói “không”, dù sai sự thật", { happy: -3, counters: { x33_khong: 1 }, flags: ["x33_noi_doi"] }, "Giữ kỷ lục bằng một lời nói dối")]),
       ],
       /* day */
       [
-        card("x33_day_mat_giong", "Mất giọng trước trận chung kết", (c, k) => `Một tuần trước đêm chung kết, bạn mất giọng hoàn toàn. Bác sĩ hỏi: "Có đau không?" Bạn chỉ còn cách lắc đầu. ${cap(k.npc("nguoi_dem"))} cãi nhau với ban tổ chức suốt ba tiếng xem cái lắc đầu có được tính không. ${k.gag()}`,
+        card("x33_day_mat_giong", "Mất giọng trước trận chung kết", (c, k) => `Một tuần trước đêm chung kết, bạn mất giọng hoàn toàn. Bác sĩ hỏi: “Có đau không?” Bạn chỉ còn cách lắc đầu. ${cap(k.npc("nguoi_dem"))} cãi nhau với ban tổ chức suốt ba tiếng xem cái lắc đầu có được tính không. ${k.gag()}`,
           [C("Lắc đầu thay chữ không suốt mùa", { counters: { x33_khong: 1 }, flags: ["x33_lac_dau"] }, "Kỷ lục còn, cổ bạn thì mỏi"),
            C("Nghỉ hẳn một mùa cho lành giọng", { health: 5, money: -0.2, flags: ["x33_nghi"] }, "Khỏe lại, kỷ lục đứng yên")]),
-        card("x33_day_quang_cao", "Hợp đồng chỉ cần một chữ có", (c, k) => `Một hãng nệm đề nghị một khoản tiền bằng hơn nửa năm thu nhập, đổi lấy một câu quảng cáo dài đúng một chữ: "Có." ${f(c, "x33_noi_co") ? "Bạn đã từng nói có một lần trên sóng, nên họ tin lần này cũng được." : "Họ nói chữ có đầu tiên của bạn sẽ là chữ có đắt nhất lịch sử."}`,
-          [C("Nói \"có\", lấy tiền", { money: 0.6, counters: { x33_khong: -3 }, flags: ["x33_ban_chu"] }, "Giàu lên, danh hiệu thành chuyện cười"),
+        card("x33_day_quang_cao", "Hợp đồng chỉ cần một chữ có", (c, k) => `Một hãng nệm đề nghị một khoản tiền bằng hơn nửa năm thu nhập, đổi lấy một câu quảng cáo dài đúng một chữ: “Có.” ${f(c, "x33_noi_co") ? "Bạn đã từng nói có một lần trên sóng, nên họ tin lần này cũng được." : "Họ nói chữ có đầu tiên của bạn sẽ là chữ có đắt nhất lịch sử."}`,
+          [C("Nói “có”, lấy tiền", { money: 0.6, counters: { x33_khong: -3 }, flags: ["x33_ban_chu"] }, "Giàu lên, danh hiệu thành chuyện cười"),
            C("Nói không với cả đống tiền", { happy: 2, counters: { x33_khong: 2 }, flags: ["x33_liem_chinh"] }, "Nghèo nhưng thẳng, người ta nể bạn thật")]),
       ],
       /* chung_ket */
       [
-        card("x33_ket", "Lễ trao danh hiệu cuối cùng", (c, k) => `Ông đếm chữ đọc tổng kết: ${dots(9802 + 1000 * n(c, "x33_khong"))} chữ không. ${k.gag()} ${cap(noOr(c, k))} vẫn chờ một câu trả lời từ nhiều năm nay. ${f(c, "x33_ban_chu") ? "Trên tấm bảng quảng cáo phía sau, gương mặt bạn đang nói \"có\"." : "Khán phòng im lặng chờ bạn nói chữ cuối cùng của mùa."} Có ba lời mời đang nằm trên bàn.`,
+        card("x33_ket", "Lễ trao danh hiệu cuối cùng", (c, k) => `Ông đếm chữ đọc tổng kết: ${dots(9802 + 1000 * n(c, "x33_khong"))} chữ không. ${k.gag()} ${cap(noOr(c, k))} vẫn chờ một câu trả lời từ nhiều năm nay. ${f(c, "x33_ban_chu") ? "Trên tấm bảng quảng cáo phía sau, gương mặt bạn đang nói “có”." : "Khán phòng im lặng chờ bạn nói chữ cuối cùng của mùa."} Có ba lời mời đang nằm trên bàn.`,
           (c) => pick(
             pathOpen("tv_host", c.age) ? ending(L33_MC, "Nhận làm MC chương trình hỏi đáp", "Lên sóng mỗi tối, nói không có lương") : undefined,
             pathOpen("referee", c.age) ? ending(L33_GIAM_KHAO, "Làm giám khảo chuyên nghiệp", "Nghề của người dám làm mất lòng")
               : pathOpen("writer", c.age) ? ending(L33_SACH, "Viết sách về một vạn chữ không", "Một chữ, ba trăm trang, cả đời") : undefined,
-            !c.married ? ending(L33_CO, "Nói \"có\" với lời cầu hôn", "Mất kỷ lục, được một mái nhà") : undefined,
+            !c.married ? ending(L33_CO, "Nói “có” với lời cầu hôn", "Mất kỷ lục, được một mái nhà") : undefined,
             ending(L33_TIEN, "Bán quyền chữ không của mình", "Giàu lên, chữ không không còn là của bạn"),
             ending(L33_DI, "Nói không với tất cả, dọn đi nơi khác", "Yên tĩnh, không còn ai đếm"))),
       ],

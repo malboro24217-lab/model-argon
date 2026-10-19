@@ -1,6 +1,6 @@
 const fs=require('fs'), assert=require('assert');
 eval(fs.readFileSync(__dirname+'/.head.js','utf8') + `
-const P=createLife(4242,{auto:false}); livingInit(P); P.age=30; P.pending=null; P.storyDue=null;
+const P=createLife(4242,{auto:false}); livingInit(P); P.age=30; P.pending=null; P.storyDue=null; P.lw.canon.last=P.age; // canon event ép nổ từ 25 tuổi (Task 20): đặt như vừa có một cái để năm này chỉ đo hàng đợi
 const card=id=>({id,category:'arc',urgency:82,cooldownYears:99,once:true,tension:1,prerequisites:()=>true,specificity:()=>8,build:()=>({title:id,text:'Một cuộc hẹn quay lại.',choices:[{label:'Đón cuộc hẹn',effects:{happy:1}},{label:'Hẹn việc khác',effects:{know:1}}],def:0})});
 pools().major.push(card('queue_test_a'),card('queue_test_b'));
 P.lw.queue=[{at:30,storylet:'queue_test_a'},{at:30,storylet:'queue_test_b'}];

@@ -26,7 +26,7 @@
  */
 import {
   createRng, PATHS, STORYLETS, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, PATH_STORYLETS, TURNING_STORYLETS,
-  SEASONS, SEASON_STORYLETS, BEATS, compileSeason, seasonLength, beatGap, isDurable, seasonKitFromNames, landingOf,
+  SEASONS, SEASON_STORYLETS, BEATS, compileSeason, seasonLength, beatGap, RESET_CASH_KEEP, resetCashDelta, isDurable, seasonKitFromNames, landingOf,
   WEIRD, AXES, fillSlots, generateCanon, canonView, CANON_SEEDS,
   type SeasonDef, type SeasonKit, type FactContext, type Effect, type StoryletView, type CanonSeed, type Plant, type PlantKind, type Slots, type CastRole,
 } from "./engine/index.ts";
@@ -44,8 +44,8 @@ const ALL_SEASONS: SeasonDef[] = [...SEASONS, ...WEIRD.map((b) => b.season)];
 
 /* ------------------------------------------------------------------ kiểm đơn vị */
 
-ok(beatGap(12) === 2, "beatGap(12) === 2");
-ok(beatGap(3) === 1 && beatGap(1) === 1 && beatGap(20) === 4 && beatGap(8) === 2, "beatGap = max(1, round(len/5))");
+ok(beatGap(12) === 3, "beatGap(12) === 3");
+ok(beatGap(3) === 1 && beatGap(1) === 1 && beatGap(20) === 5 && beatGap(8) === 2, "beatGap = max(1, round(len/4))");
 ok(BEATS.join(",") === "mo_man,khoi_dong,cu_lat,day,chung_ket", "5 nhịp đúng thứ tự");
 
 ok(isDurable({ custom: "become:singer" }), "durable: become:");
@@ -62,6 +62,9 @@ const probe: SeasonDef = { ...SEASONS[0]!, years: [8, 20] };
 ok(seasonLength(probe, 30, 0) === 8 && seasonLength(probe, 30, 0.99999) === 20, "seasonLength phủ hai đầu years");
 ok(seasonLength(probe, 75, 0.99999) === 10, "seasonLength kết thúc ≤ 85");
 ok(seasonLength(probe, 83, 0.5) === 5, "seasonLength tối thiểu 5");
+/* resetCashDelta (Task 20): thấp hơn mức đặt lại thì lên thẳng mức đó; cao hơn thì chỉ mất (1 − RESET_CASH_KEEP) phần vượt */
+ok(RESET_CASH_KEEP === 0.5 && resetCashDelta(100, 20) === 80 && resetCashDelta(100, -50) === 150, "resetCashDelta: dưới mức → lên mức");
+ok(resetCashDelta(0, 1000) === -500 && resetCashDelta(200, 1000) === -400 && resetCashDelta(100, 100) === 0, "resetCashDelta: trên mức → giữ một nửa phần vượt");
 
 /* ------------------------------------------------------------------ kiểm từng mùa */
 

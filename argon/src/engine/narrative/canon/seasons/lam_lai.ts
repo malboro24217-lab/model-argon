@@ -38,7 +38,7 @@ export const LAM_LAI: SeasonDef = {
   beats: [
     /* mo_man */
     [
-      card("ll_mo_trang_tay", "Buổi sáng trắng tay", (c, k) => `Bạn thức dậy trong căn phòng trọ mười hai mét vuông, ví còn đúng tiền một bữa sáng. ${c.home_owner ? "Mọi thứ của đời trước đã mất: tiền, những mối làm ăn, và cả cái tên trong danh bạ của nhiều người. Căn nhà cũ vẫn đứng tên bạn, nhưng nó ở lại phía sau, cùng với đời trước." : "Mọi thứ của đời trước đã mất: tiền, chỗ ở, và cả cái tên trong danh bạ của nhiều người."} ${cap(k.npc("ban_phong"))} ngáy to tới mức cửa sổ rung theo nhịp.`,
+      card("ll_mo_trang_tay", "Buổi sáng trắng tay", (c, k) => `Bạn thức dậy trong căn phòng trọ mười hai mét vuông, ví còn đúng tiền một bữa sáng. ${c.home_owner ? "Đời trước đã lùi hết về phía sau: những thói quen, những mối làm ăn, và cả cái tên trong danh bạ của nhiều người. Căn nhà cũ vẫn đứng tên bạn, nhưng nó ở lại phía sau, cùng với đời trước." : "Đời trước đã lùi hết về phía sau: chỗ ở, những thói quen, và cả cái tên trong danh bạ của nhiều người."} ${cap(k.npc("ban_phong"))} ngáy to tới mức cửa sổ rung theo nhịp.`,
         [C("Ăn sáng thật no, rồi tính tiếp", { happy: 3, flags: ["ll_an_no"] }, "Hết tiền, nhưng có sức"),
          C("Nhịn, giữ tiền đi xe tìm việc", { health: -2, flags: ["ll_nhin"], counters: { ll_cham: 1 } }, "Đói, nhưng đi được xa hơn")]),
       card("ll_mo_giay", "Ba trăm chiếc giày trái", (c, k) => `Bạn khuân hàng giúp một xưởng giày đang dọn đi. Xưởng phá sản, ${k.npc("chu_xuong")} trả công bằng thứ duy nhất còn lại: ba trăm chiếc giày, chiếc nào cũng là chiếc trái. ${k.gag()}`,

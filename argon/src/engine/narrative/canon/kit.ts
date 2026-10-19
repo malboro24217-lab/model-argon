@@ -156,6 +156,18 @@ export const land = (id: string, line: string, effects: Effect): Landing => ({ i
 export const ending = (l: Landing, label: string, hint?: string, extra: Partial<Choice> = {}): Choice =>
   C(label, l.effects, hint, extra);
 
+/**
+ * Lựa chọn chung kết cưới một người có tên: thay "marry" bằng "marry:<tên>" (host gắn vai bạn đời cho đúng người trong dàn, R20).
+ * Không có tên thì giữ nguyên effects của landing. (Chuyển từ weird/abs_21.ts sang đây ở Task 20 để mùa thường dùng chung.)
+ */
+export const wed = (l: Landing, label: string, hint: string, name: string | null): Choice => {
+  if (!name) return ending(l, label, hint);
+  const clean = name.replace(/[|:]/g, "").trim();
+  if (!clean) return ending(l, label, hint);
+  const custom = (l.effects.custom ?? "").split("|").map((p) => (p === "marry" ? `marry:${clean}` : p)).join("|");
+  return C(label, { ...l.effects, custom }, hint);
+};
+
 /* ---- Nhánh kỳ dị ---- */
 
 /** Đầu vào của season(): như SeasonDef nhưng `weird` bắt buộc, `rules` và `reset` có thể bỏ (mặc định {}). */

@@ -4,10 +4,11 @@
      laterDiff = % id tình huống về sau của đời gốc không còn xuất hiện trong đời rẽ
      dAge = |Δ tuổi chết|, dNet = |Δ tiền ròng| / thu nhập năm, dDoors+dPaths = số cửa/con đường khác nhau.
    In phân phối theo hạng (lon/vua/bond) và danh sách thẻ dưới chuẩn (lớn < 70%, vừa < 40%). */
-const fs = require('fs');
+import fs from 'node:fs'; // argon/package.json có "type": "module": dùng import, không dùng require
 eval(fs.readFileSync(process.argv[2], 'utf8') + `
 const NL = +(process.argv[3] || 60), PER = +(process.argv[4] || 4);
-const tierOf = id => { const s = [...Argon.FATE, ...Argon.FATE_ECHO].find(x => x.id === id); return s ? (id.startsWith('bond_') ? 'bond' : s.meta.tier) : null; };
+const FATE_ALL = [...(Argon.FATE || []), ...(Argon.FATE_ECHO || [])]; // bản dựng hiện tại không còn xuất Argon.FATE: khi đó không có ngã rẽ nào để đo
+const tierOf = id => { const s = FATE_ALL.find(x => x.id === id); return s ? (id.startsWith('bond_') ? 'bond' : s.meta.tier) : null; };
 const paths = P => [...P.lw.sflags].filter(f => f.startsWith('life_')).sort();
 const rows = [];
 for (let i = 0; i < NL; i++) {
@@ -33,5 +34,5 @@ for (const t of ['lon', 'vua', 'bond']) { const r = rows.filter(x => x.tier === 
 const byId = {}; for (const r of rows) (byId[r.id] = byId[r.id] || []).push(r.laterDiff);
 const bar = { lon: 0.7, vua: 0.4, bond: 0.4 };
 const under = Object.entries(byId).map(([id, v]) => [id, q(v, .5), v.length]).filter(([id, m]) => m < bar[tierOf(id)]).sort((a, b) => a[1] - b[1]);
-console.log(JSON.stringify({ forksMeasured: rows.length, summary, underBar: under.slice(0, 25) }, null, 1));
+console.log(JSON.stringify({ forksMeasured: rows.length, summary, underBar: under.slice(0, 25), note: FATE_ALL.length ? undefined : 'Argon.FATE không có trong bản dựng này; dùng divergence-tp.js (thẻ Codex) hoặc divergence-canon.js (canon event).' }, null, 1));
 `);
