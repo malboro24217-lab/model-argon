@@ -3,7 +3,7 @@
 - Spec: `argon/docs/superpowers/specs/2026-10-18-canon-event-design.md`.
 - Kế hoạch: `argon/docs/superpowers/plans/2026-10-18-canon-event.md`.
 - Nhánh: `canon-event`. Ledger này viết trên nền `cb0cc59`, tức là sau Task 1–7, 8a, 9–19, 20a và 20b.
-- Task 8b (phần host còn lại của giao diện) và Task 20 (đo, cân chỉnh) đang chạy song song trên nhánh khác. Phần nói về hai task này lấy từ brief của chúng; con số nào còn chờ thì ghi "TBD sau Task 20".
+- Task 8b (phần host còn lại của giao diện), Task 20 (đo, cân chỉnh), 20c (vật gài), 20d (R25) và 21c (giao diện, tên Almost Anyone) được ghép trên nhánh `canon-int` (19/10/2026). Số đo sau khi ghép ở mục 5.
 
 ## 1. Vì sao bỏ hướng 200 bước ngoặt
 - Hướng của Codex (`codex/200-turning-points`, ledger `2026-10-18-200-turning-points.md`):
@@ -56,7 +56,7 @@ Mỗi cửa mở một Mùa dài 8–20 năm (nhánh kỳ dị 5–12 năm). M�
 Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đời thường chỉ được chọn khoảng 30% số lần. Mùa **thay** thẻ đời thường chứ không cộng thêm, nên ngân sách quyết định vẫn giữ 120–130 mỗi đời.
 
 ### 2.3 Ba vết
-- Đổi 100% hoàn cảnh, nhưng mang theo đúng ba thứ từ đời cũ:
+- Hoàn cảnh đổi theo R25 (mục 2.2), nhưng mang theo đúng ba thứ từ đời cũ:
   - **một người:** kẻ thù truyền kiếp còn sống, hoặc người có ký ức mạnh nhất;
   - **một đồ vật hoặc kỹ năng:** vật gài, tài sản, hoặc nghề cũ;
   - **một món nợ hoặc lời hứa** chưa trả.
@@ -64,7 +64,7 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
 - Vết đồ và vết nợ không lặp lại vết của mùa liền trước khi đời còn ứng viên khác (Task 20c). Vật gài đã thành vết được đánh dấu đã dùng.
 - Món nợ hay lời hứa ở vết nợ hết "chưa trả" khi trong mùa có lựa chọn trả nợ (`repay`), hoặc giữ lời (ký ức `KEPT_PROMISE`, chỉ với lời hứa): mầm đó bị bỏ khỏi sổ. Luật năm của mùa không tính.
 - Nhịp cú lật phải dùng ít nhất một vết. Nhịp chung kết phải dùng vết nợ hay lời hứa.
-- Mỗi lần dùng vết, Causality in dòng "↩ Vì năm N…" về lựa chọn đã gieo vết đó.
+- Mỗi lần dùng vết, Causality gắn dòng "↩ Có liên quan đến lựa chọn năm N tuổi · Xem lại" dưới tiêu đề thẻ, trỏ về lựa chọn đã gieo vết đó (Task 8b; chỉ khi chữ của thẻ thật sự nhắc tới người hay vật ấy).
 
 ### 2.4 100 nhánh kỳ dị
 - 50 nhánh khoa học viễn tưởng (S01–S50) và 50 nhánh phi lý cực độ (X01–X50). Mỗi nhánh một dòng ở spec §7.
@@ -106,7 +106,7 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
 - Tổng: 105 mùa, 869 thẻ mùa.
 - Đợt B (16 mầm và 13 mùa thường còn lại) chưa làm.
 
-### 2.8 Phần Task 8b (đang làm, theo brief)
+### 2.8 Phần Task 8b (đã ghép ở canon-int)
 - `setWeird(L, v)`: đổi Độ điên qua `uiOp`, nên ghi vào actLog và tua lại vẫn khớp.
 - **"Bản kia của bạn":**
   - lúc vào mùa có một dòng "Ở dòng thời gian kia, bạn vừa bước vào Mùa: …", lấy từ cửa kế tiếp không được chọn;
@@ -118,11 +118,11 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
   - `remark` (S04, S40): chọn lại một lựa chọn cũ;
   - `age_skip:<n>` (S06, S08): nhảy tuổi;
   - `longevity:<n>` (S26): cộng vào trần tuổi.
-
-  Ở nền hiện tại, cả bốn là no-op an toàn trong `canonCustom`.
 - Nối `canon-ui.js` vào `build.py`. Thêm nhãn "tự khép lại" cho mùa kết vì `lapsed`.
+- Sau lượt chơi thử 21b và góp ý của Tùng: dòng nguyên nhân dưới tiêu đề (có "Xem lại"), dòng kết cho mọi mùa ở màn kết (chỉ dựng từ dữ liệu thật của đời đó), thẻ "Mùa N khép lại" không chặn, tên nhân vật không trùng tên gọi đang có chủ khi bể tên còn cho phép.
+- Review pass 1: I1 (gõ ở canon event vẫn đi qua đúng một cửa; ô tự nhập của 21c ở thẻ này hỏi "Bạn muốn đối mặt theo cách khác?"), I2 (di cư của mùa là `migrate_sure`), R24.
 
-## 3. Các ruling R1–R23
+## 3. Các ruling R1–R27
 | # | Quyết định | Lý do |
 |---|---|---|
 | R1 | Task 4 tạo `canon/index.ts` với `CANON_SEEDS = []`, `SEASONS = [mùa mẫu]`, `WEIRD = []`; Task 6 thay bằng nội dung thật. | Bộ kiểm của Task 4 cần một kho để chạy trước khi có nội dung. |
@@ -148,6 +148,10 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
 | R21 | Câu sót quy tắc 9 của mọi đợt kỳ dị được quét một lần ở Task 20 (thành 20a), dùng đầu dò sự thật tương phản, thay vì thêm vòng sửa cho từng đợt. | Rẻ hơn, và bắt đều mọi đợt. |
 | R22 | Bộ kiểm mới của Task 10 bắt lỗi ở 5 mùa thường (cận dưới tuổi của `become:`, phải có ≥ 1 landing không phải nghề); sửa ngay trên `canon-event` bằng vòng sửa 2 của Task 6a. | Lỗi nằm ở nội dung đã ghép, không thuộc đợt nào khác. |
 | R23 | Tách phần còn lại: 20a (quét quy tắc 9, đầu dò, gom cổng tuổi vào kit), 20b (công cụ đo), 8a (chỉ giao diện), chạy song song với Task 7. Còn lại 8b, 20 và 21 sau Task 7. | Tùng muốn song song hóa Task 8, 20 và 21. |
+| R24 | Hệ số thu nhập của mùa chỉ nhân vào lương trong mùa. Thưởng, landing, `money`, `borrow`, `repay`, cược, tiền AI tính trên lương gốc (`seasonYearlyBase`); muốn ăn theo hệ số phải khai báo `money_season:<x>`. Mua bán và khoản lỗ cố định giữ giá trị riêng. ×50 chưa coi là cân. | Tùng (19/10): lương ×50 của S39 không được nhân vào mọi khoản thưởng; đo lại tài sản lúc ra mùa và về sau (Task 8b). |
+| R25 | Thay "đổi 100% hoàn cảnh": mỗi Mùa có ít nhất một thay đổi tình thế có tác dụng thật, hợp tiền đề và được dùng trong diễn biến. Host không tự đổi nghề hay tiền khi mùa không khai báo. Kiểm toán 105 mùa (đạt / chỉ bằng lời kể / mâu thuẫn), sửa mâu thuẫn và mùa của bản demo trước, không viết lại cho đủ chỉ tiêu. | Tùng (19/10). Task 20d, quy tắc viết 11–12, `season-entry-test.js`. |
+| R26 | Cờ / bộ đếm do lựa chọn đặt mà không ai đọc: chặn trần `DEAD_KEYS_MAX` (chỉ được giảm), không mở đợt viết lại ở đợt A. | Hợp với R25 "không viết lại cho đủ chỉ tiêu" (Task 20d). |
+| R27 | Chấp nhận các hằng cân chỉnh của Task 20 (ngưỡng 8, `FORCE_FIRST_AT` 25, `KY_THRESHOLD` 10, `AXIS_GAIN`/`AXIS_FATIGUE`, `beatGap` len/4, `reset.cash` giữ một nửa phần vượt). Độ rẽ 0,66 nhận cho bản demo, là khoảng trống đã biết, chuyển sang đợt B. | Kế hoạch cho phép Task 20 chỉnh hằng; chi tiết ở `2026-10-19-canon-tuning.md`. |
 
 Các quyết định khác không đánh số:
 - **Ngưỡng mức nền:** nghèo khi `family_wealth < 0.4`, giàu khi `> 0.75` (cùng ngưỡng host), nước nghèo khi GDP < 8000. Spec chỉ nói tên lớp, không nói số.
