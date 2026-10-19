@@ -34,8 +34,9 @@ function playLive(seed, render) {
     if (!P.aiReady && P.age >= 8 && t() < 0.5) { P.aiReady = { raw: FAKE_AI(aiK++) }; P.nextAi = P.age + 1; }
     if (P.age >= 6 && t() < 0.15) P.focus = ["study", "work", "family", "health", "rest"][Math.floor(t() * 5)];
     stepYear(P);
+    assert(P.alive || !P.pending, 'dead life left a pending scene (age ' + P.age + ')');   // die() gỡ cảnh chờ; bản tua lại dừng ở lúc chết
     let k = 0;
-    while (P.alive && P.pending && k++ < 15) {   // đời đã chết thì không chọn tiếp cảnh còn treo (bản tua lại dừng ở lúc chết)
+    while (P.pending && k++ < 15) {
       const p = P.pending, key = p.key || p.id + P.age;
       if (render) touchRender(P);
       if (p.matrix && p.fog) { fogScenes++; if (t() < 0.5 && P.ar && P.ar.state.capitals.cognitiveBandwidth.value >= 35 && uiOp(P, { t: "dd", key, cost: 35 })) ddDone++; }
@@ -47,7 +48,7 @@ function playLive(seed, render) {
     if (actAges.has(P.age) && !P.pending && canHandleMoney(P)) {
       const castIds = new Set([...P.lw.cast.values()].filter(m => m.alive).map(m => m.id));
       const act = Argon.sanitizeAct(ACTS[Math.floor(t() * ACTS.length)], castIds, P.age);
-      if (act) { applyAct(P, act, "proactive", "việc tiền thử"); acts++; k = 0; while (P.alive && P.pending && k++ < 15) { if (render) touchRender(P); resolve(P, autoChoice(P)); } }
+      if (act) { applyAct(P, act, "proactive", "việc tiền thử"); acts++; k = 0; while (P.pending && k++ < 15) { if (render) touchRender(P); resolve(P, autoChoice(P)); } assert(P.alive || !P.pending, 'dead life left a pending scene after an act'); }
     }
     if (P.storyDue && !P.pending) storyFail(P, P.storyDue);
   }

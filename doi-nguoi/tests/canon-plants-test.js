@@ -59,39 +59,65 @@ assert(stats.whatReuse < 0.25, 'what dùng lại trong một đời < 25% (' + s
 assert.strictEqual(fpWithoutFresh, 0, 'fromPlayer chỉ đếm khi chỗ trống điền bằng mầm còn tươi');
 assert.strictEqual(unmarked, 0, 'mầm đã điền what được ghi used');
 
-// 2. Trả nợ / giữ lời trong mùa thì mầm ở vết "no" không còn "chưa trả"
+// 2. Chỉ chung kết của mùa mới khép vết "no": repay khép mầm nợ, KEPT_PROMISE khép mầm lời hứa.
+//    Thẻ giữa mùa (thẻ chủ nợ chung "Trả một phần ngay" repay:0.3, ký ức KEPT_PROMISE của một lựa chọn không liên quan) không khép gì.
 function grow(seed, toAge, pred) { for (let k = 0; k < 400; k++) { const P = createLife(seed + k * 101, { auto: true }); let g = 0; while (P.alive && P.age < toAge && g++ < 130) stepYear(P); if (P.alive && P.age === toAge && !P.pending && !P.lw.season && (!pred || pred(P))) return P; } throw new Error('no life'); }
+const SID = 'vu_an_gia_toc', SDEF = Argon.SEASONS.find(s => s.id === SID);
 function withPlant(kind, key) {
   const P = grow(7001, 30, Q => canonIndependent(Q)); G.life = P;
   P.lw.plants = P.lw.plants.filter(p => p.kind !== 'debt' && p.kind !== 'promise');
   P.lw.plants.push({ kind, key, label: 'nhãn ' + key, age: 20, weight: 1 });
-  assert(enterSeason(P, 'vu_an_gia_toc'), 'vào mùa');
+  assert(enterSeason(P, SID), 'vào mùa');
   assert.strictEqual(P.lw.season.scars.no.key, key, kind + ': mầm làm vết no');
   assert.strictEqual(P.lw.plants.find(p => p.key === key).used, P.age, kind + ': vết ghi used');
   return P;
 }
+const has = (P, key) => P.lw.plants.some(p => p.key === key);
+const someNpc = P => [...P.lw.cast.values()].find(m => m.alive).id;
+const KEPT = P => ({ memory: { npc: someNpc(P), tag: 'KEPT_PROMISE', weight: 0.1, note: 'một lựa chọn không liên quan' } });
+// Thẻ chủ nợ chung (storylets.ts creditor_knock), lựa chọn "Trả một phần ngay": phần trả nợ của nó, không có season_end.
+const creditor = Argon.STORYLETS.find(s => s.id === 'creditor_knock');
+assert(creditor, 'có thẻ chủ nợ chung creditor_knock');
+function partialPay(P) {   // dựng đúng thẻ, chủ nợ là một người còn sống trong dàn
+  const c = factContext(P); const ctx = { ...c, cast: { ...c.cast, creditor: someNpc(P) } };
+  const e = creditor.build(ctx, id => castName(P, id)).choices[0].effects;
+  assert(/(^|\|)repay:0\.3/.test(e.custom || '') && !Argon.landingOf(e), 'lựa chọn "Trả một phần ngay" là repay:0.3, không phải chung kết');
+  return e;
+}
 {
   const P = withPlant('debt', 'no_thu');
   canonApplyQuiet(P, { custom: 'repay:0.1' });
-  assert(P.lw.plants.some(p => p.key === 'no_thu'), 'luật năm (canonQuiet) không tính là trả xong');
-  applyEffect(P, { memory: { npc: [...P.lw.cast.keys()][0], tag: 'KEPT_PROMISE', weight: 0.1 } });
-  assert(P.lw.plants.some(p => p.key === 'no_thu'), 'giữ lời không trả mầm nợ');
-  applyEffect(P, { custom: 'repay:0.5', log: 'Bạn trả xong.' });
-  assert(!P.lw.plants.some(p => p.key === 'no_thu'), 'repay trong mùa: mầm nợ ở vết no bị bỏ');
+  assert(has(P, 'no_thu'), 'luật năm (canonQuiet) không khép mầm nợ');
+  applyEffect(P, partialPay(P));
+  assert(has(P, 'no_thu'), 'thẻ chủ nợ chung giữa mùa (repay:0.3) không khép mầm nợ');
+  applyEffect(P, KEPT(P));
+  assert(has(P, 'no_thu'), 'ký ức KEPT_PROMISE giữa mùa không khép mầm nợ');
+  const land = SDEF.landings.find(l => /(^|\|)repay/.test(l.effects.custom || ''));
+  assert(land, SID + ' có chung kết trả nợ');
+  applyEffect(P, land.effects);
+  assert(!P.lw.season, 'chung kết kết mùa');
+  assert(!has(P, 'no_thu'), 'chung kết repay: mầm nợ ở vết no bị bỏ');
 }
 {
   const P = withPlant('promise', 'loi_hua_thu');
-  applyEffect(P, { memory: { npc: [...P.lw.cast.keys()][0], tag: 'KEPT_PROMISE', weight: 0.1 } });
-  assert(!P.lw.plants.some(p => p.key === 'loi_hua_thu'), 'giữ lời trong mùa: mầm lời hứa ở vết no bị bỏ');
+  applyEffect(P, KEPT(P));
+  assert(has(P, 'loi_hua_thu'), 'ký ức KEPT_PROMISE giữa mùa không khép mầm lời hứa');
+  const land = SDEF.landings.find(l => /(^|\|)repay/.test(l.effects.custom || ''));
+  applyEffect(P, land.effects);
+  assert(!P.lw.season && has(P, 'loi_hua_thu'), 'chung kết repay không khép mầm lời hứa');
 }
 {
-  // Chung kết có repay: mầm được bỏ trước khi mùa kết (vết của mùa còn đọc được tới lúc đó)
-  const P = withPlant('debt', 'no_chung_ket');
-  const d = Argon.SEASONS.find(s => s.id === 'vu_an_gia_toc'), land = d.landings.find(l => /repay/.test((l.effects && l.effects.custom) || ''));
-  assert(land, 'vu_an_gia_toc có chung kết trả nợ');
-  applyEffect(P, land.effects || {});
+  const P = withPlant('promise', 'loi_hua_giu');
+  const land = SDEF.landings[0];
+  applyEffect(P, { ...KEPT(P), custom: 'season_end:' + land.id });
   assert(!P.lw.season, 'chung kết kết mùa');
-  assert(!P.lw.plants.some(p => p.key === 'no_chung_ket'), 'chung kết repay: mầm nợ bị bỏ');
+  assert(!has(P, 'loi_hua_giu'), 'chung kết giữ lời (KEPT_PROMISE): mầm lời hứa ở vết no bị bỏ');
+}
+{
+  // Vết vẫn in "Vì năm N…" khi mầm đã bị bỏ: scarCauses không tra sổ mầm
+  const P = withPlant('debt', 'no_van_in');
+  const sc = P.lw.season.scars; P.lw.plants = P.lw.plants.filter(p => p.key !== 'no_van_in');
+  assert(scarCauses(P, P.lw.season).includes(Argon.prov.flag(Argon.plantFlag(sc.no))), 'scarCauses dùng loại của vết, không cần mầm còn trong sổ');
 }
 
 // 3. Tua lại: cùng sổ mầm (khóa, used) với bản gốc

@@ -955,7 +955,7 @@ function updateHappiness(L){const c=L.c;let t=c.h*8+(L.st.rel-50)*.25+(L.st.heal
 
 /* ================= QUYẾT ĐỊNH ================= */
 function autoChoice(L){const p=L.pending;const g=argonGate(L);const ok=p.choices.map((c,i)=>choiceState(L,c,g)==="show"?i:-1).filter(i=>i>=0);if(L.script){const k=sceneKey(L,p);if(L.override&&L.override.key===k&&p.choices[L.override.index])return L.override.index;const sv=L.script[k];if(sv&&typeof sv==="object")return L.override&&L.override.removeKey===k?p.def:sv;if(sv!==undefined&&p.choices[sv])return sv;if(L.scriptStrict){L.auto=false;return null}}if(!ok.length)return p.def;const d=ok.includes(p.def)?p.def:ok[0];return L.ra()<.8?d:ok[Math.floor(L.ra()*ok.length)]}
-function resolve(L,i){const p=L.pending;if(!p)return;L.pending=null;const r=L.r,c=L.c;const ch=p.choices[i];markChoice(L,p,i);if(ch&&ch.fx){try{ch.fx(L)}finally{L.curMark=null}livingFollowUp(L);settleDependent(L);return}
+function resolve(L,i){const p=L.pending;if(!p)return;if(!L.alive){L.pending=null;return}L.pending=null;const r=L.r,c=L.c;const ch=p.choices[i];markChoice(L,p,i);if(ch&&ch.fx){try{ch.fx(L)}finally{L.curMark=null}livingFollowUp(L);settleDependent(L);return}
   try{resolveCore(L,p,i,r,c)}finally{L.curMark=null}livingFollowUp(L);settleDependent(L)}
 function resolveCore(L,p,i,r,c){
   switch(p.id){
@@ -974,7 +974,7 @@ function resolveCore(L,p,i,r,c){
 }
 
 /* ================= QUA ĐỜI ================= */
-function die(L,forced){L.alive=false;if(L.stories)for(const st of L.stories)st.closed=true;L.storyDue=null;const x=L.age,c=L.c,r=L.r;let cause=forced;
+function die(L,forced){L.alive=false;L.pending=null;if(L.stories)for(const st of L.stories)st.closed=true;L.storyDue=null;const x=L.age,c=L.c,r=L.r;let cause=forced;
   if(!cause){if(L.ill&&r()<.7)cause=L.ill.name;
     else if(x<1)cause=pick(r,["sinh non","biến chứng sơ sinh","nhiễm trùng sơ sinh"]);
     else if(x<5)cause=pick(r,c.g<8000?["viêm phổi","tiêu chảy","sốt rét","suy dinh dưỡng"]:["viêm phổi","tai nạn","bệnh bẩm sinh"]);
@@ -22520,7 +22520,7 @@ var Argon = (() => {
   }
   var repays = (e) => typeof e.custom == "string" && e.custom.split("|").some((x) => /^repay(:|$)/.test(x));
   function settledPlant(e, no) {
-    return !no || no.kind !== "debt" && no.kind !== "promise" ? null : repays(e) || no.kind === "promise" && e.memory?.tag === "KEPT_PROMISE" ? { kind: no.kind, key: no.key } : null;
+    return no && (no.kind === "debt" && repays(e) || no.kind === "promise" && e.memory?.tag === "KEPT_PROMISE") ? { kind: no.kind, key: no.key } : null;
   }
   function dropPlants(plants, ref) {
     if (!ref) return 0;
@@ -38789,10 +38789,10 @@ function canonOnEffect(L, e) {
   if (e.gamble) return e;   // phần chung và nhánh thắng/thua đi qua applyEffect riêng, mỗi phần cộng một lần
   if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
   if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
-  if (lw.season && !lw.canonQuiet) Argon.dropPlants(lw.plants, Argon.settledPlant(e, lw.season.scars && lw.season.scars.no));   // Task 20c: trả nợ / giữ lời trong mùa thì mầm ở vết "no" hết "chưa trả"
   const land = Argon.landingOf(e);
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
+    if (lw.season) Argon.dropPlants(lw.plants, Argon.settledPlant(e, lw.season.scars && lw.season.scars.no));   // Task 20c: chung kết trả nợ / giữ lời thì mầm ở vết "no" hết "chưa trả"
     if (lw.season) exitSeason(L, "landing", land);
     return canonOwnOnly(L, e, false);
   }
@@ -38910,7 +38910,7 @@ function nextSeasonCard(L) {
 /** Khóa nhân quả của 3 vết: nhịp cú lật và chung kết dùng vết, nên cảnh in "Vì năm N…" về lựa chọn đã gieo vết đó. */
 function scarCauses(L, se) {
   const keys = [], sc = se.scars || {};
-  for (const k of ["do", "no"]) { const x = sc[k]; const p = x && L.lw.plants.find(q => q.key === x.key); if (p) keys.push(Argon.prov.flag(Argon.plantFlag(p))); }
+  for (const k of ["do", "no"]) { const x = sc[k]; if (x && x.kind) keys.push(Argon.prov.flag(Argon.plantFlag(x))); }
   if (sc.nguoi) keys.push(Argon.prov.opinion(sc.nguoi.npc));
   return keys;
 }

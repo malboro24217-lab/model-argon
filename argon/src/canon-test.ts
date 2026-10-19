@@ -67,7 +67,7 @@ ok(freshPlant(pl("debt", "a", 1, 20)) && !freshPlant(pl("debt", "a", 1, 20, { us
   usePlants(book, [{ kind: "debt", key: "o" }], 31);
   ok(book[0]!.used === 30 && book[3]!.used === undefined, "usePlants: khớp cả loại lẫn khóa");
   ok(settledPlant({ custom: "money:1|repay:1" }, { key: "d", kind: "debt" })?.key === "d", "settledPlant: repay trả mầm nợ ở vết no");
-  ok(settledPlant({ custom: "repay" }, { key: "h", kind: "promise" })?.kind === "promise", "settledPlant: repay khép lời hứa");
+  ok(settledPlant({ custom: "repay" }, { key: "h", kind: "promise" }) === null, "settledPlant: repay không khép lời hứa");
   ok(settledPlant({ memory: { npc: "n1", tag: "KEPT_PROMISE", weight: 0.1 } }, { key: "h", kind: "promise" })?.key === "h", "settledPlant: giữ lời → lời hứa xong");
   ok(settledPlant({ memory: { npc: "n1", tag: "KEPT_PROMISE", weight: 0.1 } }, { key: "d", kind: "debt" }) === null, "settledPlant: giữ lời không trả nợ");
   ok(settledPlant({ custom: "repay:1" }, { key: "bank" }) === null && settledPlant({ custom: "repay:1" }, undefined) === null, "settledPlant: vết không từ mầm → null");

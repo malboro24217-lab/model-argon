@@ -75,10 +75,10 @@ function canonOnEffect(L, e) {
   if (e.gamble) return e;   // phần chung và nhánh thắng/thua đi qua applyEffect riêng, mỗi phần cộng một lần
   if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
   if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
-  if (lw.season && !lw.canonQuiet) Argon.dropPlants(lw.plants, Argon.settledPlant(e, lw.season.scars && lw.season.scars.no));   // Task 20c: trả nợ / giữ lời trong mùa thì mầm ở vết "no" hết "chưa trả"
   const land = Argon.landingOf(e);
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
+    if (lw.season) Argon.dropPlants(lw.plants, Argon.settledPlant(e, lw.season.scars && lw.season.scars.no));   // Task 20c: chung kết trả nợ / giữ lời thì mầm ở vết "no" hết "chưa trả"
     if (lw.season) exitSeason(L, "landing", land);
     return canonOwnOnly(L, e, false);
   }
@@ -196,7 +196,7 @@ function nextSeasonCard(L) {
 /** Khóa nhân quả của 3 vết: nhịp cú lật và chung kết dùng vết, nên cảnh in "Vì năm N…" về lựa chọn đã gieo vết đó. */
 function scarCauses(L, se) {
   const keys = [], sc = se.scars || {};
-  for (const k of ["do", "no"]) { const x = sc[k]; const p = x && L.lw.plants.find(q => q.key === x.key); if (p) keys.push(Argon.prov.flag(Argon.plantFlag(p))); }
+  for (const k of ["do", "no"]) { const x = sc[k]; if (x && x.kind) keys.push(Argon.prov.flag(Argon.plantFlag(x))); }
   if (sc.nguoi) keys.push(Argon.prov.opinion(sc.nguoi.npc));
   return keys;
 }
