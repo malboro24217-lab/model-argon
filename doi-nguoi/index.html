@@ -22655,7 +22655,7 @@ var Argon = (() => {
     let build = (c, k) => T(txt(title, c, k), text(c, k), typeof choices == "function" ? choices(c, k) : choices);
     return when ? { id, build, when } : { id, build };
   }
-  var cap3 = (s) => s.charAt(0).toUpperCase() + s.slice(1), noOr = (c, k, debt2 = "m\xF3n n\u1EE3 c\u0169", other = "m\xF3n \xE2n t\xECnh c\u0169") => k.scar("no") || (c.debt > 0 ? debt2 : other), land = (id, line, effects) => ({ id, line, effects: addCustom(effects, `season_end:${id}`) }), ending = (l, label, hint, extra = {}) => C(label, l.effects, hint, extra);
+  var cap3 = (s) => s.charAt(0).toUpperCase() + s.slice(1), noOr = (c, k, debt2 = "m\xF3n n\u1EE3 c\u0169", other = "m\xF3n \xE2n t\xECnh c\u0169") => k.scar("no") || (c.debt > 0 ? debt2 : other), migrateOk = (c) => c.independent && c.can_migrate, land = (id, line, effects) => ({ id, line, effects: addCustom(effects, `season_end:${id}`) }), ending = (l, label, hint, extra = {}) => C(label, l.effects, hint, extra);
   function season(def) {
     return { ...def, rules: def.rules ?? {}, reset: def.reset ?? {} };
   }
@@ -22673,7 +22673,7 @@ var Argon = (() => {
     rules: { income: 0.6, flags: ["w_tron_chay", "w_ten_gia"] },
     reset: {
       cash: 0.2,
-      effects: { custom: "move_city" },
+      effects: { custom: "move_city|borrow:0.5" },
       cast: [
         { key: "chu_tro", role: "neighbor", label: "b\xE0 ch\u1EE7 tr\u1ECD" },
         { key: "ao_hoa", role: "creditor", label: "g\xE3 \u0111\xF2i n\u1EE3 \xE1o hoa" },
@@ -22694,7 +22694,7 @@ var Argon = (() => {
         card(
           "tc_mo_xe",
           "Chuy\u1EBFn xe l\xFAc hai gi\u1EDD s\xE1ng",
-          (c, k) => `Hai gi\u1EDD s\xE1ng, b\u1EA1n x\xE1ch m\u1ED9t c\xE1i ba l\xF4, b\u1ECF l\u1EA1i ch\u1EADu c\xE2y v\xE0 n\u1EEDa n\u1ED3i c\u01A1m. Chuy\u1EBFn xe \u0111\xEAm c\xF2n \u0111\xFAng m\u1ED9t gh\u1EBF, c\u1EA1nh m\u1ED9t l\u1ED3ng g\xE0 r\u1EA5t c\xF3 \xFD ki\u1EBFn. S\xE1ng ra, xe th\u1EA3 b\u1EA1n xu\u1ED1ng m\u1ED9t b\u1EBFn l\u1EA1 \u1EDF ${k.noi}.`,
+          (c, k) => `Hai gi\u1EDD s\xE1ng, b\u1EA1n x\xE1ch m\u1ED9t c\xE1i ba l\xF4, b\u1ECF l\u1EA1i ch\u1EADu c\xE2y, n\u1EEDa n\u1ED3i c\u01A1m v\xE0 t\u1EDD gi\u1EA5y vay n\xF3ng k\xFD v\u1ED9i tu\u1EA7n tr\u01B0\u1EDBc, gi\u1EDD \u0111\xE3 th\xE0nh m\u1ED9t m\xF3n n\u1EE3 c\xF3 ng\u01B0\u1EDDi \u0111i \u0111\xF2i. Chuy\u1EBFn xe \u0111\xEAm c\xF2n \u0111\xFAng m\u1ED9t gh\u1EBF, c\u1EA1nh m\u1ED9t l\u1ED3ng g\xE0 r\u1EA5t c\xF3 \xFD ki\u1EBFn. S\xE1ng ra, xe th\u1EA3 b\u1EA1n xu\u1ED1ng m\u1ED9t b\u1EBFn l\u1EA1 \u1EDF ${k.noi}.`,
           [
             C("Ng\u1ED3i c\u1EA1nh l\u1ED3ng g\xE0, \u0111i th\u1EB3ng m\u1ED9t m\u1EA1ch", { flags: ["tc_di_thang"], happy: -2 }, "T\u1EDBi nhanh, ai h\u1ECFi th\u0103m b\u1EBFn xe l\xE0 l\u1EA7n ra"),
             C("\u0110\u1ED5i ba chuy\u1EBFn xe cho r\u1ED1i d\u1EA5u", { money: -0.1, health: -2, flags: ["tc_doi_xe"] }, "T\u1ED1n ti\u1EC1n v\xE0 s\u1EE9c, kh\xF3 b\u1ECB l\u1EA7n theo")
@@ -22846,7 +22846,7 @@ var Argon = (() => {
   };
 
   // src/engine/narrative/canon/seasons/vu_an_gia_toc.ts
-  var L_LUAT = land("hoc_luat", "B\u1EA1n \u0111\u1ECDc lu\u1EADt nhi\u1EC1u t\u1EDBi m\u1EE9c \u0111i thi lu\xF4n, v\xE0 t\u1EEB \u0111\xF3 h\u1ECD h\xE0ng g\u1ECDi b\u1EA1n b\u1EB1ng ch\u1EE9c danh m\u1ED7i khi c\xF3 chuy\u1EC7n.", { custom: "become:lawyer", know: 5 }), L_PHAN = land("nhan_phan", "B\u1EA1n nh\u1EADn tr\u1ECDn ph\u1EA7n th\u1EEBa k\u1EBF, d\xF9ng m\u1ED9t ph\u1EA7n kh\xE9p l\u1EA1i chuy\u1EC7n c\u0169, r\u1ED3i k\xFD v\xE0o bi\xEAn b\u1EA3n cu\u1ED1i c\xF9ng.", { money: 2, custom: "repay:1", happy: 3 }), L_PHAN_NHO = land("nhan_phan_nho", "B\u1EA1n nh\u1EADn ph\u1EA7n th\u1EEBa k\u1EBF nh\u1ECF c\u1EE7a m\xECnh, kh\xE9p \u0111\u01B0\u1EE3c m\u1ED9t n\u1EEDa chuy\u1EC7n c\u0169, r\u1ED3i k\xFD v\xE0o bi\xEAn b\u1EA3n cu\u1ED1i c\xF9ng.", { money: 1, custom: "repay:0.5", happy: 1 }), L_RA_RIENG = land("ra_rieng", "B\u1EA1n r\u1EDDi c\u1EA3 h\u1ECD, chuy\u1EC3n sang th\xE0nh ph\u1ED1 kh\xE1c, ch\u1EC9 gi\u1EEF l\u1EA1i s\u1ED1 \u0111i\u1EC7n tho\u1EA1i c\u1EE7a m\u1ED9t ng\u01B0\u1EDDi.", { custom: "move_city", rel: -3 }), has2 = (c, f9) => c.flags.has(f9);
+  var L_LUAT = land("hoc_luat", "B\u1EA1n \u0111\u1ECDc lu\u1EADt nhi\u1EC1u t\u1EDBi m\u1EE9c \u0111i thi lu\xF4n, v\xE0 t\u1EEB \u0111\xF3 h\u1ECD h\xE0ng g\u1ECDi b\u1EA1n b\u1EB1ng ch\u1EE9c danh m\u1ED7i khi c\xF3 chuy\u1EC7n.", { custom: "become:lawyer", know: 5 }), L_PHAN = land("nhan_phan", "B\u1EA1n nh\u1EADn tr\u1ECDn ph\u1EA7n th\u1EEBa k\u1EBF, d\xF9ng m\u1ED9t ph\u1EA7n kh\xE9p l\u1EA1i chuy\u1EC7n c\u0169, r\u1ED3i k\xFD v\xE0o bi\xEAn b\u1EA3n cu\u1ED1i c\xF9ng.", { money: 2, custom: "repay:1", happy: 3 }), L_PHAN_NHO = land("nhan_phan_nho", "B\u1EA1n nh\u1EADn ph\u1EA7n th\u1EEBa k\u1EBF nh\u1ECF c\u1EE7a m\xECnh, kh\xE9p \u0111\u01B0\u1EE3c m\u1ED9t n\u1EEDa chuy\u1EC7n c\u0169, r\u1ED3i k\xFD v\xE0o bi\xEAn b\u1EA3n cu\u1ED1i c\xF9ng.", { money: 1, custom: "repay:0.5", happy: 1 }), L_RA_RIENG = land("ra_rieng", "B\u1EA1n r\u1EDDi c\u1EA3 h\u1ECD, chuy\u1EC3n sang th\xE0nh ph\u1ED1 kh\xE1c, ch\u1EC9 gi\u1EEF l\u1EA1i s\u1ED1 \u0111i\u1EC7n tho\u1EA1i c\u1EE7a m\u1ED9t ng\u01B0\u1EDDi.", { custom: "move_city", rel: -3 }), L_GUI_SO = land("gui_so_tiet_kiem", "Ph\u1EA7n th\u1EEBa k\u1EBF c\u1EE7a b\u1EA1n \u0111\u01B0\u1EE3c g\u1EEDi v\xE0o m\u1ED9t s\u1ED5 ti\u1EBFt ki\u1EC7m \u0111\u1EE9ng t\xEAn b\u1EA1n, ch\u1EDD t\u1EDBi n\u0103m m\u01B0\u1EDDi t\xE1m tu\u1ED5i. B\xE0 c\xF4 \xFAt gi\u1EEF h\u1ED9 cu\u1ED1n s\u1ED5, v\xE0 m\u1ED7i n\u0103m l\u1EA1i \u0111\u01B0a ra cho b\u1EA1n xem m\u1ED9t l\u1EA7n.", { money: 1, happy: 2 }), has2 = (c, f9) => c.flags.has(f9);
   function verdict(c) {
     let manh = c.counters.va_manh ?? 0, hoa = c.counters.va_hoa ?? 0;
     return has2(c, "va_noi_ca_ho") && (hoa >= 4 || has2(c, "va_dot_so")) ? "hoa" : manh >= 5 ? "thang" : manh >= 3 ? "nua" : "deu";
@@ -22856,12 +22856,12 @@ var Argon = (() => {
     thang: () => "B\u1EB1ng ch\u1EE9ng x\u1EBFp th\xE0nh h\xE0ng, v\xE0 b\u1EA3n di ch\xFAc th\u1EE9 hai b\u1ECB tuy\xEAn v\xF4 hi\u1EC7u tr\u01B0\u1EDBc gi\u1EDD ngh\u1EC9 tr\u01B0a.",
     nua: () => "B\u1EB1ng ch\u1EE9ng \u0111\u1EE7 \u0111\u1EC3 t\xF2a nghi b\u1EA3n di ch\xFAc th\u1EE9 hai, ch\u01B0a \u0111\u1EE7 \u0111\u1EC3 g\u1EA1t n\xF3 \u0111i, n\xEAn c\u0103n nh\xE0 b\u1ECB chia \u0111\xF4i.",
     deu: () => "Kh\xF4ng ai c\xF3 b\u1EB1ng ch\u1EE9ng tr\u1ECDn v\u1EB9n, n\xEAn t\xF2a chia \u0111\u1EC1u cho ba m\u01B0\u01A1i hai ng\u01B0\u1EDDi. Ph\u1EA7n c\u1EE7a b\u1EA1n b\u1EB1ng \u0111\xFAng m\u1ED9t khung c\u1EEDa s\u1ED5."
-  }, phanOf = (c, label) => verdict(c) === "hoa" || verdict(c) === "thang" ? ending(L_PHAN, label, "Ph\u1EA7n tr\u1ECDn v\u1EB9n, \u0111\u1EE7 kh\xE9p chuy\u1EC7n c\u0169") : ending(L_PHAN_NHO, label, "Ph\u1EA7n nh\u1ECF, ch\u1EC9 \u0111\u1EE7 kh\xE9p m\u1ED9t n\u1EEDa chuy\u1EC7n c\u0169"), VU_AN_GIA_TOC = {
+  }, phanOf = (c, label) => verdict(c) === "hoa" || verdict(c) === "thang" ? ending(L_PHAN, label, "Ph\u1EA7n tr\u1ECDn v\u1EB9n, \u0111\u1EE7 kh\xE9p chuy\u1EC7n c\u0169") : ending(L_PHAN_NHO, label, "Ph\u1EA7n nh\u1ECF, ch\u1EC9 \u0111\u1EE7 kh\xE9p m\u1ED9t n\u1EEDa chuy\u1EC7n c\u0169"), raRieng = (c) => c.age >= 18 ? ending(L_RA_RIENG, "R\u1EDDi c\u1EA3 h\u1ECD, ra ri\xEAng \u1EDF th\xE0nh ph\u1ED1 kh\xE1c", "Nh\u1EB9 \u0111\u1EA7u, \xEDt ng\u01B0\u1EDDi g\u1ECDi v\u1EC1") : ending(L_GUI_SO, "G\u1EEDi ph\u1EA7n c\u1EE7a m\xECnh v\xE0o s\u1ED5 ti\u1EBFt ki\u1EC7m", "Ch\u1EDD \u0111\u1EE7 l\u1EDBn, b\xE0 c\xF4 \xFAt gi\u1EEF h\u1ED9"), VU_AN_GIA_TOC = {
     id: "vu_an_gia_toc",
     vn: "V\u1EE5 \xE1n gia t\u1ED9c",
     color: "#7a3b45",
     years: [8, 16],
-    rules: { income: 0.9, flags: ["w_vu_an_gia_toc"] },
+    rules: { income: 0.9, yearly: { money: -0.03 }, flags: ["w_vu_an_gia_toc"] },
     reset: {
       cast: [
         { key: "anh_ho", role: "rival", label: "ng\u01B0\u1EDDi anh h\u1ECD \u0111eo \u0111\u1ED3ng h\u1ED3 to" },
@@ -22876,7 +22876,7 @@ var Argon = (() => {
       "Nh\xF3m chat c\u1EE7a h\u1ECD gi\u1EDD t\xEAn l\xE0 \u201CH\u1ECD h\xE0ng \u01A1i, b\xECnh t\u0129nh\u201D. Kh\xF4ng ai b\xECnh t\u0129nh.",
       "Nh\xF3m chat c\u1EE7a h\u1ECD \u0111\u1ED5i v\u1EC1 t\xEAn c\u0169 \u201C\u0110\u1EA1i gia \u0111\xECnh y\xEAu th\u01B0\u01A1ng\u201D. L\u1EA7n n\xE0y, h\xECnh nh\u01B0 c\xF3 ng\u01B0\u1EDDi tin th\u1EADt."
     ] },
-    landings: [L_LUAT, L_PHAN, L_PHAN_NHO, L_RA_RIENG],
+    landings: [L_LUAT, L_PHAN, L_PHAN_NHO, L_RA_RIENG, L_GUI_SO],
     beats: [
       /* mo_man */
       [
@@ -22901,7 +22901,7 @@ var Argon = (() => {
         card(
           "va_mo_chia_khoa",
           "Ng\u01B0\u1EDDi gi\u1EEF ch\xECa",
-          () => "V\xEC l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t kh\xF4ng \u0111\xF2i g\xEC trong b\u1EEFa c\u01A1m, b\u1EA1n \u0111\u01B0\u1EE3c c\u1EA3 h\u1ECD giao gi\u1EEF ch\xECa kh\xF3a c\u0103n nh\xE0. Chi\u1EBFc ch\xECa nh\u1ECF x\xEDu m\xE0 n\u1EB7ng nh\u01B0 m\u1ED9t l\u1EDDi bu\u1ED9c t\u1ED9i ch\u01B0a n\xF3i ra.",
+          (c) => `V\xEC l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t kh\xF4ng \u0111\xF2i g\xEC trong b\u1EEFa c\u01A1m, b\u1EA1n \u0111\u01B0\u1EE3c c\u1EA3 h\u1ECD giao gi\u1EEF ch\xECa kh\xF3a c\u0103n nh\xE0, k\xE8m lu\xF4n ti\u1EC1n \u0111i\u1EC7n n\u01B0\u1EDBc v\xE0 thu\u1EBF \u0111\u1EA5t c\u1EE7a n\xF3 cho t\u1EDBi khi v\u1EE5 vi\u1EC7c ng\xE3 ng\u0169${c.independent ? "" : ", tr\xEDch t\u1EEB ti\u1EC1n \u0111\u1EC3 d\xE0nh c\u1EE7a b\u1EA1n"}. Chi\u1EBFc ch\xECa nh\u1ECF x\xEDu m\xE0 n\u1EB7ng nh\u01B0 m\u1ED9t l\u1EDDi bu\u1ED9c t\u1ED9i ch\u01B0a n\xF3i ra.`,
           (c, k) => [
             C("Nh\u1EADn ch\xECa, l\u1EADp s\u1ED5 ghi ai ra v\xE0o", { flags: ["va_so_ra_vao"], counters: { va_nghi: 1 } }, "C\xF3 s\u1ED5 s\xE1ch, m\u1EA5t l\xF2ng ng\u01B0\u1EDDi hay gh\xE9"),
             C(`G\u1EEDi ch\xECa cho ${k.npc("co_ut")} gi\u1EEF h\u1ED9`, { flags: ["va_dua_chia"], counters: { va_hoa: 1 } }, "Nh\u1EB9 ng\u01B0\u1EDDi, ch\xECa n\u1EB1m trong tay ng\u01B0\u1EDDi kh\xE1c")
@@ -22974,7 +22974,7 @@ var Argon = (() => {
         card(
           "va_day_to_cao",
           "L\xE1 \u0111\u01A1n c\xF3 m\u01B0\u1EDDi m\u1ED9t ch\u1EEF k\xFD",
-          (c, k) => `${cap3(k.npc("anh_ho"))} n\u1ED9p \u0111\u01A1n, ${has2(c, "va_dua_chia") ? `n\xF3i b\u1EA1n g\u1EEDi ch\xECa cho ${k.npc("co_ut")} ch\u1EC9 \u0111\u1EC3 che m\u1EAFt, c\xF2n gi\u1EA5y t\u1EDD nh\xE0 th\xEC b\u1EA1n \u0111\xE3 l\u1EA5y t\u1EEB tr\u01B0\u1EDBc.` : "n\xF3i b\u1EA1n l\xE0 ng\u01B0\u1EDDi gi\u1EEF ch\xECa n\xEAn ch\xEDnh b\u1EA1n l\u1EA5y gi\u1EA5y t\u1EDD nh\xE0."} L\xE1 \u0111\u01A1n c\xF3 ch\u1EEF k\xFD c\u1EE7a m\u01B0\u1EDDi m\u1ED9t ng\u01B0\u1EDDi h\u1ECD h\xE0ng, trong \u0111\xF3 c\xF3 hai ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng cho vay ti\u1EC1n.`,
+          (c, k) => `${cap3(k.npc("anh_ho"))} n\u1ED9p \u0111\u01A1n, ${has2(c, "va_dua_chia") ? `n\xF3i b\u1EA1n g\u1EEDi ch\xECa cho ${k.npc("co_ut")} ch\u1EC9 \u0111\u1EC3 che m\u1EAFt, c\xF2n gi\u1EA5y t\u1EDD nh\xE0 th\xEC b\u1EA1n \u0111\xE3 l\u1EA5y t\u1EEB tr\u01B0\u1EDBc.` : "n\xF3i b\u1EA1n l\xE0 ng\u01B0\u1EDDi gi\u1EEF ch\xECa n\xEAn ch\xEDnh b\u1EA1n l\u1EA5y gi\u1EA5y t\u1EDD nh\xE0."} L\xE1 \u0111\u01A1n c\xF3 ch\u1EEF k\xFD c\u1EE7a m\u01B0\u1EDDi m\u1ED9t ng\u01B0\u1EDDi h\u1ECD h\xE0ng, trong \u0111\xF3 c\xF3 hai ng\u01B0\u1EDDi b\u1EA1n t\u1EEBng cho vay ti\u1EC1n. Kh\xF4ng ai trong s\u1ED1 h\u1ECD t\u1EEBng g\xF3p m\u1ED9t \u0111\u1ED3ng ti\u1EC1n \u0111i\u1EC7n n\u01B0\u1EDBc cho c\u0103n nh\xE0 b\u1EA1n gi\u1EEF.`,
           [
             C("Thu\xEA lu\u1EADt s\u01B0, c\xE3i t\u1EDBi c\xF9ng", { money: -0.3, flags: ["va_thue_ls"] }, "T\u1ED1n ti\u1EC1n, gi\u1EEF \u0111\u01B0\u1EE3c t\xEAn m\xECnh"),
             C("T\u1EF1 \u0111\u1ECDc lu\u1EADt, t\u1EF1 b\xE0o ch\u1EEFa", { know: 5, health: -3, flags: ["va_tu_hoc_luat"] }, "R\u1EBB, m\u1EA5t ng\u1EE7, hi\u1EC3u lu\u1EADt h\u01A1n m\xECnh t\u01B0\u1EDFng")
@@ -23009,7 +23009,7 @@ var Argon = (() => {
           (c) => finale(
             c.age,
             [ending(L_LUAT, "\u0110i thi v\xE0o ngh\u1EC1 lu\u1EADt, l\xE0m cho ra l\u1EBD", "B\u1EAFt \u0111\u1EA7u m\u1ED9t ngh\u1EC1 m\u1EDBi, c\u1EA3 h\u1ECD th\xE0nh kh\xE1ch h\xE0ng")],
-            [phanOf(c, "Nh\u1EADn ph\u1EA7n c\u1EE7a m\xECnh, kh\xE9p h\u1ED3 s\u01A1"), ending(L_RA_RIENG, "R\u1EDDi c\u1EA3 h\u1ECD, ra ri\xEAng \u1EDF th\xE0nh ph\u1ED1 kh\xE1c", "Nh\u1EB9 \u0111\u1EA7u, \xEDt ng\u01B0\u1EDDi g\u1ECDi v\u1EC1")],
+            [phanOf(c, "Nh\u1EADn ph\u1EA7n c\u1EE7a m\xECnh, kh\xE9p h\u1ED3 s\u01A1"), raRieng(c)],
             has2(c, "va_dot_so") || (c.counters.va_hoa ?? 0) >= 4 ? 3 : 2
           ),
           (c) => c.age <= 50
@@ -23020,7 +23020,7 @@ var Argon = (() => {
           (c, k) => `${VERDICT[verdict(c)](k)} Trong l\xE1 \u0111\u01A1n n\u0103m \u1EA5y, ch\xEDnh chuy\u1EC7n ri\xEAng c\u1EE7a b\u1EA1n t\u1EEBng b\u1ECB \u0111em ra l\xE0m c\u1EDB bu\u1ED9c t\u1ED9i: ${noOr(c, k)}. Gi\u1EDD gi\xE0n hoa gi\u1EA5y tr\u01B0\u1EDBc c\u0103n nh\xE0 c\u0169 \u0111\xE3 \u0111\xE2m ch\u1ED3i l\u1EA1i, v\xE0 b\u1EA1n mu\u1ED1n kh\xE9p chuy\u1EC7n \u0111\xF3 cho xong. ${k.gag()}`,
           (c) => [
             phanOf(c, "Nh\u1EADn ph\u1EA7n th\u1EEBa k\u1EBF, tr\u1EA3 d\u1EE9t chuy\u1EC7n c\u0169"),
-            ending(L_RA_RIENG, "R\u1EDDi c\u1EA3 h\u1ECD, ra ri\xEAng \u1EDF th\xE0nh ph\u1ED1 kh\xE1c", "Nh\u1EB9 \u0111\u1EA7u, \xEDt ng\u01B0\u1EDDi g\u1ECDi v\u1EC1")
+            raRieng(c)
           ]
         )
       ]
@@ -23035,6 +23035,7 @@ var Argon = (() => {
     years: [8, 14],
     rules: { income: 3, flags: ["w_ngoi_sao", "no_privacy"] },
     reset: {
+      effects: { money: 0.3 },
       cast: [
         { key: "quan_ly", role: "partner", label: "c\xF4 qu\u1EA3n l\xFD n\xF3i nhanh" },
         { key: "fan", role: "neighbor", label: "ng\u01B0\u1EDDi h\xE2m m\u1ED9 s\u1ED1 m\u1ED9t" },
@@ -23055,7 +23056,7 @@ var Argon = (() => {
         card(
           "ns_mo_clip",
           "Ba m\u01B0\u01A1i gi\xE2y gi\u1EEFa ng\xE3 t\u01B0",
-          () => "\u0110\xE8n giao th\xF4ng \u1EDF ng\xE3 t\u01B0 h\u1ECFng, xe k\u1EB9t c\u1EE9ng, v\xE0 b\u1EA1n \u0111ang c\u1EA7m s\u1EB5n c\xE2y ch\u1ED5i v\u1EEBa mua. Ba m\u01B0\u01A1i gi\xE2y b\u1EA1n \u0111\u1EE9ng gi\u1EEFa \u0111\u01B0\u1EDDng h\xF4 \u201CB\xEAn n\xE0y \u0111i, b\xEAn kia ch\u1EDD\u201D \u0111\u01B0\u1EE3c ai \u0111\xF3 quay l\u1EA1i. S\xE1ng h\xF4m sau, \u0111o\u1EA1n clip c\xF3 m\u01B0\u1EDDi m\u1ED9t tri\u1EC7u l\u01B0\u1EE3t xem.",
+          () => "\u0110\xE8n giao th\xF4ng \u1EDF ng\xE3 t\u01B0 h\u1ECFng, xe k\u1EB9t c\u1EE9ng, v\xE0 b\u1EA1n \u0111ang c\u1EA7m s\u1EB5n c\xE2y ch\u1ED5i v\u1EEBa mua. Ba m\u01B0\u01A1i gi\xE2y b\u1EA1n \u0111\u1EE9ng gi\u1EEFa \u0111\u01B0\u1EDDng h\xF4 \u201CB\xEAn n\xE0y \u0111i, b\xEAn kia ch\u1EDD\u201D \u0111\u01B0\u1EE3c ai \u0111\xF3 quay l\u1EA1i. S\xE1ng h\xF4m sau, \u0111o\u1EA1n clip c\xF3 m\u01B0\u1EDDi m\u1ED9t tri\u1EC7u l\u01B0\u1EE3t xem, v\xE0 m\u1ED9t k\xEAnh truy\u1EC1n h\xECnh chuy\u1EC3n cho b\u1EA1n ti\u1EC1n b\u1EA3n quy\u1EC1n \u0111\u1EE7 ti\xEAu c\u1EA3 m\u1EA5y th\xE1ng.",
           (c) => [
             C("L\xEAn m\u1EA1ng n\xF3i v\xE0i c\xE2u c\u1EA3m \u01A1n", { flags: ["ns_cam_on"], counters: { ns_danh: 1 } }, "D\u1EC5 th\u01B0\u01A1ng, th\xEAm m\u1ED9t tri\u1EC7u l\u01B0\u1EE3t xem"),
             C(c.has_job ? "T\u1EAFt \u0111i\u1EC7n tho\u1EA1i, \u0111i l\xE0m nh\u01B0 th\u01B0\u1EDDng" : c.in_school ? "T\u1EAFt \u0111i\u1EC7n tho\u1EA1i, \u0111i h\u1ECDc nh\u01B0 th\u01B0\u1EDDng" : "T\u1EAFt \u0111i\u1EC7n tho\u1EA1i, s\u1ED1ng nh\u01B0 th\u01B0\u1EDDng", { happy: 1, flags: ["ns_tat_may"] }, "Y\xEAn \u0111\u01B0\u1EE3c ba ng\xE0y, r\u1ED3i ng\u01B0\u1EDDi ta t\u1EF1 t\xECm t\u1EDBi")
@@ -23232,7 +23233,7 @@ var Argon = (() => {
         card(
           "ll_mo_trang_tay",
           "Bu\u1ED5i s\xE1ng tr\u1EAFng tay",
-          (c, k) => `B\u1EA1n th\u1EE9c d\u1EADy trong c\u0103n ph\xF2ng tr\u1ECD m\u01B0\u1EDDi hai m\xE9t vu\xF4ng, v\xED c\xF2n \u0111\xFAng ti\u1EC1n m\u1ED9t b\u1EEFa s\xE1ng. M\u1ECDi th\u1EE9 c\u1EE7a \u0111\u1EDDi tr\u01B0\u1EDBc \u0111\xE3 m\u1EA5t: ti\u1EC1n, ch\u1ED7 \u1EDF, v\xE0 c\u1EA3 c\xE1i t\xEAn trong danh b\u1EA1 c\u1EE7a nhi\u1EC1u ng\u01B0\u1EDDi. ${cap3(k.npc("ban_phong"))} ng\xE1y to t\u1EDBi m\u1EE9c c\u1EEDa s\u1ED5 rung theo nh\u1ECBp.`,
+          (c, k) => `B\u1EA1n th\u1EE9c d\u1EADy trong c\u0103n ph\xF2ng tr\u1ECD m\u01B0\u1EDDi hai m\xE9t vu\xF4ng, v\xED c\xF2n \u0111\xFAng ti\u1EC1n m\u1ED9t b\u1EEFa s\xE1ng. ${c.home_owner ? "M\u1ECDi th\u1EE9 c\u1EE7a \u0111\u1EDDi tr\u01B0\u1EDBc \u0111\xE3 m\u1EA5t: ti\u1EC1n, nh\u1EEFng m\u1ED1i l\xE0m \u0103n, v\xE0 c\u1EA3 c\xE1i t\xEAn trong danh b\u1EA1 c\u1EE7a nhi\u1EC1u ng\u01B0\u1EDDi. C\u0103n nh\xE0 c\u0169 v\u1EABn \u0111\u1EE9ng t\xEAn b\u1EA1n, nh\u01B0ng n\xF3 \u1EDF l\u1EA1i ph\xEDa sau, c\xF9ng v\u1EDBi \u0111\u1EDDi tr\u01B0\u1EDBc." : "M\u1ECDi th\u1EE9 c\u1EE7a \u0111\u1EDDi tr\u01B0\u1EDBc \u0111\xE3 m\u1EA5t: ti\u1EC1n, ch\u1ED7 \u1EDF, v\xE0 c\u1EA3 c\xE1i t\xEAn trong danh b\u1EA1 c\u1EE7a nhi\u1EC1u ng\u01B0\u1EDDi."} ${cap3(k.npc("ban_phong"))} ng\xE1y to t\u1EDBi m\u1EE9c c\u1EEDa s\u1ED5 rung theo nh\u1ECBp.`,
           [
             C("\u0102n s\xE1ng th\u1EADt no, r\u1ED3i t\xEDnh ti\u1EBFp", { happy: 3, flags: ["ll_an_no"] }, "H\u1EBFt ti\u1EC1n, nh\u01B0ng c\xF3 s\u1EE9c"),
             C("Nh\u1ECBn, gi\u1EEF ti\u1EC1n \u0111i xe t\xECm vi\u1EC7c", { health: -2, flags: ["ll_nhin"], counters: { ll_cham: 1 } }, "\u0110\xF3i, nh\u01B0ng \u0111i \u0111\u01B0\u1EE3c xa h\u01A1n")
@@ -24450,7 +24451,7 @@ var Argon = (() => {
       color: "#5a4ac0",
       years: [6, 11],
       weird: "sf",
-      rules: { flags: ["w_thu_2081"] },
+      rules: { flags: ["w_thu_2081"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "buu_ta", role: "neighbor", label: "b\xE1c b\u01B0u t\xE1 gi\xE0" }] },
       gag: { key: "loi_dan", lines: [
         'L\u1EDDi d\u1EB7n trong th\u01B0: "\u0110\u1EEBng cho con nu\xF4i con c\xE1 v\xE0ng t\xEAn S\u1EA5m." Chi\u1EC1u \u0111\xF3 con b\u1EA1n mang v\u1EC1 m\u1ED9t con c\xE1 v\xE0ng, \u0111\xE3 \u0111\u1EB7t t\xEAn S\u1EA5m.',
@@ -24465,7 +24466,7 @@ var Argon = (() => {
           card(
             "s03_mo_doc_trom",
             "\u0110\u1ECDc tr\u01B0\u1EDBc th\u01B0 c\u1EE7a con",
-            (c, k) => `B\u1EA1n ng\u1ED3i trong b\u1EBFp, \u0111\xE8n v\xE0ng, con \u0111ang ng\u1EE7. L\xE1 th\u01B0 d\xE0i ch\xEDn trang, m\u1ED7i trang m\u1ED9t l\u1EDDi d\u1EB7n \u0111\xE1nh s\u1ED1. ${k.gag()}`,
+            (c, k) => `B\u1EA1n ng\u1ED3i trong b\u1EBFp, \u0111\xE8n v\xE0ng, con \u0111ang ng\u1EE7. L\xE1 th\u01B0 d\xE0i ch\xEDn trang, m\u1ED7i trang m\u1ED9t l\u1EDDi d\u1EB7n \u0111\xE1nh s\u1ED1. L\u1EDDi d\u1EB7n s\u1ED1 m\u1ED9t l\xE0 cho con \u0111i h\u1ECDc b\u01A1i ngay n\u0103m nay, h\u1ECDc ph\xED \u0111\xF3ng theo n\u0103m, v\xE0 n\u0103m sau l\u1EA1i c\xF3 th\xEAm m\u1ED9t l\u1EDBp ph\u1EA3i h\u1ECDc. ${k.gag()}`,
             [
               C("\u0110\u1ECDc h\u1EBFt c\u1EA3 ch\xEDn trang", { flags: ["s03_doc_het"], know: 2, happy: -2 }, "Bi\u1EBFt tr\u01B0\u1EDBc nhi\u1EC1u chuy\u1EC7n, ng\u1EE7 kh\xF4ng y\xEAn"),
               C("\u0110\u1ECDc trang \u0111\u1EA7u r\u1ED3i d\xE1n l\u1EA1i", { flags: ["s03_dan_lai"], happy: 1 }, "Nh\u1EB9 \u0111\u1EA7u, nh\u01B0ng t\xF2 m\xF2 c\u1EAFn r\u1EE9t")
@@ -24567,7 +24568,7 @@ var Argon = (() => {
       color: "#6a4fc4",
       years: [5, 9],
       weird: "sf",
-      rules: { flags: ["w_tua_lai"] },
+      rules: { flags: ["w_tua_lai"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "tho_dong_ho", role: "mentor", label: "\xF4ng th\u1EE3 \u0111\u1ED3ng h\u1ED3 \u1EDF ch\u1EE3 c\u0169" }] },
       gag: { key: "lech_sau_tua", lines: [
         "Sau l\u1EA7n tua, m\u1ECDi th\u1EE9 y nh\u01B0 c\u0169. Ch\u1EC9 c\xF3 con m\xE8o nh\xE0 b\xEAn gi\u1EDD m\xE0u cam, v\xE0 n\xF3 nh\xECn b\u1EA1n nh\u01B0 bi\u1EBFt h\u1EBFt.",
@@ -24582,7 +24583,7 @@ var Argon = (() => {
           card(
             "s04_mo_thu",
             "L\u1EA7n tua \u0111\u1EA7u ti\xEAn",
-            (c, k) => `B\u1EA1n th\u1EED tr\xEAn m\u1ED9t chuy\u1EC7n nh\u1ECF: c\xE2u n\xF3i h\u1EDB trong b\u1EEFa c\u01A1m t\u1ED1i qua. V\u1EB7n ng\u01B0\u1EE3c m\u1ED9t v\xF2ng, b\u1EEFa c\u01A1m d\u1ECDn ra l\u1EA1i, c\u1EA3 nh\xE0 ng\u1ED3i \u0111\xFAng ch\u1ED7 c\u0169. ${k.gag()}`,
+            (c, k) => `B\u1EA1n th\u1EED tr\xEAn m\u1ED9t chuy\u1EC7n nh\u1ECF: c\xE2u n\xF3i h\u1EDB trong b\u1EEFa c\u01A1m t\u1ED1i qua. V\u1EB7n ng\u01B0\u1EE3c m\u1ED9t v\xF2ng, b\u1EEFa c\u01A1m d\u1ECDn ra l\u1EA1i, c\u1EA3 nh\xE0 ng\u1ED3i \u0111\xFAng ch\u1ED7 c\u0169. S\xE1ng ra, v\xED b\u1EA1n m\u1ECFng \u0111i \u0111\xFAng b\u1EB1ng ti\u1EC1n m\u1ED9t b\u1EEFa c\u01A1m: chi\u1EBFc \u0111\u1ED3ng h\u1ED3 \u0111\xE3 thu ph\xED, v\xE0 n\u0103m n\xE0o n\xF3 c\u0169ng s\u1EBD thu. ${k.gag()}`,
             [
               C("N\xF3i l\u1EA1i c\xE2u kh\xE1c, kh\xE9o h\u01A1n", { flags: ["s04_tua_1"], counters: { s04_tua: 1 }, rel: 2 }, "B\u1EEFa c\u01A1m vui, b\u1EA1n bi\u1EBFt m\xECnh v\u1EEBa gian l\u1EADn"),
               C("\u0110\u1EC3 nguy\xEAn c\xE2u n\xF3i h\u1EDB", { flags: ["s04_khong_tua"], happy: 1 }, "Th\u1EADt th\xE0, ch\u1ECBu \xE1nh m\u1EAFt c\u1EE7a c\u1EA3 nh\xE0")
@@ -24683,7 +24684,7 @@ var Argon = (() => {
       color: "#5b6ee0",
       years: [5, 8],
       weird: "sf",
-      rules: { flags: ["w_thu_noi"] },
+      rules: { flags: ["w_thu_noi"], yearly: { money: -0.05 } },
       reset: { cast: [
         { key: "ky_thuat", role: "official", label: "anh k\u1EF9 thu\u1EADt vi\xEAn h\xE3ng chip" },
         { key: "hang_xom", role: "neighbor", label: "b\xE0 h\xE0ng x\xF3m th\xEDnh tai" }
@@ -24701,7 +24702,7 @@ var Argon = (() => {
           card(
             "s05_mo_cau_dau",
             "C\xE2u n\xF3i \u0111\u1EA7u ti\xEAn trong b\u1EEFa c\u01A1m",
-            (c, k) => `C\u1EA3 nh\xE0 \u0111ang \u0103n th\xEC ${petOf(c)} nh\u1EA3y l\xEAn gh\u1EBF tr\u1ED1ng. ${k.gag()}`,
+            (c, k) => `C\u1EA3 nh\xE0 \u0111ang \u0103n th\xEC ${petOf(c)} nh\u1EA3y l\xEAn gh\u1EBF tr\u1ED1ng, v\xE0 t\u1EEB b\u1EEFa \u0111\xF3 n\xF3 \u0111\xF2i m\u1ED9t su\u1EA5t \u0103n ri\xEAng nh\u01B0 ng\u01B0\u1EDDi. ${k.gag()}`,
             [
               C("C\u01B0\u1EDDi tr\u1EEB, g\u1EAFp th\u1EE9c \u0103n cho n\xF3", { flags: ["s05_cuoi_tru"], happy: 2 }, "\xCAm b\u1EEFa nay, n\xF3 h\u1ECDc \u0111\u01B0\u1EE3c l\xE0 n\xF3i th\xEC c\xF3 \u0103n"),
               C("H\u1ECDp gia \u0111\xECnh kh\u1EA9n c\u1EA5p", { flags: ["s05_hop_khan"], rel: -1, know: 2 }, "C\u1EA3 nh\xE0 th\u1ED1ng nh\u1EA5t l\u1EDDi khai, kh\xF4ng ai vui")
@@ -24907,7 +24908,7 @@ var Argon = (() => {
       ]
     }),
     "M\u1EA5t ba n\u0103m qua m\u1ED9t \u0111\xEAm, m\u1ECDi ng\u01B0\u1EDDi \u0111\xE3 s\u1ED1ng ti\u1EBFp"
-  ), L07_O_LAI = land("s07_o_lai", "B\u1EA1n k\xFD ti\u1EBFp h\u1EE3p \u0111\u1ED3ng \u0111\u1ECBnh c\u01B0 tr\u1ECDn \u0111\u1EDDi. Thu\u1ED9c \u0111\u1ECBa \u0111\u0103ng k\xFD d\u01B0\u1EDBi c\u1EDD m\u1ED9t n\u01B0\u1EDBc kh\xE1c, h\u1ED3 s\u01A1 c\u1EE7a b\u1EA1n chuy\u1EC3n theo, v\xE0 b\u1EA1n th\xF4i \u0111\u1EBFm ng\xE0y v\u1EC1.", { custom: "migrate_now", flags: ["s07_dan_sao_hoa"] }), L07_VE = land("s07_tro_ve", "B\u1EA1n v\u1EC1 tr\xEAn chuy\u1EBFn t\xE0u cu\u1ED1i m\xF9a, mang theo m\u1ED9t kho\u1EA3n ti\u1EBFt ki\u1EC7m l\u1EDBn v\xE0 m\u1ED9t l\xE0n da kh\xF4ng quen n\u1EAFng. \u0110\u1EA5t d\u01B0\u1EDBi ch\xE2n n\u1EB7ng h\u01A1n b\u1EA1n nh\u1EDB.", { money: 3, flags: ["s07_tro_ve"] }), S07 = weird(
+  ), L07_O_LAI = land("s07_o_lai", "B\u1EA1n k\xFD ti\u1EBFp h\u1EE3p \u0111\u1ED3ng \u0111\u1ECBnh c\u01B0 tr\u1ECDn \u0111\u1EDDi. Thu\u1ED9c \u0111\u1ECBa \u0111\u0103ng k\xFD d\u01B0\u1EDBi c\u1EDD m\u1ED9t n\u01B0\u1EDBc kh\xE1c, h\u1ED3 s\u01A1 c\u1EE7a b\u1EA1n chuy\u1EC3n theo, v\xE0 b\u1EA1n th\xF4i \u0111\u1EBFm ng\xE0y v\u1EC1.", { custom: "migrate_now", flags: ["s07_dan_sao_hoa"] }), L07_THEM_KY = land("s07_them_ky", "B\u1EA1n k\xFD th\xEAm m\u1ED9t k\u1EF3 tr\u1EF1c \u1EDF tr\u1EA1m, \u0111\u1EC3 d\xE0nh \u0111\u01B0\u1EE3c m\u1ED9t kho\u1EA3n l\u1EDBn, v\xE0 h\u1EB9n chuy\u1EBFn t\xE0u sau s\u1EBD v\u1EC1 h\u1EB3n.", { money: 1.5, flags: ["s07_them_ky"] }), L07_VE = land("s07_tro_ve", "B\u1EA1n v\u1EC1 tr\xEAn chuy\u1EBFn t\xE0u cu\u1ED1i m\xF9a, mang theo m\u1ED9t kho\u1EA3n ti\u1EBFt ki\u1EC7m l\u1EDBn v\xE0 m\u1ED9t l\xE0n da kh\xF4ng quen n\u1EAFng. \u0110\u1EA5t d\u01B0\u1EDBi ch\xE2n n\u1EB7ng h\u01A1n b\u1EA1n nh\u1EDB.", { money: 3, flags: ["s07_tro_ve"] }), S07 = weird(
     "S07",
     "sf",
     ["ky", "dat"],
@@ -24934,7 +24935,7 @@ var Argon = (() => {
         "C\u1EA3 nh\xE0 h\xE1t m\u1EEBng sinh nh\u1EADt b\u1EA1n. B\xE0i h\xE1t t\u1EDBi n\u01A1i l\xFAc b\u1EA1n \u0111\xE3 ng\u1EE7, m\xE1y t\u1EF1 ph\xE1t trong bu\u1ED3ng t\u1ED1i.",
         'B\u1EA1n n\xF3i "Con nh\u1EDB nh\xE0." Hai m\u01B0\u01A1i ph\xFAt \u0111\u1EE7 \u0111\u1EC3 h\u1ED1i h\u1EADn, kh\xF4ng \u0111\u1EE7 \u0111\u1EC3 r\xFAt l\u1EA1i.'
       ] },
-      landings: [L07_O_LAI, L07_VE],
+      landings: [L07_O_LAI, L07_THEM_KY, L07_VE],
       beats: [
         /* mo_man */
         [
@@ -24952,8 +24953,8 @@ var Argon = (() => {
             "Bu\u1ED3ng ng\u1EE7 hai m\xE9t vu\xF4ng",
             (c, k) => `${cap3(k.npc("chi_huy"))} ph\xE1t cho b\u1EA1n m\u1ED9t bu\u1ED3ng ng\u1EE7 hai m\xE9t vu\xF4ng v\xE0 m\u1ED9t l\u1ECBch ca tr\u1EF1c in k\xEDn c\u1EA3 hai m\u1EB7t. Ca \u0111\xEAm ngo\xE0i tr\u1EDDi tr\u1EA3 g\u1EA5p \u0111\xF4i, nh\u01B0ng gi\xF3 b\u1EE5i \u1EDF \u0111\xE2y c\u1EAFt c\u1EA3 k\xEDnh.`,
             [
-              C("Nh\u1EADn ca ngo\xE0i tr\u1EDDi", { money: 0.2, health: -3, flags: ["s07_ca_ngoai"] }, "Ti\u1EC1n v\u1EC1 nhanh, ph\u1ED5i ch\u1ECBu thi\u1EC7t"),
-              C("Nh\u1EADn ca trong nh\xE0 k\xEDnh", { flags: ["s07_nha_kinh"], happy: 2 }, "An to\xE0n, ch\u1EADm gi\xE0u")
+              C("Nh\u1EADn ca ngo\xE0i tr\u1EDDi", { money: 0.2, health: -3, custom: "job_switch:build", flags: ["s07_ca_ngoai"] }, "Ti\u1EC1n v\u1EC1 nhanh, ph\u1ED5i ch\u1ECBu thi\u1EC7t"),
+              C("Nh\u1EADn ca trong nh\xE0 k\xEDnh", { custom: "job_switch:farm", flags: ["s07_nha_kinh"], happy: 2 }, "An to\xE0n, ch\u1EADm gi\xE0u")
             ]
           )
         ],
@@ -25017,8 +25018,8 @@ var Argon = (() => {
             "s07_ket_chuyen_cuoi",
             "Chuy\u1EBFn t\xE0u v\u1EC1 cu\u1ED1i m\xF9a",
             (c, k) => `L\u1ECBch ph\xF3ng t\xE0u v\u1EC1 ch\u1EC9 c\xF2n m\u1ED9t chuy\u1EBFn trong m\xF9a n\xE0y. B\u1EA1n ngh\u0129 t\u1EDBi ${k.scar("no") || "l\u1EDDi h\u1EE9a s\u1EBD v\u1EC1 nh\xE0 d\u1ECBp n\u0103m m\u1EDBi"}, r\u1ED3i nh\xECn ra c\u1EEDa s\u1ED5. ${c.flags.has("s07_hat_giong") ? "Lu\u1ED1ng rau t\u1EEB g\xF3i h\u1EA1t gi\u1ED1ng b\u1EA1n mang theo v\u1EEBa ra l\u1EE9a l\xE1 th\u1EE9 ba." : "Ngo\xE0i kia ch\u1EC9 c\xF3 \u0111\xE1 \u0111\u1ECF v\xE0 gi\xF3."} ${c.flags.has("s07_gui_tien") ? "D\u01B0\u1EDBi \u0111\u1EA5t, ng\u01B0\u1EDDi nh\xE0 v\u1EEBa g\u1EEDi l\xEAn t\u1EA5m \u1EA3nh c\u0103n b\u1EBFp s\u1EEDa b\u1EB1ng ti\u1EC1n c\u1EE7a b\u1EA1n." : "D\u01B0\u1EDBi \u0111\u1EA5t, ng\u01B0\u1EDDi nh\xE0 \u0111\xE3 quen v\u1EDBi ch\u1ED7 tr\u1ED1ng c\u1EE7a b\u1EA1n."}`,
-            [
-              ending(L07_O_LAI, "\u1EDE l\u1EA1i \u0111\u1ECBnh c\u01B0, kh\xF4ng v\u1EC1 n\u1EEFa", "Th\xE0nh ng\u01B0\u1EDDi c\u1EE7a tr\u1EA1m, m\u1EA5t h\u1EB3n ch\u1ED7 d\u01B0\u1EDBi \u0111\u1EA5t"),
+            (c) => [
+              migrateOk(c) ? ending(L07_O_LAI, "\u1EDE l\u1EA1i \u0111\u1ECBnh c\u01B0, kh\xF4ng v\u1EC1 n\u1EEFa", "Th\xE0nh ng\u01B0\u1EDDi c\u1EE7a tr\u1EA1m, m\u1EA5t h\u1EB3n ch\u1ED7 d\u01B0\u1EDBi \u0111\u1EA5t") : ending(L07_THEM_KY, "K\xFD th\xEAm m\u1ED9t k\u1EF3 \u1EDF tr\u1EA1m", "Th\xEAm m\u1ED9t kho\u1EA3n l\u1EDBn, th\xEAm v\xE0i n\u0103m xa nh\xE0"),
               ending(L07_VE, "L\xEAn chuy\u1EBFn t\xE0u v\u1EC1", "Mang ti\u1EC1n v\u1EC1, l\xE0m ng\u01B0\u1EDDi l\u1EA1 \u1EDF nh\xE0 m\xECnh")
             ]
           )
@@ -25575,7 +25576,7 @@ var Argon = (() => {
       color: "#5a4fcf",
       years: [5, 9],
       weird: "sf",
-      rules: { flags: ["w_time_door"] },
+      rules: { flags: ["w_time_door"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "ba_trong_cua", role: "neighbor", label: "b\xE0 tr\xF4ng nh\xE0 v\u1EC7 sinh" }, { key: "buu_ta", role: "mentor", label: "anh b\u01B0u t\xE1 b\xEAn kia c\u1EEDa" }] },
       gag: { key: "tien_thoi_cu", lines: [
         "B\xE0 tr\xF4ng c\u1EEDa thu ti\u1EC1n v\xE9, \u0111\u1EBFm hai l\u1EA7n, r\u1ED3i th\u1ED1i l\u1EA1i b\u1EB1ng \u0111\u1ED3ng ti\u1EC1n c\u0169 kh\xF4ng ai ti\xEAu \u0111\u01B0\u1EE3c.",
@@ -25591,7 +25592,7 @@ var Argon = (() => {
             "s12_mo_thu",
             "L\xE1 th\u01B0 \u0111\u1EA7u ti\xEAn",
             (c, k) => J2(
-              "L\u1EA7n \u0111\u1EA7u b\u01B0\u1EDBc qua, b\u1EA1n ch\u1EC9 mang theo c\xE1i \u0111i\u1EC7n tho\u1EA1i kh\xF4ng c\xF3 s\xF3ng.",
+              "L\u1EA7n \u0111\u1EA7u b\u01B0\u1EDBc qua, b\u1EA1n ch\u1EC9 mang theo c\xE1i \u0111i\u1EC7n tho\u1EA1i kh\xF4ng c\xF3 s\xF3ng. B\xE0 tr\xF4ng c\u1EEDa b\xE1n cho b\u1EA1n t\u1EA5m v\xE9 n\u0103m, gi\xE1 kh\xF4ng r\u1EBB, m\u1ED7i n\u0103m mua l\u1EA1i m\u1ED9t l\u1EA7n.",
               `B\xEAn kia, ${k.npc("buu_ta")} ng\u1ED3i b\u1EC7t c\u1EA1nh chi\u1EBFc xe \u0111\u1EA1p tu\u1ED9t x\xEDch, th\u01B0 r\u01A1i \u0111\u1EA7y v\u1EC9a h\xE8, v\xE0 nh\u1EDD b\u1EA1n giao gi\xFAp m\u1ED9t l\xE1.`,
               "\u0110\u1ECBa ch\u1EC9 tr\xEAn phong b\xEC l\xE0 nh\xE0 b\u1EA1n, t\u1EEB h\u1ED3i n\xF3 ch\u01B0a l\xE0 nh\xE0 b\u1EA1n.",
               k.gag()
@@ -26017,7 +26018,7 @@ var Argon = (() => {
         ]
       ]
     })
-  ), L15_QUAN = land("nguoi_cua_vom", "B\u1EA1n \u1EDF l\u1EA1i, nh\u1EADn m\u1ED9t ch\u1EE9c trong ban v\u1EADn h\xE0nh v\xF2m, c\xF3 th\u1EBB v\xE0ng v\xE0 m\u1ED9t c\xE1i b\xE0n nh\xECn ra l\u1EDBp k\xEDnh.", { custom: "become:official" }), L15_GAC = land("gac_cong_vom", "B\u1EA1n \u1EDF l\u1EA1i, nh\u1EADn g\xE1c c\u1ED5ng ch\xEDnh c\u1EE7a v\xF2m, bi\u1EBFt m\u1EB7t t\u1EEBng ng\u01B0\u1EDDi ra v\xE0o.", { custom: "become:security_guard" }), L15_RA = land("tron_ra_vom", "B\u1EA1n chui qua khe c\u1EEDa, d\u1ECDn sang m\u1ED9t th\xE0nh ph\u1ED1 kh\xE1c, n\u01A1i tr\u1EDDi c\xF2n m\u01B0a.", { custom: "move_city", happy: 4 }), L15_XA = land("ra_vom_di_xa", "B\u1EA1n ra kh\u1ECFi v\xF2m v\xE0 \u0111i lu\xF4n sang n\u01B0\u1EDBc kh\xE1c, mang theo m\u1ED9t chai kh\xF4ng kh\xED trong v\xF2m.", { custom: "migrate_now" }), S15 = weird(
+  ), L15_QUAN = land("nguoi_cua_vom", "B\u1EA1n \u1EDF l\u1EA1i, nh\u1EADn m\u1ED9t ch\u1EE9c trong ban v\u1EADn h\xE0nh v\xF2m, c\xF3 th\u1EBB v\xE0ng v\xE0 m\u1ED9t c\xE1i b\xE0n nh\xECn ra l\u1EDBp k\xEDnh.", { custom: "become:official" }), L15_GAC = land("gac_cong_vom", "B\u1EA1n \u1EDF l\u1EA1i, nh\u1EADn g\xE1c c\u1ED5ng ch\xEDnh c\u1EE7a v\xF2m, bi\u1EBFt m\u1EB7t t\u1EEBng ng\u01B0\u1EDDi ra v\xE0o.", { custom: "become:security_guard" }), L15_RA = land("tron_ra_vom", "B\u1EA1n chui qua khe c\u1EEDa, d\u1ECDn sang m\u1ED9t th\xE0nh ph\u1ED1 kh\xE1c, n\u01A1i tr\u1EDDi c\xF2n m\u01B0a.", { custom: "move_city", happy: 4 }), L15_DEN_BU = land("o_lai_den_bu", "B\u1EA1n \u1EDF l\u1EA1i d\u01B0\u1EDBi v\xF2m, nh\u1EADn kho\u1EA3n \u0111\u1EC1n b\xF9 c\u1EE7a ban v\u1EADn h\xE0nh cho nh\u1EEFng n\u0103m b\u1ECB nh\u1ED1t, v\xE0 t\u1EADp quen v\u1EDBi b\u1EA7u tr\u1EDDi kh\xF4ng bao gi\u1EDD m\u01B0a.", { money: 1, happy: 1 }), L15_XA = land("ra_vom_di_xa", "B\u1EA1n ra kh\u1ECFi v\xF2m v\xE0 \u0111i lu\xF4n sang n\u01B0\u1EDBc kh\xE1c, mang theo m\u1ED9t chai kh\xF4ng kh\xED trong v\xF2m.", { custom: "migrate_now" }), S15 = weird(
     "S15",
     "sf",
     ["dat", "luat"],
@@ -26045,7 +26046,7 @@ var Argon = (() => {
         "D\u1EF1 b\xE1o th\u1EDDi ti\u1EBFt c\xF3 th\xEAm m\u1EE5c m\u1EDBi: \u0111\u1ED9 \u1EA9m c\u1EE7a l\xF2ng ng\u01B0\u1EDDi. H\xF4m nay: th\u1EA5p.",
         "D\u1EF1 b\xE1o th\u1EDDi ti\u1EBFt b\xE1o c\xF3 m\u01B0a. C\u1EA3 th\xE0nh ph\u1ED1 \u0111\u1ED5 ra \u0111\u01B0\u1EDDng, c\u1EA7m s\u1EB5n ch\u1EADu."
       ] },
-      landings: [L15_QUAN, L15_GAC, L15_RA, L15_XA],
+      landings: [L15_QUAN, L15_GAC, L15_RA, L15_XA, L15_DEN_BU],
       beats: [
         /* mo_man */
         [
@@ -26166,7 +26167,7 @@ var Argon = (() => {
             (c) => [
               ...pathOpen("official", c.age) ? [ending(L15_QUAN, "\u1EDE l\u1EA1i, nh\u1EADn ch\u1EE9c trong ban v\u1EADn h\xE0nh", "C\xF3 quy\u1EC1n, s\u1ED1ng c\u1EA3 \u0111\u1EDDi d\u01B0\u1EDBi k\xEDnh")] : pathOpen("security_guard", c.age) ? [ending(L15_GAC, "\u1EDE l\u1EA1i, nh\u1EADn g\xE1c c\u1ED5ng v\xF2m", "Y\xEAn \u1ED5n, bi\u1EBFt m\u1ECDi chuy\u1EC7n ra v\xE0o")] : [],
               ending(L15_RA, "Ra ngo\xE0i, d\u1ECDn sang th\xE0nh ph\u1ED1 kh\xE1c", "C\xF3 m\u01B0a, b\u1EAFt \u0111\u1EA7u l\u1EA1i t\u1EEB \u0111\u1EA7u"),
-              ending(L15_XA, "Ra ngo\xE0i v\xE0 \u0111i h\u1EB3n sang n\u01B0\u1EDBc kh\xE1c", "Th\u1EADt xa v\xF2m, th\u1EADt xa m\u1ECDi th\u1EE9")
+              migrateOk(c) ? ending(L15_XA, "Ra ngo\xE0i v\xE0 \u0111i h\u1EB3n sang n\u01B0\u1EDBc kh\xE1c", "Th\u1EADt xa v\xF2m, th\u1EADt xa m\u1ECDi th\u1EE9") : ending(L15_DEN_BU, "\u1EDE l\u1EA1i, nh\u1EADn ti\u1EC1n \u0111\u1EC1n b\xF9 c\u1EE7a ban v\u1EADn h\xE0nh", "C\xF3 m\u1ED9t kho\u1EA3n, s\u1ED1ng ti\u1EBFp d\u01B0\u1EDBi k\xEDnh")
             ]
           )
         ]
@@ -26498,7 +26499,7 @@ var Argon = (() => {
       color: "#5d7be0",
       years: [5, 10],
       weird: "sf",
-      rules: { flags: ["w_alien_tenant"] },
+      rules: { flags: ["w_alien_tenant"], yearly: { money: 0.03 } },
       reset: { cast: [{ key: "nguoi_thue", role: "neighbor", label: "ng\u01B0\u1EDDi thu\xEA ph\xF2ng s\u1ED1 2" }, { key: "thanh_tra", role: "official", label: "\xF4ng thanh tra nh\xE0 \u1EDF c\u1EA7m s\u1ED5 tay" }] },
       gag: { key: "tien_thue", lines: [
         "Ti\u1EC1n thu\xEA th\xE1ng n\xE0y: m\u1ED9t vi\xEAn \u0111\xE1 bi\u1EBFt h\xE1t, h\xE1t l\u1EC7ch t\xF4ng.",
@@ -26515,7 +26516,7 @@ var Argon = (() => {
             "\u0110i\u1EC1u kho\u1EA3n vi\u1EBFt tay",
             (c, k) => J2(
               "H\u1EE3p \u0111\u1ED3ng c\xF3 th\xEAm m\u1ED9t \u0111i\u1EC1u kho\u1EA3n ng\u01B0\u1EDDi thu\xEA t\u1EF1 vi\u1EBFt tay: ch\u1EE7 nh\xE0 kh\xF4ng m\u1EDF c\u1EEDa ph\xF2ng s\u1ED1 2 v\xE0o nh\u1EEFng \u0111\xEAm kh\xF4ng tr\u0103ng.",
-              `${cap3(k.npc("nguoi_thue"))} k\xFD b\u1EB1ng m\u1ED9t d\u1EA5u tay c\xF3 s\xE1u ng\xF3n.`,
+              `${cap3(k.npc("nguoi_thue"))} k\xFD b\u1EB1ng m\u1ED9t d\u1EA5u tay c\xF3 s\xE1u ng\xF3n. Ti\u1EC1n ph\xF2ng m\u1ED7i n\u0103m tr\u1EA3 b\u1EB1ng m\u1ED9t vi\xEAn \u0111\xE1 bi\u1EBFt h\xE1t, v\xE0 ti\u1EC7m v\xE0ng \u0111\u1EA7u ng\xF5 ch\u1ECBu mua l\u1EA1i v\u1EDBi gi\xE1 kha kh\xE1.`,
               k.gag()
             ),
             [
@@ -26627,7 +26628,7 @@ var Argon = (() => {
             (c) => [
               ending(L18_DO, "\u1EDE l\u1EA1i, b\xE1n k\xE9t \u0111\u1ED3 l\u1EA1", "C\xF3 c\u1EE7a, s\u1ED1ng c\u1EA1nh nh\u1EEFng th\u1EE9 kh\xF4ng ai hi\u1EC3u"),
               pathOpen("tour_guide", c.age) ? ending(L18_DU_LICH, "M\u1EDF nh\xE0 tr\u1ECD cho kh\xE1ch tham quan", "N\u1ED5i ti\u1EBFng, nh\xE0 kh\xF4ng c\xF2n l\xE0 nh\xE0") : ending(L18_DIEU_TRA, "K\xFD bi\xEAn b\u1EA3n, giao h\u1EBFt cho thanh tra", "S\u1EA1ch tay, m\u1EA5t nh\xE0 v\xE0 m\u1ED9t kho\u1EA3n ph\u1EA1t"),
-              ending(L18_DI, "L\xEAn t\xE0u \u0111i c\xF9ng ng\u01B0\u1EDDi thu\xEA", "B\u1ECF l\u1EA1i t\u1EA5t c\u1EA3, h\u1EA1 c\xE1nh \u1EDF m\u1ED9t n\u01A1i l\u1EA1")
+              ...migrateOk(c) ? [ending(L18_DI, "L\xEAn t\xE0u \u0111i c\xF9ng ng\u01B0\u1EDDi thu\xEA", "B\u1ECF l\u1EA1i t\u1EA5t c\u1EA3, h\u1EA1 c\xE1nh \u1EDF m\u1ED9t n\u01A1i l\u1EA1")] : []
             ]
           )
         ]
@@ -27072,7 +27073,7 @@ var Argon = (() => {
       color: "#7a52d1",
       years: [5, 6],
       weird: "sf",
-      rules: { flags: ["w_other_self"] },
+      rules: { flags: ["w_other_self"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "ong_gac_dem", role: "neighbor", label: "\xF4ng g\xE1c \u0111\xEAm c\u1EE7a t\xF2a nh\xE0" }] },
       gag: { key: "ban_kia_muon_do", lines: [
         "B\u1EA3n kia m\u01B0\u1EE3n \u0111\xF4i d\xE9p c\u1EE7a b\u1EA1n, s\xE1ng h\xF4m sau tr\u1EA3 l\u1EA1i m\u1ED9t \u0111\xF4i gi\xE0y da b\xF3ng lo\xE1ng.",
@@ -27087,7 +27088,7 @@ var Argon = (() => {
           card(
             "s22_mo_guong",
             "Ng\u01B0\u1EDDi trong g\u01B0\u01A1ng b\u01B0\u1EDBc ra",
-            (c, k) => `B\u1EA3n kia ng\u1ED3i xu\u1ED1ng gh\u1EBF nh\xE0 b\u1EA1n, t\u1EF1 r\xF3t n\u01B0\u1EDBc, ch\xEA \u1EA5m tr\xE0 h\u01A1i nh\u1EA1t. N\xF3 k\u1EC3 \u0111\u1EDDi b\xEAn \u0111\xF3: c\xF9ng ng\xE0y sinh, c\xF9ng cha m\u1EB9, ch\u1EC9 kh\xE1c m\u1ED9t l\u1EA7n ch\u1ECDn c\u1EEDa, r\u1ED3i m\u1ECDi th\u1EE9 tr\u01B0\u1EE3t \u0111i. ${cap3(k.npc("ong_gac_dem"))} g\xF5 c\u1EEDa h\u1ECFi sao trong nh\xE0 c\xF3 hai gi\u1ECDng gi\u1ED1ng h\u1EC7t nhau. ${k.gag()}`,
+            (c, k) => `B\u1EA3n kia ng\u1ED3i xu\u1ED1ng gh\u1EBF nh\xE0 b\u1EA1n, t\u1EF1 r\xF3t n\u01B0\u1EDBc, ch\xEA \u1EA5m tr\xE0 h\u01A1i nh\u1EA1t. N\xF3 k\u1EC3 \u0111\u1EDDi b\xEAn \u0111\xF3: c\xF9ng ng\xE0y sinh, c\xF9ng cha m\u1EB9, ch\u1EC9 kh\xE1c m\u1ED9t l\u1EA7n ch\u1ECDn c\u1EEDa, r\u1ED3i m\u1ECDi th\u1EE9 tr\u01B0\u1EE3t \u0111i. ${cap3(k.npc("ong_gac_dem"))} g\xF5 c\u1EEDa h\u1ECFi sao trong nh\xE0 c\xF3 hai gi\u1ECDng gi\u1ED1ng h\u1EC7t nhau. T\u1EEB h\xF4m \u0111\xF3, d\xF9 \u1EDF hay \u0111i, b\u1EA3n kia v\u1EABn ti\xEAu ti\u1EC1n b\u1EB1ng th\u1EBB c\u1EE7a b\u1EA1n, v\xEC hai ng\u01B0\u1EDDi c\xF9ng m\u1ED9t ch\u1EEF k\xFD. ${k.gag()}`,
             [
               C("M\u1EDDi b\u1EA3n kia \u1EDF l\u1EA1i v\xE0i h\xF4m", { flags: ["s22_o_chung"], happy: 2 }, "C\xF3 ng\u01B0\u1EDDi hi\u1EC3u m\xECnh nh\u1EA5t, c\u0169ng soi m\xECnh nh\u1EA5t"),
               C("Nh\u1EDD \xF4ng g\xE1c \u0111\xEAm canh c\xE1i g\u01B0\u01A1ng", { flags: ["s22_canh_guong"], counters: { s22_de_phong: 1 } }, "An to\xE0n h\u01A1n, b\u1EA3n kia ph\u1EADt \xFD")
@@ -27766,7 +27767,7 @@ var Argon = (() => {
       color: "#3f7fd9",
       years: [5, 8],
       weird: "sf",
-      rules: { flags: ["w_time_loop"] },
+      rules: { income: 0.7, flags: ["w_time_loop"] },
       reset: { cast: [{ key: "co_ca_phe", role: "neighbor", label: "c\xF4 b\xE1n c\xE0 ph\xEA \u0111\u1EA7u \u0111\u01B0\u1EDDng" }] },
       gag: { key: "bo_cau", lines: [
         "\u0110\xFAng 7 gi\u1EDD 02, con b\u1ED3 c\xE2u l\u1EA1i \u0111\xE2m v\xE0o c\u1EEDa k\xEDnh. B\u1EA1n \u0111\xE3 th\u1EED \u0111\xF3ng, m\u1EDF, d\xE1n gi\u1EA5y b\xE1o, n\xF3 v\u1EABn \u0111\xE2m.",
@@ -27791,7 +27792,7 @@ var Argon = (() => {
           card(
             "s28_mo_bon_muoi",
             "Ng\xE0y th\u1EE9 b\u1ED1n m\u01B0\u01A1i",
-            (c, k) => `T\u1EDBi ng\xE0y th\u1EE9 b\u1ED1n m\u01B0\u01A1i, b\u1EA1n hi\u1EC3u ra m\u1ED9t \u0111i\u1EC1u: h\xF4m nay l\xE0m g\xEC, mai c\u0169ng x\xF3a s\u1EA1ch. ${cap3(k.npc("co_ca_phe"))} \u0111\u01B0a ly c\xE0 ph\xEA nh\u01B0 m\u1ECDi l\u1EA7n, n\xF3i c\xF9ng m\u1ED9t c\xE2u nh\u01B0 m\u1ECDi l\u1EA7n: "Tr\u1EDDi n\xE0y m\xE0 u\u1ED1ng n\xF3ng l\xE0 gan \u0111\u1EA5y."`,
+            (c, k) => `T\u1EDBi ng\xE0y th\u1EE9 b\u1ED1n m\u01B0\u01A1i, b\u1EA1n hi\u1EC3u ra m\u1ED9t \u0111i\u1EC1u: h\xF4m nay l\xE0m g\xEC, mai c\u0169ng x\xF3a s\u1EA1ch. ${c.has_job ? "L\u01B0\u01A1ng ch\u1EC9 v\u1EC1 v\xE0o th\u1EE9 S\xE1u, n\xEAn m\u1ED7i l\u1EA7n k\u1EB9t trong th\u1EE9 T\u01B0, b\u1EA1n ch\u1EC9 l\u0129nh \u0111\u01B0\u1EE3c ph\u1EA7n c\xF2n s\xF3t l\u1EA1i." : "M\u1ECDi kho\u1EA3n ti\u1EC1n ng\u01B0\u1EDDi ta h\u1EE9a tr\u1EA3 v\xE0o th\u1EE9 S\xE1u \u0111\u1EC1u kh\xF4ng bao gi\u1EDD t\u1EDBi."} ${cap3(k.npc("co_ca_phe"))} \u0111\u01B0a ly c\xE0 ph\xEA nh\u01B0 m\u1ECDi l\u1EA7n, n\xF3i c\xF9ng m\u1ED9t c\xE2u nh\u01B0 m\u1ECDi l\u1EA7n: "Tr\u1EDDi n\xE0y m\xE0 u\u1ED1ng n\xF3ng l\xE0 gan \u0111\u1EA5y."`,
             [
               C("N\xF3i th\u1EADt m\u1ECDi \u0111i\u1EC1u v\u1EDBi m\u1ECDi ng\u01B0\u1EDDi", { flags: ["s28_noi_that"], happy: 4, rel: -2 }, "Nh\u1EB9 ng\u01B0\u1EDDi, h\xF4m sau h\u1ECD qu\xEAn, b\u1EA1n th\xEC kh\xF4ng"),
               C("Ng\u1ED3i th\u01B0 vi\u1EC7n t\u1EEB s\xE1ng t\u1EDBi t\u1ED1i", { flags: ["s28_doc_sach"], know: 5 }, "Th\xF4ng th\xE1i d\u1EA7n, c\xF4 \u0111\u01A1n d\u1EA7n")
@@ -28244,7 +28245,7 @@ var Argon = (() => {
       color: "#6a4fb3",
       years: [6, 10],
       weird: "sf",
-      rules: { flags: ["w_shared_dream", "no_privacy"] },
+      rules: { flags: ["w_shared_dream", "no_privacy"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "to_truong", role: "neighbor", label: "b\xE0 tr\u01B0\u1EDFng khu ph\u1ED1 m\u1EA5t ng\u1EE7" }] },
       gag: { key: "ca_tre_hat", lines: [
         "\u0110\xEAm n\xE0o c\u0169ng v\u1EADy, c\u1EA3 x\xF3m m\u01A1 th\u1EA5y c\xF9ng m\u1ED9t con c\xE1 tr\xEA bi\u1EBFt h\xE1t, v\xE0 s\xE1ng ra ai c\u0169ng ng\xE2n nga \u0111\xFAng m\u1ED9t c\xE2u.",
@@ -28259,7 +28260,7 @@ var Argon = (() => {
           card(
             "s32_mo_sang",
             "B\u1EEFa s\xE1ng kh\xF4ng ai nh\xECn ai",
-            (c, k) => `Bu\u1ED5i s\xE1ng \u0111\u1EA7u ti\xEAn sau khi m\u1EA1ng ch\u1EA1y, c\u1EA3 x\xF3m \u0103n s\xE1ng m\xE0 kh\xF4ng ai d\xE1m nh\xECn ai. ${cap3(k.npc("to_truong"))} \u0111i t\u1EEBng nh\xE0 ph\xE1t gi\u1EA5y, \u0111\u1EC1 ngh\u1ECB m\u1ED7i nh\xE0 ghi l\u1EA1i gi\u1EA5c m\u01A1 \u0111\xEAm qua \u201C\u0111\u1EC3 ban qu\u1EA3n l\xFD khu ph\u1ED1 c\xF2n theo d\xF5i\u201D. ${k.gag()}`,
+            (c, k) => `Bu\u1ED5i s\xE1ng \u0111\u1EA7u ti\xEAn sau khi m\u1EA1ng ch\u1EA1y, c\u1EA3 x\xF3m \u0103n s\xE1ng m\xE0 kh\xF4ng ai d\xE1m nh\xECn ai. ${cap3(k.npc("to_truong"))} \u0111i t\u1EEBng nh\xE0 ph\xE1t gi\u1EA5y, \u0111\u1EC1 ngh\u1ECB m\u1ED7i nh\xE0 ghi l\u1EA1i gi\u1EA5c m\u01A1 \u0111\xEAm qua \u201C\u0111\u1EC3 ban qu\u1EA3n l\xFD khu ph\u1ED1 c\xF2n theo d\xF5i\u201D, k\xE8m phi\u1EBFu thu ph\xED duy tr\xEC tr\u1EA1m t\xEDn hi\u1EC7u, nh\xE0 n\xE0o c\u0169ng \u0111\xF3ng h\u1EB1ng n\u0103m. ${k.gag()}`,
             [
               C("Ghi th\u1EADt, n\u1ED9p \u0111\xFAng h\u1EA1n", { flags: ["s32_ghi_that"], counters: { s32_tin: 1 } }, "\u0110\u01B0\u1EE3c tin, m\u1EA5t \u0111\u1EDDi t\u01B0"),
               C("Ghi b\u1EEBa m\u1ED9t gi\u1EA5c m\u01A1 v\u1EC1 b\u1EAFp c\u1EA3i", { flags: ["s32_ghi_bua"], happy: 2 }, "Vui, nh\u01B0ng c\u1EA3 x\xF3m \u0111\xE3 th\u1EA5y gi\u1EA5c m\u01A1 th\u1EADt c\u1EE7a b\u1EA1n"),
@@ -28378,8 +28379,8 @@ var Argon = (() => {
             "C\u0103n ph\xF2ng c\xF3 m\u1ED9t c\xE1i gh\u1EBF",
             (c, k) => `Ch\u1ED7 l\xE0m c\u1EE7a b\u1EA1n c\xF3 m\u1ED9t c\xE1i gh\u1EBF, m\u1ED9t camera v\xE0 t\u1EA5m bi\u1EC3n \u201CXin c\u1EE9 t\u1EF1 nhi\xEAn\u201D. ${cap3(k.npc("giam_sat"))} gi\u1EA3i th\xEDch: m\u1ED7i ng\xE0y \u0111\u1ECDc t\xE1m tr\u0103m c\xE2u, g\u1EADt \u0111\u1EA7u n\u1EBFu ng\u01B0\u1EDDi th\u1EADt c\xF3 th\u1EC3 n\xF3i c\xE2u \u0111\xF3, l\u1EAFc \u0111\u1EA7u n\u1EBFu kh\xF4ng. ${k.gag()}`,
             [
-              C("G\u1EADt l\u1EAFc theo c\u1EA3m gi\xE1c, \u0111\xFAng quy tr\xECnh", { flags: ["s33_dung_quy_trinh"], counters: { s33_nguoi: 1 } }, "\u1ED4n \u0111\u1ECBnh, ch\xE1n \u0111\u1EBFn t\xEA ng\u01B0\u1EDDi"),
-              C("Ghi l\xFD do cho t\u1EEBng c\xE2u", { know: 3, bw: -3, flags: ["s33_ghi_chu"], counters: { s33_danh: 1 } }, "\u0110\u01B0\u1EE3c c\u1EA5p tr\xEAn \u0111\u1EC3 \xFD, l\xE0m ch\u1EADm g\u1EA5p \u0111\xF4i")
+              C("G\u1EADt l\u1EAFc theo c\u1EA3m gi\xE1c, \u0111\xFAng quy tr\xECnh", { custom: "job_switch:office", flags: ["s33_dung_quy_trinh"], counters: { s33_nguoi: 1 } }, "\u1ED4n \u0111\u1ECBnh, ch\xE1n \u0111\u1EBFn t\xEA ng\u01B0\u1EDDi"),
+              C("Ghi l\xFD do cho t\u1EEBng c\xE2u", { custom: "job_switch:office", know: 3, bw: -3, flags: ["s33_ghi_chu"], counters: { s33_danh: 1 } }, "\u0110\u01B0\u1EE3c c\u1EA5p tr\xEAn \u0111\u1EC3 \xFD, l\xE0m ch\u1EADm g\u1EA5p \u0111\xF4i")
             ]
           ),
           card(
@@ -28576,7 +28577,7 @@ var Argon = (() => {
             "Ba con \u0111\u01B0\u1EDDng tr\xEAn t\u1EDD gi\u1EA5y",
             (c, k) => `H\u1EA1n ch\xF3t c\u1EE7a vi\u1EC7n l\xE0 s\xE1ng th\u1EE9 Hai. ${cap3(k.npc("co_giao"))} mang sang m\u1ED9t n\u1ED3i ch\xE1o v\xE0 m\u1ED9t l\u1EDDi khuy\xEAn: ${n12(c, "s34_di") >= 2 ? "gi\u1EA5y t\u1EDD \u0111\xE3 s\u1EB5n, \u0111i th\xEC \u0111i cho s\u1EDBm." : n12(c, "s34_vien") >= 2 ? "h\u1EE3p \u0111\u1ED3ng \u0111\xE3 k\xFD th\xEC con \u0111i, nh\u01B0ng \u0111\u1EEBng \u0111\u1EC3 con \u0111i m\u1ED9t m\xECnh trong l\xF2ng." : "\u0111\u1EE9a nh\u1ECF c\u1EA7n m\u1ED9t n\u01A1i kh\xF4ng ai \u0111\u1EBFm b\u1EADc thang thay n\xF3."} C\xF2n ${noOr(c, k)} th\xEC v\u1EABn ch\u01B0a tr\u1EA3, \u0111i \u0111\xE2u c\u0169ng ph\u1EA3i mang theo. ${k.gag()}`,
             (c) => finale3(c, [
-              { l: S34_DI, label: "C\u1EA3 nh\xE0 \u0111\u1ED5i n\u01B0\u1EDBc m\xE0 \u0111i", hint: "Con \u0111\u01B0\u1EE3c t\u1EF1 do, c\u1EA3 nh\xE0 l\xE0m l\u1EA1i t\u1EEB \u0111\u1EA7u \u1EDF \u0111\u1EA5t l\u1EA1" },
+              { l: S34_DI, label: "C\u1EA3 nh\xE0 \u0111\u1ED5i n\u01B0\u1EDBc m\xE0 \u0111i", hint: "Con \u0111\u01B0\u1EE3c t\u1EF1 do, c\u1EA3 nh\xE0 l\xE0m l\u1EA1i t\u1EEB \u0111\u1EA7u \u1EDF \u0111\u1EA5t l\u1EA1", ok: migrateOk },
               { l: S34_XA, label: "\u0110\u1EC3 con \u0111i h\u1ECDc \u1EDF vi\u1EC7n xa", hint: "Con bay cao, nh\xE0 v\u1EAFng ti\u1EBFng c\u01B0\u1EDDi" },
               { l: S34_AN, label: "Chuy\u1EC3n th\xE0nh ph\u1ED1, s\u1ED1ng k\xEDn ti\u1EBFng", hint: "Con \u0111\u01B0\u1EE3c l\xE0m tr\u1EBB con, t\xE0i n\u0103ng ng\u1EE7 y\xEAn" }
             ])
@@ -28939,7 +28940,7 @@ var Argon = (() => {
       ]
     }),
     "Vi\u1EC5n t\u01B0\u1EDFng: m\u1ED9t n\u0103m s\u1ED1ng trong th\xE2n ng\u01B0\u1EDDi b\u1EA1n \u0111\u1EDDi"
-  ), S38_DI = land("nhap_quoc_tich_moi", "Th\xE0nh ph\u1ED1 n\u1ED5i c\u1EADp b\u1EBFn m\u1ED9t n\u01B0\u1EDBc gi\xE0u ven bi\u1EC3n, v\xE0 b\u1EA1n \u1EDF l\u1EA1i \u0111\xF3, gi\u1EA5y t\u1EDD \u0111\xF3ng d\u1EA5u n\u01B0\u1EDBc m\u1EDBi, ch\xE2n v\u1EABn quen \u0111\u1EE9ng cho v\u1EEFng.", { custom: "migrate_now", happy: 3 }), S38_THUY = land("thuyen_vien_noi", "B\u1EA1n theo th\xE0nh ph\u1ED1 ra kh\u01A1i ti\u1EBFp, k\xFD h\u1EE3p \u0111\u1ED3ng thuy\u1EC1n vi\xEAn, v\xE0 t\u1EEB \u0111\xF3 nh\xE0 b\u1EA1n l\xE0 n\u01A1i n\xE0o con t\xE0u \u0111ang \u0111\u1EADu.", { custom: "become:sailor", happy: 4 }), S38_NGU = land("ngu_dan_noi", "B\u1EA1n \u1EDF l\u1EA1i v\u1EDBi bi\u1EC3n, k\xE9o l\u01B0\u1EDBi cho th\xE0nh ph\u1ED1 n\u1ED5i, s\u1ED1ng b\u1EB1ng nh\u1EEFng m\u1EBB c\xE1 \u0111i ngang m\xE0 kh\xF4ng ph\u1EA3i n\u1ED9p thu\u1EBF.", { custom: "become:deep_fisher", happy: 3 }), S38_VE = land("ve_dat_lien", "B\u1EA1n v\u1EC1 l\u1EA1i \u0111\u1EA5t li\u1EC1n, m\u1EA5t tr\u1EAFng ti\u1EC1n c\u1ECDc c\u0103n nh\xE0 v\u1ECF \u1ED1c, ch\u1EC9 mang theo m\u1ED9t c\xE1i la b\xE0n v\xE0 th\xF3i quen \u0111\u1EE9ng d\u1EA1ng ch\xE2n.", { money: -1, happy: 2 }), S38 = weird(
+  ), S38_DI = land("nhap_quoc_tich_moi", "Th\xE0nh ph\u1ED1 n\u1ED5i c\u1EADp b\u1EBFn m\u1ED9t n\u01B0\u1EDBc gi\xE0u ven bi\u1EC3n, v\xE0 b\u1EA1n \u1EDF l\u1EA1i \u0111\xF3, gi\u1EA5y t\u1EDD \u0111\xF3ng d\u1EA5u n\u01B0\u1EDBc m\u1EDBi, ch\xE2n v\u1EABn quen \u0111\u1EE9ng cho v\u1EEFng.", { custom: "migrate_now", happy: 3 }), S38_THUY = land("thuyen_vien_noi", "B\u1EA1n theo th\xE0nh ph\u1ED1 ra kh\u01A1i ti\u1EBFp, k\xFD h\u1EE3p \u0111\u1ED3ng thuy\u1EC1n vi\xEAn, v\xE0 t\u1EEB \u0111\xF3 nh\xE0 b\u1EA1n l\xE0 n\u01A1i n\xE0o con t\xE0u \u0111ang \u0111\u1EADu.", { custom: "become:sailor", happy: 4 }), S38_NGU = land("ngu_dan_noi", "B\u1EA1n \u1EDF l\u1EA1i v\u1EDBi bi\u1EC3n, k\xE9o l\u01B0\u1EDBi cho th\xE0nh ph\u1ED1 n\u1ED5i, s\u1ED1ng b\u1EB1ng nh\u1EEFng m\u1EBB c\xE1 \u0111i ngang m\xE0 kh\xF4ng ph\u1EA3i n\u1ED9p thu\u1EBF.", { custom: "become:deep_fisher", happy: 3 }), S38_O_NOI = land("o_lai_thanh_pho_noi", "B\u1EA1n \u1EDF l\u1EA1i khi th\xE0nh ph\u1ED1 ra kh\u01A1i ti\u1EBFp, nh\u1EADn vi\u1EC7c gi\u1EEF x\xEDch cho c\u1EA3 d\xE3y nh\xE0 v\u1ECF \u1ED1c, v\xE0 \u0111\u01B0\u1EE3c tr\u1EA3 tr\u01B0\u1EDBc m\u1ED9t kho\u1EA3n l\u1EDBn cho m\u01B0\u1EDDi n\u0103m canh s\xF3ng.", { money: 1, happy: 3 }), S38_VE = land("ve_dat_lien", "B\u1EA1n v\u1EC1 l\u1EA1i \u0111\u1EA5t li\u1EC1n, m\u1EA5t tr\u1EAFng ti\u1EC1n c\u1ECDc c\u0103n nh\xE0 v\u1ECF \u1ED1c, ch\u1EC9 mang theo m\u1ED9t c\xE1i la b\xE0n v\xE0 th\xF3i quen \u0111\u1EE9ng d\u1EA1ng ch\xE2n.", { money: -1, happy: 2 }), S38 = weird(
     "S38",
     "sf",
     ["dat", "tien"],
@@ -28960,7 +28961,7 @@ var Argon = (() => {
         "Thu\u1EBF m\u1EDBi: thu\u1EBF c\xE1 \u0111i ngang. C\xF3 ng\u01B0\u1EDDi \u0111\u1EC1 ngh\u1ECB gi\u0103ng l\u01B0\u1EDBi \u0111\u1EC3 c\xE1 \u0111i \u0111\u01B0\u1EDDng kh\xE1c cho \u0111\u1EE1 t\u1ED1n.",
         "Thu\u1EBF m\u1EDBi nh\u1EA5t: thu\u1EBF im l\u1EB7ng, \u0111\xE1nh v\xE0o ai kh\xF4ng ph\xE0n n\xE0n v\u1EC1 thu\u1EBF. C\u1EA3 th\xE0nh ph\u1ED1 ph\xE0n n\xE0n \u1EA7m \u0129 su\u1ED1t m\u1ED9t tu\u1EA7n."
       ] },
-      landings: [S38_DI, S38_THUY, S38_NGU, S38_VE],
+      landings: [S38_DI, S38_THUY, S38_NGU, S38_VE, S38_O_NOI],
       beats: [
         /* mo_man */
         [
@@ -29045,8 +29046,9 @@ var Argon = (() => {
             "Th\xE0nh ph\u1ED1 xin c\u1EADp b\u1EBFn",
             (c, k) => `Sau m\u1EA5y n\u0103m tr\xF4i n\u1ED5i, th\xE0nh ph\u1ED1 xin c\u1EADp b\u1EBFn m\u1ED9t n\u01B0\u1EDBc gi\xE0u ven bi\u1EC3n. M\u1ED7i c\u01B0 d\xE2n \u0111\u01B0\u1EE3c ch\u1ECDn: nh\u1EADn gi\u1EA5y t\u1EDD \u1EDF l\u1EA1i n\u01B0\u1EDBc \u0111\xF3, theo th\xE0nh ph\u1ED1 ra kh\u01A1i ti\u1EBFp, hay v\u1EC1 l\u1EA1i \u0111\u1EA5t li\u1EC1n c\u0169. ${n12(c, "s38_tieng") >= 4 ? "H\u1ED9i \u0111\u1ED3ng mu\u1ED1n b\u1EA1n \u1EDF l\u1EA1i d\u1EABn \u0111o\xE0n." : n12(c, "s38_bien") >= 2 ? "Thuy\u1EC1n tr\u01B0\u1EDFng \u0111\xE3 gi\u1EEF cho b\u1EA1n m\u1ED9t ch\u1ED7 tr\xEAn boong." : "Kh\xF4ng ai gi\u1EEF ch\u1ED7 cho b\u1EA1n, n\xEAn b\u1EA1n \u0111\u01B0\u1EE3c ch\u1ECDn th\u1EADt t\u1EF1 do."} Tr\xEAn b\u1EDD, ${noOr(c, k)} v\u1EABn \u0111ang ch\u1EDD b\u1EA1n. ${k.gag()}`,
             (c) => finale3(c, [
-              { l: S38_DI, label: "Nh\u1EADn gi\u1EA5y t\u1EDD, \u1EDF l\u1EA1i n\u01B0\u1EDBc m\u1EDBi", hint: "\u0110\u1ED5i n\u01B0\u1EDBc, l\xE0m l\u1EA1i t\u1EEB \u0111\u1EA7u tr\xEAn \u0111\u1EA5t li\u1EC1n kh\xE1c" },
+              { l: S38_DI, label: "Nh\u1EADn gi\u1EA5y t\u1EDD, \u1EDF l\u1EA1i n\u01B0\u1EDBc m\u1EDBi", hint: "\u0110\u1ED5i n\u01B0\u1EDBc, l\xE0m l\u1EA1i t\u1EEB \u0111\u1EA7u tr\xEAn \u0111\u1EA5t li\u1EC1n kh\xE1c", ok: migrateOk },
               { l: S38_VE, label: "V\u1EC1 l\u1EA1i \u0111\u1EA5t li\u1EC1n c\u0169", hint: "M\u1EA5t ti\u1EC1n c\u1ECDc, v\u1EC1 g\u1EA7n ng\u01B0\u1EDDi quen" },
+              { l: S38_O_NOI, label: "\u1EDE l\u1EA1i, theo th\xE0nh ph\u1ED1 n\u1ED5i ra kh\u01A1i ti\u1EBFp", hint: "C\xF3 m\u1ED9t kho\u1EA3n, nh\xE0 l\xE0 n\u01A1i s\xF3ng \u0111\u01B0a t\u1EDBi", ok: (x) => !migrateOk(x) },
               { l: S38_THUY, label: "Theo th\xE0nh ph\u1ED1 ra kh\u01A1i l\xE0m thuy\u1EC1n vi\xEAn", hint: "L\u01B0\u01A1ng kh\xE1, nh\xE0 l\xE0 n\u01A1i con t\xE0u \u0111\u1EADu", path: "sailor" },
               { l: S38_NGU, label: "\u1EDE l\u1EA1i v\u1EDBi bi\u1EC3n, k\xE9o l\u01B0\u1EDBi cho th\xE0nh ph\u1ED1", hint: "S\u1ED1ng b\u1EB1ng bi\u1EC3n, n\u1EAFng gi\xF3 c\u1EA3 \u0111\u1EDDi", path: "deep_fisher" }
             ])
@@ -29280,7 +29282,7 @@ var Argon = (() => {
             (c, k) => `Gia \u0111\xECnh th\u1EADt c\u1EE7a b\u1EA1n m\u1EDF c\u1EEDa, nh\xECn b\u1EA1n v\xE0 nh\u1EADn ra ngay, nh\u01B0 \u0111\xE3 ch\u1EDD ba m\u01B0\u01A1i n\u0103m. ${c.parents_alive > 0 ? "Ph\xEDa sau b\u1EA1n, ng\u01B0\u1EDDi \u0111\xE3 nu\xF4i b\u1EA1n \u0111\u1EE9ng \u0111\u1EE3i \u1EDF \u0111\u1EA7u ng\xF5, tay c\u1EA7m h\u1ED9p c\u01A1m." : "Trong t\xFAi \xE1o b\u1EA1n v\u1EABn c\xF2n t\u1EA5m \u1EA3nh c\u1EE7a ng\u01B0\u1EDDi \u0111\xE3 nu\xF4i m\xECnh."} ${n12(c, "s40_sua") >= 2 ? "B\u1EA1n kh\xF4ng c\xF2n ch\u1EAFc k\xFD \u1EE9c n\xE0o l\xE0 c\u1EE7a ai, ch\u1EC9 ch\u1EAFc m\u1ED9t \u0111i\u1EC1u:" : "B\u1EA1n bi\u1EBFt r\xF5 k\xFD \u1EE9c n\xE0o l\xE0 th\u1EADt, v\xE0 bi\u1EBFt th\xEAm m\u1ED9t \u0111i\u1EC1u:"} ${noOr(c, k)} th\xEC v\u1EABn l\xE0 c\u1EE7a b\u1EA1n, d\xF9 tu\u1ED5i th\u01A1 c\xF3 l\xE0 c\u1EE7a ai. ${k.gag()}`,
             (c) => finale3(c, [
               { l: S40_VE, label: "D\u1ECDn v\u1EC1 s\u1ED1ng g\u1EA7n gia \u0111\xECnh th\u1EADt", hint: "B\u1EAFt \u0111\u1EA7u l\u1EA1i t\u1EEB nh\u1EEFng b\u1EEFa c\u01A1m \u0111\u1EA7u ti\xEAn" },
-              { l: S40_XA, label: "Sang n\u01B0\u1EDBc kh\xE1c v\u1EDBi gia \u0111\xECnh th\u1EADt", hint: "\u0110\u1ED5i n\u01B0\u1EDBc, \u0111\u1ED5i ti\u1EBFng, \u0111\u1ED5i c\u1EA3 tu\u1ED5i th\u01A1" },
+              { l: S40_XA, label: "Sang n\u01B0\u1EDBc kh\xE1c v\u1EDBi gia \u0111\xECnh th\u1EADt", hint: "\u0110\u1ED5i n\u01B0\u1EDBc, \u0111\u1ED5i ti\u1EBFng, \u0111\u1ED5i c\u1EA3 tu\u1ED5i th\u01A1", ok: migrateOk },
               { l: S40_HAI, label: "Nh\u1EADn c\u1EA3 hai gia \u0111\xECnh", hint: "C\xF3 th\xEAm ng\u01B0\u1EDDi th\xE2n, c\xF3 ti\u1EC1n b\u1ED3i th\u01B0\u1EDDng, th\xEAm vi\u1EC7c ph\u1EA3i lo" }
             ])
           )
@@ -29542,7 +29544,7 @@ var Argon = (() => {
       color: "#5a5fd0",
       years: [5, 9],
       weird: "sf",
-      rules: { flags: ["w_meo_noi"] },
+      rules: { flags: ["w_meo_noi"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "meo_dau_dan", role: "rival", label: "con m\xE8o m\u01B0\u1EDBp c\u1EE5t \u0111u\xF4i \u0111\u1EA7u \u0111\xE0n" }, { key: "phong_vien", role: "partner", label: "ch\u1ECB ph\xF3ng vi\xEAn \u0111eo ba c\xE1i th\u1EBB" }] },
       gag: { key: "ca_tuoi", lines: [
         'M\xE1y d\u1ECBch r\xE8 l\xEAn c\xE2u \u0111\u1EA7u ti\xEAn trong ng\xE0y, nh\u01B0 m\u1ECDi ng\xE0y: "C\xE1 h\xF4m nay kh\xF4ng t\u01B0\u01A1i."',
@@ -29556,7 +29558,7 @@ var Argon = (() => {
           card(
             "s43_mo_vong",
             "C\xE1i v\xF2ng c\u1ED5 bi\u1EBFt n\xF3i",
-            (c, k) => `B\u1EA1n c\xE0i c\xE1i v\xF2ng c\u1ED5 phi\xEAn d\u1ECBch cho ${meo(c)}, b\u1EA5m n\xFAt, r\u1ED3i ch\u1EDD. Con m\xE8o nh\xECn b\u1EA1n ba gi\xE2y, ng\xE1p, r\u1ED3i m\u1EDBi m\u1EDF mi\u1EC7ng. ${k.gag()}`,
+            (c, k) => `B\u1EA1n c\xE0i c\xE1i v\xF2ng c\u1ED5 phi\xEAn d\u1ECBch cho ${meo(c)}, b\u1EA5m n\xFAt, r\u1ED3i ch\u1EDD. Con m\xE8o nh\xECn b\u1EA1n ba gi\xE2y, ng\xE1p, r\u1ED3i m\u1EDBi m\u1EDF mi\u1EC7ng, v\xE0 y\xEAu c\u1EA7u \u0111\u1EA7u ti\xEAn c\u1EE7a n\xF3 l\xE0 t\u1EEB nay m\u1ED7i tu\u1EA7n hai b\u1EEFa c\xE1 t\u01B0\u01A1i, ghi v\xE0o s\u1ED5 chi ti\xEAu c\u1EE7a nh\xE0. ${k.gag()}`,
             [
               C("\u0110\u0103ng \u0111o\u1EA1n ghi \xE2m l\xEAn m\u1EA1ng", { flags: ["s43_dang"], counters: { s43_danh: 1 } }, "C\u1EA3 th\xE0nh ph\u1ED1 nghe, m\xE8o nh\xE0 b\u1EA1n th\xE0nh ng\u01B0\u1EDDi n\u1ED5i ti\u1EBFng"),
               C("Gi\u1EEF b\xED m\u1EADt, ch\u1EC9 nghe m\u1ED9t m\xECnh", { flags: ["s43_bi_mat"], happy: 3 }, "Y\xEAn \u1ED5n, nh\u01B0ng b\xED m\u1EADt trong x\xF3m kh\xF4ng gi\u1EEF \u0111\u01B0\u1EE3c l\xE2u")
@@ -29753,7 +29755,7 @@ var Argon = (() => {
       ]
     }),
     "Vi\u1EC5n t\u01B0\u1EDFng: c\u1EA3 th\xE0nh ph\u1ED1 ng\u1EE7, m\u1ED7i ng\xE0y m\u1ED9t l\u1EF1a ch\u1ECDn kh\xF4ng ai th\u1EA5y"
-  ), S45_DI = land("s45_ve_mot_chieu", "Con t\xE0u ch\u01B0a c\u1EA5t c\xE1nh, nh\u01B0ng v\xE9 m\u1ED9t chi\u1EC1u v\u1EABn l\xE0 v\xE9 m\u1ED9t chi\u1EC1u: b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u01B0a t\u1EDBi c\u0103n c\u1EE9 ph\xF3ng \u1EDF n\u01B0\u1EDBc ngo\xE0i v\xE0 \u1EDF l\u1EA1i l\xE0m ng\u01B0\u1EDDi \u0111i ti\xEAn phong.", { custom: "migrate_now|become:explorer", happy: 3 }), S45_BAY = land("s45_can_cu", "B\u1EA1n theo \u0111o\xE0n sang c\u0103n c\u1EE9 ph\xF3ng \u1EDF n\u01B0\u1EDBc ngo\xE0i, \u1EDF l\u1EA1i tr\xF4ng v\u01B0\u1EDDn rau c\u1EE7a tr\u1EA1m, ch\u1EDD m\u1ED9t chuy\u1EBFn t\xE0u kh\xF4ng bi\u1EBFt bao gi\u1EDD.", { custom: "migrate_now", happy: 2 }), S45_RUT = land("s45_rut_lui", "B\u1EA1n r\xFAt t\xEAn tr\u01B0\u1EDBc gi\u1EDD ph\xF3ng, \u0111\u1EC1n h\u1EE3p \u0111\u1ED3ng, v\xE0 ra \u0111\u01B0\u1EDDng l\xFAc n\xE0o c\u0169ng c\xF3 ng\u01B0\u1EDDi h\xF4 theo c\xE2u kh\u1EA9u hi\u1EC7u c\u0169.", { money: -1.5, happy: -4 }), S45_HAI = land("s45_dien_hai", "B\u1EA1n bi\u1EBFn c\xE1i nh\u1EE5c th\xE0nh ti\u1EBFt m\u1EE5c: ng\u01B0\u1EDDi su\xFDt bay l\xEAn sao k\u1EC3 chuy\u1EC7n m\xECnh \u1EDF l\u1EA1i.", { custom: "become:comedian", happy: 2 }), s45 = weird(
+  ), S45_DI = land("s45_ve_mot_chieu", "Con t\xE0u ch\u01B0a c\u1EA5t c\xE1nh, nh\u01B0ng v\xE9 m\u1ED9t chi\u1EC1u v\u1EABn l\xE0 v\xE9 m\u1ED9t chi\u1EC1u: b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u01B0a t\u1EDBi c\u0103n c\u1EE9 ph\xF3ng \u1EDF n\u01B0\u1EDBc ngo\xE0i v\xE0 \u1EDF l\u1EA1i l\xE0m ng\u01B0\u1EDDi \u0111i ti\xEAn phong.", { custom: "migrate_now|become:explorer", happy: 3 }), S45_BAY = land("s45_can_cu", "B\u1EA1n theo \u0111o\xE0n sang c\u0103n c\u1EE9 ph\xF3ng \u1EDF n\u01B0\u1EDBc ngo\xE0i, \u1EDF l\u1EA1i tr\xF4ng v\u01B0\u1EDDn rau c\u1EE7a tr\u1EA1m, ch\u1EDD m\u1ED9t chuy\u1EBFn t\xE0u kh\xF4ng bi\u1EBFt bao gi\u1EDD.", { custom: "migrate_now", happy: 2 }), S45_O_DAT = land("s45_o_mat_dat", "B\u1EA1n kh\xF4ng \u0111\u01B0\u1EE3c l\xEAn t\xE0u, n\xEAn \u1EDF l\u1EA1i l\xE0m ng\u01B0\u1EDDi \u0111\u1EBFm ng\u01B0\u1EE3c cho m\u1ECDi chuy\u1EBFn ph\xF3ng. C\u1EA3 n\u01B0\u1EDBc nh\u1EDB gi\u1ECDng b\u1EA1n h\u01A1n nh\u1EDB m\u1EB7t nh\u1EEFng ng\u01B0\u1EDDi \u0111\xE3 \u0111i.", { money: 1, happy: 2 }), S45_RUT = land("s45_rut_lui", "B\u1EA1n r\xFAt t\xEAn tr\u01B0\u1EDBc gi\u1EDD ph\xF3ng, \u0111\u1EC1n h\u1EE3p \u0111\u1ED3ng, v\xE0 ra \u0111\u01B0\u1EDDng l\xFAc n\xE0o c\u0169ng c\xF3 ng\u01B0\u1EDDi h\xF4 theo c\xE2u kh\u1EA9u hi\u1EC7u c\u0169.", { money: -1.5, happy: -4 }), S45_HAI = land("s45_dien_hai", "B\u1EA1n bi\u1EBFn c\xE1i nh\u1EE5c th\xE0nh ti\u1EBFt m\u1EE5c: ng\u01B0\u1EDDi su\xFDt bay l\xEAn sao k\u1EC3 chuy\u1EC7n m\xECnh \u1EDF l\u1EA1i.", { custom: "become:comedian", happy: 2 }), s45 = weird(
     "S45",
     "sf",
     ["danh", "ky"],
@@ -29777,7 +29779,7 @@ var Argon = (() => {
         'C\xE2u "M\u1ED9t chi\u1EC1u, kh\xF4ng quay \u0111\u1EA7u!" gi\u1EDD \u0111\u01B0\u1EE3c in l\xEAn \xE1o, l\xEAn c\u1ED1c, v\xE0 l\xEAn t\u1EA5m bi\u1EC3n c\u1EA5m quay xe tr\u01B0\u1EDBc tr\u01B0\u1EDDng quay.',
         'B\u1EA1n n\u1EB1m m\u01A1 th\u1EA5y m\xECnh h\xF4 "M\u1ED9t chi\u1EC1u, kh\xF4ng quay \u0111\u1EA7u!", t\u1EC9nh d\u1EADy th\xEC c\u1EA3 nh\xE0 \u0111ang h\xF4 theo ngo\xE0i ph\xF2ng kh\xE1ch.'
       ] },
-      landings: [S45_DI, S45_BAY, S45_RUT, S45_HAI],
+      landings: [S45_DI, S45_BAY, S45_RUT, S45_HAI, S45_O_DAT],
       beats: [
         [
           card(
@@ -29856,7 +29858,7 @@ var Argon = (() => {
             "\u0110\xEAm tr\u01B0\u1EDBc gi\u1EDD ph\xF3ng",
             (c, k) => `\u0110\xEAm tr\u01B0\u1EDBc gi\u1EDD ph\xF3ng, \u0111i\u1EC7n tho\u1EA1i b\u1EA1n c\xF3 ba tr\u0103m tin nh\u1EAFn. ${cap3(noOr(c, k))} v\u1EABn \u1EDF \u0111\xF3, kh\xF4ng bay theo ai c\u1EA3. ${has7(c, "s45_hua_o") ? "L\u1EDDi h\u1EE9a \u1EDF l\u1EA1i tr\xEAn s\xF3ng \u0111\u01B0\u1EE3c chi\u1EBFu l\u1EA1i su\u1ED1t bu\u1ED5i t\u1ED1i." : "Ngo\xE0i c\u1EEDa, ng\u01B0\u1EDDi ta \u0111\xE3 d\u1EF1ng s\u1EB5n s\xE2n kh\u1EA5u ti\u1EC5n \u0111\u01B0a."}`,
             (c) => {
-              let out = [pathOpen("explorer", c.age) ? ending(S45_DI, "L\xEAn t\xE0u, \u0111i th\u1EADt", "Kh\xF4ng quay \u0111\u1EA7u, \u0111\u1EDDi m\u1EDBi \u1EDF m\u1ED9t n\u01A1i r\u1EA5t xa") : ending(S45_BAY, "Theo \u0111o\xE0n sang c\u0103n c\u1EE9 ph\xF3ng", "\u0110i xa th\u1EADt, d\xF9 t\xE0u ch\u01B0a ch\u1EAFc bay")];
+              let out = [migrateOk(c) ? pathOpen("explorer", c.age) ? ending(S45_DI, "L\xEAn t\xE0u, \u0111i th\u1EADt", "Kh\xF4ng quay \u0111\u1EA7u, \u0111\u1EDDi m\u1EDBi \u1EDF m\u1ED9t n\u01A1i r\u1EA5t xa") : ending(S45_BAY, "Theo \u0111o\xE0n sang c\u0103n c\u1EE9 ph\xF3ng", "\u0110i xa th\u1EADt, d\xF9 t\xE0u ch\u01B0a ch\u1EAFc bay") : ending(S45_O_DAT, "\u1EDE l\u1EA1i m\u1EB7t \u0111\u1EA5t, l\xE0m ng\u01B0\u1EDDi \u0111\u1EBFm ng\u01B0\u1EE3c", "Kh\xF4ng \u0111i \u0111\u01B0\u1EE3c, v\u1EABn l\xE0 m\u1ED9t ph\u1EA7n c\u1EE7a chuy\u1EBFn bay")];
               return out.push(ending(S45_RUT, "R\xFAt t\xEAn, ch\u1ECBu ph\u1EA1t h\u1EE3p \u0111\u1ED3ng", "\u1EDE l\u1EA1i v\u1EDBi ng\u01B0\u1EDDi th\xE2n, mang nh\u1EE5c nhi\u1EC1u n\u0103m")), pathOpen("comedian", c.age) && out.push(ending(S45_HAI, "R\xFAt t\xEAn, r\u1ED3i di\u1EC5n h\xE0i v\u1EC1 chuy\u1EC7n \u0111\xF3", "Bi\u1EBFn nh\u1EE5c th\xE0nh ngh\u1EC1, kh\xF4ng ai qu\xEAn chuy\u1EC7n c\u0169")), has7(c, "s45_hua_o") ? out.reverse() : out;
             }
           )
@@ -29880,7 +29882,7 @@ var Argon = (() => {
       color: "#7a6ad8",
       years: [7, 12],
       weird: "sf",
-      rules: { flags: ["w_tre_sao_khac"] },
+      rules: { flags: ["w_tre_sao_khac"], yearly: { money: -0.05 } },
       reset: { cast: [{ key: "dua_tre", role: "child", label: "\u0111\u1EE9a tr\u1EBB t\xF3c b\u1EA1c t\u1EEB d\u01B0\u1EDBi h\u1ED3" }, { key: "kinh_ram", role: "official", label: "ng\u01B0\u1EDDi \u0111i\u1EC1u tra \u0111eo k\xEDnh r\xE2m" }] },
       gag: { key: "may_giat", lines: [
         '\u0110\u1EE9a tr\u1EBB c\xFAi ch\xE0o c\xE1i m\xE1y gi\u1EB7t c\xF3 c\u1EEDa tr\xF2n r\u1EA5t l\u1EC5 ph\xE9p, g\u1ECDi n\xF3 l\xE0 "th\u01B0a thuy\u1EC1n tr\u01B0\u1EDFng".',
@@ -29894,7 +29896,7 @@ var Argon = (() => {
           card(
             "s46_mo_bep",
             "S\xE1ng \u0111\u1EA7u ti\xEAn trong b\u1EBFp",
-            (c, k) => `B\u1EA1n qu\u1EA5n ${k.npc("dua_tre")} trong ch\u0103n mang v\u1EC1. S\xE1ng ra n\xF3 \u0111\xE3 d\u1EADy tr\u01B0\u1EDBc b\u1EA1n, \u0111\u1EE9ng nghi\xEAm trong b\u1EBFp. ${k.gag()}`,
+            (c, k) => `B\u1EA1n qu\u1EA5n ${k.npc("dua_tre")} trong ch\u0103n mang v\u1EC1. S\xE1ng ra n\xF3 \u0111\xE3 d\u1EADy tr\u01B0\u1EDBc b\u1EA1n, \u0111\u1EE9ng nghi\xEAm trong b\u1EBFp. T\u1EEB h\xF4m \u0111\xF3 nh\xE0 b\u1EA1n th\xEAm m\u1ED9t mi\u1EC7ng \u0103n, th\xEAm qu\u1EA7n \xE1o, s\xE1ch v\u1EDF v\xE0 ti\u1EC1n kh\xE1m cho m\u1ED9t \u0111\u1EE9a tr\u1EBB kh\xF4ng c\xF3 gi\u1EA5y t\u1EDD. ${k.gag()}`,
             [
               C("Gi\u1EA5u n\xF3 trong nh\xE0 m\u1ED9t th\u1EDDi gian", { flags: ["s46_giau"], counters: { s46_tinh: 1 } }, "Y\xEAn \u0111\u01B0\u1EE3c \xEDt ng\xE0y, c\xE0ng gi\u1EA5u c\xE0ng kh\xF3 n\xF3i"),
               C("B\xE1o ngay cho ch\xEDnh quy\u1EC1n", { flags: ["s46_bao"], counters: { s46_nghi: -1 } }, "\u0110\xFAng lu\u1EADt, kh\xF4ng bi\u1EBFt h\u1ECD s\u1EBD \u0111\u01B0a n\xF3 \u0111i \u0111\xE2u")
@@ -29991,7 +29993,7 @@ var Argon = (() => {
       color: "#4b58b8",
       years: [5, 9],
       weird: "sf",
-      rules: { flags: ["w_chuoc_ky_uc"] },
+      rules: { flags: ["w_chuoc_ky_uc"], yearly: { money: -0.05 } },
       reset: { cast: [{ key: "nguoi_mua", role: "rival", label: "ng\u01B0\u1EDDi mua gi\u1EA5u m\u1EB7t" }, { key: "tho_may", role: "partner", label: "c\u1EADu th\u1EE3 s\u1EEDa m\xE1y d\u01B0\u1EDBi t\u1EA7ng tr\u1EC7t" }] },
       gag: { key: "lo_dau_gia", lines: [
         "L\xF4 \u0111\u1EA7u ti\xEAn l\xEAn s\xE0n: \u0111o\u1EA1n phim b\u1EA1n b\u1ED1n tu\u1ED5i h\xE1t sai l\u1EDDi trong \u0111\xE1m c\u01B0\u1EDBi nh\xE0 h\xE0ng x\xF3m. Gi\xE1 kh\u1EDFi \u0111i\u1EC3m \u0111\xE3 cao h\u01A1n b\u1EA1n t\u01B0\u1EDFng.",
@@ -30005,7 +30007,7 @@ var Argon = (() => {
           card(
             "s47_mo_thu",
             "B\u1EE9c th\u01B0 l\xFAc n\u1EEDa \u0111\xEAm",
-            (c, k) => `B\u1EA1n \u0111\u1ECDc l\u1EA1i b\u1EE9c th\u01B0 l\u1EA7n th\u1EE9 ba, g\u1ECDi v\xE0o t\u1ED5ng \u0111\xE0i, nghe nh\u1EA1c ch\u1EDD b\u1ED1n m\u01B0\u01A1i ph\xFAt r\u1ED3i m\xE1y t\u1EF1 c\xFAp. Trang \u0111\u1EA5u gi\xE1 \u0111\xE3 m\u1EDF. ${k.gag()}`,
+            (c, k) => `B\u1EA1n \u0111\u1ECDc l\u1EA1i b\u1EE9c th\u01B0 l\u1EA7n th\u1EE9 ba, g\u1ECDi v\xE0o t\u1ED5ng \u0111\xE0i, nghe nh\u1EA1c ch\u1EDD b\u1ED1n m\u01B0\u01A1i ph\xFAt r\u1ED3i m\xE1y t\u1EF1 c\xFAp. Trang \u0111\u1EA5u gi\xE1 \u0111\xE3 m\u1EDF. Mu\u1ED1n gi\u1EEF ch\u1ED7 trong phi\xEAn \u0111\u1EA5u, b\u1EA1n ph\u1EA3i m\u1EDF l\u1EA1i t\xE0i kho\u1EA3n l\u01B0u tr\u1EEF, ph\xED \u0111\xF3ng h\u1EB1ng n\u0103m, tr\u1EC5 m\u1ED9t n\u0103m l\xE0 m\u1EA5t h\u1EBFt. ${k.gag()}`,
             [
               C("\u0110\u1EB7t c\u1ECDc gi\u1EEF ch\u1ED7 trong phi\xEAn \u0111\u1EA5u", { money: -0.2, flags: ["s47_dat_coc"] }, "C\xF3 ch\u1ED7 trong ph\xF2ng \u0111\u1EA5u gi\xE1, ti\u1EC1n b\u1EAFt \u0111\u1EA7u ch\u1EA3y"),
               C("G\u1ECDi c\u1EA3 nh\xE0 v\u1EC1 h\u1ECDp kh\u1EA9n", { rel: 2, flags: ["s47_hop_nha"] }, "\u0110\xF4ng ng\u01B0\u1EDDi g\xF3p s\u1EE9c, c\u0169ng \u0111\xF4ng \xFD ki\u1EBFn")
@@ -30094,7 +30096,7 @@ var Argon = (() => {
       ]
     }),
     "Vi\u1EC5n t\u01B0\u1EDFng: t\u1EEBng t\u1EA5m \u1EA3nh nh\xE0 b\u1EA1n l\xEAn s\xE0n \u0111\u1EA5u gi\xE1"
-  ), S48_PT = land("s48_phong_trao", "B\u1EA1n d\u1EABn \u0111\u1EA7u phong tr\xE0o \u0111\xF2i quy\u1EC1n \u0111\u01B0\u1EE3c bu\u1ED3n. Th\xE0nh ph\u1ED1 m\u1EDF nh\u1EEFng c\u0103n ph\xF2ng kh\xF4ng camera, v\xE0 b\u1EA1n c\xF3 m\u1ED9t ngh\u1EC1 kh\xF4ng ai d\u1EA1y.", { custom: "become:activist", happy: 4 }), S48_DI = land("s48_di_cu", "B\u1EA1n sang m\u1ED9t n\u01B0\u1EDBc kh\xF4ng ch\u1EA5m \u0111i\u1EC3m h\u1EA1nh ph\xFAc, n\u01A1i ng\u01B0\u1EDDi ta \u0111\u01B0\u1EE3c ph\xE9p m\u1EB7t n\u1EB7ng m\xE0y nh\u1EB9.", { custom: "migrate_now", money: -1 }), S48_QUE = land("s48_ve_noi_it_camera", "B\u1EA1n d\u1ECDn t\u1EDBi m\u1ED9t th\u1ECB tr\u1EA5n nh\u1ECF \xEDt camera, n\u01A1i ng\u01B0\u1EDDi ta c\xF2n \u0111\u01B0\u1EE3c ng\u1ED3i bu\u1ED3n tr\u01B0\u1EDBc hi\xEAn nh\xE0.", { custom: "move_city", happy: 3 }), S48_CUOI = land("s48_cuoi_chuan", "B\u1EA1n luy\u1EC7n \u0111\u01B0\u1EE3c n\u1EE5 c\u01B0\u1EDDi \u0111\u1EA1t ch\xEDn m\u01B0\u01A1i \u0111i\u1EC3m. L\u01B0\u01A1ng t\u0103ng, \u0111i\u1EC3m t\u0103ng, v\xE0 kh\xF4ng ai bi\u1EBFt b\u1EA1n th\u1EADt ra \u0111ang ngh\u0129 g\xEC.", { income_mult: 1.3, happy: -4 }), s48 = weird(
+  ), S48_PT = land("s48_phong_trao", "B\u1EA1n d\u1EABn \u0111\u1EA7u phong tr\xE0o \u0111\xF2i quy\u1EC1n \u0111\u01B0\u1EE3c bu\u1ED3n. Th\xE0nh ph\u1ED1 m\u1EDF nh\u1EEFng c\u0103n ph\xF2ng kh\xF4ng camera, v\xE0 b\u1EA1n c\xF3 m\u1ED9t ngh\u1EC1 kh\xF4ng ai d\u1EA1y.", { custom: "become:activist", happy: 4 }), S48_DI = land("s48_di_cu", "B\u1EA1n sang m\u1ED9t n\u01B0\u1EDBc kh\xF4ng ch\u1EA5m \u0111i\u1EC3m h\u1EA1nh ph\xFAc, n\u01A1i ng\u01B0\u1EDDi ta \u0111\u01B0\u1EE3c ph\xE9p m\u1EB7t n\u1EB7ng m\xE0y nh\u1EB9.", { custom: "migrate_now", money: -1 }), S48_HAM = land("s48_tang_ham", "B\u1EA1n thu\xEA l\u1EA1i t\u1EA7ng h\u1EA7m sau ti\u1EC7m s\u1EEDa xe, m\u1EDF m\u1ED9t ch\u1ED7 cho ng\u01B0\u1EDDi ta xu\u1ED1ng bu\u1ED3n cho \u0111\xE3, v\xE0 thu m\u1ED7i ng\u01B0\u1EDDi m\u1ED9t kho\u1EA3n nh\u1ECF. Qu\xE1n \u0111\xF4ng \u0111\u1EBFn m\u1EE9c ph\u1EA3i x\u1EBFp h\xE0ng.", { money: 1, happy: 2 }), S48_QUE = land("s48_ve_noi_it_camera", "B\u1EA1n d\u1ECDn t\u1EDBi m\u1ED9t th\u1ECB tr\u1EA5n nh\u1ECF \xEDt camera, n\u01A1i ng\u01B0\u1EDDi ta c\xF2n \u0111\u01B0\u1EE3c ng\u1ED3i bu\u1ED3n tr\u01B0\u1EDBc hi\xEAn nh\xE0.", { custom: "move_city", happy: 3 }), S48_CUOI = land("s48_cuoi_chuan", "B\u1EA1n luy\u1EC7n \u0111\u01B0\u1EE3c n\u1EE5 c\u01B0\u1EDDi \u0111\u1EA1t ch\xEDn m\u01B0\u01A1i \u0111i\u1EC3m. L\u01B0\u01A1ng t\u0103ng, \u0111i\u1EC3m t\u0103ng, v\xE0 kh\xF4ng ai bi\u1EBFt b\u1EA1n th\u1EADt ra \u0111ang ngh\u0129 g\xEC.", { income_mult: 1.3, happy: -4 }), s48 = weird(
     "S48",
     "sf",
     ["luat", "tinh", "ky"],
@@ -30110,7 +30112,7 @@ var Argon = (() => {
       color: "#5c6bc0",
       years: [6, 10],
       weird: "sf",
-      rules: { income: 0.85, flags: ["w_cham_diem_vui"] },
+      rules: { income: 0.85, yearly: { money: -0.05 }, flags: ["w_cham_diem_vui"] },
       reset: { cast: [{ key: "kiem_dinh", role: "official", label: "nh\xE2n vi\xEAn ki\u1EC3m \u0111\u1ECBnh n\u1EE5 c\u01B0\u1EDDi" }, { key: "ong_bong_bay", role: "mentor", label: "\xF4ng gi\xE0 b\xE1n b\xF3ng bay kh\xF4ng bao gi\u1EDD c\u01B0\u1EDDi" }] },
       gag: { key: "camera_cham", lines: [
         "Camera \u1EDF c\u1EEDa ch\u1EA5m b\u1EA1n 41 \u0111i\u1EC3m h\u1EA1nh ph\xFAc. Con ch\xF3 nh\xE0 b\xEAn \u0111i ngang, \u0111\u01B0\u1EE3c 88.",
@@ -30118,7 +30120,7 @@ var Argon = (() => {
         "Camera ch\u1EA5m b\u1EA1n 52 \u0111i\u1EC3m, cao nh\u1EA5t t\u1EEB tr\u01B0\u1EDBc t\u1EDBi nay. H\xF3a ra l\xFAc \u0111\xF3 b\u1EA1n \u0111ang h\u1EAFt h\u01A1i.",
         "Camera ch\u1EA5m 100 \u0111i\u1EC3m cho t\u1EA5m \u1EA3nh c\u01B0\u1EDDi b\u1EA1n d\xE1n tr\u01B0\u1EDBc \u1ED1ng k\xEDnh. Kh\xF4ng ai s\u1EEDa l\u1ED7i n\xE0y."
       ] },
-      landings: [S48_PT, S48_DI, S48_CUOI, S48_QUE],
+      landings: [S48_PT, S48_DI, S48_CUOI, S48_QUE, S48_HAM],
       beats: [
         [
           card(
@@ -30197,7 +30199,7 @@ var Argon = (() => {
             "Phi\xEAn h\u1ECDp v\u1EC1 lu\u1EADt n\u1EE5 c\u01B0\u1EDDi",
             (c, k) => `H\u1ED9i \u0111\u1ED3ng th\xE0nh ph\u1ED1 m\u1EDF phi\xEAn h\u1ECDp v\u1EC1 lu\u1EADt ch\u1EA5m \u0111i\u1EC3m, v\xE0 t\xEAn b\u1EA1n c\xF3 trong danh s\xE1ch ph\xE1t bi\u1EC3u. ${k.gag()} ${cap3(k.scar("no") || "m\u1ED9t l\u1EDDi h\u1EE9a c\u0169")} v\u1EABn n\u1EB1m \u0111\xF3, nh\u01B0 m\u1ECDi n\u1ED7i bu\u1ED3n ch\u01B0a xong.`,
             (c) => {
-              let di = ending(S48_DI, "\u0110i n\u01B0\u1EDBc ngo\xE0i, n\u01A1i \u0111\u01B0\u1EE3c ph\xE9p bu\u1ED3n", "Tho\xE1t lu\u1EADt, b\u1ECF l\u1EA1i m\u1ECDi ng\u01B0\u1EDDi"), yen = c.has_job && !c.retired && c.age <= 65 ? ending(S48_CUOI, "Luy\u1EC7n n\u1EE5 c\u01B0\u1EDDi \u0111\u1EA1t chu\u1EA9n, s\u1ED1ng y\xEAn", "L\u01B0\u01A1ng t\u0103ng, m\u1EB7t m\xECnh kh\xF4ng c\xF2n l\xE0 c\u1EE7a m\xECnh") : ending(S48_QUE, "D\u1ECDn v\u1EC1 th\u1ECB tr\u1EA5n nh\u1ECF \xEDt camera", "Y\xEAn th\xE2n, nh\u01B0ng ph\u1EA3i xa m\u1ECDi th\u1EE9 quen thu\u1ED9c");
+              let di = migrateOk(c) ? ending(S48_DI, "\u0110i n\u01B0\u1EDBc ngo\xE0i, n\u01A1i \u0111\u01B0\u1EE3c ph\xE9p bu\u1ED3n", "Tho\xE1t lu\u1EADt, b\u1ECF l\u1EA1i m\u1ECDi ng\u01B0\u1EDDi") : ending(S48_HAM, "M\u1EDF t\u1EA7ng h\u1EA7m cho ng\u01B0\u1EDDi ta xu\u1ED1ng bu\u1ED3n", "Ki\u1EBFm \u0111\u01B0\u1EE3c m\u1ED9t kho\u1EA3n, s\u1ED1ng n\u1EEDa tr\xEAn n\u1EEDa d\u01B0\u1EDBi"), yen = c.has_job && !c.retired && c.age <= 65 ? ending(S48_CUOI, "Luy\u1EC7n n\u1EE5 c\u01B0\u1EDDi \u0111\u1EA1t chu\u1EA9n, s\u1ED1ng y\xEAn", "L\u01B0\u01A1ng t\u0103ng, m\u1EB7t m\xECnh kh\xF4ng c\xF2n l\xE0 c\u1EE7a m\xECnh") : ending(S48_QUE, "D\u1ECDn v\u1EC1 th\u1ECB tr\u1EA5n nh\u1ECF \xEDt camera", "Y\xEAn th\xE2n, nh\u01B0ng ph\u1EA3i xa m\u1ECDi th\u1EE9 quen thu\u1ED9c");
               if (!pathOpen("activist", c.age)) return has7(c, "s48_nop_don_di") ? [di, yen] : [yen, di];
               let pt = ending(S48_PT, "\u0110\u1EE9ng l\xEAn ph\xE1t bi\u1EC3u, d\u1EABn \u0111\u1EA7u phong tr\xE0o", "C\xF3 th\u1EC3 \u0111\u1ED5i lu\u1EADt, ch\u1EAFc ch\u1EAFn m\u1EA5t y\xEAn \u1ED5n");
               return n13(c, "s48_pt") >= 3 ? [pt, di, yen] : has7(c, "s48_nop_don_di") ? [di, pt, yen] : [yen, pt, di];
@@ -30318,7 +30320,7 @@ var Argon = (() => {
       ]
     }),
     "Vi\u1EC5n t\u01B0\u1EDFng: bu\xF4n \u0111\xE2u th\u1EAFng \u0111\xF3, nh\xECn ng\u01B0\u1EDDi c\u0169ng th\u1EA5y gi\xE1"
-  ), S50_TEN_MOI = land("s50_ten_moi", "B\u1EA1n b\u1EAFt \u0111\u1EA7u l\u1EA1i d\u01B0\u1EDBi m\u1ED9t c\xE1i t\xEAn m\u1EDBi \u1EDF th\xE0nh ph\u1ED1 kh\xE1c: kh\xF4ng n\u1EE3, kh\xF4ng ngh\u1EC1, kh\xF4ng ai nh\u1EDB m\u1EB7t.", { custom: "repay:5|job_lose|move_city", happy: 3 }), S50_TEN_CU = land("s50_ten_cu", "H\u1EC7 th\u1ED1ng kh\xF4i ph\u1EE5c b\u1EA1n k\xE8m \u0111\u1EA7y \u0111\u1EE7 n\u1EE3 n\u1EA7n v\xE0 m\u1ED9t kho\u1EA3n ph\u1EA1t v\xEC \u0111\xE3 kh\xF4ng t\u1ED3n t\u1EA1i qu\xE1 h\u1EA1n.", { money: -1.5, happy: -2 }), S50_GIUP = land("s50_giup_nguoi", "B\u1EA1n l\xE0m cho m\u1ED9t v\u0103n ph\xF2ng nh\u1ECF chuy\xEAn \u0111\u01B0a nh\u1EEFng ng\u01B0\u1EDDi b\u1ECB x\xF3a tr\u1EDF l\u1EA1i s\u1ED5 s\xE1ch.", { custom: "become:social_worker", happy: 3 }), s50 = weird(
+  ), S50_TEN_MOI = land("s50_ten_moi", "B\u1EA1n b\u1EAFt \u0111\u1EA7u l\u1EA1i d\u01B0\u1EDBi m\u1ED9t c\xE1i t\xEAn m\u1EDBi \u1EDF th\xE0nh ph\u1ED1 kh\xE1c: kh\xF4ng n\u1EE3, kh\xF4ng ngh\u1EC1, kh\xF4ng ai nh\u1EDB m\u1EB7t.", { custom: "repay:5|job_lose|move_city", happy: 3 }), S50_TEN_CU = land("s50_ten_cu", "H\u1EC7 th\u1ED1ng kh\xF4i ph\u1EE5c b\u1EA1n, ghi l\u1EA1i s\u1ED5 n\u1EE3 c\u0169 t\u1EEB \u0111\u1EA7u, k\xE8m m\u1ED9t kho\u1EA3n ph\u1EA1t v\xEC \u0111\xE3 kh\xF4ng t\u1ED3n t\u1EA1i qu\xE1 h\u1EA1n.", { money: -1.5, custom: "borrow:1", happy: -2 }), S50_GIUP = land("s50_giup_nguoi", "B\u1EA1n l\xE0m cho m\u1ED9t v\u0103n ph\xF2ng nh\u1ECF chuy\xEAn \u0111\u01B0a nh\u1EEFng ng\u01B0\u1EDDi b\u1ECB x\xF3a tr\u1EDF l\u1EA1i s\u1ED5 s\xE1ch.", { custom: "become:social_worker", happy: 3 }), s50 = weird(
     "S50",
     "sf",
     ["luat", "tien", "ky"],
@@ -30335,7 +30337,7 @@ var Argon = (() => {
       years: [5, 9],
       weird: "sf",
       rules: { income: 0.6, flags: ["w_khong_ton_tai"] },
-      reset: { cast: [{ key: "o_quay", role: "official", label: "c\xF4 nh\xE2n vi\xEAn qu\u1EA7y s\u1ED1 b\u1EA3y" }, { key: "ong_khong_ten", role: "mentor", label: "\xF4ng gi\xE0 kh\xF4ng t\u1ED3n t\u1EA1i t\u1EEB m\u01B0\u1EDDi n\u0103m nay" }] },
+      reset: { effects: { custom: "repay:50" }, cast: [{ key: "o_quay", role: "official", label: "c\xF4 nh\xE2n vi\xEAn qu\u1EA7y s\u1ED1 b\u1EA3y" }, { key: "ong_khong_ten", role: "mentor", label: "\xF4ng gi\xE0 kh\xF4ng t\u1ED3n t\u1EA1i t\u1EEB m\u01B0\u1EDDi n\u0103m nay" }] },
       gag: { key: "may_lay_so", lines: [
         "M\xE1y l\u1EA5y s\u1ED1 in ra m\u1ED9t t\u1EDD gi\u1EA5y tr\u1EAFng tinh. Ng\u01B0\u1EDDi \u1EDF qu\u1EA7y nh\xECn t\u1EDD gi\u1EA5y, r\u1ED3i nh\xECn xuy\xEAn qua b\u1EA1n.",
         "M\xE1y l\u1EA5y s\u1ED1 l\u1EA1i in gi\u1EA5y tr\u1EAFng. B\u1EA1n x\u1EBFp h\xE0ng b\u1EB1ng t\u1EDD gi\u1EA5y tr\u1EAFng, ng\u01B0\u1EDDi ph\xEDa sau c\u0169ng x\u1EBFp h\xE0ng sau t\u1EDD gi\u1EA5y tr\u1EAFng.",
@@ -30442,7 +30444,7 @@ var Argon = (() => {
     "X01",
     "abs",
     ["danh", "dat"],
-    (c) => c.age >= 22 && c.age <= 68 && rural(c) && c.pressure.danh >= 2,
+    (c) => c.country === "VN" && c.age >= 22 && c.age <= 68 && rural(c) && c.pressure.danh >= 2,
     () => "Nh\u1EADn con d\u1EA5u th\xF4n, \u0111\u1EA5u v\u1EDBi con tr\xE2u",
     (s) => ({
       title: "Tr\u01B0\u1EDFng th\xF4n b\u1EA5t \u0111\u1EAFc d\u0129",
@@ -30566,7 +30568,7 @@ var Argon = (() => {
       color: "#e0a030",
       years: [5, 9],
       weird: "abs",
-      rules: { flags: ["w_x02_gia_toc_meo"] },
+      rules: { flags: ["w_x02_gia_toc_meo"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "truong_ho", role: "mentor", label: "\xF4ng ch\xFA tr\u01B0\u1EDFng h\u1ECD" }, { key: "em_ho", role: "sibling", label: "c\xF4 em h\u1ECD gi\u1EEF s\u1ED5 l\u1ECBch m\xE8o" }] },
       gag: { key: "meo_chu_toa", lines: [
         "Con m\xE8o n\u1EB1m l\xEAn t\u1EDD ch\u01B0\u01A1ng tr\xECnh h\u1ECDp. C\u1EA3 h\u1ECD ng\u1ED3i ch\u1EDD n\xF3 d\u1EADy m\u1EDBi \u0111\u1ECDc ti\u1EBFp.",
@@ -30589,7 +30591,7 @@ var Argon = (() => {
           card(
             "x02_mo_so",
             "Cu\u1ED1n s\u1ED5 t\xE2m tr\u1EA1ng",
-            (c, k) => `${cap3(k.npc("em_ho"))} \u0111\u01B0\u1EE3c giao gi\u1EEF s\u1ED5 t\xE2m tr\u1EA1ng c\u1EE7a con m\xE8o, ghi t\u1EEBng gi\u1EDD n\xF3 ng\xE1p, n\xF3 li\u1EBFm ch\xE2n, n\xF3 nh\xECn ra c\u1EEDa. Mu\u1ED1n \u0111\u1EB7t l\u1ECBch h\u1ECDp ph\u1EA3i n\u1ED9p ph\xED "gi\u1EEF s\u1ED5" cho c\xF4. Cu\u1ED1n s\u1ED5 \u0111\xE3 d\xE0y h\u01A1n c\u1EA3 gia ph\u1EA3.`,
+            (c, k) => `${cap3(k.npc("em_ho"))} \u0111\u01B0\u1EE3c giao gi\u1EEF s\u1ED5 t\xE2m tr\u1EA1ng c\u1EE7a con m\xE8o, ghi t\u1EEBng gi\u1EDD n\xF3 ng\xE1p, n\xF3 li\u1EBFm ch\xE2n, n\xF3 nh\xECn ra c\u1EEDa. M\u1ED7i nh\xE0 trong h\u1ECD ph\u1EA3i n\u1ED9p ph\xED "gi\u1EEF s\u1ED5" cho c\xF4 h\u1EB1ng n\u0103m, nh\xE0 b\u1EA1n c\u0169ng kh\xF4ng ngo\u1EA1i l\u1EC7. Cu\u1ED1n s\u1ED5 \u0111\xE3 d\xE0y h\u01A1n c\u1EA3 gia ph\u1EA3.`,
             [
               C("Gi\xFAp c\xF4 \u1EA5y ghi s\u1ED5", { flags: ["x02_giu_so"], know: 2, counters: { x02_quyen: 1 } }, "Bi\u1EBFt l\u1ECBch m\xE8o tr\u01B0\u1EDBc m\u1ECDi ng\u01B0\u1EDDi, d\xEDnh v\xE0o ti\u1EC1n ph\xED"),
               C("H\u1ECFi c\xF4ng khai v\u1EC1 ti\u1EC1n ph\xED gi\u1EEF s\u1ED5", { flags: ["x02_hoi_phi"], counters: { x02_tach: 1 } }, "\u0110\xFAng l\u1EBD, m\u1EA5t m\u1ED9t \u0111\u1ED3ng minh")
@@ -31201,7 +31203,7 @@ var Argon = (() => {
             "B\u1EEFa c\u01A1m thi\u1EBFu m\u1ED9t ng\u01B0\u1EDDi",
             (c) => `${n14(c, "x07_xa") >= 3 ? "B\u1EEFa c\u01A1m cu\u1ED1i tu\u1EA7n gi\u1EDD ch\u1EC9 c\xF2n b\u1EA1n v\u1EDBi m\u1ED9t g\xF3i m\xEC in m\u1EB7t m\xECnh." : "B\u1EEFa c\u01A1m cu\u1ED1i tu\u1EA7n v\u1EAFng d\u1EA7n, nh\u01B0ng v\u1EABn c\xF2n ng\u01B0\u1EDDi ch\u1EDD."} Ng\u01B0\u1EDDi nh\xE0 n\xF3i kh\xF4ng tr\xE1ch g\xEC b\u1EA1n, ch\u1EC9 l\xE0 h\u1ECD \u0111\xE3 quen \u0103n tr\u01B0\u1EDBc.`,
             [
-              C("Xin h\xE3ng ngh\u1EC9 m\u1ED9t n\u0103m kh\xF4ng l\u01B0\u01A1ng", { money: -0.3, flags: ["x07_nghi_nam"], rel: 5 }, "M\u1EA5t ti\u1EC1n, k\xE9o l\u1EA1i \u0111\u01B0\u1EE3c m\u1ED9t b\u1EEFa c\u01A1m"),
+              C("Xin h\xE3ng t\u1EA1m ng\u01B0ng h\u1EE3p \u0111\u1ED3ng m\u1ED9t n\u0103m", { money: -0.3, flags: ["x07_nghi_nam"], rel: 5 }, "M\u1EA5t ti\u1EC1n, k\xE9o l\u1EA1i \u0111\u01B0\u1EE3c m\u1ED9t b\u1EEFa c\u01A1m"),
               C("G\u1EEDi th\xEAm ti\u1EC1n v\u1EC1 thay cho m\xECnh", { money: -0.1, flags: ["x07_gui_tien"], counters: { x07_xa: 1 } }, "Ng\u01B0\u1EDDi nh\xE0 \u0111\u1EE7 \u0103n, b\xE0n \u0103n v\u1EABn tr\u1ED1ng")
             ]
           )
@@ -31227,7 +31229,7 @@ var Argon = (() => {
     "X08",
     "abs",
     ["mau", "dat"],
-    (c) => c.age >= 22 && c.age <= 40 && rural(c) && c.pressure.mau >= 2,
+    (c) => c.country === "VN" && c.age >= 22 && c.age <= 40 && rural(c) && c.pressure.mau >= 2,
     () => "Nh\u1EADn l\xE0m c\u1EE5 t\u1ED5 c\u1EE7a c\u1EA3 l\xE0ng",
     (s) => ({
       title: "C\u1EE5 t\u1ED5 v\u1EC1 l\xE0ng",
@@ -31577,7 +31579,7 @@ var Argon = (() => {
   function plantKey(c, kind, keys) {
     return keys.find((k) => c.plants.some((p) => p.kind === kind && p.key === k) || c.flags.has(`plant:${kind}:${k}`));
   }
-  var X11_VDV = land("x11_van_dong_vien", "Li\xEAn \u0111o\xE0n \u0111i\u1EC1n kinh g\u1ECDi b\u1EA1n l\xEAn tuy\u1EC3n, v\xEC m\xF4n kia c\xF3 ra sao th\xEC b\u1EA1n v\u1EABn ch\u1EA1y nhanh nh\u1EA5t.", { custom: "become:runner", happy: 4, pressure: { danh: 2 } }), X11_TT = land("x11_trong_tai", "B\u1EA1n th\xE0nh tr\u1ECDng t\xE0i c\u1EE7a m\xF4n n\xE0y. Kh\xF4ng ai c\xE3i \u0111\u01B0\u1EE3c b\u1EA1n, v\xEC kh\xF4ng ai bi\u1EBFt lu\u1EADt.", { custom: "become:referee", happy: 3 }), X11_HLV = land("x11_hlv", "B\u1EA1n th\xE0nh hu\u1EA5n luy\u1EC7n vi\xEAn \u0111\u1EA7u ti\xEAn c\u1EE7a m\xF4n n\xE0y, ng\u01B0\u1EDDi duy nh\u1EA5t d\xE1m n\xF3i m\xECnh hi\u1EC3u lu\u1EADt.", { custom: "become:coach", happy: 4 }), X11_SACH = land("x11_sach_luat", "B\u1EA1n b\xE1n quy\u1EC1n in cu\u1ED1n lu\u1EADt cho m\u1ED9t nh\xE0 xu\u1EA5t b\u1EA3n, t\xEAn b\u1EA1n in ngay b\xECa, \u0111\u1EE7 s\u1ED1ng thong th\u1EA3 v\xE0i n\u0103m.", { money: 2, happy: 3, pressure: { danh: 2 } }), X11_SAN = land("x11_san_tap", "B\u1EA1n b\u1ECF ti\u1EC1n d\u1EF1ng m\u1ED9t s\xE2n t\u1EADp cho tr\u1EBB con trong ph\u1ED1, v\u1EA1ch k\u1EBB b\u1EB1ng s\u01A1n h\u1EB3n hoi.", { money: -1, happy: 6 }), X12_TEN_CU = land("x12_ten_cu", "B\u1EA1n s\u1ED1ng l\u1EA1i b\u1EB1ng t\xEAn c\u0169, tr\u1EA3 n\u1EE3 c\u0169 c\xF9ng ph\xED gi\u1EA5y t\u1EDD, gi\u1EEF t\u1EDD gi\u1EA5y ch\u1EE9ng t\u1EED l\xE0m k\u1EF7 ni\u1EC7m.", { custom: "repay:1.5", money: -2, happy: 4 }), X12_TEN_MOI = land("x12_ten_moi", "B\u1EA1n nh\u1EADn t\xEAn m\u1EDBi, d\u1ECDn sang th\xE0nh ph\u1ED1 kh\xE1c, b\u1EAFt \u0111\u1EA7u l\u1EA1i \u1EDF n\u01A1i kh\xF4ng ai g\u1ECDi nh\u1EA7m t\xEAn m\xECnh.", { custom: "move_city", money: -1, happy: 2 }), X12_TANG_LE = land("x12_nghe_tang_le", "Sau ng\u1EA7n \u1EA5y chuy\u1EC7n, b\u1EA1n hi\u1EC3u ngh\u1EC1 tang l\u1EC5 h\u01A1n ai h\u1EBFt, v\xE0 m\u1EDF d\u1ECBch v\u1EE5 t\u1ED5 ch\u1EE9c tang l\u1EC5 chu \u0111\xE1o nh\u1EA5t v\xF9ng.", { custom: "become:funeral_worker", happy: 3 }), X13_VE = land("x13_ban_ve", "B\u1EA1n k\xFD ti\u1EBFp, s\u1ED1ng b\u1EB1ng ti\u1EC1n v\xE9, v\xE0 quen d\u1EA7n v\u1EDBi vi\u1EC7c ng\xE0y n\xE0o c\u0169ng c\xF3 ng\u01B0\u1EDDi l\u1EA1 nh\xECn m\xECnh \u0103n c\u01A1m.", { income_mult: 1.3, happy: -4 }), X13_BAN_DUT = land("x13_ban_dut", "B\u1EA1n b\xE1n \u0111\u1EE9t b\u1ED9 s\u01B0u t\u1EADp v\xE0 quy\u1EC1n tr\u01B0ng b\xE0y cho b\u1EA3o t\xE0ng, nh\u1EADn ti\u1EC1n r\u1ED3i d\u1ECDn l\xEAn th\xE0nh ph\u1ED1.", { money: 3, custom: "move_city", happy: 2 }), X13_DONG_CUA = land("x13_dong_cua", "B\u1EA1n b\u1ED3i th\u01B0\u1EDDng h\u1EE3p \u0111\u1ED3ng, g\u1EE1 h\u1EBFt s\u1ED1 ki\u1EC3m k\xEA, ng\u1ED3i l\xEAn c\xE1i gh\u1EBF c\u1EE7a m\xECnh l\u1EA7n \u0111\u1EA7u sau nhi\u1EC1u n\u0103m.", { money: -1, happy: 8 }), X14_GIAU = land("x14_giau", "T\xF2a gi\u1EEF nguy\xEAn l\xE1 th\u0103m. B\u1EA1n th\xE0nh ng\u01B0\u1EDDi gi\xE0u nh\u1EA5t ph\u1ED1, k\xE8m hai m\u01B0\u01A1i ph\xF2ng v\xE0 m\u1ED9t d\xF2ng h\u1ECD gh\xE9t b\u1EA1n.", { money: 5, happy: 3 }), X14_CHIA = land("x14_chia_doi", "B\u1EA1n k\xFD chia \u0111\xF4i v\u1EDBi ng\u01B0\u1EDDi nh\xE0 c\u1EE5, c\u1EA7m ph\u1EA7n c\u1EE7a m\xECnh v\xE0 \u0111\u01B0\u1EE3c m\u1EDDi d\u1EF1 ng\xE0y t\u01B0\u1EDFng nh\u1EDB c\u1EE5 h\u1EB1ng n\u0103m.", { money: 2, happy: 5, rel: 4 }), X14_TRANG = land("x14_trang_tay", "T\xF2a tuy\xEAn l\xE1 th\u0103m v\xF4 hi\u1EC7u. B\u1EA1n m\u1EA5t c\u1EA3 \xE1n ph\xED l\u1EABn ti\u1EC1n \u0111\xE3 \u1EE9ng tr\u01B0\u1EDBc, ch\u1EC9 gi\u1EEF \u0111\u01B0\u1EE3c t\xFAi cam cu\u1ED1i c\xF9ng.", { money: -2, happy: -4 }), X15_O_LAI = land("x15_o_lai", "B\u1EA1n \u1EDF l\u1EA1i, gi\u1EA5y t\u1EDD h\u1EE3p ph\xE1p sau nhi\u1EC1u n\u0103m ch\u1EDD, v\xE0 b\u1EAFt \u0111\u1EA7u \u0111\u1EDDi ng\u01B0\u1EDDi di c\u01B0 th\u1EADt s\u1EF1.", { custom: "migrate_now", money: -1 }), X15_VE = land("x15_ve_nha", "B\u1EA1n v\u1EC1 n\u01B0\u1EDBc, n\u1ED9p ph\u1EA1t, mang theo ba t\u1EEB ngo\u1EA1i ng\u1EEF v\xE0 m\u1ED9t c\xE1i tem \u0111\xE3 b\u1EA1c m\xE0u.", { money: -1.5, happy: 4 }), X15_THUYEN = land("x15_thuyen_vien", "B\u1EA1n k\xFD h\u1EE3p \u0111\u1ED3ng thuy\u1EC1n vi\xEAn tr\xEAn ch\xEDnh con t\xE0u t\u1EEBng ch\u1EDF m\xECnh, l\u1EA7n n\xE0y c\xF3 h\u1ED9 chi\u1EBFu v\xE0 gi\u01B0\u1EDDng ri\xEAng.", { custom: "become:sailor", money: -0.5 }), X16_MC = land("x16_mc", "B\u1EA1n th\xE0nh MC truy\u1EC1n h\xECnh, ng\u01B0\u1EDDi duy nh\u1EA5t m\u1EDF ch\u01B0\u01A1ng tr\xECnh b\u1EB1ng c\xE2u: ch\xE0o qu\xFD v\u1ECB v\xE0 c\xE1c b\u1EA1n b\u1ED1n ch\xE2n.", { custom: "become:tv_host", happy: 3 }), X16_PT = land("x16_phat_thanh", "B\u1EA1n th\xE0nh ph\xE1t thanh vi\xEAn, gi\u1ECDng \u0111\u1ECDc quen c\u1EE7a c\u1EA3 v\xF9ng, con ch\xF3 n\u1EB1m d\u01B0\u1EDBi ch\xE2n b\xE0n m\u1ED7i s\xE1ng.", { custom: "become:radio_voice", happy: 4 }), X16_HOI_KY = land("x16_hoi_ky", "B\u1EA1n vi\u1EBFt h\u1ED3i k\xFD nh\xE2n danh con ch\xF3. S\xE1ch b\xE1n ch\u1EA1y, n\xF3 \u0111\u01B0\u1EE3c chia ph\u1EA7n b\u1EB1ng x\u01B0\u01A1ng.", { money: 2, happy: 3 }), X16_CUU_HO = land("x16_cuu_ho", "B\u1EA1n d\u1ED3n ti\u1EC1n danh ti\u1EBFng l\u1EADp m\u1ED9t tr\u1EA1m c\u1EE9u h\u1ED9 ch\xF3 m\xE8o b\u1ECB b\u1ECF r\u01A1i.", { money: -1.5, happy: 7 }), X17_CONG_TAC = land("x17_cong_tac_xa_hoi", "B\u1EA1n m\u1EDF m\u1ED9t v\u0103n ph\xF2ng nh\u1ECF \u1EDF \u0111\u1EA7u ph\u1ED1, gi\xFAp ai c\u1EA7n th\xEC gi\xFAp, kh\xF4ng c\u1EA7n bi\u1EC3n t\xEAn.", { custom: "become:social_worker", happy: 4 }), X17_DAI_BIEU = land("x17_dai_bieu", "B\u1EA1n ra \u1EE9ng c\u1EED v\xE0 tr\xFAng, nh\u1EDD c\u1EA3 m\u1ED9t con ph\u1ED1 mang t\xEAn m\xECnh. T\u1EEB nay danh ti\u1EBFng l\xE0 vi\u1EC7c l\xE0m.", { custom: "become:politician", happy: 2, pressure: { danh: 3 } }), X17_DI = land("x17_don_di", "B\u1EA1n d\u1ECDn sang th\xE0nh ph\u1ED1 kh\xE1c, n\u01A1i kh\xF4ng con ph\u1ED1 n\xE0o bi\u1EBFt t\xEAn b\u1EA1n.", { custom: "move_city", happy: 5 }), X17_BAN_TEN = land("x17_ban_ten", "B\u1EA1n b\xE1n quy\u1EC1n d\xF9ng t\xEAn cho ti\u1EC7m b\xE1nh \u0111\u1EA7u ph\u1ED1, s\u1ED1ng b\u1EB1ng ti\u1EC1n b\u1EA3n quy\u1EC1n v\xE0 ch\u1ECBu ti\u1EBFng.", { money: 1.5, happy: -2, pressure: { danh: 2 } }), X18_KH = land("x18_nha_khoa_hoc", "B\u1EA1n th\xE0nh nghi\xEAn c\u1EE9u vi\xEAn th\u1EADt, \u0111\u1EE9ng t\xEAn ba b\xE0i b\xE1o, v\xE0 v\u1EABn b\u1ECB g\u1ECDi l\xE0 ng\u01B0\u1EDDi \u0111\u1EB7t t\xEAn con b\u1ECD.", { custom: "become:scientist", happy: 4 }), X18_BT = land("x18_giu_rung", "B\u1EA1n th\xE0nh ng\u01B0\u1EDDi gi\u1EEF r\u1EEBng, s\u1ED1ng trong c\u0103n ch\xF2i c\u1EA1nh t\u1ED5 c\u1EE7a lo\xE0i b\u1ECD mang c\xE2u ch\u1EEDi c\u1EE7a m\xECnh.", { custom: "become:environmentalist", happy: 5 }), X18_MAU = land("x18_ban_mau", "B\u1EA1n b\xE1n b\u1ED9 s\u01B0u t\u1EADp m\u1EABu cho m\u1ED9t vi\u1EC7n b\u1EA3o t\xE0ng, \u0111\u1EE7 kh\xE9p m\u1ECDi chuy\u1EC7n c\u0169 v\xE0 c\xF2n d\u01B0.", { money: 2, custom: "repay:1", happy: 2 }), X18_HIEN = land("x18_hien_dat", "B\u1EA1n d\u1ED3n ti\u1EC1n mua l\u1EA1i m\u1EA3nh r\u1EEBng nh\u1ECF v\xE0 hi\u1EBFn cho khu b\u1EA3o t\u1ED3n.", { money: -2, happy: 7 }), X19_DB = land("x19_dau_bep", "B\u1EA1n m\u1EDF b\u1EBFp ri\xEAng b\u1EB1ng t\xEAn th\u1EADt. Kh\xE1ch c\u0169 t\xECm \u0111\u1EBFn, g\u1ECDi \u0111\xFAng m\xF3n t\u1EE7 c\xF3 t\xEAn th\u1EADt c\u1EE7a b\u1EA1n.", { custom: "become:restaurateur", happy: 5 }), X19_LO = land("x19_lo", "B\u1EA1n c\xF4ng khai m\u1ECDi chuy\u1EC7n, b\u1ED3i th\u01B0\u1EDDng \u0111\u1EE7 c\u1EA3, v\xE0 c\u1EA3 v\xF9ng bi\u1EBFt b\u1EA1n t\u1EEBng l\xE0 \u0111\u1EA7u b\u1EBFp gi\u1EA3.", { money: -2, happy: 2 }), X19_QUAN = land("x19_quan_com", "B\u1EA1n mua m\u1ED9t gian qu\xE1n c\u01A1m nh\u1ECF, n\u1EA5u \u0111\xFAng m\u1EA5y m\xF3n m\xECnh bi\u1EBFt, kh\xF4ng th\xEAm t\xEAn k\xEAu.", { buy: { kind: "shop", name: "gian qu\xE1n c\u01A1m nh\u1ECF", price: 1, borrow: !0 }, happy: 4 }), X20_YEU = land("x20_yeu_that", "Hai ng\u01B0\u1EDDi k\xFD l\u1EA1i gi\u1EA5y k\u1EBFt h\xF4n, l\u1EA7n n\xE0y c\u1ED1 \xFD, v\xE0 gi\u1EEF v\u1EA1ch ph\u1EA5n l\xE0m k\u1EF7 ni\u1EC7m.", { custom: "marry", happy: 8 }), X20_CU = land("x20_cuoi_dung_nguoi", "T\u1EDD gi\u1EA5y c\u0169 \u0111\u01B0\u1EE3c h\u1EE7y. B\u1EA1n c\u01B0\u1EDBi \u0111\xFAng ng\u01B0\u1EDDi h\u1EE9a h\xF4n ban \u0111\u1EA7u, trong m\u1ED9t \u0111\xE1m c\u01B0\u1EDBi ch\u1EC9 c\xF3 m\u01B0\u1EDDi kh\xE1ch.", { custom: "marry", happy: 6 }), X20_MOT_MINH = land("x20_mot_minh", "H\u1EE7y xong m\u1ECDi gi\u1EA5y t\u1EDD, b\u1EA1n \u1EDF m\u1ED9t m\xECnh, tr\u1EA3 \xE1n ph\xED b\u1EB1ng c\u1EA3 n\u0103m thu nh\u1EADp v\xE0 th\u1EA5y nh\u1EB9 nh\xF5m l\u1EA1 l\xF9ng.", { money: -1, happy: 3 }), HEIRLOOMS = {
+  var X11_VDV = land("x11_van_dong_vien", "Li\xEAn \u0111o\xE0n \u0111i\u1EC1n kinh g\u1ECDi b\u1EA1n l\xEAn tuy\u1EC3n, v\xEC m\xF4n kia c\xF3 ra sao th\xEC b\u1EA1n v\u1EABn ch\u1EA1y nhanh nh\u1EA5t.", { custom: "become:runner", happy: 4, pressure: { danh: 2 } }), X11_TT = land("x11_trong_tai", "B\u1EA1n th\xE0nh tr\u1ECDng t\xE0i c\u1EE7a m\xF4n n\xE0y. Kh\xF4ng ai c\xE3i \u0111\u01B0\u1EE3c b\u1EA1n, v\xEC kh\xF4ng ai bi\u1EBFt lu\u1EADt.", { custom: "become:referee", happy: 3 }), X11_HLV = land("x11_hlv", "B\u1EA1n th\xE0nh hu\u1EA5n luy\u1EC7n vi\xEAn \u0111\u1EA7u ti\xEAn c\u1EE7a m\xF4n n\xE0y, ng\u01B0\u1EDDi duy nh\u1EA5t d\xE1m n\xF3i m\xECnh hi\u1EC3u lu\u1EADt.", { custom: "become:coach", happy: 4 }), X11_SACH = land("x11_sach_luat", "B\u1EA1n b\xE1n quy\u1EC1n in cu\u1ED1n lu\u1EADt cho m\u1ED9t nh\xE0 xu\u1EA5t b\u1EA3n, t\xEAn b\u1EA1n in ngay b\xECa, \u0111\u1EE7 s\u1ED1ng thong th\u1EA3 v\xE0i n\u0103m.", { money: 2, happy: 3, pressure: { danh: 2 } }), X11_SAN = land("x11_san_tap", "B\u1EA1n b\u1ECF ti\u1EC1n d\u1EF1ng m\u1ED9t s\xE2n t\u1EADp cho tr\u1EBB con trong ph\u1ED1, v\u1EA1ch k\u1EBB b\u1EB1ng s\u01A1n h\u1EB3n hoi.", { money: -1, happy: 6 }), X12_TEN_CU = land("x12_ten_cu", "B\u1EA1n s\u1ED1ng l\u1EA1i b\u1EB1ng t\xEAn c\u0169, tr\u1EA3 n\u1EE3 c\u0169 c\xF9ng ph\xED gi\u1EA5y t\u1EDD, gi\u1EEF t\u1EDD gi\u1EA5y ch\u1EE9ng t\u1EED l\xE0m k\u1EF7 ni\u1EC7m.", { custom: "repay:1.5", money: -2, happy: 4 }), X12_TEN_MOI = land("x12_ten_moi", "B\u1EA1n nh\u1EADn t\xEAn m\u1EDBi, d\u1ECDn sang th\xE0nh ph\u1ED1 kh\xE1c, b\u1EAFt \u0111\u1EA7u l\u1EA1i \u1EDF n\u01A1i kh\xF4ng ai g\u1ECDi nh\u1EA7m t\xEAn m\xECnh.", { custom: "move_city", money: -1, happy: 2 }), X12_TANG_LE = land("x12_nghe_tang_le", "Sau ng\u1EA7n \u1EA5y chuy\u1EC7n, b\u1EA1n hi\u1EC3u ngh\u1EC1 tang l\u1EC5 h\u01A1n ai h\u1EBFt, v\xE0 m\u1EDF d\u1ECBch v\u1EE5 t\u1ED5 ch\u1EE9c tang l\u1EC5 chu \u0111\xE1o nh\u1EA5t v\xF9ng.", { custom: "become:funeral_worker", happy: 3 }), X13_VE = land("x13_ban_ve", "B\u1EA1n k\xFD ti\u1EBFp, s\u1ED1ng b\u1EB1ng ti\u1EC1n v\xE9, v\xE0 quen d\u1EA7n v\u1EDBi vi\u1EC7c ng\xE0y n\xE0o c\u0169ng c\xF3 ng\u01B0\u1EDDi l\u1EA1 nh\xECn m\xECnh \u0103n c\u01A1m.", { income_mult: 1.3, happy: -4 }), X13_BAN_DUT = land("x13_ban_dut", "B\u1EA1n b\xE1n \u0111\u1EE9t b\u1ED9 s\u01B0u t\u1EADp v\xE0 quy\u1EC1n tr\u01B0ng b\xE0y cho b\u1EA3o t\xE0ng, nh\u1EADn ti\u1EC1n r\u1ED3i d\u1ECDn l\xEAn th\xE0nh ph\u1ED1.", { money: 3, custom: "move_city", happy: 2 }), X13_DONG_CUA = land("x13_dong_cua", "B\u1EA1n b\u1ED3i th\u01B0\u1EDDng h\u1EE3p \u0111\u1ED3ng, g\u1EE1 h\u1EBFt s\u1ED1 ki\u1EC3m k\xEA, ng\u1ED3i l\xEAn c\xE1i gh\u1EBF c\u1EE7a m\xECnh l\u1EA7n \u0111\u1EA7u sau nhi\u1EC1u n\u0103m.", { money: -1, happy: 8 }), X14_GIAU = land("x14_giau", "T\xF2a gi\u1EEF nguy\xEAn l\xE1 th\u0103m. B\u1EA1n th\xE0nh ng\u01B0\u1EDDi gi\xE0u nh\u1EA5t ph\u1ED1, k\xE8m hai m\u01B0\u01A1i ph\xF2ng v\xE0 m\u1ED9t d\xF2ng h\u1ECD gh\xE9t b\u1EA1n.", { money: 5, happy: 3 }), X14_CHIA = land("x14_chia_doi", "B\u1EA1n k\xFD chia \u0111\xF4i v\u1EDBi ng\u01B0\u1EDDi nh\xE0 c\u1EE5, c\u1EA7m ph\u1EA7n c\u1EE7a m\xECnh v\xE0 \u0111\u01B0\u1EE3c m\u1EDDi d\u1EF1 ng\xE0y t\u01B0\u1EDFng nh\u1EDB c\u1EE5 h\u1EB1ng n\u0103m.", { money: 2, happy: 5, rel: 4 }), X14_TRANG = land("x14_trang_tay", "T\xF2a tuy\xEAn l\xE1 th\u0103m v\xF4 hi\u1EC7u. B\u1EA1n m\u1EA5t c\u1EA3 \xE1n ph\xED l\u1EABn ti\u1EC1n \u0111\xE3 \u1EE9ng tr\u01B0\u1EDBc, ch\u1EC9 gi\u1EEF \u0111\u01B0\u1EE3c t\xFAi cam cu\u1ED1i c\xF9ng.", { money: -2, happy: -4 }), X15_O_LAI = land("x15_o_lai", "B\u1EA1n \u1EDF l\u1EA1i, gi\u1EA5y t\u1EDD h\u1EE3p ph\xE1p sau nhi\u1EC1u n\u0103m ch\u1EDD, v\xE0 b\u1EAFt \u0111\u1EA7u \u0111\u1EDDi ng\u01B0\u1EDDi di c\u01B0 th\u1EADt s\u1EF1.", { custom: "migrate_now", money: -1 }), X15_O_CHUI = land("x15_o_chui", "B\u1EA1n \u1EDF l\u1EA1i b\u1EBFn c\u1EA3ng \u1EA5y, s\u1ED1ng kh\xF4ng gi\u1EA5y t\u1EDD, l\xE0m c\xF4ng nh\u1EADt cho b\xE1c g\xE1c kho v\xE0 g\u1EEDi v\u1EC1 nh\xE0 m\u1ED9t kho\u1EA3n l\u1EDBn d\xE0nh d\u1EE5m t\u1EEBng \u0111\u1ED3ng.", { money: -1, happy: -2 }), X15_VE = land("x15_ve_nha", "B\u1EA1n v\u1EC1 n\u01B0\u1EDBc, n\u1ED9p ph\u1EA1t, mang theo ba t\u1EEB ngo\u1EA1i ng\u1EEF v\xE0 m\u1ED9t c\xE1i tem \u0111\xE3 b\u1EA1c m\xE0u.", { money: -1.5, happy: 4 }), X15_THUYEN = land("x15_thuyen_vien", "B\u1EA1n k\xFD h\u1EE3p \u0111\u1ED3ng thuy\u1EC1n vi\xEAn tr\xEAn ch\xEDnh con t\xE0u t\u1EEBng ch\u1EDF m\xECnh, l\u1EA7n n\xE0y c\xF3 h\u1ED9 chi\u1EBFu v\xE0 gi\u01B0\u1EDDng ri\xEAng.", { custom: "become:sailor", money: -0.5 }), X16_MC = land("x16_mc", "B\u1EA1n th\xE0nh MC truy\u1EC1n h\xECnh, ng\u01B0\u1EDDi duy nh\u1EA5t m\u1EDF ch\u01B0\u01A1ng tr\xECnh b\u1EB1ng c\xE2u: ch\xE0o qu\xFD v\u1ECB v\xE0 c\xE1c b\u1EA1n b\u1ED1n ch\xE2n.", { custom: "become:tv_host", happy: 3 }), X16_PT = land("x16_phat_thanh", "B\u1EA1n th\xE0nh ph\xE1t thanh vi\xEAn, gi\u1ECDng \u0111\u1ECDc quen c\u1EE7a c\u1EA3 v\xF9ng, con ch\xF3 n\u1EB1m d\u01B0\u1EDBi ch\xE2n b\xE0n m\u1ED7i s\xE1ng.", { custom: "become:radio_voice", happy: 4 }), X16_HOI_KY = land("x16_hoi_ky", "B\u1EA1n vi\u1EBFt h\u1ED3i k\xFD nh\xE2n danh con ch\xF3. S\xE1ch b\xE1n ch\u1EA1y, n\xF3 \u0111\u01B0\u1EE3c chia ph\u1EA7n b\u1EB1ng x\u01B0\u01A1ng.", { money: 2, happy: 3 }), X16_CUU_HO = land("x16_cuu_ho", "B\u1EA1n d\u1ED3n ti\u1EC1n danh ti\u1EBFng l\u1EADp m\u1ED9t tr\u1EA1m c\u1EE9u h\u1ED9 ch\xF3 m\xE8o b\u1ECB b\u1ECF r\u01A1i.", { money: -1.5, happy: 7 }), X17_CONG_TAC = land("x17_cong_tac_xa_hoi", "B\u1EA1n m\u1EDF m\u1ED9t v\u0103n ph\xF2ng nh\u1ECF \u1EDF \u0111\u1EA7u ph\u1ED1, gi\xFAp ai c\u1EA7n th\xEC gi\xFAp, kh\xF4ng c\u1EA7n bi\u1EC3n t\xEAn.", { custom: "become:social_worker", happy: 4 }), X17_DAI_BIEU = land("x17_dai_bieu", "B\u1EA1n ra \u1EE9ng c\u1EED v\xE0 tr\xFAng, nh\u1EDD c\u1EA3 m\u1ED9t con ph\u1ED1 mang t\xEAn m\xECnh. T\u1EEB nay danh ti\u1EBFng l\xE0 vi\u1EC7c l\xE0m.", { custom: "become:politician", happy: 2, pressure: { danh: 3 } }), X17_DI = land("x17_don_di", "B\u1EA1n d\u1ECDn sang th\xE0nh ph\u1ED1 kh\xE1c, n\u01A1i kh\xF4ng con ph\u1ED1 n\xE0o bi\u1EBFt t\xEAn b\u1EA1n.", { custom: "move_city", happy: 5 }), X17_BAN_TEN = land("x17_ban_ten", "B\u1EA1n b\xE1n quy\u1EC1n d\xF9ng t\xEAn cho ti\u1EC7m b\xE1nh \u0111\u1EA7u ph\u1ED1, s\u1ED1ng b\u1EB1ng ti\u1EC1n b\u1EA3n quy\u1EC1n v\xE0 ch\u1ECBu ti\u1EBFng.", { money: 1.5, happy: -2, pressure: { danh: 2 } }), X18_KH = land("x18_nha_khoa_hoc", "B\u1EA1n th\xE0nh nghi\xEAn c\u1EE9u vi\xEAn th\u1EADt, \u0111\u1EE9ng t\xEAn ba b\xE0i b\xE1o, v\xE0 v\u1EABn b\u1ECB g\u1ECDi l\xE0 ng\u01B0\u1EDDi \u0111\u1EB7t t\xEAn con b\u1ECD.", { custom: "become:scientist", happy: 4 }), X18_BT = land("x18_giu_rung", "B\u1EA1n th\xE0nh ng\u01B0\u1EDDi gi\u1EEF r\u1EEBng, s\u1ED1ng trong c\u0103n ch\xF2i c\u1EA1nh t\u1ED5 c\u1EE7a lo\xE0i b\u1ECD mang c\xE2u ch\u1EEDi c\u1EE7a m\xECnh.", { custom: "become:environmentalist", happy: 5 }), X18_MAU = land("x18_ban_mau", "B\u1EA1n b\xE1n b\u1ED9 s\u01B0u t\u1EADp m\u1EABu cho m\u1ED9t vi\u1EC7n b\u1EA3o t\xE0ng, \u0111\u1EE7 kh\xE9p m\u1ECDi chuy\u1EC7n c\u0169 v\xE0 c\xF2n d\u01B0.", { money: 2, custom: "repay:1", happy: 2 }), X18_HIEN = land("x18_hien_dat", "B\u1EA1n d\u1ED3n ti\u1EC1n mua l\u1EA1i m\u1EA3nh r\u1EEBng nh\u1ECF v\xE0 hi\u1EBFn cho khu b\u1EA3o t\u1ED3n.", { money: -2, happy: 7 }), X19_DB = land("x19_dau_bep", "B\u1EA1n m\u1EDF b\u1EBFp ri\xEAng b\u1EB1ng t\xEAn th\u1EADt. Kh\xE1ch c\u0169 t\xECm \u0111\u1EBFn, g\u1ECDi \u0111\xFAng m\xF3n t\u1EE7 c\xF3 t\xEAn th\u1EADt c\u1EE7a b\u1EA1n.", { custom: "become:restaurateur", happy: 5 }), X19_LO = land("x19_lo", "B\u1EA1n c\xF4ng khai m\u1ECDi chuy\u1EC7n, b\u1ED3i th\u01B0\u1EDDng \u0111\u1EE7 c\u1EA3, v\xE0 c\u1EA3 v\xF9ng bi\u1EBFt b\u1EA1n t\u1EEBng l\xE0 \u0111\u1EA7u b\u1EBFp gi\u1EA3.", { money: -2, happy: 2 }), X19_QUAN = land("x19_quan_com", "B\u1EA1n mua m\u1ED9t gian qu\xE1n c\u01A1m nh\u1ECF, n\u1EA5u \u0111\xFAng m\u1EA5y m\xF3n m\xECnh bi\u1EBFt, kh\xF4ng th\xEAm t\xEAn k\xEAu.", { buy: { kind: "shop", name: "gian qu\xE1n c\u01A1m nh\u1ECF", price: 1, borrow: !0 }, happy: 4 }), X20_YEU = land("x20_yeu_that", "Hai ng\u01B0\u1EDDi k\xFD l\u1EA1i gi\u1EA5y k\u1EBFt h\xF4n, l\u1EA7n n\xE0y c\u1ED1 \xFD, v\xE0 gi\u1EEF v\u1EA1ch ph\u1EA5n l\xE0m k\u1EF7 ni\u1EC7m.", { custom: "marry", happy: 8 }), X20_CU = land("x20_cuoi_dung_nguoi", "T\u1EDD gi\u1EA5y c\u0169 \u0111\u01B0\u1EE3c h\u1EE7y. B\u1EA1n c\u01B0\u1EDBi \u0111\xFAng ng\u01B0\u1EDDi h\u1EE9a h\xF4n ban \u0111\u1EA7u, trong m\u1ED9t \u0111\xE1m c\u01B0\u1EDBi ch\u1EC9 c\xF3 m\u01B0\u1EDDi kh\xE1ch.", { custom: "marry", happy: 6 }), X20_MOT_MINH = land("x20_mot_minh", "H\u1EE7y xong m\u1ECDi gi\u1EA5y t\u1EDD, b\u1EA1n \u1EDF m\u1ED9t m\xECnh, tr\u1EA3 \xE1n ph\xED b\u1EB1ng c\u1EA3 n\u0103m thu nh\u1EADp v\xE0 th\u1EA5y nh\u1EB9 nh\xF5m l\u1EA1 l\xF9ng.", { money: -1, happy: 3 }), HEIRLOOMS = {
     ban_do_cua_ong: "t\u1EA5m b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i",
     ban_do_kho_bau_cua_ong: "t\u1EDD b\u1EA3n \u0111\u1ED3 kho ch\xF4n c\u1EE7a \xF4ng",
     vat_vang_trong_heo_dat: "v\u1EADt b\u1EB1ng v\xE0ng \xF4ng g\u1EEDi trong con heo \u0111\u1EA5t",
@@ -31737,7 +31739,7 @@ var Argon = (() => {
               (c, k) => `${cap3(k.npc("chu_no"))} g\u1EEDi v\xF2ng hoa to nh\u1EA5t \u0111\xE1m, ruy b\u0103ng ghi: xin chia bu\u1ED3n, kho\u1EA3n n\u1EE3 xin kh\xE9p l\u1EA1i. \xD4ng lau n\u01B0\u1EDBc m\u1EAFt r\u1EA5t th\u1EADt, r\u1ED3i g\u1EA1ch t\xEAn b\u1EA1n kh\u1ECFi cu\u1ED1n s\u1ED5 ngay tr\u01B0\u1EDBc linh c\u1EEFu.`,
               [
                 C("Ch\u1EA1y t\u1EDBi n\xF3i th\u1EADt v\u1EDBi \xF4ng \u1EA5y", { flags: ["x12_thu_that"], counters: { x12_song: 1 }, rel: 2 }, "Gi\u1EEF ch\u1EEF t\xEDn, kho\u1EA3n n\u1EE3 quay v\u1EC1 nguy\xEAn v\u1EB9n"),
-                C("\u0110\u1EC3 \xF4ng \u1EA5y kh\xE9p s\u1ED5", { flags: ["x12_khep_so"], pressure: { luat: 1 } }, "Nh\u1EB9 n\u1EE3 h\xF4m nay, mang th\xEAm m\u1ED9t b\xED m\u1EADt")
+                C("\u0110\u1EC3 \xF4ng \u1EA5y kh\xE9p s\u1ED5", { custom: "repay:0.5", flags: ["x12_khep_so"], pressure: { luat: 1 } }, "Nh\u1EB9 n\u1EE3 h\xF4m nay, mang th\xEAm m\u1ED9t b\xED m\u1EADt")
               ]
             )
           ],
@@ -31745,7 +31747,7 @@ var Argon = (() => {
             card(
               "x12_kd_tai_khoan",
               "T\xE0i kho\u1EA3n c\u1EE7a ng\u01B0\u1EDDi qu\xE1 c\u1ED1",
-              (c, k) => `Ng\xE2n h\xE0ng kh\xF3a t\xE0i kho\u1EA3n c\u1EE7a b\u1EA1n${c.home_owner ? ", c\u0103n nh\xE0 \u0111\u1EE9ng t\xEAn b\u1EA1n chuy\u1EC3n sang ch\u1EDD th\u1EEBa k\u1EBF" : c.independent ? ", ch\u1EE7 nh\xE0 \u0111\xF2i l\u1EA1i ph\xF2ng" : ", t\xEAn b\u1EA1n b\u1ECB g\u1EA1ch kh\u1ECFi h\u1ED3 s\u01A1 c\u01B0 tr\xFA c\u1EE7a gia \u0111\xECnh"}${c.has_job ? ", ch\u1ED7 l\xE0m g\u1EEDi th\u01B0 chia bu\u1ED3n k\xE8m quy\u1EBFt \u0111\u1ECBnh th\xF4i vi\u1EC7c" : ", m\u1ECDi \u0111\u01A1n xin vi\u1EC7c b\u1ECB tr\u1EA3 v\u1EC1 v\xEC ng\u01B0\u1EDDi n\u1ED9p \u0111\xE3 m\u1EA5t"}. ${k.gag()} Tr\xEAn gi\u1EA5y t\u1EDD, b\u1EA1n kh\xF4ng c\xF2n \u0111\u01B0\u1EE3c l\xE0m g\xEC, k\u1EC3 c\u1EA3 m\u1EAFc n\u1EE3.`,
+              (c, k) => `Ng\xE2n h\xE0ng kh\xF3a t\xE0i kho\u1EA3n c\u1EE7a b\u1EA1n${c.home_owner ? ", c\u0103n nh\xE0 \u0111\u1EE9ng t\xEAn b\u1EA1n chuy\u1EC3n sang ch\u1EDD th\u1EEBa k\u1EBF" : c.independent ? ", ch\u1EE7 nh\xE0 \u0111\xF2i l\u1EA1i ph\xF2ng" : ", t\xEAn b\u1EA1n b\u1ECB g\u1EA1ch kh\u1ECFi h\u1ED3 s\u01A1 c\u01B0 tr\xFA c\u1EE7a gia \u0111\xECnh"}${c.has_job ? ", ch\u1ED7 l\xE0m g\u1EEDi th\u01B0 chia bu\u1ED3n, t\u1EEB nay l\u01B0\u01A1ng ch\u1EC9 tr\u1EA3 qua ng\u01B0\u1EDDi nh\xE0 v\xE0 b\u1EDBt g\u1EA7n h\u1EBFt" : ", m\u1ECDi \u0111\u01A1n xin vi\u1EC7c b\u1ECB tr\u1EA3 v\u1EC1 v\xEC ng\u01B0\u1EDDi n\u1ED9p \u0111\xE3 m\u1EA5t"}. ${k.gag()} Tr\xEAn gi\u1EA5y t\u1EDD, b\u1EA1n kh\xF4ng c\xF2n \u0111\u01B0\u1EE3c l\xE0m g\xEC, k\u1EC3 c\u1EA3 m\u1EAFc n\u1EE3.`,
               [
                 C("Nh\u1EADn l\xE0m vi\u1EC7c v\u1EB7t tr\u1EA3 c\xF4ng ng\xE0y", { money: 0.1, health: -2, flags: ["x12_viec_vat"] }, "S\u1ED1ng t\u1EA1m \u0111\u01B0\u1EE3c, kh\xF4ng ai b\u1EA3o hi\u1EC3m cho b\u1EA1n"),
                 C("D\u1ECDn v\u1EC1 \u1EDF nh\u1EDD ng\u01B0\u1EDDi th\xE2n", { rel: 3, happy: -2, flags: ["x12_o_nho"] }, "C\xF3 m\xE1i nh\xE0, m\u1EA5t ch\xFAt t\u1EF1 tr\u1ECDng")
@@ -31933,7 +31935,7 @@ var Argon = (() => {
         color: "#d4a017",
         years: [5, 9],
         weird: "abs",
-        rules: { flags: ["w_thua_ke_boc_tham"] },
+        rules: { flags: ["w_thua_ke_boc_tham"], yearly: { money: -0.05 } },
         reset: { cast: [{ key: "luat_su", role: "mentor", label: "b\xE0 lu\u1EADt s\u01B0 c\u1EE7a c\u1EE5" }, { key: "chau_cu", role: "rival", label: "ng\u01B0\u1EDDi ch\xE1u \u0111\xEDch t\xF4n c\u1EE7a c\u1EE5" }] },
         gag: { key: "ho_hang_moi", lines: [
           "Chu\xF4ng c\u1EEDa reo. M\u1ED9t ng\u01B0\u1EDDi t\u1EF1 gi\u1EDBi thi\u1EC7u l\xE0 ch\xE1u g\u1ECDi c\u1EE5 b\u1EB1ng \xF4ng tr\u1EBB, mang theo m\u1ED9t t\xFAi cam v\xE0 m\u1ED9t t\u1EDD \u0111\u01A1n ki\u1EC7n.",
@@ -31947,7 +31949,7 @@ var Argon = (() => {
             card(
               "x14_mo_biet_thu",
               "C\u0103n bi\u1EC7t th\u1EF1 hai m\u01B0\u01A1i ph\xF2ng",
-              (c, k) => `${cap3(k.npc("luat_su"))} giao cho b\u1EA1n m\u1ED9t ch\xF9m ch\xECa kh\xF3a n\u1EB7ng hai c\xE2n v\xE0 b\u1EA3n k\xEA t\xE0i s\u1EA3n d\xE0i b\u1ED1n trang. C\u0103n bi\u1EC7t th\u1EF1 c\xF3 hai m\u01B0\u01A1i ph\xF2ng, ba ph\xF2ng ch\u01B0a ai t\xECm th\u1EA5y c\u1EEDa. ${k.gag()}`,
+              (c, k) => `${cap3(k.npc("luat_su"))} giao cho b\u1EA1n m\u1ED9t ch\xF9m ch\xECa kh\xF3a n\u1EB7ng hai c\xE2n v\xE0 b\u1EA3n k\xEA t\xE0i s\u1EA3n d\xE0i b\u1ED1n trang. C\u0103n bi\u1EC7t th\u1EF1 c\xF3 hai m\u01B0\u01A1i ph\xF2ng, ba ph\xF2ng ch\u01B0a ai t\xECm th\u1EA5y c\u1EEDa. Ng\u01B0\u1EDDi gi\u1EEF ch\xECa ch\u1ECBu ti\u1EC1n \u0111i\u1EC7n n\u01B0\u1EDBc v\xE0 \xE1n ph\xED c\u1EE7a n\xF3 cho t\u1EDBi ng\xE0y t\xF2a x\u1EED xong, \u0111\xF3ng theo n\u0103m. ${k.gag()}`,
               [
                 C("D\u1ECDn v\xE0o \u1EDF ngay", { flags: ["x14_don_vao"], happy: 3, money: 0.1 }, "S\u1ED1ng nh\u01B0 vua, th\xE0nh bia c\u1ED1 \u0111\u1ECBnh"),
                 C("\u1EDE nh\xE0 c\u0169, kh\xF3a bi\u1EC7t th\u1EF1 l\u1EA1i", { flags: ["x14_khoa_cua"], counters: { x14_cung: 1 } }, "An to\xE0n, \u0111\u1ED3 trong \u0111\xF3 c\u1EE9 m\u1EA5t d\u1EA7n")
@@ -32052,7 +32054,7 @@ var Argon = (() => {
           "C\xE1i tem gi\u1EDD \u0111\xE3 b\u1EA1c m\xE0u, ch\u1EC9 c\xF2n \u0111\u1ECDc \u0111\u01B0\u1EE3c ch\u1EEF D\u1EC4. Ng\u01B0\u1EDDi g\xE1c kho b\u1EA3o th\u1EBF c\u0169ng \u0111\xFAng.",
           "B\u1EA1n b\xF3c c\xE1i tem ra, d\xE1n v\xE0o cu\u1ED1n s\u1ED5 tay. L\u01B0ng \xE1o nh\u1EB9 h\u1EB3n, nh\u01B0 v\u1EEBa m\u1EA5t m\u1ED9t ng\u01B0\u1EDDi b\u1EA3o l\xE3nh."
         ] },
-        landings: [X15_O_LAI, X15_VE, X15_THUYEN],
+        landings: [X15_O_LAI, X15_VE, X15_THUYEN, X15_O_CHUI],
         beats: [
           [
             card(
@@ -32131,7 +32133,7 @@ var Argon = (() => {
               "Con t\xE0u c\u1EADp b\u1EBFn l\u1EA7n n\u1EEFa",
               (c, k) => `${k.gag()} Con t\xE0u n\u0103m x\u01B0a ch\u1EDF b\u1EA1n sang l\u1EA1i c\u1EADp b\u1EBFn, l\u1EA7n n\xE0y c\xF3 danh s\xE1ch h\xE0nh kh\xE1ch \u0111\xE0ng ho\xE0ng. ${f6(c, "x15_bao_lanh") ? "Ng\u01B0\u1EDDi b\u1EA3o l\xE3nh nh\u1EAFn: gi\u1EA5y t\u1EDD \u1EDF l\u1EA1i \u0111\xE3 c\xF3 c\u1EEDa, ch\u1EC9 ch\u1EDD b\u1EA1n g\u1EADt \u0111\u1EA7u." : f6(c, "x15_chap_nhan") ? "V\xE9 v\u1EC1 \u0111\xE3 n\u1EB1m s\u1EB5n trong t\xFAi t\u1EEB h\xF4m b\u1EA1n ch\u1EA5p nh\u1EADn quy\u1EBFt \u0111\u1ECBnh." : x15Legal(c) ? "Gi\u1EA5y ph\xE9p \u1EDF t\u1EA1m c\u1EE7a b\u1EA1n s\u1EAFp \u0111\u01B0\u1EE3c x\xE9t gia h\u1EA1n." : `L\u1EC7nh v\u1EC1 n\u01B0\u1EDBc v\u1EABn c\xF2n hi\u1EC7u l\u1EF1c${f6(c, "x15_muon_o") ? ", d\xF9 b\u1EA1n \u0111\xE3 n\xF3i mu\u1ED1n \u1EDF l\u1EA1i" : ""}; mu\u1ED1n \u1EDF, ch\u1EC9 c\xF2n m\u1ED9t l\u1EA7n kh\xE1ng c\xE1o.`} \u1EDE nh\xE0, ${noOr(c, k)} v\u1EABn ch\u1EDD; \u1EDF \u0111\xE2y, cu\u1ED9c \u0111\u1EDDi m\u1EDBi ch\u01B0a c\xF3 t\xEAn b\u1EA1n tr\xEAn gi\u1EA5y.`,
               (c) => {
-                let home = ending(X15_VE, "V\u1EC1 n\u01B0\u1EDBc, n\u1ED9p ph\u1EA1t", "M\u1EA5t ti\u1EC1n, \u0111\u01B0\u1EE3c v\u1EC1 nh\xE0"), stay = x15Legal(c) ? ending(X15_O_LAI, "\u1EDE l\u1EA1i, ch\u1EDD gi\u1EA5y t\u1EDD h\u1EE3p ph\xE1p", "\u0110\u1EDDi m\u1EDBi \u1EDF x\u1EE9 l\u1EA1, tr\u1EA3 gi\xE1 b\u1EB1ng nhi\u1EC1u n\u0103m") : ending(X15_O_LAI, "Kh\xE1ng c\xE1o l\u1EA7n cu\u1ED1i \u0111\u1EC3 \u0111\u01B0\u1EE3c \u1EDF l\u1EA1i", "T\u1ED1n hai n\u0103m thu nh\u1EADp, ch\u1EDD th\xEAm nhi\u1EC1u n\u0103m", { effects: { ...X15_O_LAI.effects, money: -2 } }), sail = pathOpen("sailor", c.age) ? [ending(X15_THUYEN, "Xin l\xE0m thuy\u1EC1n vi\xEAn tr\xEAn con t\xE0u \u1EA5y", "C\xF3 h\u1ED9 chi\u1EBFu, \u0111\u1EDDi l\xEAnh \u0111\xEAnh")] : [];
+                let home = ending(X15_VE, "V\u1EC1 n\u01B0\u1EDBc, n\u1ED9p ph\u1EA1t", "M\u1EA5t ti\u1EC1n, \u0111\u01B0\u1EE3c v\u1EC1 nh\xE0"), stay = migrateOk(c) ? x15Legal(c) ? ending(X15_O_LAI, "\u1EDE l\u1EA1i, ch\u1EDD gi\u1EA5y t\u1EDD h\u1EE3p ph\xE1p", "\u0110\u1EDDi m\u1EDBi \u1EDF x\u1EE9 l\u1EA1, tr\u1EA3 gi\xE1 b\u1EB1ng nhi\u1EC1u n\u0103m") : ending(X15_O_LAI, "Kh\xE1ng c\xE1o l\u1EA7n cu\u1ED1i \u0111\u1EC3 \u0111\u01B0\u1EE3c \u1EDF l\u1EA1i", "T\u1ED1n hai n\u0103m thu nh\u1EADp, ch\u1EDD th\xEAm nhi\u1EC1u n\u0103m", { effects: { ...X15_O_LAI.effects, money: -2 } }) : ending(X15_O_CHUI, "\u1EDE l\u1EA1i kh\xF4ng gi\u1EA5y t\u1EDD, g\u1EEDi ti\u1EC1n v\u1EC1 nh\xE0", "C\xF3 vi\u1EC7c \u1EDF b\u1EBFn, kh\xF4ng c\xF3 t\xEAn tr\xEAn gi\u1EA5y"), sail = pathOpen("sailor", c.age) ? [ending(X15_THUYEN, "Xin l\xE0m thuy\u1EC1n vi\xEAn tr\xEAn con t\xE0u \u1EA5y", "C\xF3 h\u1ED9 chi\u1EBFu, \u0111\u1EDDi l\xEAnh \u0111\xEAnh")] : [];
                 return f6(c, "x15_chap_nhan") ? [home, stay, ...sail] : [...sail, stay, home];
               }
             )
@@ -32270,7 +32272,7 @@ var Argon = (() => {
         color: "#cc8a1e",
         years: [6, 11],
         weird: "abs",
-        rules: { flags: ["w_pho_ten_toi"] },
+        rules: { flags: ["w_pho_ten_toi"], yearly: { money: -0.03 } },
         reset: { cast: [{ key: "to_truong", role: "neighbor", label: "b\xE0 tr\u01B0\u1EDFng h\u1ED9i khu ph\u1ED1" }, { key: "ban_banh", role: "rival", label: "\xF4ng b\xE1n b\xE1nh \u0111\u1EA7u ph\u1ED1" }] },
         gag: { key: "bien_pho", lines: [
           "T\u1EA5m bi\u1EC3n ph\u1ED1 in sai m\u1ED9t d\u1EA5u, t\xEAn b\u1EA1n th\xE0nh m\u1ED9t t\u1EEB kh\xE1c h\u1EB3n ngh\u0129a. C\u1EA3 ph\u1ED1 th\u1ED1ng nh\u1EA5t kh\xF4ng ai nh\u1EAFc t\u1EDBi.",
@@ -32293,7 +32295,7 @@ var Argon = (() => {
             card(
               "x17_mo_quy_tac",
               "B\u1EA3n quy t\u1EAFc g\u01B0\u01A1ng m\u1EABu",
-              (c, k) => `${cap3(k.npc("to_truong"))} d\xE1n l\xEAn c\u1EEDa nh\xE0 b\u1EA1n m\u1ED9t t\u1EDD quy t\u1EAFc: kh\xF4ng c\xE3i nhau to ti\u1EBFng, kh\xF4ng ph\u01A1i qu\u1EA7n \xE1o ra m\u1EB7t ph\u1ED1, kh\xF4ng v\u1EC1 nh\xE0 sau m\u01B0\u1EDDi gi\u1EDD \u0111\xEAm, kh\xF4ng n\u1EE3 ti\u1EC1n ai. "Ng\u01B0\u1EDDi mang t\xEAn ph\u1ED1," b\xE0 n\xF3i, "th\xEC ph\u1EA3i s\u1EA1ch nh\u01B0 t\u1EA5m bi\u1EC3n."`,
+              (c, k) => `${cap3(k.npc("to_truong"))} d\xE1n l\xEAn c\u1EEDa nh\xE0 b\u1EA1n m\u1ED9t t\u1EDD quy t\u1EAFc: kh\xF4ng c\xE3i nhau to ti\u1EBFng, kh\xF4ng ph\u01A1i qu\u1EA7n \xE1o ra m\u1EB7t ph\u1ED1, kh\xF4ng v\u1EC1 nh\xE0 sau m\u01B0\u1EDDi gi\u1EDD \u0111\xEAm, kh\xF4ng n\u1EE3 ti\u1EC1n ai, v\xE0 \u0111\xF3ng qu\u1EF9 khu ph\u1ED1 h\u1EB1ng n\u0103m g\u1EA5p \u0111\xF4i nh\xE0 kh\xE1c. "Ng\u01B0\u1EDDi mang t\xEAn ph\u1ED1," b\xE0 n\xF3i, "th\xEC ph\u1EA3i s\u1EA1ch nh\u01B0 t\u1EA5m bi\u1EC3n."`,
               [
                 C("K\xFD cam k\u1EBFt tu\xE2n th\u1EE7", { flags: ["x17_cam_ket"], counters: { x17_guong: 1 }, happy: -2 }, "\u0110\u01B0\u1EE3c l\xF2ng h\xE0ng x\xF3m, m\u1EA5t t\u1EF1 do"),
                 C("G\u1EE1 t\u1EDD quy t\u1EAFc xu\u1ED1ng", { flags: ["x17_go_quy_tac"], happy: 2, counters: { x17_guong: -1 } }, "S\u1ED1ng nh\u01B0 c\u0169, c\u1EA3 ph\u1ED1 x\xEC x\xE0o")
@@ -32607,7 +32609,7 @@ var Argon = (() => {
         color: "#c7922f",
         years: [5, 8],
         weird: "abs",
-        rules: { flags: ["w_hon_nhan_giay"] },
+        rules: { flags: ["w_hon_nhan_giay"], yearly: { money: -0.03 } },
         reset: { cast: [{ key: "nguoi_kia", role: "neighbor", label: "ng\u01B0\u1EDDi c\u01B0\u1EDBi nh\u1EA7m" }, { key: "can_bo", role: "official", label: "anh c\xE1n b\u1ED9 h\u1ED9 t\u1ECBch" }] },
         gag: { key: "trung_ten", lines: [
           "\u1EDE v\u0103n ph\xF2ng h\u1ED9 t\u1ECBch, ng\u01B0\u1EDDi ta g\u1ECDi t\xEAn ng\u01B0\u1EDDi kia. C\u1EA3 ng\u01B0\u1EDDi kia l\u1EABn ng\u01B0\u1EDDi h\u1EE9a h\xF4n c\u1EE7a b\u1EA1n c\xF9ng \u0111\u1EE9ng d\u1EADy. C\xE1n b\u1ED9 th\u1EDF d\xE0i, ghi th\xEAm ch\u1EEF A v\xE0 ch\u1EEF B.",
@@ -32621,7 +32623,7 @@ var Argon = (() => {
             card(
               "x20_mo_chung_nha",
               "C\u0103n h\u1ED9 cho hai ng\u01B0\u1EDDi l\u1EA1",
-              (c, k) => `Theo quy \u0111\u1ECBnh, c\u1EB7p v\u1EEBa \u0111\u0103ng k\xFD ph\u1EA3i \u1EDF chung m\u1ED9t \u0111\u1ECBa ch\u1EC9 t\u1EDBi khi th\u1EE7 t\u1EE5c h\u1EE7y \u0111\u01B0\u1EE3c duy\u1EC7t. ${cap3(k.npc("nguoi_kia"))} x\xE1ch vali \u0111\u1EBFn, \u0111\u1EB7t m\u1ED9t ch\u1EADu c\xE2y l\xEAn b\xE0n c\u1EE7a b\u1EA1n v\xE0 h\u1ECFi ph\xF2ng t\u1EAFm \u1EDF \u0111\xE2u. ${k.gag()}`,
+              (c, k) => `Theo quy \u0111\u1ECBnh, c\u1EB7p v\u1EEBa \u0111\u0103ng k\xFD ph\u1EA3i \u1EDF chung m\u1ED9t \u0111\u1ECBa ch\u1EC9 t\u1EDBi khi th\u1EE7 t\u1EE5c h\u1EE7y \u0111\u01B0\u1EE3c duy\u1EC7t. ${cap3(k.npc("nguoi_kia"))} x\xE1ch vali \u0111\u1EBFn, \u0111\u1EB7t m\u1ED9t ch\u1EADu c\xE2y l\xEAn b\xE0n c\u1EE7a b\u1EA1n v\xE0 h\u1ECFi ph\xF2ng t\u1EAFm \u1EDF \u0111\xE2u. L\u1EC7 ph\xED gi\u1EEF h\u1ED3 s\u01A1 h\u1EE7y n\u1ED9p theo n\u0103m, hai ng\u01B0\u1EDDi chia \u0111\xF4i. ${k.gag()}`,
               [
                 C("Chia nh\xE0 b\u1EB1ng m\u1ED9t v\u1EA1ch ph\u1EA5n", { flags: ["x20_vach_phan"], happy: 1 }, "R\u1EA1ch r\xF2i, ng\xE0y n\xE0o c\u0169ng c\xF3 ng\u01B0\u1EDDi gi\u1EABm v\u1EA1ch"),
                 C("N\u1EA5u c\u01A1m m\u1EDDi ng\u01B0\u1EDDi kia \u0103n chung", { flags: ["x20_an_chung"], rel: 2, counters: { x20_gan: 1 } }, "D\u1EC5 th\u1EDF h\u01A1n, kh\xF3 gi\u1EEF kho\u1EA3ng c\xE1ch")
@@ -33169,8 +33171,8 @@ var Argon = (() => {
             "x24_ket",
             "H\u1EA3i \u0111\u0103ng hay \u0111\u1EA5t li\u1EC1n",
             (c, k) => `Ng\u1ECDn h\u1EA3i \u0111\u0103ng tr\xEAn \u0111\u1EA3o s\xE1ng l\u1EA1i l\u1EA7n \u0111\u1EA7u sau ba m\u01B0\u01A1i n\u0103m. B\u1EA1n \u0111\u1EE9ng d\u01B0\u1EDBi ch\xE2n \u0111\xE8n, m\u1ED9t tay c\u1EA7m th\u01B0 c\u1EE7a ${k.npc("ba_moi_gioi")}, m\u1ED9t tay c\u1EA7m gi\u1EA5y nh\u1EAFc ${noOr(c, k, "m\xF3n n\u1EE3 \u1EDF \u0111\u1EA5t li\u1EC1n", "l\u1EDDi h\u1EE9a \u1EDF \u0111\u1EA5t li\u1EC1n")}. ${cnt8(c, "x24_dao") >= 2 ? "B\u1EA1n \u0111\xE3 thu\u1ED9c t\u1EEBng t\u1EA3ng \u0111\xE1 tr\xEAn \u0111\u1EA3o." : "B\u1EA1n v\u1EABn ch\u01B0a thu\u1ED9c \u0111\u01B0\u1EDDng ra b\u1EBFn."} ${c.flags.has("x24_chia_dao") ? "N\u1EEDa kia c\u1EE7a \u0111\u1EA3o \u0111ang ch\u1EDD b\u1EA1n quy\u1EBFt c\xF9ng." : "C\u1EA3 h\xF2n \u0111\u1EA3o ch\u1EC9 ch\u1EDD m\u1ED9t ch\u1EEF k\xFD c\u1EE7a b\u1EA1n."} ${k.gag()}`,
-            [
-              ending(L24_DI, "\u1EDE l\u1EA1i, nh\u1EADp c\u01B0 l\xE0m ch\xFAa \u0111\u1EA3o", "\u0110\u1ED5i n\u01B0\u1EDBc, \u0111\u1ED5i \u0111\u1EDDi, b\u1ED1n m\u01B0\u01A1i con d\xEA"),
+            (c) => [
+              ...migrateOk(c) ? [ending(L24_DI, "\u1EDE l\u1EA1i, nh\u1EADp c\u01B0 l\xE0m ch\xFAa \u0111\u1EA3o", "\u0110\u1ED5i n\u01B0\u1EDBc, \u0111\u1ED5i \u0111\u1EDDi, b\u1ED1n m\u01B0\u01A1i con d\xEA")] : [],
               ending(L24_BAN, "B\xE1n \u0111\u1EA3o cho khu ngh\u1EC9 d\u01B0\u1EE1ng", "Gi\xE0u l\xEAn, m\u1EA5t v\u01B0\u01A1ng qu\u1ED1c"),
               ending(L24_TANG, "Trao \u0111\u1EA3o cho b\u1EA7y d\xEA", "Nh\u1EB9 l\xF2ng, nh\u1EB9 c\u1EA3 t\xFAi")
             ]
@@ -33194,7 +33196,7 @@ var Argon = (() => {
       color: "#e8a33a",
       years: [5, 9],
       weird: "abs",
-      rules: { income: 0.9, flags: ["w_vuong_quoc_dua", "w_luong_huu_bang_dua"] },
+      rules: { income: 0.9, yearly: { money: -0.05 }, flags: ["w_vuong_quoc_dua", "w_luong_huu_bang_dua"] },
       reset: { cast: [{ key: "anh_quy", role: "official", label: "anh nh\xE2n vi\xEAn qu\u1EF9 h\u01B0u tr\xED" }, { key: "ba_dua", role: "rival", label: "b\xE0 bu\xF4n d\u01B0a \u0111\u1EA7u ch\u1EE3" }] },
       gag: { key: "dua_khap_noi", lines: [
         "B\u1EA1n m\u1EDF t\u1EE7 l\u1EA1nh: ba qu\u1EA3 d\u01B0a. B\u1EA1n m\u1EDF t\u1EE7 qu\u1EA7n \xE1o: n\u0103m qu\u1EA3 d\u01B0a v\xE0 m\u1ED9t c\xE1i \xE1o.",
@@ -33208,7 +33210,7 @@ var Argon = (() => {
           card(
             "x25_mo_dem",
             "M\u01B0\u1EDDi hai ngh\xECn qu\u1EA3",
-            (c, k) => `B\u1EA1n m\u1EA5t tr\u1ECDn m\u1ED9t ng\xE0y \u0111\u1EC3 \u0111\u1EBFm. M\u01B0\u1EDDi hai ngh\xECn qu\u1EA3, v\u1ECF xanh s\u1ECDc \u0111\u1EADm, qu\u1EA3 n\xE0o c\u0169ng d\xE1n tem c\u1EE7a qu\u1EF9 h\u01B0u tr\xED, v\xE0 theo t\xEDnh to\xE1n s\u1EBD b\u1EAFt \u0111\u1EA7u h\u1ECFng sau n\u0103m m\u01B0\u01A1i ng\xE0y. ${k.gag()}`,
+            (c, k) => `B\u1EA1n m\u1EA5t tr\u1ECDn m\u1ED9t ng\xE0y \u0111\u1EC3 \u0111\u1EBFm. M\u01B0\u1EDDi hai ngh\xECn qu\u1EA3, v\u1ECF xanh s\u1ECDc \u0111\u1EADm, qu\u1EA3 n\xE0o c\u0169ng d\xE1n tem c\u1EE7a qu\u1EF9 h\u01B0u tr\xED, v\xE0 theo t\xEDnh to\xE1n s\u1EBD b\u1EAFt \u0111\u1EA7u h\u1ECFng sau n\u0103m m\u01B0\u01A1i ng\xE0y. N\u0103m n\xE0o qu\u1EF9 c\u0169ng s\u1EBD ch\u1EDF t\u1EDBi m\u1ED9t \u0111\u1EE3t nh\u01B0 th\u1EBF, thay cho m\u1ED9t ph\u1EA7n ti\u1EC1n, v\xE0 ph\u1EA7n b\xE1n kh\xF4ng k\u1ECBp th\xEC h\u1ECFng. ${k.gag()}`,
             [
               C("Thu\xEA kho l\u1EA1nh", { money: -0.3, flags: ["x25_kho_lanh"] }, "D\u01B0a s\u1ED1ng l\xE2u h\u01A1n, ti\u1EC1n th\xEC kh\xF4ng"),
               C("B\xE0y b\xE1n ngay tr\u01B0\u1EDBc c\u1ED5ng", { money: 0.1, counters: { x25_ban: 1 }, flags: ["x25_ban_cong"] }, "C\xF3 ti\u1EC1n li\u1EC1n, c\u1EA3 x\xF3m g\u1ECDi b\u1EA1n l\xE0 nh\xE0 d\u01B0a"),
@@ -33661,7 +33663,7 @@ var Argon = (() => {
       color: "#e6a85c",
       years: [5, 8],
       weird: "abs",
-      rules: { flags: ["w_loi_hua_tuoi_tho"] },
+      rules: { flags: ["w_loi_hua_tuoi_tho"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "lop_truong", role: "neighbor", label: LOP_TRUONG }, { key: "co_giao", role: "mentor", label: "c\xF4 gi\xE1o ch\u1EE7 nhi\u1EC7m c\u0169" }] },
       gag: { key: "dem_nguoc", lines: [
         "L\u1EDBp tr\u01B0\u1EDFng c\u0169 l\u1EADp nh\xF3m chat t\xEAn \u0110\u1EBFm Ng\u01B0\u1EE3c \u0110\u1EBFn B\u1ED1n M\u01B0\u01A1i. Nh\xF3m c\xF3 b\u1ED1n m\u01B0\u01A1i hai th\xE0nh vi\xEAn, ch\u1EC9 hai ng\u01B0\u1EDDi kh\xF4ng \u0111\u01B0\u1EE3c n\xF3i.",
@@ -33675,7 +33677,7 @@ var Argon = (() => {
           card(
             "x29_mo_san_truong",
             "Gi\u1EEFa s\xE2n tr\u01B0\u1EDDng",
-            (c, k) => `C\u1EA3 l\u1EDBp \u0111\u1EE9ng v\xF2ng quanh hai ng\u01B0\u1EDDi, ai c\u0169ng gi\u01A1 \u0111i\u1EC7n tho\u1EA1i. ${cap3(fr29(c, k.N))} \u0111\u1ECF m\u1EB7t nh\xECn t\u1EDD gi\u1EA5y, r\u1ED3i nh\xECn b\u1EA1n, r\u1ED3i nh\xECn c\u1ED9t c\u1EDD nh\u01B0 mu\u1ED1n tr\xE8o l\xEAn tr\u1ED1n. ${k.gag()}`,
+            (c, k) => `C\u1EA3 l\u1EDBp \u0111\u1EE9ng v\xF2ng quanh hai ng\u01B0\u1EDDi, ai c\u0169ng gi\u01A1 \u0111i\u1EC7n tho\u1EA1i. ${cap3(fr29(c, k.N))} \u0111\u1ECF m\u1EB7t nh\xECn t\u1EDD gi\u1EA5y, r\u1ED3i nh\xECn b\u1EA1n, r\u1ED3i nh\xECn c\u1ED9t c\u1EDD nh\u01B0 mu\u1ED1n tr\xE8o l\xEAn tr\u1ED1n. L\u1EDBp tr\u01B0\u1EDFng tuy\xEAn b\u1ED1 t\u1EEB nay n\u0103m n\xE0o c\u1EA3 l\u1EDBp c\u0169ng h\u1ECDp \u0111\u1EC3 theo d\xF5i hai ng\u01B0\u1EDDi, ai c\u0169ng \u0111\xF3ng qu\u1EF9, ri\xEAng hai ng\u01B0\u1EDDi \u0111\xF3ng g\u1EA5p \u0111\xF4i. ${k.gag()}`,
             [
               C("C\u01B0\u1EDDi tr\u1EEB, b\u1EA3o h\u1ED3i \u0111\xF3 c\xF2n b\xE9", { flags: ["x29_cuoi_tru"], counters: { x29_ban: 1 } }, "Qua chuy\u1EC7n, ng\u01B0\u1EDDi kia h\u01A1i bu\u1ED3n"),
               C("Nghi\xEAm t\xFAc h\u1EB9n g\u1EB7p ri\xEAng", { flags: ["x29_hen_rieng"], counters: { x29_tinh: 1 } }, "M\u1EDF m\u1ED9t c\xE1nh c\u1EEDa, c\u1EA3 l\u1EDBp h\xF3ng"),
@@ -34135,7 +34137,7 @@ var Argon = (() => {
       color: "#e8a33d",
       years: [5, 9],
       weird: "abs",
-      rules: { income: 1.1, flags: ["w_ong_khong"] },
+      rules: { income: 1.1, yearly: { money: 0.05 }, flags: ["w_ong_khong"] },
       reset: { cast: [{ key: "nguoi_dem", role: "official", label: "\xF4ng \u0111\u1EBFm ch\u1EEF" }, { key: "nha_san_xuat", role: "partner", label: "c\xF4 qu\u1EA3n l\xFD ch\u01B0\u01A1ng tr\xECnh" }] },
       gag: { key: "chu_khong", lines: [
         "\xD4ng \u0111\u1EBFm ch\u1EEF g\u1EA1ch th\xEAm m\u1ED9t v\u1EA1ch v\xE0o s\u1ED5, l\u1EA9m b\u1EA9m con s\u1ED1 m\u1EDBi nh\u01B0 \u0111\u1ECDc b\u1EA3ng c\u1EEDu ch\u01B0\u01A1ng.",
@@ -34150,7 +34152,7 @@ var Argon = (() => {
           card(
             "x33_mo_bi_ngo",
             "Gi\xE1m kh\u1EA3o h\u1ED9i thi b\xED ng\xF4",
-            (c, k) => `H\u1ED9i thi b\xED ng\xF4 to nh\u1EA5t v\xF9ng m\u1EDDi b\u1EA1n l\xE0m gi\xE1m kh\u1EA3o, v\u1EDBi m\u1ED9t nhi\u1EC7m v\u1EE5 duy nh\u1EA5t: n\xF3i kh\xF4ng v\u1EDBi m\u1ECDi qu\u1EA3 b\xED. M\u1ED9t tr\u0103m hai m\u01B0\u01A1i qu\u1EA3 x\u1EBFp h\xE0ng, m\u1ED7i qu\u1EA3 c\xF3 m\u1ED9t ng\u01B0\u1EDDi ch\u1EE7 \u0111ang run. ${k.gag()}`,
+            (c, k) => `H\u1ED9i thi b\xED ng\xF4 to nh\u1EA5t v\xF9ng m\u1EDDi b\u1EA1n l\xE0m gi\xE1m kh\u1EA3o, v\u1EDBi m\u1ED9t nhi\u1EC7m v\u1EE5 duy nh\u1EA5t: n\xF3i kh\xF4ng v\u1EDBi m\u1ECDi qu\u1EA3 b\xED. M\u1ED9t tr\u0103m hai m\u01B0\u01A1i qu\u1EA3 x\u1EBFp h\xE0ng, m\u1ED7i qu\u1EA3 c\xF3 m\u1ED9t ng\u01B0\u1EDDi ch\u1EE7 \u0111ang run. H\u1ED9i k\u1EF7 l\u1EE5c g\u1EEDi k\xE8m gi\u1EA5y b\xE1o: ng\u01B0\u1EDDi gi\u1EEF danh hi\u1EC7u \u0111\u01B0\u1EE3c tr\u1EA3 m\u1ED9t kho\u1EA3n nh\u1ECF m\u1ED7i n\u0103m, mi\u1EC5n ch\u1EEF kh\xF4ng v\u1EABn c\xF2n \u0111\u01B0\u1EE3c \u0111\u1EBFm. ${k.gag()}`,
             [
               C("Nh\u1EADn l\u1EDDi, n\xF3i kh\xF4ng c\u1EA3 tr\u0103m l\u1EA7n", { money: 0.1, counters: { x33_khong: 1 }, flags: ["x33_giam_khao"] }, "C\xF3 ti\u1EC1n c\xF4ng, m\u1EA5t m\u1ED9t tr\u0103m hai m\u01B0\u01A1i ng\u01B0\u1EDDi quen"),
               C("T\u1EEB ch\u1ED1i l\u1EDDi m\u1EDDi", { happy: 1, counters: { x33_khong: 1 }, flags: ["x33_tu_choi_moi"] }, "\u0110\xFAng ch\u1EA5t, v\xE0 ch\xEDnh l\u1EDDi t\u1EEB ch\u1ED1i l\xEAn b\xE1o")
@@ -34214,7 +34216,7 @@ var Argon = (() => {
           card(
             "x33_day_quang_cao",
             "H\u1EE3p \u0111\u1ED3ng ch\u1EC9 c\u1EA7n m\u1ED9t ch\u1EEF c\xF3",
-            (c, k) => `M\u1ED9t h\xE3ng n\u1EC7m \u0111\u1EC1 ngh\u1ECB m\u1ED9t kho\u1EA3n ti\u1EC1n b\u1EB1ng ba n\u0103m thu nh\u1EADp, \u0111\u1ED5i l\u1EA5y m\u1ED9t c\xE2u qu\u1EA3ng c\xE1o d\xE0i \u0111\xFAng m\u1ED9t ch\u1EEF: "C\xF3." ${f7(c, "x33_noi_co") ? "B\u1EA1n \u0111\xE3 t\u1EEBng n\xF3i c\xF3 m\u1ED9t l\u1EA7n tr\xEAn s\xF3ng, n\xEAn h\u1ECD tin l\u1EA7n n\xE0y c\u0169ng \u0111\u01B0\u1EE3c." : "H\u1ECD n\xF3i ch\u1EEF c\xF3 \u0111\u1EA7u ti\xEAn c\u1EE7a b\u1EA1n s\u1EBD l\xE0 ch\u1EEF c\xF3 \u0111\u1EAFt nh\u1EA5t l\u1ECBch s\u1EED."}`,
+            (c, k) => `M\u1ED9t h\xE3ng n\u1EC7m \u0111\u1EC1 ngh\u1ECB m\u1ED9t kho\u1EA3n ti\u1EC1n b\u1EB1ng h\u01A1n n\u1EEDa n\u0103m thu nh\u1EADp, \u0111\u1ED5i l\u1EA5y m\u1ED9t c\xE2u qu\u1EA3ng c\xE1o d\xE0i \u0111\xFAng m\u1ED9t ch\u1EEF: "C\xF3." ${f7(c, "x33_noi_co") ? "B\u1EA1n \u0111\xE3 t\u1EEBng n\xF3i c\xF3 m\u1ED9t l\u1EA7n tr\xEAn s\xF3ng, n\xEAn h\u1ECD tin l\u1EA7n n\xE0y c\u0169ng \u0111\u01B0\u1EE3c." : "H\u1ECD n\xF3i ch\u1EEF c\xF3 \u0111\u1EA7u ti\xEAn c\u1EE7a b\u1EA1n s\u1EBD l\xE0 ch\u1EEF c\xF3 \u0111\u1EAFt nh\u1EA5t l\u1ECBch s\u1EED."}`,
             [
               C('N\xF3i "c\xF3", l\u1EA5y ti\u1EC1n', { money: 0.6, counters: { x33_khong: -3 }, flags: ["x33_ban_chu"] }, "Gi\xE0u l\xEAn, danh hi\u1EC7u th\xE0nh chuy\u1EC7n c\u01B0\u1EDDi"),
               C("N\xF3i kh\xF4ng v\u1EDBi c\u1EA3 \u0111\u1ED1ng ti\u1EC1n", { happy: 2, counters: { x33_khong: 2 }, flags: ["x33_liem_chinh"] }, "Ngh\xE8o nh\u01B0ng th\u1EB3ng, ng\u01B0\u1EDDi ta n\u1EC3 b\u1EA1n th\u1EADt")
@@ -34238,7 +34240,7 @@ var Argon = (() => {
         ]
       ]
     })
-  ), L34_NTK = land("nha_thiet_ke_ao_mua", "B\u1EA1n m\u1EDF x\u01B0\u1EDFng thi\u1EBFt k\u1EBF ri\xEAng. Tr\u01B0\u1EDDng ph\xE1i R\xE1ch c\xF3 t\xEAn trong gi\xE1o tr\xECnh c\u1EE7a c\xE1c tr\u01B0\u1EDDng th\u1EDDi trang.", { custom: "become:fashion", happy: 5 }), L34_BAN = land("ban_thuong_hieu_rach", "B\u1EA1n b\xE1n th\u01B0\u01A1ng hi\u1EC7u R\xE1ch cho m\u1ED9t t\u1EADp \u0111o\xE0n may m\u1EB7c, \u0111\u1EE7 ti\u1EC1n mua nh\xE0, v\xE0 kh\xF4ng bao gi\u1EDD ph\u1EA3i m\u1EB7c \xE1o m\u01B0a r\xE1ch n\u1EEFa.", { money: 2.5, happy: -1 }), L34_DI = land("xuong_o_xu_mua", "B\u1EA1n mang k\xE9o v\xE0 d\xE2y thun sang m\u1ED9t \u0111\u1EA5t n\u01B0\u1EDBc m\u01B0a quanh n\u0103m, m\u1EDF x\u01B0\u1EDFng \u1EDF \u0111\xF3.", { custom: "migrate_now", money: -0.5 }), X34 = weird(
+  ), L34_NTK = land("nha_thiet_ke_ao_mua", "B\u1EA1n m\u1EDF x\u01B0\u1EDFng thi\u1EBFt k\u1EBF ri\xEAng. Tr\u01B0\u1EDDng ph\xE1i R\xE1ch c\xF3 t\xEAn trong gi\xE1o tr\xECnh c\u1EE7a c\xE1c tr\u01B0\u1EDDng th\u1EDDi trang.", { custom: "become:fashion", happy: 5 }), L34_BAN = land("ban_thuong_hieu_rach", "B\u1EA1n b\xE1n th\u01B0\u01A1ng hi\u1EC7u R\xE1ch cho m\u1ED9t t\u1EADp \u0111o\xE0n may m\u1EB7c, \u0111\u1EE7 ti\u1EC1n mua nh\xE0, v\xE0 kh\xF4ng bao gi\u1EDD ph\u1EA3i m\u1EB7c \xE1o m\u01B0a r\xE1ch n\u1EEFa.", { money: 2.5, happy: -1 }), L34_O_LAI = land("o_lai_va_ao", "B\u1EA1n \u1EDF l\u1EA1i, m\u1EDF m\u1ED9t s\u1EA1p v\xE1 \xE1o m\u01B0a \u1EDF g\xF3c ch\u1EE3, nh\u1EADn may \u0111o cho ng\u01B0\u1EDDi quen, v\xE0 \u0111\u1EC3 d\xE0nh \u0111\u01B0\u1EE3c m\u1ED9t kho\u1EA3n kha kh\xE1.", { money: 1, happy: 3 }), L34_DI = land("xuong_o_xu_mua", "B\u1EA1n mang k\xE9o v\xE0 d\xE2y thun sang m\u1ED9t \u0111\u1EA5t n\u01B0\u1EDBc m\u01B0a quanh n\u0103m, m\u1EDF x\u01B0\u1EDFng \u1EDF \u0111\xF3.", { custom: "migrate_now", money: -0.5 }), X34 = weird(
     "X34",
     "abs",
     ["tien", "danh"],
@@ -34262,7 +34264,7 @@ var Argon = (() => {
         "Ng\u01B0\u1EDDi ta b\u1EAFt \u0111\u1EA7u thu\xEA b\u1EA1n ra m\u1EAFt \xE1o m\u01B0a \u0111\u1EC3 ch\u1ED1ng m\u01B0a: b\u1EA1n tr\xECnh di\u1EC5n \u1EDF \u0111\xE2u, \u1EDF \u0111\xF3 n\u1EAFng.",
         "L\u1EA7n \u0111\u1EA7u ti\xEAn, bu\u1ED5i ra m\u1EAFt c\xF3 m\u01B0a th\u1EADt. Kh\xF4ng ai mang \xE1o m\u01B0a, k\u1EC3 c\u1EA3 b\u1EA1n."
       ] },
-      landings: [L34_NTK, L34_BAN, L34_DI],
+      landings: [L34_NTK, L34_BAN, L34_DI, L34_O_LAI],
       beats: [
         /* mo_man */
         [
@@ -34349,7 +34351,7 @@ var Argon = (() => {
             (c) => pick(
               pathOpen("fashion", c.age) ? ending(L34_NTK, "M\u1EDF x\u01B0\u1EDFng thi\u1EBFt k\u1EBF mang t\xEAn m\xECnh", "Th\xE0nh ngh\u1EC1 th\u1EADt, v\u1EA5t v\u1EA3 th\u1EADt") : void 0,
               ending(L34_BAN, "B\xE1n th\u01B0\u01A1ng hi\u1EC7u R\xE1ch", "C\xF3 nh\xE0, c\xF3 ti\u1EC1n, h\u1EBFt l\xE0 nh\xE0 thi\u1EBFt k\u1EBF"),
-              ending(L34_DI, "Sang x\u1EE9 m\u01B0a quanh n\u0103m m\u1EDF x\u01B0\u1EDFng", "\u0110\u1EA5t l\u1EA1, m\u01B0a nhi\u1EC1u, kh\xE1ch nhi\u1EC1u")
+              migrateOk(c) ? ending(L34_DI, "Sang x\u1EE9 m\u01B0a quanh n\u0103m m\u1EDF x\u01B0\u1EDFng", "\u0110\u1EA5t l\u1EA1, m\u01B0a nhi\u1EC1u, kh\xE1ch nhi\u1EC1u") : ending(L34_O_LAI, "\u1EDE l\u1EA1i, m\u1EDF s\u1EA1p v\xE1 \xE1o m\u01B0a \u1EDF g\xF3c ch\u1EE3", "Kh\xF4ng gi\xE0u, kh\xE1ch quen g\u1ECDi b\u1EA1n l\xE0 th\u1EA7y")
             )
           )
         ]
@@ -34727,7 +34729,7 @@ var Argon = (() => {
       color: "#eebc3a",
       years: [5, 9],
       weird: "abs",
-      rules: { flags: ["w_ngoai_giao_san_truong"] },
+      rules: { flags: ["w_ngoai_giao_san_truong"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "nguyen_thu", role: "neighbor", label: "c\xF4 b\xE9 nguy\xEAn th\u1EE7" }, { key: "hieu_pho", role: "first_boss", label: "th\u1EA7y hi\u1EC7u ph\xF3" }] },
       gag: { key: "hiep_uoc", lines: [
         "Hi\u1EC7p \u01B0\u1EDBc \u0111\u1EA7u ti\xEAn \u0111\u01B0\u1EE3c k\xFD tr\xEAn gi\u1EA5y g\xF3i k\u1EB9o: hai n\u01B0\u1EDBc c\xF9ng d\xF9ng chung c\xE1i x\xEDch \u0111u.",
@@ -34742,7 +34744,7 @@ var Argon = (() => {
           card(
             "x38_mo_quoc_thu",
             "Tr\xECnh qu\u1ED1c th\u01B0 tr\u01B0\u1EDBc c\u1ED9t c\u1EDD",
-            (c, k) => `${cap3(k.npc("nguyen_thu"))} y\xEAu c\u1EA7u m\u1ED9t l\u1EC5 tr\xECnh qu\u1ED1c th\u01B0 \u0111\xFAng nghi th\u1EE9c: \u0111\u1EA1i s\u1EE9 ph\u1EA3i c\xFAi ch\xE0o, \u0111\u1ECDc to, v\xE0 kh\xF4ng \u0111\u01B0\u1EE3c c\u01B0\u1EDDi. C\u1EA3 s\xE2n tr\u01B0\u1EDDng d\u1EEBng ch\u01A1i \u0111\u1EC3 xem. ${k.gag()}`,
+            (c, k) => `${cap3(k.npc("nguyen_thu"))} y\xEAu c\u1EA7u m\u1ED9t l\u1EC5 tr\xECnh qu\u1ED1c th\u01B0 \u0111\xFAng nghi th\u1EE9c: \u0111\u1EA1i s\u1EE9 ph\u1EA3i c\xFAi ch\xE0o, \u0111\u1ECDc to, v\xE0 kh\xF4ng \u0111\u01B0\u1EE3c c\u01B0\u1EDDi. Nghi th\u1EE9c c\xF2n g\u1ED3m qu\xE0 ngo\u1EA1i giao: m\u1ED7i n\u0103m m\u1ED9t t\xFAi k\u1EB9o cho c\u1EA3 n\u01B0\u1EDBc, \u0111\u1EA1i s\u1EE9 t\u1EF1 lo. C\u1EA3 s\xE2n tr\u01B0\u1EDDng d\u1EEBng ch\u01A1i \u0111\u1EC3 xem. ${k.gag()}`,
             (c) => [
               C("M\u1EB7c vest \u0111i tr\xECnh qu\u1ED1c th\u01B0", { happy: 3, counters: { x38_uy_tin: 1 }, flags: ["x38_vest"] }, c.has_job && anyFlag(c, ["job_teach", "life_professor", "highland_teacher"]) ? "L\u0169 tr\u1EBB tin b\u1EA1n tuy\u1EC7t \u0111\u1ED1i, \u0111\u1ED3ng nghi\u1EC7p th\xEC c\u01B0\u1EDDi" : "L\u0169 tr\u1EBB tin b\u1EA1n tuy\u1EC7t \u0111\u1ED1i, c\xE1c ph\u1EE5 huynh th\xEC c\u01B0\u1EDDi"),
               C("Nh\u1EADn ch\u1EE9c, gi\u1EEF k\xEDn v\u1EDBi ng\u01B0\u1EDDi l\u1EDBn", { flags: ["x38_bi_mat"] }, "Y\xEAn chuy\u1EC7n, nh\u01B0ng b\xED m\u1EADt n\xE0o c\u0169ng c\xF3 ng\xE0y l\u1ED9")
@@ -34962,7 +34964,7 @@ var Argon = (() => {
       color: "#e6a23c",
       years: [7, 12],
       weird: "abs",
-      rules: { flags: ["w_nguoi_mot_ngay"] },
+      rules: { flags: ["w_nguoi_mot_ngay"], yearly: { money: -0.05 } },
       reset: { cast: [{ key: "ban_cua_ho", role: "partner", label: "ng\u01B0\u1EDDi b\u1EA1n c\u1EE7a ng\u01B0\u1EDDi kia" }, { key: "cam_do", role: "creditor", label: "b\xE0 ch\u1EE7 ti\u1EC7m c\u1EA7m \u0111\u1ED3" }] },
       gag: { key: "loi_nhan", lines: [
         'T\u1EDD gi\u1EA5y d\xE1n tr\xEAn g\u01B0\u01A1ng: "M\u01B0\u1EE3n t\u1EA1m \xEDt ti\u1EC1n mua gi\xE0y. Gi\xE0y \u0111\u1EB9p." K\xFD t\xEAn: Ng\u01B0\u1EDDi H\xF4m \u0110\xF3.',
@@ -35432,7 +35434,7 @@ var Argon = (() => {
       color: "#e6a532",
       years: [6, 11],
       weird: "abs",
-      rules: { flags: ["w_emoji_name"] },
+      rules: { flags: ["w_emoji_name"], yearly: { money: -0.03 } },
       reset: { cast: [
         { key: "can_bo", role: "official", label: "anh c\xE1n b\u1ED9 h\u1ED9 t\u1ECBch" },
         { key: "luat_su", role: "mentor", label: "b\xE0 lu\u1EADt s\u01B0 v\u1EC1 h\u01B0u" }
@@ -35450,7 +35452,7 @@ var Argon = (() => {
           card(
             "x43_mo_dung_hinh",
             "Ng\xE0y c\u1EA3 n\u01B0\u1EDBc \u0111\u1EE9ng h\xECnh",
-            (c, k) => `Ba ng\xE0y li\u1EC1n, m\u1ECDi \xF4 h\u1ECD t\xEAn tr\xEAn c\u1EA3 n\u01B0\u1EDBc ch\u1EC9 hi\u1EC7n m\u1ED9t h\xECnh m\u1EB7t tr\u1EDDi c\u01B0\u1EDDi. ${k.gag()} ${cap3(k.npc("can_bo"))} \u0111\u1EBFn t\u1EADn nh\xE0, m\u1ED3 h\xF4i \u01B0\u1EDBt \xE1o, xin b\u1EA1n \u0111\u1ED5i t\xEAn con tr\u01B0\u1EDBc khi h\u1EC7 th\u1ED1ng s\u1EADp h\u1EB3n.`,
+            (c, k) => `Ba ng\xE0y li\u1EC1n, m\u1ECDi \xF4 h\u1ECD t\xEAn tr\xEAn c\u1EA3 n\u01B0\u1EDBc ch\u1EC9 hi\u1EC7n m\u1ED9t h\xECnh m\u1EB7t tr\u1EDDi c\u01B0\u1EDDi. ${k.gag()} ${cap3(k.npc("can_bo"))} \u0111\u1EBFn t\u1EADn nh\xE0, m\u1ED3 h\xF4i \u01B0\u1EDBt \xE1o, xin b\u1EA1n \u0111\u1ED5i t\xEAn con tr\u01B0\u1EDBc khi h\u1EC7 th\u1ED1ng s\u1EADp h\u1EB3n. Ch\u01B0a \u0111\u1ED5i th\xEC n\u0103m n\xE0o gi\u1EA5y t\u1EDD c\u1EE7a con c\u0169ng ph\u1EA3i l\xE0m l\u1EA1i b\u1EB1ng tay, l\u1EC7 ph\xED b\u1EA1n ch\u1ECBu.`,
             [
               C("\u0110\u1ED5i t\xEAn con cho xong chuy\u1EC7n", { flags: ["x43_doi_ten"], happy: -3, counters: { x43_kien: -1 } }, "Y\xEAn chuy\u1EC7n, con m\u1EA5t c\xE1i t\xEAn c\u1EA3 nh\xE0 \u0111\xE3 ch\u1ECDn"),
               C("Gi\u1EEF t\xEAn, \u0111\xF3 l\xE0 quy\u1EC1n c\u1EE7a con", { flags: ["x43_giu_ten"], counters: { x43_kien: 1 }, pressure: { danh: 1 } }, "Th\xE0nh chuy\u1EC7n c\u1EA3 n\u01B0\u1EDBc, kh\xF3 l\xF9i \u0111\u01B0\u1EE3c n\u1EEFa")
@@ -35999,7 +36001,7 @@ var Argon = (() => {
       color: "#e0a43c",
       years: [5, 10],
       weird: "abs",
-      rules: { flags: ["w_love_monument"] },
+      rules: { flags: ["w_love_monument"], yearly: { money: 0.05 } },
       reset: { cast: [
         { key: "nguoi_nhan", role: "partner", label: "ng\u01B0\u1EDDi nh\u1EADn b\u1EE9c th\u01B0 n\u0103m \u1EA5y" },
         { key: "dieu_khac", role: "neighbor", label: "b\xE0 nh\xE0 \u0111i\xEAu kh\u1EAFc" }
@@ -36017,7 +36019,7 @@ var Argon = (() => {
           card(
             "x47_mo_khanh_thanh",
             "Ng\xE0y kh\xE1nh th\xE0nh",
-            (c, k) => `L\u1EC5 kh\xE1nh th\xE0nh c\xF3 k\xE8n, c\xF3 b\xF3ng bay, c\xF3 m\u1ED9t em b\xE9 \u0111\u01B0\u1EE3c giao nhi\u1EC7m v\u1EE5 \u0111\u1ECDc to to\xE0n v\u0103n b\u1EE9c th\u01B0. ${k.gag()} B\u1EA1n \u0111\u1EE9ng h\xE0ng th\u1EE9 ba, m\u1EB7t \u0111\u1ECF b\u1EEBng.`,
+            (c, k) => `L\u1EC5 kh\xE1nh th\xE0nh c\xF3 k\xE8n, c\xF3 b\xF3ng bay, c\xF3 m\u1ED9t em b\xE9 \u0111\u01B0\u1EE3c giao nhi\u1EC7m v\u1EE5 \u0111\u1ECDc to to\xE0n v\u0103n b\u1EE9c th\u01B0. ${k.gag()} B\u1EA1n \u0111\u1EE9ng h\xE0ng th\u1EE9 ba, m\u1EB7t \u0111\u1ECF b\u1EEBng. T\u1ED1i \u0111\xF3, th\xE0nh ph\u1ED1 l\u1EA7n theo ch\u1EEF k\xFD tr\xEAn th\u01B0, g\u1EEDi t\u1EDBi nh\xE0 b\u1EA1n phong b\xEC nhu\u1EADn b\xFAt \u0111\u1EA7u ti\xEAn, ngo\xE0i b\xECa ghi \u201CT\xE1c gi\u1EA3 c\xE2u th\u1EE9 ba\u201D, h\u1EB9n n\u0103m n\xE0o c\u0169ng g\u1EEDi.`,
             [
               C("B\u01B0\u1EDBc l\xEAn nh\u1EADn m\xECnh l\xE0 ng\u01B0\u1EDDi vi\u1EBFt", { flags: ["x47_nhan"], counters: { x47_lo: 1 }, pressure: { danh: 1 } }, "N\u1ED5i ti\u1EBFng nh\u1EA5t bu\u1ED5i l\u1EC5, theo c\xE1ch t\u1EC7 nh\u1EA5t"),
               C("K\xE9o m\u0169 th\u1EA5p, l\u1EABn v\xE0o \u0111\xE1m \u0111\xF4ng", { flags: ["x47_giau"], happy: -1 }, "Tho\xE1t h\xF4m nay, t\xEAn b\u1EA1n v\u1EABn kh\u1EAFc tr\xEAn \u0111\xE1")
@@ -36408,7 +36410,7 @@ var Argon = (() => {
       color: "#d4a03a",
       years: [5, 9],
       weird: "abs",
-      rules: { flags: ["w_own_memorial"] },
+      rules: { flags: ["w_own_memorial"], yearly: { money: -0.03 } },
       reset: { cast: [
         { key: "chu_le", role: "sibling", label: "ng\u01B0\u1EDDi em h\u1ECD gi\u1EEF s\u1ED5 l\u1EC5" },
         { key: "chu_in", role: "neighbor", label: "\xF4ng ch\u1EE7 x\u01B0\u1EDFng in l\u1ECBch" }
@@ -36426,7 +36428,7 @@ var Argon = (() => {
           card(
             "x50_mo_khe_cua",
             "N\u1EA5p sau khe c\u1EEDa",
-            (c, k) => `B\u1EA1n \u0111\u1EE9ng sau khe c\u1EEDa nghe tr\u1ECDn ${gio(c)} c\u1EE7a ch\xEDnh m\xECnh. Ng\u01B0\u1EDDi ta k\u1EC3 chuy\u1EC7n b\u1EA1n c\xF5ng ai qua \u0111o\u1EA1n \u0111\u01B0\u1EDDng ng\u1EADp, cho ai vay ti\u1EC1n r\u1ED3i kh\xF4ng \u0111\xF2i, to\xE0n nh\u1EEFng chuy\u1EC7n b\u1EA1n \u0111\xE3 qu\xEAn. ${k.gag()}`,
+            (c, k) => `B\u1EA1n \u0111\u1EE9ng sau khe c\u1EEDa nghe tr\u1ECDn ${gio(c)} c\u1EE7a ch\xEDnh m\xECnh. Ng\u01B0\u1EDDi ta k\u1EC3 chuy\u1EC7n b\u1EA1n c\xF5ng ai qua \u0111o\u1EA1n \u0111\u01B0\u1EDDng ng\u1EADp, cho ai vay ti\u1EC1n r\u1ED3i kh\xF4ng \u0111\xF2i, to\xE0n nh\u1EEFng chuy\u1EC7n b\u1EA1n \u0111\xE3 qu\xEAn. Cu\u1ED1i bu\u1ED5i, ng\u01B0\u1EDDi em h\u1ECD gi\u1EEF s\u1ED5 l\u1EC5 ghi t\xEAn b\u1EA1n v\xE0o danh s\xE1ch \u0111\xF3ng g\xF3p h\u1EB1ng n\u0103m, cho ch\xEDnh ${gio(c)} c\u1EE7a b\u1EA1n. ${k.gag()}`,
             [
               C("B\u01B0\u1EDBc v\xE0o, c\u1EA3m \u01A1n t\u1EEBng ng\u01B0\u1EDDi", { flags: ["x50_buoc_vao"], rel: 3, happy: 2 }, "\u1EA4m l\xF2ng, c\u1EA3 ph\xF2ng ng\u01B0\u1EE3ng ch\xEDn ng\u01B0\u1EDDi"),
               C("\u0110\u1EE9ng nghe ti\u1EBFp \u0111\u1EBFn h\u1EBFt", { flags: ["x50_nghe_lom"], know: 2, counters: { x50_nghe: 1 } }, "Bi\u1EBFt th\xEAm nhi\u1EC1u \u0111i\u1EC1u, mang th\xEAm m\u1ED9t b\xED m\u1EADt")
