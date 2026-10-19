@@ -32,6 +32,20 @@ function livingInit(L) {
   { const urbanShare = clamp(0.1 + 0.28 * Math.log10(Math.max(900, L.c.g) / 800), 0.15, 0.85); const urban = rng.next() < urbanShare; const o = L.fam > 0.75 ? "rich" : L.fam < 0.4 ? (urban ? "poor_urban" : "poor_rural") : "middle"; L.lw.sflags.add("origin_" + o); L.lw.sflags.add(urban ? "urban" : "rural"); L.origin = o; }
   canonInit(L);
 }
+/* Tên người thật nổi tiếng mà các bể tên có thể ghép ra (không dùng cho bất kỳ ai trong game). So không dấu, không hoa, cả hai thứ tự. */
+const REAL_NAMES = new Set(["joseph kabila", "laurent kabila", "felix tshisekedi", "nelson mandela", "jacob zuma", "cyril ramaphosa", "barack obama", "michelle obama", "donald trump", "joe biden", "kamala harris", "bill clinton", "hillary clinton", "george bush",
+  "vladimir putin", "xi jinping", "mao zedong", "kim jong un", "kim jong il", "kim il sung", "shinzo abe", "narendra modi", "indira gandhi", "rahul gandhi", "imran khan", "angela merkel", "emmanuel macron", "boris johnson",
+  "elon musk", "jeff bezos", "bill gates", "mark zuckerberg", "taylor swift", "michael jackson", "lionel messi", "cristiano ronaldo", "mohamed salah", "jackie chan", "bruce lee", "ho chi minh", "vo nguyen giap", "lee kuan yew",
+  "fidel castro", "raul castro", "hugo chavez", "jair bolsonaro", "paul kagame", "william ruto", "yoweri museveni", "abiy ahmed", "muhammadu buhari", "bola tinubu", "recep erdogan", "lee jae myung", "moon jae in", "park chung hee"]);
+function nameKey(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toLowerCase().replace(/[^a-z]+/g, " ").trim(); }
+/** true nếu họ tên trùng một người thật nổi tiếng (bất kể thứ tự họ / tên). */
+function nameBlocked(name) { const k = nameKey(name); if (!k) return false; return REAL_NAMES.has(k) || REAL_NAMES.has(k.split(" ").reverse().join(" ")); }
+/** Tên gọi cho người mới trong nhà (con, bạn đời): rút như cũ; chỉ khi trùng tên gọi đang có chủ mới rút thêm một lần trong phần còn trống. */
+function freshGiven(L, r, pool) {
+  let n = pick(r, pool); if (!L || !L.lw) return n;
+  const taken = freeTier(L, pool); if (!taken.has(n)) return n;   // tránh chặt nhất mà bể tên còn cho phép (xem nameTiers ở canon.js)
+  const free = pool.filter(x => !taken.has(x)); return free.length ? free[Math.floor(r() * free.length)] : n;
+}
 function ROLE_SEX_OF(role, rng) { return role === "mother" ? "F" : (role === "father" || role === "bully" || role === "official") ? "M" : (rng.next() < 0.5 ? "M" : "F"); }
 function castName(L, id) { if (isCanonKey(id)) return canonName(L, id); const m = L.lw && L.lw.cast.get(id); if (m) return m.name; const n = L.ar && L.ar.state.npcs.get(id); return n ? n.name : "ai đó"; }
 function castRole(L, r) { return Argon.byRole(L.lw.cast, r); }
@@ -71,7 +85,8 @@ function factContext(L) {
 /* ---- Hiệu ứng khai báo → thế giới ---- */
 function applyEffect(L, e, npcId) {
   e = canonOnEffect(L, e);   // áp lực, vật gài, kết mùa trước khi tính tiền của chung kết
-  const s = L.ar.state, yearly = Math.max(300, householdIncome(L)), ctxNpc = id => (id && s.npcs.get(id)) || (npcId && s.npcs.get(npcId));
+  // R24: tiền thưởng / phạt (money:<x>, cược) tính trên lương gốc, không nhân hệ số mùa.
+  const s = L.ar.state, yearly = seasonYearlyBase(L), ctxNpc = id => (id && s.npcs.get(id)) || (npcId && s.npcs.get(npcId));
   if (e.gamble) { const win = L.r() < e.gamble.p; applyEffect(L, { ...e, gamble: undefined, log: undefined }, npcId); applyEffect(L, win ? e.gamble.win : e.gamble.lose, npcId); return; }
   if (e.game) { const npc = ctxNpc(e.game.npc); if (npc) { const r = argonPlay(L, npc, e.game.move, yearly * e.game.stake_frac, npc.id); const o = r.outcome;
       log(L, `${e.log ? e.log + ". " : ""}${npc.name} ${o.npcMove === "cooperate" ? "chơi thật" : "chơi xấu"} → ${AR.CELL_VN[o.cell]}: bạn ${o.payoffA.capital >= 0 ? "nhận" : "mất"} ${fmtPPP(Math.abs(o.payoffA.capital))}${o.breach_detected ? " (bạn phát hiện kịp)" : ""}.`, o.cell === "win_win" || o.cell === "arbitrage" ? "good" : o.cell === "sucker" || o.cell === "mutual_destruction" ? "bad" : "");
@@ -129,7 +144,7 @@ function leaveSpouse(m, quiet) {
 function roleVN(m) { return (m && ((m.role === "season" && m.label) || LW.ROLE_VN[m.role] || m.label)) || "người quen"; }   // người của mùa: nhãn riêng ("bà chủ vựa phế liệu")
 /** Cưới một người đã có trong dàn nhân vật (R20): thêm vai spouse cho chính người đó, không tạo NPC mới. */
 function marryMember(L, m) {
-  for (const o of L.lw.cast.values()) if (o !== m && (o.roles.includes("spouse") || o.role === "spouse")) leaveSpouse(o, true);
+  for (const o of L.lw.cast.values()) if (o !== m && o.alive && (o.roles.includes("spouse") || o.role === "spouse")) leaveSpouse(o, true);   // bạn đời đã mất vẫn là bạn đời đã mất, không thành "người cũ"
   // Vai chính thành spouse: ageCast báo cái chết theo m.role, nên người này mất thì bạn góa như mọi bạn đời khác.
   m.role = "spouse"; m.roles = m.roles.filter(r => r !== "season"); if (!m.roles.includes("spouse")) m.roles.push("spouse");
   L.married = true; L.spouse = m.name; L.flags.marriedAt = L.age; L.lw.counters.married_years = 0;
@@ -138,7 +153,7 @@ function marryMember(L, m) {
   log(L, `Bạn kết hôn với ${m.name}.`, "good big"); addSt(L, "happy", 10); addSt(L, "rel", 8);
 }
 function customEffect(L, c, npcId) {
-  const s = L.ar.state, yearly = Math.max(300, householdIncome(L));
+  const s = L.ar.state, yearly = seasonYearlyBase(L);   // R24: borrow / repay tính trên lương gốc
   if (c.includes("|")) { for (const part of c.split("|")) customEffect(L, part, npcId); return; }
   const [kind, arg] = c.split(":"); const x = +arg || 0;
   if (canonCustom(L, kind, arg)) return;
@@ -161,7 +176,7 @@ function customEffect(L, c, npcId) {
       const cands = arg ? [...L.lw.cast.values()].filter(x => x.alive && x.name === arg && !fam.has(x.role)) : [];
       const m = cands.find(x => sc.has(x.id)) || cands[0];
       if (arg && L.married && [...L.lw.cast.values()].some(x => x.alive && x.role === "spouse" && x.name === arg)) break;   // đã cưới chính người này
-      if (m) marryMember(L, m); else resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex) }, 0, L.r, L.c); break; }
+      if (m) marryMember(L, m); else resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex, L) }, 0, L.r, L.c); break; }
     case "have_child": bornChild(L); break;
     case "retire": { L.retired = true; const pen = L.c.g > 30000 ? .55 : L.c.g > 10000 ? .35 : .1; L.income *= pen; log(L, "Bạn nghỉ hưu sớm.", "big"); break; }
     case "migrate_now": { L.flags.migAsked = true; const dest = pickWeighted(L.r, COUNTRIES.filter(d => d.g > L.c.g * 1.5 && d.g > 15000), d => d.b + (d.g > 40000 ? 1 : 0)); if (dest) resolveCore(L, { id: "migrate", data: dest.id }, 0, L.r, L.c); else log(L, "Không tìm được nơi nào nhận bạn.", "bad"); break; }
@@ -183,7 +198,7 @@ function syncFromArgon(L) { const A = L.ar, a = A.state.capitals.capitalAssets, 
 /* ---- Storylet → cảnh ---- */
 function sceneFromStorylet(L, st, ctx) {
   const view = st.build(ctx, id => castName(L, id));
-  const yearly = Math.max(300, householdIncome(L)), u = yearly * 0.15;
+  const yearly = seasonYearlyBase(L), u = yearly * 0.15;
   const npcId = view.npc;
   const choices = view.choices.map(ch => ({ label: ch.label, hint: ch.hint || "", tier: ch.tier, longterm: ch.longterm, _fx: ch.effects, fx: L2 => applyEffect(L2, ch.effects, npcId) }));
   let matrix = null;
@@ -206,6 +221,17 @@ function runDueCustoms(L) {
   for (let qi = 0; qi < q.length;) { const it = q[qi]; if (it.at <= L.age && it.custom) { q.splice(qi, 1); customEffect(L, it.custom); if (L.pending) return true; } else qi++; }
   return false;
 }
+/** Dàn nhân vật già thêm một năm ở tuổi L.age (luồng npc): người mất, đổ bệnh, khỏe lại. livingYear và age_skip (canon.js) dùng chung. */
+function castYear(L) {
+  const lw = L.lw;
+  for (const ev of Argon.ageCast(lw.cast, L.age, L.ar.rng, L.c.g < 8000)) {
+    const r = roleVN(lw.cast.get(ev.id) || { role: ev.role });
+    if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
+      if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
+    else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
+    else log(L, `${ev.name} (${r}) khỏe lại.`, "good");
+  }
+}
 /* ---- Một năm của mạng lưới sống. Gọi từ lifeEvents. Trả về true nếu đã đặt L.pending ---- */
 function livingYear(L) {
   livingInit(L);
@@ -216,13 +242,7 @@ function livingYear(L) {
   habitYear(L);
   seasonYearly(L);   // luật năm của mùa: mỗi năm một lần, kể cả năm bận
   // 1. Dàn nhân vật già đi
-  for (const ev of Argon.ageCast(lw.cast, L.age, rng, L.c.g < 8000)) {
-    const r = roleVN(lw.cast.get(ev.id) || { role: ev.role });
-    if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
-      if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
-    else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
-    else log(L, `${ev.name} (${r}) khỏe lại.`, "good");
-  }
+  castYear(L);
   // 2. Người phụ thuộc: tiền chảy ra
   const deps = Argon.dependentCosts(lw.cast, L.age, L.c.g > 30000); const yearly = Math.max(300, householdIncome(L));
   let depTotal = 0; for (const d of deps) depTotal += d.frac * supportMult(L, d.role) * yearly;
@@ -289,7 +309,7 @@ function eulogyVN(L) {
   const yrs = n => (n / 4).toFixed(0);
   const p1 = V.ticks_sovereign === 0 && V.agency_peak < 0.3
     ? `Bạn sống ${L.age} năm ở ${L.c.n}${L.migrated ? `, xa nơi sinh là ${L.birthC.n}` : ""}, và phần lớn thời gian ấy là kịch bản sống bạn chứ không phải bạn sống nó. ${V.crises_survived ? `${V.crises_survived} lần khủng hoảng gõ cửa; mỗi lần bạn tỉnh một chút rồi guồng quay lại kéo về.` : "Không có cú đánh nào đủ mạnh để bạn phải nhìn lại."} ${V.ticks_rat_race > 8 ? `Có ${yrs(V.ticks_rat_race)} năm bạn chạy chỉ để đứng yên.` : ""}`
-    : `Bạn sống ${L.age} năm ở ${L.c.n}. ${yrs(V.ticks_autopilot)} năm đầu là của người khác: của làng, của nhà, của những điều ai cũng làm. Rồi ${V.crises_survived ? `sau ${V.crises_survived} lần khủng hoảng` : "dần dần"}, bạn bắt đầu thấy luật chơi, và ${yrs(V.ticks_sovereign)} năm cuối cùng bạn tự viết lấy phần mình${V.relapses ? `, dù có ${V.relapses} lần suýt trượt về` : ""}.`;
+    : `Bạn sống ${L.age} năm ở ${L.c.n}. ${+yrs(V.ticks_autopilot) > 0 ? `${yrs(V.ticks_autopilot)} năm đầu là của người khác: của làng, của nhà, của những điều ai cũng làm. Rồi ` : "Từ rất sớm, "}${V.crises_survived ? `sau ${V.crises_survived} lần khủng hoảng` : "dần dần"}, bạn bắt đầu thấy luật chơi${+yrs(V.ticks_sovereign) > 0 ? `, và ${yrs(V.ticks_sovereign)} năm cuối cùng bạn tự viết lấy phần mình` : ", dù chưa kịp sống trọn năm nào theo luật của riêng mình"}${V.relapses ? `, dù có ${V.relapses} lần suýt trượt về` : ""}.`;   // không bao giờ "0 năm"
   const p2 = `${S.rounds ? `Bạn ngồi vào ${S.rounds} ván với người khác và để lại ${S.net_systemic_surplus >= 0 ? "thêm " : "ít hơn "}${fmtPPP(Math.abs(S.net_systemic_surplus))} cho tất cả những người ngồi cùng bàn, trên ${fmtPPP(S.potential_surplus)} có thể có nếu ai cũng thật.` : "Bạn ít khi ngồi vào bàn với ai."} ${prospered.length ? `${prospered.join(", ")} khá lên nhờ có bạn.` : ""} ${preyed.length ? `${preyed.join(", ")} khá lên trên lưng bạn.` : ""} ${bankrupt.length ? `${bankrupt.join(", ")} trắng tay, và một phần là vì bạn.` : ""} ${friends.length ? `${friends.join(", ")} tin bạn đến cuối.` : ""} ${enemies.length ? `${enemies.join(", ")} thì không bao giờ.` : ""}`;
   const p3 = `Khi nấm mộ đã xanh cỏ, ${L.c.g < 8000 ? "làng" : "khu phố"} nhớ gì về bạn? ${good ? `Người ta nhớ ${good.note || LW.TAG_VN[good.tag]}.` : ""} ${bad ? `Người ta cũng nhớ ${bad.note || LW.TAG_VN[bad.tag]}.` : ""} ${!good && !bad ? "Không nhiều. Bạn là một người đi qua, và ở nơi này điều đó không hiếm." : R.reputation_final >= 65 ? `Tên bạn được nhắc khi người ta cần ví dụ về một người tử tế.` : R.reputation_final <= 35 ? `Tên bạn được nhắc khi người ta dặn con cẩn thận.` : "Tên bạn được nhắc, thỉnh thoảng, không tốt không xấu."}`;
   const own = (L.actLog || []).filter(a => a.kind === "proactive").map(a => ({ a, m: L.lw.cz.marks.find(m => m.key === a.key) })).filter(x => x.m)

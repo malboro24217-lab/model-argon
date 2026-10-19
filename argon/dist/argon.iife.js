@@ -21599,7 +21599,7 @@ var Argon = (() => {
     let [lo, hi] = def.years, r = Math.min(Math.max(rngNext, 0), 0.999999), len = Math.min(hi, lo + Math.floor(r * (hi - lo + 1)), SEASON_END_MAX - age);
     return Math.max(SEASON_MIN, len);
   }
-  var beatGap = (len) => Math.max(1, Math.round(len / 4)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child"]);
+  var beatGap = (len) => Math.max(1, Math.round(len / 4)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child", "swap_other"]);
   function isDurable(e) {
     return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || p.startsWith("marry:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
   }

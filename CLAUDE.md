@@ -4,7 +4,7 @@
 
 Quy tắc khi sửa:
 - Engine nằm trong `argon/src`. Sửa xong thì bundle lại vào `argon/dist/argon.iife.js` (lệnh ở README), rồi chạy `python3 doi-nguoi/tests/build.py` để ghép lại `doi-nguoi/index.html`.
-- Sau khi ghép, chạy các test trong `doi-nguoi/tests` (micro, repeat, path, agency-host, review-fixes, money, `canon-test.js`, `canon-ui-test.js`) và hai test engine trong `argon/src` (`canon-test`, `canon-content-test`; lệnh ở README) trước khi commit.
+- Sau khi ghép, chạy các test trong `doi-nguoi/tests` (micro, repeat, path, agency-host, review-fixes, money, `canon-test.js`, `canon-ui-test.js`, `season-entry-test.js`) và hai test engine trong `argon/src` (`canon-test`, `canon-content-test`; lệnh ở README) trước khi commit. Sửa giao diện (`index.html`, `canon-ui.js`) thì chạy thêm hai test Chromium `ui-canon-test.mjs` và `ui-want-states.mjs`.
 - Trang game: https://claude.ai/artifact/Smj8uxWFib5C34KjY714Sw (bản tách file từ 18/10/2026; link cũ LakKYQieoAm7osu5inVJ1B là bản gộp, không cập nhật nữa).
   Đăng bản tách file trong `doi-nguoi/publish/` (do build.py sinh ra): `file_path` = `doi-nguoi/publish/index.html`, `files` = từng file `.js` trong `doi-nguoi/publish/files.txt`, `url` = link trên, giữ `capabilities: {"sample": {}}`. Chỉ cần gửi những file `.js` đã đổi.
   Trước khi đăng, đọc bản đang chạy bằng Artifact read (trang chính chỉ ~45KB) và gộp thay đổi của session khác vào. Không dùng force.

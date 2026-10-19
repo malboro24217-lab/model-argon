@@ -1,6 +1,6 @@
 # Quy tắc viết mùa và nhánh kỳ dị
 
-Các quy tắc 1–10 rút ra từ các lần review khi viết 100 nhánh kỳ dị (Task 10–19 của canon event). Bản gốc là phần bổ sung cho hướng dẫn viết từng đợt, nằm trong thư mục làm việc `.superpowers/` (không theo repo). Bản này dịch lại để quy tắc nằm cùng mã nguồn. Quy tắc 11–12 rút ra từ kiểm toán thay đổi tình thế của Task 20d (ruling R25).
+Các quy tắc 1–10 rút ra từ các lần review khi viết 100 nhánh kỳ dị (Task 10–19 của canon event). Bản gốc là phần bổ sung cho hướng dẫn viết từng đợt, nằm trong thư mục làm việc `.superpowers/` (không theo repo). Bản này dịch lại để quy tắc nằm cùng mã nguồn. Quy tắc 11–12 đến từ Task 8b (ruling R24 về tiền trong mùa, và di cư của mùa luôn thành theo review I2). Quy tắc 13–14 rút ra từ kiểm toán thay đổi tình thế của Task 20d (ruling R25).
 
 Áp dụng cho:
 - mọi mùa thường trong `argon/src/engine/narrative/canon/seasons/`;
@@ -68,7 +68,25 @@ cd argon && node --experimental-strip-types src/canon-content-test.ts && node --
 - Lựa chọn có `tier` không bao giờ đứng đầu, vì lựa chọn đầu là mặc định. Đặt chúng ở cuối (content-guide §4).
 - **Bộ kiểm chưa bắt quy tắc này** (ruling R19 hẹn đưa vào bộ kiểm ở Task 20). Hiện người viết và reviewer phải tự đọc.
 
-## 11. Mỗi Mùa có một thay đổi tình thế thật (ruling R25)
+## 11. Tiền trong mùa: tính trên lương gốc (R24)
+- Hệ số thu nhập của mùa (`rules.income`, ví dụ ×50 của S39) chỉ nhân vào **lương hằng năm trong mùa**. Host gỡ hệ số khi ra mùa.
+- Mọi khoản tính theo "năm thu nhập" đều dùng **lương gốc, không nhân hệ số mùa**:
+  - `money: <x>` trong thẻ mùa, thẻ thường, chung kết, `rules.yearly`;
+  - `borrow:<x>`, `repay:<x>`;
+  - cược với NPC (`game`), tiền do AI cho (`fx.money`).
+- Mua, bán tài sản và các khoản lỗ cố định giữ đúng giá trị của chúng, không bao giờ nhân hệ số.
+- Muốn một phần thưởng ăn theo hệ số mùa thì phải **khai báo rõ** bằng `custom: "money_season:<x>"`:
+  - trong mùa: `<x>` năm thu nhập hiện tại (đã nhân hệ số);
+  - ở chung kết (mùa vừa kết cùng năm): `<x>` năm lương gốc × hệ số của mùa vừa kết.
+  - Ví dụ: `land("s39_chia_lai", "…", { custom: "money_season:0.5" })` cho nửa năm thu nhập ×50.
+- Host: `seasonYearlyBase(L)` và `seasonMoneyYearly(L)` trong `doi-nguoi/canon.js`.
+
+## 12. Di cư của mùa luôn thành
+- `migrate_now` trong `reset.effects` hay trong chung kết được host đổi thành `migrate_sure`: không tung 55%, không có nhánh "thủ tục không thành".
+- Lời mời di cư thường (thẻ ngoài mùa) vẫn tung như cũ.
+- Vẫn phải gate bằng `c.can_migrate` (R14): không còn nước nào nhận thì host ghi "Không tìm được nơi nào nhận bạn.". Ở chung kết dùng `migrateOk(c)` của `kit.ts` (quy tắc 14).
+
+## 13. Mỗi Mùa có một thay đổi tình thế thật (ruling R25)
 - Rút ra từ kiểm toán Task 20d. Thay cho câu "đổi 100% hoàn cảnh" của spec.
 - Mỗi Mùa có ít nhất một thay đổi tình thế có tác dụng thật, phù hợp với tiền đề và được sử dụng trong diễn biến.
 - Thay đổi hợp lệ: việc làm, nơi ở, tiền hay nợ, một mối quan hệ, một nghĩa vụ, quyền tiếp cận (được hay mất một thứ), hoặc một luật riêng của mùa.
@@ -83,8 +101,9 @@ cd argon && node --experimental-strip-types src/canon-content-test.ts && node --
 - Host không tự đổi nghề hay tiền khi mùa không khai báo (`doi-nguoi/tests/season-entry-test.js`).
 - Bộ kiểm bắt: mùa không khai báo gì lúc vào mùa; cờ của `reset.effects` không ai đọc; tổng số cờ / bộ đếm do lựa chọn đặt mà không thẻ nào đọc lại vượt trần `DEAD_KEYS_MAX`. "Phù hợp tiền đề" và "dùng có ý nghĩa" phải đọc và chơi thử. Bảng phân lớp: `argon/docs/canon/season-change-audit.md`, sinh bằng `node --experimental-strip-types argon/tools/season-change-audit.js --md <file>`.
 
-## 12. Chung kết không đưa người chưa tự lập đi xa
+## 14. Chung kết không đưa người chưa tự lập đi xa
 - Landing có `migrate_now` chỉ mở khi `migrateOk(c)` trong `kit.ts` (đã tự lập và còn nước để đi). Host bỏ `migrate_now` với người chưa tự lập, nên dòng landing "bạn chuyển sang nước khác" sẽ sai.
 - Khi không đi được, thẻ chung kết vẫn phải còn ≥ 2 lựa chọn: thêm một landing ở lại (tiền, nghề tại chỗ…).
 - Landing có `move_city` không mở cho người dưới 18 tuổi (một đứa trẻ không chuyển đi một mình). Mùa trẻ con chơi tới chung kết được (vd. `vu_an_gia_toc`) thì thay bằng landing khác.
-- Bộ kiểm bắt cả hai.
+- Landing được mở thì host đổi `migrate_now` thành `migrate_sure` (quy tắc 12), nên dòng "bạn chuyển sang nước khác" luôn đúng.
+- Bộ kiểm bắt cả `migrate_now` thiếu `migrateOk` lẫn `move_city` mở cho người dưới 18 tuổi.

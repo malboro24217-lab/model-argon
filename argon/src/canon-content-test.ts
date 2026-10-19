@@ -90,7 +90,7 @@ const CUSTOM_OK = new Set([
   "apologize", "become", "borrow", "confess_hook", "explode_hook", "have_child", "job_lose", "job_lose_maybe", "job_new", "job_switch",
   "marry", "migrate_now", "move_city", "repay", "restructure", "retire", "return_home", "scholar", "shop_end", "spouse_leave", "study", "study_done",
   // canon (Task 7, 8, 10)
-  "season_end", "age_skip", "longevity", "swap_other", "remark",
+  "season_end", "age_skip", "longevity", "swap_other", "remark", "money_season",
 ]);
 const marks = (e: Effect | undefined): boolean => !!e && !!(e.buy || e.sell || e.lifestyle || e.deposit || e.withdraw || e.lend || e.give || e.insure || e.uninsure || e.support || e.flags?.length || e.unflags?.length || e.later || e.memory || e.secret || e.promise || e.close_doors?.length || e.trust || e.custom || e.game || e.plant || e.income_mult !== undefined || (e.money !== undefined && e.money !== 0) || (e.counters && Object.keys(e.counters).length) || (e.gamble && (marks(e.gamble.win) || marks(e.gamble.lose))));
 const customParts = (e: Effect): string[] => (e.custom ? e.custom.split("|") : []);

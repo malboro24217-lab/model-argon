@@ -298,6 +298,8 @@ details.fold>.fb{display:flex;flex-direction:column;gap:8px;padding:2px 0 6px}
 .e.promise{color:var(--ochre)}
 .e.door{color:var(--seal);font-weight:500}
 .e.door .st{font-size:11.5px;font-weight:700;border:1.5px solid var(--seal);border-radius:2px;padding:0 5px;margin-right:8px;display:inline-block;transform:rotate(-2deg)}
+.e.other{font-style:italic;color:var(--pen)}
+.e.other .st{font-style:normal;font-size:11.5px;font-weight:700;border:1.5px dashed currentColor;border-radius:2px;padding:0 5px;margin-right:8px;display:inline-block;transform:rotate(1.5deg)}
 .more{border:0;background:none;color:var(--pen);font-weight:500;padding:10px 0;text-align:left;min-height:40px}
 
 /* ===== Tiền ===== */
@@ -401,9 +403,17 @@ details.panel[open]>summary .label::after{content:" −"}
 /* ===== Giai đoạn 1: dán vào cuối <style> trong doi-nguoi/index.html (trước khối @media điện thoại) ===== */
 
 /* Dòng "↩ Vì năm…" trên tiêu đề thẻ */
-.because{display:flex;gap:8px;align-items:baseline;font-family:var(--f-story);font-style:italic;font-size:15px;color:var(--pen);margin:-4px 0 -6px;max-width:62ch}
-.because-mark{font-style:normal;font-weight:700;flex:none}
-.decision.micro .because{font-size:14px}
+.because{margin:-6px 0 0;font-size:13.5px;color:var(--muted);max-width:62ch}
+.because summary{display:flex;flex-wrap:wrap;gap:0 6px;align-items:baseline;cursor:pointer;list-style:none;width:fit-content}
+.because summary::-webkit-details-marker{display:none}
+.because-mark{font-weight:700;color:var(--pen);flex:none}
+.because-more{color:var(--pen);text-decoration:underline;text-underline-offset:2px}
+.because-more::before{content:"·";color:var(--muted);margin-right:6px;display:inline-block;text-decoration:none}
+.because[open] .because-more{font-weight:600}
+.because-body{margin:6px 0 2px;padding:0 0 0 18px;font-family:var(--f-story);font-size:14.5px;line-height:1.5;color:var(--print)}
+.because-body li{margin:3px 0}
+.because-ev{display:block;font-family:var(--f-ui);font-size:13px;color:var(--muted)}
+.decision.micro .because{font-size:13px}
 
 /* Báo "X sẽ nhớ điều này." */
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:50;max-width:min(92vw,520px);
@@ -411,6 +421,12 @@ details.panel[open]>summary .label::after{content:" −"}
   padding:9px 14px;font-family:var(--f-story);font-style:italic;font-size:15.5px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
 .toast.bad{color:var(--seal);border-left-color:var(--seal)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+/* Thẻ chung kết của mùa: không chặn, tự tắt, bấm để tắt sớm; nổi trên cả chế độ đường hầm; nằm trên chỗ của toast, không che thanh điều khiển */
+.landing-card{position:fixed;left:50%;bottom:calc(var(--dock-h,0px) + 76px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:51;width:min(92vw,520px);background:var(--sheet);color:var(--print);border:1px solid var(--rule);border-left:5px solid var(--season-mark,var(--pen));border-radius:3px;box-shadow:var(--shadow);padding:10px 14px 11px;opacity:0;transition:opacity .3s,transform .3s;cursor:pointer}
+.landing-card.show{opacity:1;transform:translate(-50%,0)}
+.landing-card .lc-h{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted);margin:0 0 3px}
+.landing-card .lc-t{font-family:var(--f-story);font-style:italic;font-size:15.5px;line-height:1.45;margin:0}
+@media (prefers-reduced-motion:reduce){.landing-card{transition:none}}
 html.playing .toast{bottom:calc(var(--dock-h,0px) + 12px + env(safe-area-inset-bottom,0px))}
 
 /* Thẻ thập kỷ trong nhật ký */
@@ -494,7 +510,8 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
   .sb-head{grid-area:head;flex-wrap:nowrap}
   .sb-t{font-size:17.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sb-n{font-size:12.5px}
-  .sb-kind,.sb-beat{display:none}
+  .sb-beat{display:none}
+  .sb-kind{font-size:10.5px;padding:0 4px;flex:none} .sb-kf{display:none}
   .sb-meta{grid-area:meta;font-size:12.5px;gap:2px 10px}
   .sb-track{grid-area:track;height:3px;margin-top:0}
   body.pending .season-banner{padding:6px 12px 8px;margin-top:8px}
@@ -624,7 +641,144 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
 </style>
 
 <div class="wrap" id="app"></div>
-<script id="canonui"></script>
+<script id="canonui">
+/* ================= MÙA: giao diện (canon event, Task 8a) =================
+   Màu nhấn theo mùa đang chạy, banner "Mùa N: …", ô chọn "Độ điên" trong menu.
+   Chỉ ĐỌC dữ liệu host do canon.js ghi: L.lw.season = { id, from, end, … } | null, L.lw.canon.seasons, L.weird (0|1|2).
+   Tên và màu mùa lấy qua canonSeasonDef(id) (phase1.js), tức seasonDef(id) của canon.js.
+   Mọi hàm an toàn khi chưa có document / Argon / L.lw (không ném lỗi, không vẽ gì).
+
+   API
+     seasonTheme(L)   → đặt body[data-season], body[data-weird] và biến --season, --season-ink-l/-d (chữ, ≥ 4,5), --season-mark-l/-d
+                        (vạch, viền, thanh tiến độ, ≥ 3) cho giấy sáng / tối; L không có mùa thì gỡ hết
+     seasonBanner(L)  → điền #season-banner ("Mùa N: tên" + khoảng tuổi + năm thứ mấy + nhịp); không có mùa thì ẩn
+     seasonNotes(L)   → thẻ chung kết (L.uiNotes, canon.js ghi lúc mùa đáp xuống): hiện một thẻ nhỏ không chặn, tự tắt; không phải quyết định
+     weirdMenu(L)     → ô chọn Độ điên trong menu (#weirdBox); đổi thì gọi window.setWeird(G.life, v) (Task 8b, qua uiOp);
+                        chưa có window.setWeird thì ẩn ô
+*/
+const WEIRD_LEVELS = [[0, "Đời thật", "Không có chuyện kỳ dị: chỉ những mùa có thể xảy ra ngoài đời."], [1, "Phim", "Thỉnh thoảng đời rẽ sang một mùa kỳ dị, như trong phim."], [2, "Điên", "Chuyện kỳ dị đến thường hơn."]];
+const _SEASON_VARS = ["--season", "--season-ink-l", "--season-ink-d", "--season-mark-l", "--season-mark-d"];
+/* Nền giấy hai giao diện (khớp :root trong index.html): chữ màu mùa phải đọc được trên cả paper lẫn sheet. */
+const _SEASON_BG = { l: ["#E3E8E1", "#F6F8F3", "#ECF0E9"], d: ["#0F1512", "#18201C", "#1F2924"] };
+const _SEASON_TO = { l: "#24302B", d: "#DCE5DE" };
+
+function _hexRgb(h) { return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function _lum(h) { const c = _hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+function _contrast(a, b) { const x = _lum(a), y = _lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+function _hsl(h) {
+  const [r, g, b] = _hexRgb(h).map(v => v / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  if (!d) return [0, 0, l];
+  const s = d / (1 - Math.abs(2 * l - 1)), hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [(hh * 60 + 360) % 360, s, l];
+}
+function _hslHex(h, s, l) {
+  const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+  const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+  return "#" + [r, g, b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, "0")).join("");
+}
+/* Màu mùa đọc được trên giấy của một giao diện: giữ sắc độ (hue, độ bão hòa), chỉ đổi độ sáng
+   (giấy sáng: tối dần, giấy tối: sáng dần) tới khi tương phản ≥ min trên mọi nền giấy.
+   min 4,5 cho chữ (seasonInk), 3 cho vạch, viền, thanh tiến độ (seasonMark). */
+function seasonInk(hex, theme, min) {
+  const bg = _SEASON_BG[theme], need = min || 4.5, ok = c => bg.every(b => _contrast(c, b) >= need);
+  if (ok(hex)) return hex.toLowerCase();
+  const [h, s, l0] = _hsl(hex), dir = theme === "d" ? 1 : -1;
+  for (let l = l0; l >= 0 && l <= 1; l += dir * 0.01) { const c = _hslHex(h, s, Math.min(1, Math.max(0, l))); if (ok(c)) return c; }
+  return _SEASON_TO[theme];
+}
+function seasonMark(hex, theme) { return seasonInk(hex, theme, 3); }
+function _seasonNow(L) {
+  const s = L && L.alive !== false && L.lw && L.lw.season;
+  if (!s || !s.id || typeof canonSeasonDef !== "function") return null;
+  const def = canonSeasonDef(s.id);
+  return def ? { s, def } : null;
+}
+
+function seasonTheme(L) {
+  if (typeof document === "undefined" || !document.body) return;
+  const b = document.body, now = _seasonNow(L), hex = now && /^#[0-9a-f]{6}$/i.test(now.def.color) ? now.def.color : null;
+  if (!hex) {
+    if (b.dataset.season != null) { delete b.dataset.season; delete b.dataset.weird; for (const p of _SEASON_VARS) b.style.removeProperty(p); }
+    return;
+  }
+  if (b.dataset.season === now.def.id) return;
+  b.dataset.season = now.def.id;
+  if (now.def.weird) b.dataset.weird = now.def.weird; else delete b.dataset.weird;
+  b.style.setProperty("--season", hex);
+  b.style.setProperty("--season-ink-l", seasonInk(hex, "l"));
+  b.style.setProperty("--season-ink-d", seasonInk(hex, "d"));
+  b.style.setProperty("--season-mark-l", seasonMark(hex, "l"));
+  b.style.setProperty("--season-mark-d", seasonMark(hex, "d"));
+}
+
+function seasonBanner(L) {
+  if (typeof document === "undefined") return;
+  const el = document.getElementById("season-banner"); if (!el) return;
+  const now = _seasonNow(L);
+  if (!now || !L.alive) { el.hidden = true; el.innerHTML = ""; delete el.dataset.key; return; }
+  const { s, def } = now, E = typeof esc === "function" ? esc : (x => String(x));
+  const n = Number.isInteger(s.n) && s.n > 0 ? s.n : ((L.lw.canon && L.lw.canon.seasons) || []).length + 1;
+  const from = Number.isFinite(s.from) ? s.from : L.age, end = Number.isFinite(s.end) && s.end > from ? s.end : null;
+  // Năm vào mùa là "năm 1" (không có "năm 0"); không vượt quá độ dài mùa.
+  const len = end ? end - from : 0, yr = Math.max(1, Math.min(len || Infinity, L.age - from + 1));
+  const bi = L.lw.counters && L.lw.counters.season_beat;
+  const beat = typeof Argon !== "undefined" && Argon.BEATS && Argon.BEAT_VN && Number.isInteger(bi) ? Argon.BEAT_VN[Argon.BEATS[Math.min(bi, Argon.BEATS.length - 1)]] || "" : "";
+  // Nhãn loại nhánh: điện thoại chỉ hiện phần ngắn ("viễn tưởng" / "phi lý") để mùa kỳ dị không chỉ khác nhau ở màu.
+  const kind = def.weird === "sf" ? "<span class=\"sb-kf\">nhánh </span>viễn tưởng" : def.weird === "abs" ? "<span class=\"sb-kf\">nhánh </span>phi lý" : "";
+  const ages = end ? `${from}–${end} tuổi` : `từ ${from} tuổi`;
+  const pct = len ? Math.round(yr / len * 100) : 0;
+  el.setAttribute("aria-label", `Mùa ${n}: ${def.vn}, ${ages}`);
+  el.innerHTML = `<div class="sb-head"><h2 class="sb-t"><span class="sb-n">Mùa ${n}:</span> <span class="sb-name">${E(def.vn)}</span></h2>${kind ? `<span class="sb-kind">${kind}</span>` : ""}</div>
+    <div class="sb-meta"><span class="sb-ages">${ages}</span>${len ? `<span class="sb-yr">năm ${yr}/${len}</span>` : ""}${beat ? `<span class="sb-beat">${E(beat)}</span>` : ""}</div>
+    ${len ? `<div class="sb-track" aria-hidden="true"><i style="width:${pct}%"></i></div>` : ""}`;
+  const key = s.id + "@" + from;
+  if (el.dataset.key !== key) { el.dataset.key = key; el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter"); }
+  el.hidden = false;
+}
+
+function weirdMenu(L) {
+  if (typeof document === "undefined") return;
+  const box = document.getElementById("weirdBox"); if (!box) return;
+  const v = L && (L.weird === 0 || L.weird === 1 || L.weird === 2) ? L.weird : 1;
+  const has = typeof window !== "undefined" && typeof window.setWeird === "function";
+  if (!has) { box.hidden = true; return; }   // chưa có setWeird (Task 8b): không hiện một ô bấm không được
+  const can = !!L && L.alive !== false && !L.replay;
+  let sel = box.querySelector("select");
+  if (!sel) {
+    box.innerHTML = `<label for="weirdSel">Độ điên</label><select id="weirdSel">${WEIRD_LEVELS.map(([k, n, h]) => `<option value="${k}" title="${h}">${n}</option>`).join("")}</select>`;
+    sel = box.querySelector("select");
+    sel.onchange = () => {
+      const life = typeof G !== "undefined" && G ? G.life : L, nv = +sel.value;
+      if (typeof window.setWeird === "function" && life) window.setWeird(life, nv);
+      weirdMenu(life);
+    };
+  }
+  if (document.activeElement !== sel) sel.value = String(v);
+  sel.disabled = !can;
+  const lv = WEIRD_LEVELS.find(x => x[0] === v);
+  box.title = can ? lv[2] : "Độ điên chưa đổi được lúc này.";   // đời đã hết hoặc đang tua lại
+  box.hidden = false;
+}
+
+/* Thẻ chung kết: mỗi ghi chú hiện đúng một lần (đánh dấu shown trên ghi chú, không đụng mô phỏng). Không chặn đồng hồ, không nhận phím. */
+function seasonNotes(L) {
+  if (typeof document === "undefined" || !document.body || !L || !Array.isArray(L.uiNotes)) return;
+  const note = L.uiNotes.find(x => x && !x.shown && x.kind === "landing"); if (!note) return;
+  note.shown = true;
+  const E = typeof esc === "function" ? esc : (x => String(x));
+  let el = document.getElementById("landing-card");
+  if (!el) { el = document.createElement("div"); el.id = "landing-card"; el.className = "landing-card"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); document.body.appendChild(el); el.onclick = () => el.classList.remove("show"); }
+  const kind = note.weird === "sf" ? " · nhánh viễn tưởng" : note.weird === "abs" ? " · nhánh phi lý" : "";
+  el.innerHTML = `<p class="lc-h">${note.n ? `Mùa ${note.n} khép lại` : "Một mùa khép lại"}: ${E(note.vn)}${kind}</p><p class="lc-t">${E(note.line)}</p>`;
+  if (/^#[0-9a-f]{6}$/i.test(note.color || "")) {
+    const th = document.documentElement.dataset.theme, dark = th === "dark" || (th !== "light" && typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches);
+    el.style.borderLeftColor = seasonMark(note.color, dark ? "d" : "l");
+  }
+  el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+  clearTimeout(seasonNotes.t); seasonNotes.t = setTimeout(() => el.classList.remove("show"), 7000);
+}
+
+</script>
 
 <script id="engine">
 /* ================= DỮ LIỆU =================
@@ -826,8 +980,8 @@ function lifeExp(c,sex){return Math.round(c.le+(sex==="F"?2.4:-2.4))}
 
 /* ================= TẠO MỘT CUỘC ĐỜI ================= */
 function randomCountry(r){return pickWeighted(r,COUNTRIES,c=>c.b)}
-function makeName(r,c,sex){const p=NAMES[c.nm];const g=pick(r,p[sex]),s=pick(r,(sex==="F"&&p.SF)||p.S);return p.first===false?`${s} ${g}`:`${g} ${s}`}
-function spouseName(r,c,sex){const p=NAMES[c.nm];return pick(r,p[sex==="M"?"F":"M"])}
+function makeName(r,c,sex){const p=NAMES[c.nm];const one=()=>{const g=pick(r,p[sex]),s=pick(r,(sex==="F"&&p.SF)||p.S);return p.first===false?`${s} ${g}`:`${g} ${s}`};let n=one();for(let k=0;k<8&&typeof nameBlocked==="function"&&nameBlocked(n);k++)n=one();return n}
+function spouseName(r,c,sex,L){const p=NAMES[c.nm],pool=p[sex==="M"?"F":"M"];return L&&typeof freshGiven==="function"?freshGiven(L,r,pool):pick(r,pool)}
 
 function createLife(seed,opts={}){
   const r=makeRng(seed);
@@ -861,7 +1015,7 @@ const FOCI={
 function availableFoci(L){if(L.age<6)return["play"];return["study","work","family","health","rest"]}
 function defaultFocus(L){if(L.age<6)return"play";if(L.school.in)return"study";const r=L.ra();if(L.st.health<40)return"health";if(L.married&&r<.35)return"family";return r<.6?"work":r<.8?"family":"health"}
 
-function deathQ(L){const x=L.age;let q=qBase(L.c,x,lnAFor(L.c,L.sex));
+function deathQ(L){if(L.longevity&&L.age>=125)return 1;const x=typeof bioAge==="function"?bioAge(L):L.age;let q=qBase(L.c,x,lnAFor(L.c,L.sex));
   if(x<5)q*=Math.exp((0.5-L.fam)*0.9);
   else q=1-Math.exp(Math.log(1-Math.min(q,.999))*Math.exp((refHealth(x)-L.st.health)/30));
   if(L.ill&&!L.ill.treated)q=Math.min(1,q+L.ill.risk);
@@ -901,7 +1055,7 @@ function applyFocus(L){switch(L.focus){
 function refHealth(x){return x<35?68:68-0.045*Math.pow(x-35,1.6)}
 function growth(L){const x=L.age;
   if(x<18)addSt(L,"health",(70-L.st.health)*.08);
-  else addSt(L,"health",(refHealth(x)-L.st.health)*.08);
+  else addSt(L,"health",(refHealth(typeof bioAge==="function"?bioAge(L):x)-L.st.health)*.08);
   addSt(L,"rel",(50-L.st.rel)*.03);
   if(L.ill&&!L.ill.treated)addSt(L,"health",-3);
   if(x>=3&&x<6)addSt(L,"know",1.5+L.fam);
@@ -982,7 +1136,7 @@ function lifeEvents(L){const r=L.r,x=L.age,c=L.c;
     ["Một trận lũ quét qua vùng bạn sống.","happy",-7,"bad",c.g<20000],["Bạn đi chơi xa lần đầu tiên.","happy",5,"good"]]);
     if(ev[4]!==false){log(L,ev[0],ev[3]);addSt(L,ev[1],ev[2])}}
 }
-function bornChild(L){const r=L.r,c=L.c,x=L.age;const k={name:pick(r,NAMES[c.nm][r()<.5?"M":"F"]),born:x,alive:true};L.kids.push(k);Argon.addCastMember(L.ar.state,L.lw.cast,L.ar.rng,"child",k.name,-x,0.6);
+function bornChild(L){const r=L.r,c=L.c,x=L.age;const pool=NAMES[c.nm][r()<.5?"M":"F"];const k={name:typeof freshGiven==="function"?freshGiven(L,r,pool):pick(r,pool),born:x,alive:true};L.kids.push(k);Argon.addCastMember(L.ar.state,L.lw.cast,L.ar.rng,"child",k.name,-x,0.6);
   log(L,`Con bạn ra đời: bé ${k.name}.`,"good big");addSt(L,"happy",6);addSt(L,"rel",4);
   if(L.sex==="F"&&r()<maternalRisk(c))die(L,"biến chứng khi sinh con");return k}
 function lifePassive(L){const r=L.r,x=L.age,c=L.c;
@@ -998,7 +1152,7 @@ function lifePassive(L){const r=L.r,x=L.age,c=L.c;
 function lifeDecision(L){const r=L.r,x=L.age,c=L.c;if(L.pending||!L.alive)return;
   // hôn nhân
   if(!L.married&&x>=17&&x<=45){const early=c.g<8000?.05:0;const p=(x<20?.02:.04)+early+L.st.rel/100*.14-(x>35?.04:0);
-    if(r()<p){const nm=spouseName(r,c,L.sex);L.pending={id:"marry",data:nm,title:`Bạn và ${nm}`,
+    if(r()<p){const nm=spouseName(r,c,L.sex,L);L.pending={id:"marry",data:nm,title:`Bạn và ${nm}`,
       text:`Hai người quen nhau đã lâu và nghĩ đến chuyện kết hôn.`,choices:[{label:"Kết hôn",hint:"+hạnh phúc, +quan hệ"},{label:"Chưa phải lúc",hint:"Có thể gặp người khác sau"}],def:0};return}}
   // di cư
   if(!L.migrated&&!L.flags.migAsked&&x>=21&&x<=40&&c.g<25000&&L.job&&r()<.035*({bold:2.2,curious:1.4,kind:.7,tough:1}[temperOf(L)]||1)){L.flags.migAsked=true;
@@ -22671,7 +22825,7 @@ var Argon = (() => {
     let [lo, hi] = def.years, r = Math.min(Math.max(rngNext, 0), 0.999999), len = Math.min(hi, lo + Math.floor(r * (hi - lo + 1)), SEASON_END_MAX - age);
     return Math.max(SEASON_MIN, len);
   }
-  var beatGap = (len) => Math.max(1, Math.round(len / 4)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child"]);
+  var beatGap = (len) => Math.max(1, Math.round(len / 4)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child", "swap_other"]);
   function isDurable(e) {
     return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || p.startsWith("marry:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
   }
@@ -37009,6 +37163,20 @@ function livingInit(L) {
   { const urbanShare = clamp(0.1 + 0.28 * Math.log10(Math.max(900, L.c.g) / 800), 0.15, 0.85); const urban = rng.next() < urbanShare; const o = L.fam > 0.75 ? "rich" : L.fam < 0.4 ? (urban ? "poor_urban" : "poor_rural") : "middle"; L.lw.sflags.add("origin_" + o); L.lw.sflags.add(urban ? "urban" : "rural"); L.origin = o; }
   canonInit(L);
 }
+/* Tên người thật nổi tiếng mà các bể tên có thể ghép ra (không dùng cho bất kỳ ai trong game). So không dấu, không hoa, cả hai thứ tự. */
+const REAL_NAMES = new Set(["joseph kabila", "laurent kabila", "felix tshisekedi", "nelson mandela", "jacob zuma", "cyril ramaphosa", "barack obama", "michelle obama", "donald trump", "joe biden", "kamala harris", "bill clinton", "hillary clinton", "george bush",
+  "vladimir putin", "xi jinping", "mao zedong", "kim jong un", "kim jong il", "kim il sung", "shinzo abe", "narendra modi", "indira gandhi", "rahul gandhi", "imran khan", "angela merkel", "emmanuel macron", "boris johnson",
+  "elon musk", "jeff bezos", "bill gates", "mark zuckerberg", "taylor swift", "michael jackson", "lionel messi", "cristiano ronaldo", "mohamed salah", "jackie chan", "bruce lee", "ho chi minh", "vo nguyen giap", "lee kuan yew",
+  "fidel castro", "raul castro", "hugo chavez", "jair bolsonaro", "paul kagame", "william ruto", "yoweri museveni", "abiy ahmed", "muhammadu buhari", "bola tinubu", "recep erdogan", "lee jae myung", "moon jae in", "park chung hee"]);
+function nameKey(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toLowerCase().replace(/[^a-z]+/g, " ").trim(); }
+/** true nếu họ tên trùng một người thật nổi tiếng (bất kể thứ tự họ / tên). */
+function nameBlocked(name) { const k = nameKey(name); if (!k) return false; return REAL_NAMES.has(k) || REAL_NAMES.has(k.split(" ").reverse().join(" ")); }
+/** Tên gọi cho người mới trong nhà (con, bạn đời): rút như cũ; chỉ khi trùng tên gọi đang có chủ mới rút thêm một lần trong phần còn trống. */
+function freshGiven(L, r, pool) {
+  let n = pick(r, pool); if (!L || !L.lw) return n;
+  const taken = freeTier(L, pool); if (!taken.has(n)) return n;   // tránh chặt nhất mà bể tên còn cho phép (xem nameTiers ở canon.js)
+  const free = pool.filter(x => !taken.has(x)); return free.length ? free[Math.floor(r() * free.length)] : n;
+}
 function ROLE_SEX_OF(role, rng) { return role === "mother" ? "F" : (role === "father" || role === "bully" || role === "official") ? "M" : (rng.next() < 0.5 ? "M" : "F"); }
 function castName(L, id) { if (isCanonKey(id)) return canonName(L, id); const m = L.lw && L.lw.cast.get(id); if (m) return m.name; const n = L.ar && L.ar.state.npcs.get(id); return n ? n.name : "ai đó"; }
 function castRole(L, r) { return Argon.byRole(L.lw.cast, r); }
@@ -37048,7 +37216,8 @@ function factContext(L) {
 /* ---- Hiệu ứng khai báo → thế giới ---- */
 function applyEffect(L, e, npcId) {
   e = canonOnEffect(L, e);   // áp lực, vật gài, kết mùa trước khi tính tiền của chung kết
-  const s = L.ar.state, yearly = Math.max(300, householdIncome(L)), ctxNpc = id => (id && s.npcs.get(id)) || (npcId && s.npcs.get(npcId));
+  // R24: tiền thưởng / phạt (money:<x>, cược) tính trên lương gốc, không nhân hệ số mùa.
+  const s = L.ar.state, yearly = seasonYearlyBase(L), ctxNpc = id => (id && s.npcs.get(id)) || (npcId && s.npcs.get(npcId));
   if (e.gamble) { const win = L.r() < e.gamble.p; applyEffect(L, { ...e, gamble: undefined, log: undefined }, npcId); applyEffect(L, win ? e.gamble.win : e.gamble.lose, npcId); return; }
   if (e.game) { const npc = ctxNpc(e.game.npc); if (npc) { const r = argonPlay(L, npc, e.game.move, yearly * e.game.stake_frac, npc.id); const o = r.outcome;
       log(L, `${e.log ? e.log + ". " : ""}${npc.name} ${o.npcMove === "cooperate" ? "chơi thật" : "chơi xấu"} → ${AR.CELL_VN[o.cell]}: bạn ${o.payoffA.capital >= 0 ? "nhận" : "mất"} ${fmtPPP(Math.abs(o.payoffA.capital))}${o.breach_detected ? " (bạn phát hiện kịp)" : ""}.`, o.cell === "win_win" || o.cell === "arbitrage" ? "good" : o.cell === "sucker" || o.cell === "mutual_destruction" ? "bad" : "");
@@ -37106,7 +37275,7 @@ function leaveSpouse(m, quiet) {
 function roleVN(m) { return (m && ((m.role === "season" && m.label) || LW.ROLE_VN[m.role] || m.label)) || "người quen"; }   // người của mùa: nhãn riêng ("bà chủ vựa phế liệu")
 /** Cưới một người đã có trong dàn nhân vật (R20): thêm vai spouse cho chính người đó, không tạo NPC mới. */
 function marryMember(L, m) {
-  for (const o of L.lw.cast.values()) if (o !== m && (o.roles.includes("spouse") || o.role === "spouse")) leaveSpouse(o, true);
+  for (const o of L.lw.cast.values()) if (o !== m && o.alive && (o.roles.includes("spouse") || o.role === "spouse")) leaveSpouse(o, true);   // bạn đời đã mất vẫn là bạn đời đã mất, không thành "người cũ"
   // Vai chính thành spouse: ageCast báo cái chết theo m.role, nên người này mất thì bạn góa như mọi bạn đời khác.
   m.role = "spouse"; m.roles = m.roles.filter(r => r !== "season"); if (!m.roles.includes("spouse")) m.roles.push("spouse");
   L.married = true; L.spouse = m.name; L.flags.marriedAt = L.age; L.lw.counters.married_years = 0;
@@ -37115,7 +37284,7 @@ function marryMember(L, m) {
   log(L, `Bạn kết hôn với ${m.name}.`, "good big"); addSt(L, "happy", 10); addSt(L, "rel", 8);
 }
 function customEffect(L, c, npcId) {
-  const s = L.ar.state, yearly = Math.max(300, householdIncome(L));
+  const s = L.ar.state, yearly = seasonYearlyBase(L);   // R24: borrow / repay tính trên lương gốc
   if (c.includes("|")) { for (const part of c.split("|")) customEffect(L, part, npcId); return; }
   const [kind, arg] = c.split(":"); const x = +arg || 0;
   if (canonCustom(L, kind, arg)) return;
@@ -37138,7 +37307,7 @@ function customEffect(L, c, npcId) {
       const cands = arg ? [...L.lw.cast.values()].filter(x => x.alive && x.name === arg && !fam.has(x.role)) : [];
       const m = cands.find(x => sc.has(x.id)) || cands[0];
       if (arg && L.married && [...L.lw.cast.values()].some(x => x.alive && x.role === "spouse" && x.name === arg)) break;   // đã cưới chính người này
-      if (m) marryMember(L, m); else resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex) }, 0, L.r, L.c); break; }
+      if (m) marryMember(L, m); else resolveCore(L, { id: "marry", data: arg || spouseName(L.r, L.c, L.sex, L) }, 0, L.r, L.c); break; }
     case "have_child": bornChild(L); break;
     case "retire": { L.retired = true; const pen = L.c.g > 30000 ? .55 : L.c.g > 10000 ? .35 : .1; L.income *= pen; log(L, "Bạn nghỉ hưu sớm.", "big"); break; }
     case "migrate_now": { L.flags.migAsked = true; const dest = pickWeighted(L.r, COUNTRIES.filter(d => d.g > L.c.g * 1.5 && d.g > 15000), d => d.b + (d.g > 40000 ? 1 : 0)); if (dest) resolveCore(L, { id: "migrate", data: dest.id }, 0, L.r, L.c); else log(L, "Không tìm được nơi nào nhận bạn.", "bad"); break; }
@@ -37160,7 +37329,7 @@ function syncFromArgon(L) { const A = L.ar, a = A.state.capitals.capitalAssets, 
 /* ---- Storylet → cảnh ---- */
 function sceneFromStorylet(L, st, ctx) {
   const view = st.build(ctx, id => castName(L, id));
-  const yearly = Math.max(300, householdIncome(L)), u = yearly * 0.15;
+  const yearly = seasonYearlyBase(L), u = yearly * 0.15;
   const npcId = view.npc;
   const choices = view.choices.map(ch => ({ label: ch.label, hint: ch.hint || "", tier: ch.tier, longterm: ch.longterm, _fx: ch.effects, fx: L2 => applyEffect(L2, ch.effects, npcId) }));
   let matrix = null;
@@ -37183,6 +37352,17 @@ function runDueCustoms(L) {
   for (let qi = 0; qi < q.length;) { const it = q[qi]; if (it.at <= L.age && it.custom) { q.splice(qi, 1); customEffect(L, it.custom); if (L.pending) return true; } else qi++; }
   return false;
 }
+/** Dàn nhân vật già thêm một năm ở tuổi L.age (luồng npc): người mất, đổ bệnh, khỏe lại. livingYear và age_skip (canon.js) dùng chung. */
+function castYear(L) {
+  const lw = L.lw;
+  for (const ev of Argon.ageCast(lw.cast, L.age, L.ar.rng, L.c.g < 8000)) {
+    const r = roleVN(lw.cast.get(ev.id) || { role: ev.role });
+    if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
+      if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
+    else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
+    else log(L, `${ev.name} (${r}) khỏe lại.`, "good");
+  }
+}
 /* ---- Một năm của mạng lưới sống. Gọi từ lifeEvents. Trả về true nếu đã đặt L.pending ---- */
 function livingYear(L) {
   livingInit(L);
@@ -37193,13 +37373,7 @@ function livingYear(L) {
   habitYear(L);
   seasonYearly(L);   // luật năm của mùa: mỗi năm một lần, kể cả năm bận
   // 1. Dàn nhân vật già đi
-  for (const ev of Argon.ageCast(lw.cast, L.age, rng, L.c.g < 8000)) {
-    const r = roleVN(lw.cast.get(ev.id) || { role: ev.role });
-    if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
-      if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
-    else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
-    else log(L, `${ev.name} (${r}) khỏe lại.`, "good");
-  }
+  castYear(L);
   // 2. Người phụ thuộc: tiền chảy ra
   const deps = Argon.dependentCosts(lw.cast, L.age, L.c.g > 30000); const yearly = Math.max(300, householdIncome(L));
   let depTotal = 0; for (const d of deps) depTotal += d.frac * supportMult(L, d.role) * yearly;
@@ -37266,7 +37440,7 @@ function eulogyVN(L) {
   const yrs = n => (n / 4).toFixed(0);
   const p1 = V.ticks_sovereign === 0 && V.agency_peak < 0.3
     ? `Bạn sống ${L.age} năm ở ${L.c.n}${L.migrated ? `, xa nơi sinh là ${L.birthC.n}` : ""}, và phần lớn thời gian ấy là kịch bản sống bạn chứ không phải bạn sống nó. ${V.crises_survived ? `${V.crises_survived} lần khủng hoảng gõ cửa; mỗi lần bạn tỉnh một chút rồi guồng quay lại kéo về.` : "Không có cú đánh nào đủ mạnh để bạn phải nhìn lại."} ${V.ticks_rat_race > 8 ? `Có ${yrs(V.ticks_rat_race)} năm bạn chạy chỉ để đứng yên.` : ""}`
-    : `Bạn sống ${L.age} năm ở ${L.c.n}. ${yrs(V.ticks_autopilot)} năm đầu là của người khác: của làng, của nhà, của những điều ai cũng làm. Rồi ${V.crises_survived ? `sau ${V.crises_survived} lần khủng hoảng` : "dần dần"}, bạn bắt đầu thấy luật chơi, và ${yrs(V.ticks_sovereign)} năm cuối cùng bạn tự viết lấy phần mình${V.relapses ? `, dù có ${V.relapses} lần suýt trượt về` : ""}.`;
+    : `Bạn sống ${L.age} năm ở ${L.c.n}. ${+yrs(V.ticks_autopilot) > 0 ? `${yrs(V.ticks_autopilot)} năm đầu là của người khác: của làng, của nhà, của những điều ai cũng làm. Rồi ` : "Từ rất sớm, "}${V.crises_survived ? `sau ${V.crises_survived} lần khủng hoảng` : "dần dần"}, bạn bắt đầu thấy luật chơi${+yrs(V.ticks_sovereign) > 0 ? `, và ${yrs(V.ticks_sovereign)} năm cuối cùng bạn tự viết lấy phần mình` : ", dù chưa kịp sống trọn năm nào theo luật của riêng mình"}${V.relapses ? `, dù có ${V.relapses} lần suýt trượt về` : ""}.`;   // không bao giờ "0 năm"
   const p2 = `${S.rounds ? `Bạn ngồi vào ${S.rounds} ván với người khác và để lại ${S.net_systemic_surplus >= 0 ? "thêm " : "ít hơn "}${fmtPPP(Math.abs(S.net_systemic_surplus))} cho tất cả những người ngồi cùng bàn, trên ${fmtPPP(S.potential_surplus)} có thể có nếu ai cũng thật.` : "Bạn ít khi ngồi vào bàn với ai."} ${prospered.length ? `${prospered.join(", ")} khá lên nhờ có bạn.` : ""} ${preyed.length ? `${preyed.join(", ")} khá lên trên lưng bạn.` : ""} ${bankrupt.length ? `${bankrupt.join(", ")} trắng tay, và một phần là vì bạn.` : ""} ${friends.length ? `${friends.join(", ")} tin bạn đến cuối.` : ""} ${enemies.length ? `${enemies.join(", ")} thì không bao giờ.` : ""}`;
   const p3 = `Khi nấm mộ đã xanh cỏ, ${L.c.g < 8000 ? "làng" : "khu phố"} nhớ gì về bạn? ${good ? `Người ta nhớ ${good.note || LW.TAG_VN[good.tag]}.` : ""} ${bad ? `Người ta cũng nhớ ${bad.note || LW.TAG_VN[bad.tag]}.` : ""} ${!good && !bad ? "Không nhiều. Bạn là một người đi qua, và ở nơi này điều đó không hiếm." : R.reputation_final >= 65 ? `Tên bạn được nhắc khi người ta cần ví dụ về một người tử tế.` : R.reputation_final <= 35 ? `Tên bạn được nhắc khi người ta dặn con cẩn thận.` : "Tên bạn được nhắc, thỉnh thoảng, không tốt không xấu."}`;
   const own = (L.actLog || []).filter(a => a.kind === "proactive").map(a => ({ a, m: L.lw.cz.marks.find(m => m.key === a.key) })).filter(x => x.m)
@@ -37496,13 +37670,14 @@ function metaApply(L, m) { if (!m || !m.lives) return; const codex = Array.isArr
   if (m.perks.includes("mentor")) { const me = castRole(L, "mentor"); if (me) Argon.setEdge(L.ar.state.graph, me.id, "player", 0.5, 0); }
   L.perks = m.perks.slice(); }
 
-/* ---- Thao tác giao diện có đổi trạng thái: thẩm định (tốn băng thông), mức sống, sống dưới mức thu nhập ----
+/* ---- Thao tác giao diện có đổi trạng thái: thẩm định (tốn băng thông), mức sống, sống dưới mức thu nhập, Độ điên ----
    Đi qua uiOp để được ghi vào actLog (kind "ui", kèm số lựa chọn đã có lúc bấm); bản tua lại áp lại đúng chỗ đó. */
 function applyUiOp(L, op) {
   if (!op || !L.ar) return false;
   if (op.t === "dd") return dueDiligence(L, op.key, op.cost);
   if (op.t === "ly") { if (!canHandleMoney(L)) return false; moneyEffect(L, { lifestyle: op.v }); return true; }
   if (op.t === "frugal") { L.ar.frugal = !!op.v; return true; }
+  if (op.k === "weird") { if (!(op.v === 0 || op.v === 1 || op.v === 2)) return false; L.weird = op.v; return true; }   // setWeird (canon.js)
   return false;
 }
 function uiOp(L, op) {
@@ -37553,7 +37728,7 @@ function clampFx(fx) {
   return o;
 }
 function applyFx(L, fx, npcMap) {
-  const yearly = Math.max(300, householdIncome(L));
+  const yearly = typeof seasonYearlyBase === "function" ? seasonYearlyBase(L) : Math.max(300, householdIncome(L));   // R24
   const tone = (fx.money || 0) < 0 || (fx.health || 0) < 0 || (fx.happy || 0) < -5 ? "bad" : (fx.money || 0) > 0 || (fx.happy || 0) > 5 ? "good" : "";
   if (fx.game && L.ar) { const npc = npcMap[fx.game.npc]; if (npc) { const r = argonPlay(L, npc, fx.game.move, yearly * fx.game.stake_frac, npc.id);
       const o = r.outcome; log(L, `${fx.log || ""} → ${AR.CELL_VN[o.cell]}. ${npc.name} đã ${o.npcMove === "cooperate" ? "hợp tác" : "phản bội"}. Bạn ${o.payoffA.capital >= 0 ? "nhận" : "mất"} ${fmtPPP(Math.abs(o.payoffA.capital))}.`, o.cell === "win_win" || o.cell === "arbitrage" ? "good" : o.cell === "sucker" || o.cell === "mutual_destruction" ? "bad" : "");
@@ -37757,7 +37932,8 @@ CHỈ TRẢ VỀ JSON đúng khuôn:
  "co":[],"bo_co":[],"viec_lon":[{"loai":"...","gia_tri":"..."}],"thoi_quen":{},"bi_mat":null,"chuyen":null,"chon":null}`;
 
 /* ---- Gói bối cảnh gửi AI ---- */
-function isFreeScene(p) { return !!p && (p.ai || p.story || p.choices.some(c => c._fx)); }
+/** Cảnh tự do: gõ gì cũng được, không phải chọn nút. Canon event và thẻ có chung kết mùa thì KHÔNG (đã nổ thì không tránh được: gõ xong vẫn đi qua một cửa, theo chon hoặc def). */
+function isFreeScene(p) { return !!p && !(p.canon || p.choices.some(c => c._fx && Argon.landingOf(c._fx) !== null)) && (p.ai || p.story || p.choices.some(c => c._fx)); }
 function actPacket(L, text) {
   const pk = statePacket(L);
   pk.nguoi_than = [...L.lw.cast.values()].filter(m => m.alive).map(m => ({ id: m.id, ten: m.name, vai: roleVN(m), tuoi: L.age + m.age_offset, tin: +(Argon.opinionOf(L.ar.state, L.lw.mem, m.id)).toFixed(2) })).slice(0, 14);
@@ -37990,7 +38166,7 @@ async function storyTick(L, sample) {
 
 /* ================= HỆ QUẢ NHÌN THẤY ĐƯỢC (Giai đoạn 1) =================
    Hai phần, đều chỉ là hiển thị: không rút rng, không đổi kết quả, chơi lại không bị ảnh hưởng.
-   1) Dòng "↩ Vì năm 22 tuổi bạn …" nằm TRÊN tiêu đề thẻ, thay cho câu nối vào cuối p.text.
+   1) Dòng "↩ Có liên quan đến lựa chọn năm 22 tuổi · Xem lại" nằm DƯỚI tiêu đề thẻ (mở ra mới thấy lựa chọn cũ đầy đủ), thay cho câu nối vào cuối p.text.
    2) Báo nhẹ "X sẽ nhớ điều này." sau một lựa chọn để lại ký ức, CHỈ KHI trong kho có thẻ về sau đọc lại đúng ký ức ấy.
    Xem causality-line.md để biết chỗ dán. */
 
@@ -38005,10 +38181,25 @@ function becauseLine(L, marks) {
   const title = String(m.title || "").trim();
   return `Vì năm ${m.age} tuổi ${what}${title ? ` (${title})` : ""}${more}.`;
 }
-/* Markup cho render() trong index.html, đặt ngay trước <h3 id="decT">. */
+/* Dòng ngắn dưới tiêu đề: "↩ Có liên quan đến lựa chọn năm N tuổi · Xem lại" (góp ý 19/10). */
+function becauseShort(L, marks) {
+  if (!marks || !marks.length) return "";
+  const ages = [...new Set(marks.map(m => m.age))].sort((a, b) => a - b), last = ages[ages.length - 1];
+  // Dấu ấn không có lựa chọn (đời đưa đẩy) thì nói "chuyện", không gán cho bạn một lựa chọn không có thật.
+  const what = marks.some(m => m.age === last && m.choice) ? "lựa chọn" : "chuyện";
+  return ages.length > 1 ? `Có liên quan đến ${what} năm ${last} tuổi và ${ages.length - 1} lần trước đó` : `Có liên quan đến ${what} năm ${last} tuổi`;
+}
+/* Markup cho render() trong index.html, đặt ngay SAU <h3 id="decT">. Thu gọn mặc định; "Xem lại" mở ra lựa chọn cũ đầy đủ và các chuyện liên quan.
+   Trạng thái mở nhớ theo khóa cảnh (G.becauseOpen) để render() vẽ lại không đóng mất. */
 function becauseHTML(L, p) {
   if (!p.causes || !p.causes.length) return "";
-  return `<p class="because" title="${esc(causeLine(L, p.causes))}"><span class="because-mark" aria-hidden="true">↩</span>${esc(becauseLine(L, p.causes))}</p>`;
+  const key = p.key || p.id + "@" + L.age, open = typeof G !== "undefined" && G && G.becauseOpen === key;
+  const rows = p.causes.slice().sort((a, b) => a.age - b.age).map(m => {
+    const ev = (m.consequences || []).filter(c => !(c.age === L.age && c.text === p.title)).slice(-3);
+    return `<li><b>Năm ${m.age} tuổi${m.title ? ` · ${esc(m.title)}` : ""}:</b> ${m.choice ? `bạn đã chọn “${esc(m.choice)}”.` : "bạn để mọi chuyện trôi."}`
+      + ev.map(c => `<span class="because-ev">→ ${c.age} tuổi: ${esc(c.text)}</span>`).join("") + `</li>`;
+  }).join("");
+  return `<details class="because" data-k="${esc(key)}"${open ? " open" : ""} ontoggle="if(window.G)G.becauseOpen=this.open?this.dataset.k:(G.becauseOpen===this.dataset.k?null:G.becauseOpen)"><summary><span class="because-mark" aria-hidden="true">↩</span><span class="because-s">${esc(becauseShort(L, p.causes))}</span><span class="because-more">Xem lại</span></summary><ul class="because-body">${rows}</ul></details>`;
 }
 
 /* ---------- 2. "Họ sẽ nhớ điều này" ---------- */
@@ -38258,14 +38449,26 @@ const TOMB_PRESETS = [
   { name: 92, cell: 20, rg: 5, epi: 44, epiLines: 3, body: 36, peer: 56, rem: true },
   { name: 88, cell: 18, rg: 4, epi: 42, epiLines: 2, body: 34, peer: 54, rem: false }
 ];
+/* Hai cỡ gọn hơn, chỉ thử khi có dòng "Các mùa": giữ cả dòng mùa lẫn "Người nhớ bạn nhất" trước khi phải bỏ dòng mùa. */
+const TOMB_SEASON_PRESETS = [
+  { name: 88, cell: 18, rg: 4, epi: 42, epiLines: 2, body: 34, peer: 54, rem: true },
+  { name: 84, cell: 16, rg: 3, epi: 40, epiLines: 2, body: 32, peer: 50, rem: true }
+];
 async function tombstoneCanvas(L, cf) {
   const d = tombstoneData(L, cf); await _fontsReady(d);
   const cv = document.createElement("canvas"); cv.width = TOMB.W; cv.height = TOMB.H;
   const c = cv.getContext("2d");
-  // Bố cục chọn như khi không có dòng "Các mùa"; dòng mùa chỉ thêm vào nếu bố cục ấy vẫn vừa (không đẩy mục khác ra ngoài).
+  // Có dòng "Các mùa": thử từ rộng tới gọn (kể cả hai cỡ gọn hơn chỉ dùng cho trường hợp này), giữ "Người nhớ bạn nhất".
+  // Không cỡ nào vừa thì như cũ: bố cục chọn khi không có dòng mùa, dòng mùa chỉ thêm nếu bố cục ấy vẫn vừa.
+  if (d.seasons && d.seasons.length) {
+    const PS = TOMB_PRESETS.filter(p => p.rem).concat(TOMB_SEASON_PRESETS).find(p => _drawTomb(c, d, L.seed, p) <= TOMB.H - 200);
+    if (PS) { _drawTomb(c, d, L.seed, PS); cv.tombPreset = PS; return cv; }
+  }
   const base = { ...d, seasons: [] }, fits = P => _drawTomb(c, base, L.seed, P) <= TOMB.H - 200;
   const P = TOMB_PRESETS.find(fits) || TOMB_PRESETS[TOMB_PRESETS.length - 1];
-  if (!(d.seasons && d.seasons.length && _drawTomb(c, d, L.seed, P) <= TOMB.H - 200)) _drawTomb(c, base, L.seed, P);
+  const withSeasons = !!(d.seasons && d.seasons.length && _drawTomb(c, d, L.seed, P) <= TOMB.H - 200);
+  if (!withSeasons) _drawTomb(c, base, L.seed, P);
+  cv.tombPreset = withSeasons ? P : { ...P, noSeasons: true };
   return cv;
 }
 function _drawTomb(c, d, seed, P) {
@@ -38418,7 +38621,7 @@ function funeralLine(r, came) {
 }
 
 /* ================= CÁC MÙA CỦA ĐỜI BẠN (canon event, Task 8a) =================
-   Chỉ đọc L.lw.canon.seasons = [{ id, from, to, reason: "landing" | "cut" | "death", landing }] và L.lw.season (canon.js ghi).
+   Chỉ đọc L.lw.canon.seasons = [{ id, from, to, reason: "landing" | "cut" | "lapsed" | "death", landing }] và L.lw.season (canon.js ghi).
    Không có dữ liệu mùa thì mọi hàm trả rỗng: màn kết, thước đời và Tấm bia giữ nguyên như trước.
      canonSeasonDef(id)  → SeasonDef qua seasonDef(id) của canon.js (id kỳ dị viết hoa kiểu "w_S01") | null
      canonSeasonsOf(L)   → [{ n, id, vn, color, weird, from, to, reason, line }] theo thứ tự; mùa còn chạy lúc chết mà host chưa ghi thì thêm "death"
@@ -38431,14 +38634,14 @@ function canonSeasonsOf(L) {
   const raw = lw.canon && Array.isArray(lw.canon.seasons) ? lw.canon.seasons.slice() : [];
   const cur = lw.season;
   if (cur && cur.id && !raw.some(s => s && s.id === cur.id && s.from === cur.from))
-    raw.push({ id: cur.id, from: cur.from, to: L.alive ? null : L.age, end: cur.end, reason: L.alive ? "running" : "death", landing: null });
+    raw.push({ id: cur.id, from: cur.from, to: L.alive ? null : L.age, end: cur.end, reason: L.alive ? "running" : "death", landing: null, line: !L.alive && typeof seasonEndLine === "function" ? seasonEndLine(L, cur, "death") : "" });
   return raw.filter(s => s && s.id).map((s, i) => {
     const def = canonSeasonDef(s.id);
     const land = def && s.landing ? (def.landings || []).find(x => x.id === s.landing) : null;
     return {
       n: i + 1, id: s.id, vn: def ? def.vn : "Một mùa không tên", color: def && /^#[0-9a-f]{6}$/i.test(def.color) ? def.color : "#56655D",
       weird: def && def.weird ? def.weird : null, from: Number.isFinite(s.from) ? s.from : null, to: Number.isFinite(s.to) ? s.to : null,
-      end: Number.isFinite(s.end) ? s.end : null, reason: s.reason || "", line: land ? land.line : ""
+      end: Number.isFinite(s.end) ? s.end : null, reason: s.reason || "", line: land ? land.line : (typeof s.line === "string" ? s.line : "")
     };
   });
 }
@@ -38453,14 +38656,14 @@ function seasonSpans(L) {
     return { from: s.from, to: s.to != null ? s.to : s.from, color: s.color, aheadTo: null };
   });
 }
-const SEASON_END_VN = { death: ["dang dở", "seal"], cut: ["bị cắt ngang", "cut"] };
+const SEASON_END_VN = { death: ["dang dở", "seal"], cut: ["bị cắt ngang", "cut"], lapsed: ["tự khép lại", "cut"] };
 function seasonsEndHTML(L) {
   const ss = canonSeasonsOf(L).filter(s => s.reason !== "running"); if (!ss.length) return "";
   const kind = { sf: "nhánh viễn tưởng", abs: "nhánh phi lý" };
   return `<div class="panel seasons-end"><span class="label">Các mùa của đời bạn</span><ol class="slist">${ss.map(s => {
     const r = SEASON_END_VN[s.reason], ages = seasonAgesVN(s);
     return `<li class="sm" style="--sc:${s.color}"><span class="sm-n">Mùa ${s.n}</span><span class="sm-b"><b>${esc(s.vn)}</b>${s.weird ? ` <span class="sm-k">${kind[s.weird] || ""}</span>` : ""}</span>`
-      + `<span class="sm-a">${ages ? esc(ages) : ""}${r ? `<span class="sm-st ${r[1]}">${r[0]}</span>` : ""}</span>${!r && s.line ? `<span class="sm-l">${esc(s.line)}</span>` : ""}</li>`;
+      + `<span class="sm-a">${ages ? esc(ages) : ""}${r ? `<span class="sm-st ${r[1]}">${r[0]}</span>` : ""}</span>${s.line ? `<span class="sm-l">${esc(s.line)}</span>` : ""}</li>`;   // mọi mùa đều có câu kết: chung kết, hoặc câu sinh từ trạng thái mùa (cắt, dang dở, tự khép)
   }).join("")}</ol></div>`;
 }
 
@@ -38887,7 +39090,7 @@ function canonFacts(L, cast, opinion) {
 function canonOwnOnly(L, e, dropMoves) {
   if (canonIndependent(L)) return e;
   const out = { ...e };
-  if (e.money) { const amt = Math.max(300, householdIncome(L)) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
+  if (e.money) { const amt = seasonYearlyBase(L) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
   if (e.custom) {
     const keep = e.custom.split("|").filter(p => !/^(repay|borrow|restructure|migrate_now|migrate)(:|$)/.test(p) && !(dropMoves && /^(move_city|job_[a-z_]*|become)(:|$)/.test(p)));
     if (keep.length) out.custom = keep.join("|"); else delete out.custom;
@@ -38900,25 +39103,26 @@ function canonOnEffect(L, e) {
   const lw = L.lw; if (!lw || !e) return e;
   if (!lw.canon) canonInit(L);
   if (e.gamble) return e;   // phần chung và nhánh thắng/thua đi qua applyEffect riêng, mỗi phần cộng một lần
+  if (e.custom && customParts(e.custom).includes("swap_other") && !lw.swapping) return canonSwap(L, e);   // Task 8b: đổi đời trước, phần còn lại áp lên đời mới
   if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
   if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
   const land = Argon.landingOf(e);
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
     if (lw.season) exitSeason(L, "landing", land);
-    return canonOwnOnly(L, e, false);
+    return sureMigrate(canonOwnOnly(L, e, false));
   }
   return e;
 }
 function canonApplyQuiet(L, e) { const lw = L.lw; lw.canonQuiet = true; try { applyEffect(L, e); } finally { lw.canonQuiet = false; } }
 
 /* ---- vào / ra mùa ---- */
-const CANON_FEMALE = /^(bà|cô|chị|mẹ|dì|thím|mợ|em gái|người phụ nữ|nữ|góa phụ|bé gái)\b/i, CANON_MALE = /^(ông|anh|chú|cậu|bác trai|bố|cha|người đàn ông|nam|bé trai|lão)\b/i;
+// Hết từ: khoảng trắng / dấu câu / hết chuỗi (\b của JS không hiểu chữ có dấu: "cô\b" hỏng sau "ô").
+const CANON_FEMALE = /^(bà|cô|chị|mẹ|dì|thím|mợ|em gái|người phụ nữ|nữ|góa phụ|bé gái)(?=[\s,.;:]|$)/i, CANON_MALE = /^(ông|anh|chú|cậu|bác trai|bố|cha|người đàn ông|nam|bé trai|lão)(?=[\s,.;:]|$)/i;
 /** Người mới của mùa: NPC thật trong dàn nhân vật, tên theo nước đang sống. */
 function seasonCastMember(L, nc, r, ar) {
   const sex = CANON_FEMALE.test(nc.label) ? "F" : CANON_MALE.test(nc.label) || nc.role === "official" || nc.role === "bully" ? "M" : (r() < 0.5 ? "M" : "F");
-  const used = new Set([L.name, ...[...L.lw.cast.values()].filter(m => m.alive).map(m => m.name)]);
-  let name = makeName(r, L.c, sex); for (let k = 0; k < 40 && used.has(name); k++) name = makeName(r, L.c, sex);
+  const name = canonFreshName(L, r, sex);   // không trùng tên gọi của bạn hay của người đang sống trong đời bạn, không trùng tên người thật nổi tiếng
   const off = nc.role === "child" ? Math.min(-1, 8 - L.age) : ["mentor", "official", "first_boss", "creditor"].includes(nc.role) ? 10 + Math.floor(r() * 16) : -4 + Math.floor(r() * 10);
   const trust = nc.role === "rival" || nc.role === "bully" ? -0.1 : nc.role === "mentor" ? 0.3 : 0.1;
   const m = Argon.addCastMember(L.ar.state, L.lw.cast, ar, nc.role, name, off, trust);
@@ -38938,7 +39142,7 @@ function enterSeason(L, id) {
   const rs = canonRng(L, "season:" + id), r = () => rs.next(), ar = canonRng(L, "cast:" + id);
   // 3. đặt lại: tiền (chỉ người đã tự lập, tính trên tiền riêng), hiệu ứng đầu mùa, người mới
   if (d.reset.cash !== undefined && ctx.independent) L.savings += Argon.resetCashDelta(d.reset.cash * Math.max(300, householdIncome(L)), ctx.own_cash);
-  if (d.reset.effects) canonApplyQuiet(L, canonOwnOnly(L, d.reset.effects, true));
+  if (d.reset.effects) canonApplyQuiet(L, sureMigrate(canonOwnOnly(L, d.reset.effects, true)));   // di cư của mùa chắc chắn thành (migrate_sure)
   const cast = {};
   for (const nc of d.reset.cast || []) cast[nc.key] = seasonCastMember(L, nc, r, ar).id;
   // 4. hệ số thu nhập: sống suốt mùa (chưa có thu nhập thì việc làm sau này cũng nhân hệ số, xem seasonIncomeMult); gỡ khi ra mùa
@@ -38954,7 +39158,7 @@ function enterSeason(L, id) {
   const n = lw.canon.seasons.length + 1;
   lw.season = { id, n, from: L.age, end: L.age + len, scars, mult, cast, lastAt: L.age, beatAt: null, yearAt: L.age };
   // 8.
-  log(L, `Mùa ${n}: ${d.vn}.`, "big");
+  seasonEnterLog(L, n, d);   // cùng năm với mùa vừa bị cắt: gộp thành một dòng, dòng cắt đọc trước
   return true;
 }
 
@@ -38969,6 +39173,7 @@ function exitSeason(L, reason, landing) {
   lw.season = null; lw.counters.season_beat = 0; delete lw.counters.season_next;
   if (reason === "landing" && d) { const l = d.landings.find(x => x.id === landing); if (l && l.line) log(L, l.line, "good big"); }
   else if (reason === "cut" && d) log(L, `${d.vn} khép lại giữa chừng.`, "big");
+  otherSelfOnExit(L, se, rec);   // Task 8b: dòng "Bản kia của bạn" lúc hết mùa
   return rec;
 }
 /** Gọi khi qua đời (die). */
@@ -39040,11 +39245,12 @@ function canonScene(L, ev) {
   const sc = sceneFromStorylet(L, { id: ev.id, build: () => view }, null);
   sc.canon = { axis: ev.axis, seed: ev.seed, seasons: ev.doors.map(d => d.season) };
   const keys = [];
-  if (ev.slots.what && ev.slots.what.kind !== "asset") keys.push(Argon.prov.flag(Argon.plantFlag(ev.slots.what)));
-  if (ev.slots.who) { for (const p of lw.plants) if (p.npc === ev.slots.who) keys.push(Argon.prov.flag(Argon.plantFlag(p))); keys.push(Argon.prov.opinion(ev.slots.who)); }
+  if (ev.slots.what && ev.slots.what.kind !== "asset" && canonMentionsText(view, ev.slots.what.label)) keys.push(Argon.prov.flag(Argon.plantFlag(ev.slots.what)));
+  if (ev.slots.who && canonMentions(L, view, ev.slots.who)) { for (const p of lw.plants) if (p.npc === ev.slots.who) keys.push(Argon.prov.flag(Argon.plantFlag(p))); keys.push(Argon.prov.opinion(ev.slots.who)); }
   let marks = []; try { marks = Argon.resolveCauses(lw.cz, keys); } catch { marks = []; }
   if (marks.length) { Argon.attachConsequence(marks, L.age, ev.id, sc.title); sc.causes = marks; }
   lw.canon.fromPlayer = (lw.canon.fromPlayer || 0) + (ev.slots.fromPlayer > 0 ? 1 : 0);
+  canonSceneHook(L, sc, ev);   // Task 8b: bản kia của bạn ở mỗi cửa, chữ AI đã lưu (bản tua lại)
   return sc;
 }
 
@@ -39064,16 +39270,406 @@ function canonYear(L) {
   return false;
 }
 
-/** customEffect: canon:<trục> | season:<id> | season_end:<landing> | các custom của Task 8 (no-op). true nếu đã xử lý. */
+/** customEffect: canon:<trục> | season:<id> | season_end:<landing> | swap_other | remark | age_skip:<n> | longevity:<n>. true nếu đã xử lý. */
 function canonCustom(L, kind, arg) {
   const lw = L.lw;
   switch (kind) {
     case "canon": { if (!lw.canon) canonInit(L); if (arg in lw.pressure) lw.pressure[arg] = Math.max(0, lw.pressure[arg] - Argon.DISCHARGE); lw.canon.n++; lw.canon.last = L.age; return true; }
     case "season": enterSeason(L, arg); return true;
     case "season_end": if (lw.season) exitSeason(L, "landing", arg || null); return true;   // thường đã kết ở canonOnEffect
-    case "swap_other": case "remark": case "age_skip": case "longevity": return true;          // Task 8
+    case "swap_other": return true;                       // đã xử lý ở canonOnEffect (canonSwap); gọi lẻ thì không làm gì
+    case "remark": canonRemark(L); return true;
+    case "migrate_sure": migrateSure(L); return true;
+    case "money_season": L.savings += seasonMoneyYearly(L) * (+arg || 0); return true;   // R24: phần thưởng nhân hệ số mùa, phải khai báo rõ
+    case "age_skip": ageSkip(L, +arg || 0); return true;
+    case "longevity": addLongevity(L, +arg || 0); return true;
   }
   return false;
+}
+
+/* ================= Task 8b: Độ điên, bản kia của bạn, chữ AI, custom của host =================
+   Mọi thứ ở đây tất định và tua lại được: Độ điên đi qua uiOp (actLog kind "ui"), chữ AI đi qua actLog kind "canon_text",
+   swap_other / remark / age_skip / longevity chỉ đọc trạng thái đời và các luồng rng đã có. */
+function customParts(c) { return typeof c === "string" && c ? c.split("|") : []; }
+
+/** Độ điên: 0 Đời thật, 1 Phim, 2 Điên. Ghi uiOp { k: "weird", v } (choice.js) để bản tua lại áp lại đúng chỗ. Ô chọn ở menu gọi window.setWeird. */
+function setWeird(L, v) {
+  v = +v;
+  if (!L || L.alive === false || L.replay || !(v === 0 || v === 1 || v === 2)) return false;
+  return uiOp(L, { k: "weird", v });
+}
+
+/* ---- Bản kia của bạn ---- */
+/** Cửa "kế tiếp không được chọn" của một cảnh có n cửa: cửa liền sau, vòng về đầu. -1 nếu chỉ có một cửa. */
+function otherDoor(n, picked) { return n > 1 && picked >= 0 ? (picked + 1) % n : -1; }
+/** Dòng lúc vào mùa: tên mùa của cửa kế tiếp không được chọn. ev là canon event (doors) hoặc cảnh canon (canon.seasons). */
+function otherSelfLine(L, ev, picked) {
+  const seasons = ev && (ev.canon ? ev.canon.seasons : Array.isArray(ev.doors) ? ev.doors.map(d => d.season) : null);
+  if (!seasons) return "";
+  const k = otherDoor(seasons.length, picked), d = k >= 0 ? seasonDef(seasons[k]) : null;
+  return d ? `Ở dòng thời gian kia, bạn vừa bước vào Mùa: ${d.vn}.` : "";
+}
+/**
+ * Dòng lúc hết mùa: tua đời phản thực (replayLife với cửa khác ở canon event mở mùa này) tới đúng tuổi hiện tại,
+ * lấy mùa và chung kết của bản kia trong cùng khoảng tuổi. "" khi đang tua lại / tự chơi / theo kịch bản (đắt, và
+ * không đổi gì của đời này). Lưu rồi khôi phục G.life (replayLife đọc focusLog của G.life).
+ */
+function otherSelfEnd(L, se) {
+  se = se || (L && L.lw && L.lw.season);
+  if (!L || L.replay || L.auto || L.script || !se || !se.other) return "";
+  const o = se.other, to = L.age, from = se.from;
+  const was = typeof G !== "undefined" ? G.life : null;
+  let snap = null;
+  try {
+    if (typeof G !== "undefined") G.life = L;
+    replayLife(L.seed, L.choices, { key: o.key, index: o.index }, L.actLog || [], P => {
+      if (snap || (P.alive && P.age < to)) return;
+      snap = { age: P.age, alive: P.alive, season: P.lw.season ? { id: P.lw.season.id, from: P.lw.season.from } : null, seasons: (P.lw.canon ? P.lw.canon.seasons : []).map(s => ({ ...s })) };
+      P.alive = false;   // đủ rồi: dừng bản tua lại ở tuổi này (giới hạn thời gian)
+    });
+  } catch (e) { snap = null; }
+  finally { if (typeof G !== "undefined") G.life = was; }
+  if (!snap) return "";
+  if (!snap.alive) return `Ở dòng thời gian kia, bạn đã mất năm ${snap.age} tuổi.`;
+  const name = id => { const d = seasonDef(id); return d ? d.vn : "một mùa không tên"; };
+  if (snap.season && snap.season.from <= to) return `Ở dòng thời gian kia, bạn vẫn đang ở giữa Mùa: ${name(snap.season.id)}.`;
+  const ov = snap.seasons.filter(s => s.to >= from && s.from <= to);
+  const s = ov.find(x => x.id === o.season) || ov[ov.length - 1];
+  if (!s) return "Ở dòng thời gian kia, những năm ấy trôi qua bình thường, không có mùa nào.";
+  const d = seasonDef(s.id), land = s.reason === "landing" && d ? d.landings.find(x => x.id === s.landing) : null;
+  if (land && land.line) return `Ở dòng thời gian kia, Mùa: ${name(s.id)} đã khép lại năm ${s.to} tuổi. ${land.line}`;
+  return `Ở dòng thời gian kia, Mùa: ${name(s.id)} dang dở, khép lại năm ${s.to} tuổi.${s.line ? " " + s.line : ""}`;
+}
+/** Gọi ở cuối exitSeason. Chết thì thôi (đời đã hết); đang đổi chỗ (swap_other) cũng thôi. */
+function otherSelfOnExit(L, se, rec) {
+  if (!rec) return;
+  if (rec.reason === "cut") { const e = L.log[L.log.length - 1]; if (e && e.age === L.age) e.cut = true; }   // seasonEnterLog gộp dòng này với "Mùa N"
+  if (rec.reason === "landing" && !L.replay) seasonLandingNote(L, se, rec);
+  if (se && se.mult && se.mult !== 1) rec.mult = se.mult;   // money_season ở chung kết dùng hệ số của mùa vừa kết
+  if (rec.reason !== "landing" && se) rec.line = seasonEndLine(L, se, rec.reason);   // câu kết cho mùa cắt / dang dở / tự khép (tất định)
+  if (rec.reason === "death" || !se || !se.other || (L.lw && L.lw.swapping)) return;
+  const line = otherSelfEnd(L, se);
+  if (line) log(L, line, "other");
+}
+/**
+ * Gọi ở cuối canonScene. Mỗi cửa: sau khi vào mùa thì nhớ cửa kế tiếp không được chọn (se.other, cho otherSelfEnd)
+ * và ghi dòng "Bản kia của bạn". Bản tua lại: nếu actLog có chữ AI (canon_text) cho cảnh này thì hiện đúng chữ đó.
+ */
+function canonSceneHook(L, sc, ev) {
+  const seasons = sc.canon.seasons;
+  sc.canon.ctx = { who: ev.slots.who ? castName(L, ev.slots.who) : "", what: ev.slots.what ? (ev.slots.what.label || ev.slots.what.key || "") : "" };
+  sc.choices.forEach((ch, i) => {
+    const fx = ch.fx;
+    ch.fx = L2 => {
+      fx(L2);
+      const se = L2.lw && L2.lw.season, k = otherDoor(seasons.length, i);
+      if (!se || se.id !== seasons[i] || se.from !== L2.age || k < 0) return;
+      se.other = { key: sc.key, index: k, season: seasons[k] };
+      if (!L2.replay) { const line = otherSelfLine(L2, sc, i); if (line) log(L2, line, "other"); }
+    };
+  });
+  if (L.replay && L.replayActs) { const rec = L.replayActs.find(a => a.kind === "canon_text" && a.key === sc.key && a.age === L.age); if (rec) applyCanonText(sc, rec.raw); }
+}
+
+/* ---- Chữ AI cho canon event ---- */
+/** Kiểm JSON AI trả về: { title, text, doors: [nhãn × số cửa] }. Trả bản sạch hoặc null. */
+function canonTextOk(raw, n) {
+  if (!raw || typeof raw !== "object") return null;
+  const t = typeof raw.title === "string" ? raw.title.trim() : "", x = typeof raw.text === "string" ? raw.text.trim() : "";
+  const d = Array.isArray(raw.doors) ? raw.doors.map(v => typeof v === "string" ? v.trim() : "") : [];
+  if (t.length < 3 || t.length > 70 || x.length < 20 || x.length > 700 || d.length !== n || d.some(v => v.length < 2 || v.length > 60)) return null;
+  if ([t, x, ...d].some(v => /[{}<>]|undefined/.test(v))) return null;
+  return { title: t, text: x, doors: d };
+}
+/** Áp chữ (title, text, nhãn cửa) lên cảnh. Hiệu ứng của cửa (fx, _fx) giữ nguyên. */
+function applyCanonText(sc, raw) {
+  const r = canonTextOk(raw, sc.choices.length); if (!r) return false;
+  sc.title = r.title; sc.text = r.text; r.doors.forEach((l, i) => { sc.choices[i].label = l; });
+  sc.canon.ai = "done";
+  return true;
+}
+function canonAiPrompt(L, sc) {
+  const lw = L.lw, se = lw.season;
+  const doors = sc.choices.map((c, i) => ({ nhan: c.label, goi_y: c.hint || "", mo_mua: (seasonDef(sc.canon.seasons[i]) || {}).vn || "" }));
+  const vet = lw.plants.slice(-6).map(p => p.label || p.key);
+  const ctx = { nuoc: L.c.n, tuoi: L.age, gioi: L.sex === "M" ? "nam" : "nữ", nghe: L.retired ? "đã nghỉ hưu" : (L.job || "chưa đi làm"), hon_nhan: L.married ? "đã kết hôn" : L.widowed ? "góa" : "độc thân",
+    cho_trong: sc.canon.ctx || {}, vat_gai: vet, mua_dang_chay: se ? (seasonDef(se.id) || {}).vn || "" : "", tieu_de: sc.title, doan_mo: sc.text, cua: doors };
+  return `Bạn là biên kịch của một trò chơi mô phỏng cuộc đời. Đây là một biến cố lớn (canon event) của nhân vật, dựng từ chính những gì đời họ đã gieo. Hãy viết lại tiêu đề, đoạn mở và nhãn của từng cửa bằng tiếng Việt có dấu, giọng điện ảnh nhưng cụ thể, đúng nước và hoàn cảnh. Giữ nguyên ý nghĩa của từng cửa và thứ tự cửa (cửa i vẫn dẫn tới đúng mùa mo_mua của nó), giữ tên người trong cho_trong nếu có. Không dùng người thật, tổ chức thật, thương hiệu thật, tôn giáo cụ thể; không nội dung tình dục; chuyện phạm pháp chỉ kể hậu quả.
+
+Trả lời CHỈ bằng một object JSON, không có chữ nào khác:
+{"title":"≤ 60 ký tự","text":"2–4 câu, ≤ 500 ký tự","doors":[${doors.map(() => '"≤ 40 ký tự"').join(",")}]}
+
+BỐI CẢNH:
+${JSON.stringify(ctx)}`;
+}
+/** Phần "text" đang viết dở trong luồng JSON (để hiện dần lên cảnh). */
+function canonTextPartial(s) { const m = /"text"\s*:\s*"((?:[^"\\]|\\.)*)/.exec(s || ""); if (!m) return ""; try { return JSON.parse('"' + m[1].replace(/\\$/, "") + '"'); } catch { return m[1]; } }
+function canonTextParse(s) { if (!s) return null; const a = s.indexOf("{"), b = s.lastIndexOf("}"); if (a < 0 || b <= a) return null; try { return JSON.parse(s.slice(a, b + 1)); } catch { return null; } }
+/**
+ * AI viết lại chữ của canon event đang chờ (sc = L.pending có sc.canon). Chỉ khi có NAR.sample và không phải bản tua lại.
+ * Hiệu ứng giữ nguyên. Chữ chạy dần vào sceneEl (#decTxt). Xong mà cảnh vẫn đang chờ thì áp chữ và ghi actLog
+ * { kind: "canon_text", age, key, raw }; bản tua lại đọc bản ghi này (canonSceneHook). Trả về Promise<boolean>.
+ */
+async function canonAiRewrite(L, sc, sceneEl) {
+  if (!L || L.replay || !sc || !sc.canon || sc.canon.ai || typeof NAR === "undefined" || !NAR.sample || !NAR.enabled || NAR.status === "off") return false;
+  sc.canon.ai = "busy";
+  const key = sc.key, age = L.age, q = s => sceneEl && sceneEl.querySelector ? sceneEl.querySelector(s) : null;
+  const txt = q("#decTxt"), orig = sc.text;
+  let raw = null;
+  try {
+    const out = await NAR.sample(canonAiPrompt(L, sc), { modelTier: NAR.mode === "deep" ? "default" : "quick", onText: ({ text }) => { const p = canonTextPartial(text); if (txt && p && L.pending === sc) txt.textContent = p; } });
+    raw = canonTextParse(out && typeof out === "object" ? out.text : out);
+  } catch (e) { raw = null; }
+  const ok = L.pending === sc && L.age === age && !!canonTextOk(raw, sc.choices.length);
+  if (!ok) { sc.canon.ai = "fail"; if (txt && L.pending === sc) txt.textContent = orig; return false; }
+  applyCanonText(sc, raw);
+  L.actLog = L.actLog || []; L.actLog.push({ kind: "canon_text", age, key, raw: canonTextOk(raw, sc.choices.length) });
+  if (typeof render === "function" && typeof document !== "undefined") render();
+  return true;
+}
+
+/* ---- age_skip:<n> và longevity:<n> ---- */
+/** Tuổi sinh học (tử vong, sức khỏe nền): tuổi thật trừ phần được sống thêm, không trẻ hơn 25 (hoặc tuổi thật nếu chưa tới). */
+function bioAge(L) { const n = L.longevity || 0; return n > 0 ? Math.max(Math.min(L.age, 25), L.age - n) : L.age; }
+/** Nhảy n năm: tuổi tăng n, dàn nhân vật già theo từng năm (có thể có người mất), thước đời không có năm trống. */
+function ageSkip(L, n) {
+  n = Math.max(0, Math.min(40, Math.round(n), 110 - L.age)); if (!n || !L.alive || !L.lw) return;
+  for (let k = 0; k < n; k++) { L.age++; castYear(L); L.map.push({ h: L.st.happy, skip: true }); }
+  log(L, `${n} năm trôi qua mà bạn không hề hay biết. Giờ bạn đã ${L.age} tuổi.`, "big");
+}
+/** Sống thêm n năm: tuổi sinh học lùi n năm (deathQ, growth đọc bioAge). */
+function addLongevity(L, n) {
+  n = Math.max(0, Math.min(60, Math.round(n))); if (!n) return;
+  L.longevity = (L.longevity || 0) + n;
+  log(L, `Cơ thể bạn chậm lại: bạn sẽ già muộn hơn người thường ${n} năm.`, "big");
+}
+
+/* ---- remark: chọn lại một lựa chọn cũ ---- */
+const REMARK_DROP = /^(season|season_end|canon|swap_other|remark|age_skip|longevity)(:|$)/;
+/**
+ * Viết lại một dấu ấn cũ: lấy dấu ấn có nhiều hệ quả nhất (hòa thì sớm nhất) của một storylet còn dựng lại được,
+ * đổi choice sang cửa khác đã từng hiện, mở lại các cửa nó đã đóng, rồi áp hiệu ứng của lựa chọn mới (bỏ các custom của mùa).
+ * Tất định: chỉ đọc dấu ấn và dựng lại storylet; L.choices không đổi nên bản tua lại làm đúng như vậy.
+ */
+function canonRemark(L) {
+  const lw = L.lw; if (!lw) return null;
+  const P = pools(), byId = new Map();
+  for (const s of P.major.concat(P.micro)) if (!byId.has(s.id)) byId.set(s.id, s);
+  const cands = lw.cz.marks.filter(m => !m.remark && m.age < L.age && m.key && m.alt_indices && m.alt_indices.length && m.altLabels && !/^(canon_|ss_)/.test(m.storylet) && byId.has(m.storylet))
+    .sort((a, b) => (b.consequences.length + b.doors_closed.length) - (a.consequences.length + a.doors_closed.length) || a.age - b.age);
+  const ctx = factContext(L), names = id => castName(L, id);
+  for (const m of cands) {
+    let view; try { view = byId.get(m.storylet).build(ctx, names); } catch { continue; }
+    const alt = m.alt_indices.find(k => view.choices[k] && view.choices[k].effects && view.choices[k].label === m.altLabels[k]);
+    if (alt === undefined) continue;
+    const e = { ...view.choices[alt].effects };
+    if (e.custom) { const keep = customParts(e.custom).filter(p => !REMARK_DROP.test(p)); if (keep.length) e.custom = keep.join("|"); else delete e.custom; }
+    const old = m.choice, label = m.altLabels[alt];
+    m.remark = { age: L.age, from: old, index: m.choice_index };
+    m.choice = label; m.choice_index = alt; m.alt_indices = [];   // không đưa dấu ấn đã viết lại vào "Cuộc đời suýt có"
+    for (const d of m.doors_closed) lw.cz.doors.delete(d);
+    m.doors_closed = [];
+    log(L, `Ký ức năm ${m.age} tuổi được viết lại: trong chuyện “${m.title}”, bạn đã chọn “${label}” thay vì “${old}”.`, "big");
+    const w = m.witnesses && m.witnesses[0];
+    applyEffect(L, e, w && L.ar.state.npcs.has(w) ? w : undefined);
+    return m;
+  }
+  log(L, "Không còn ký ức nào đủ rõ để viết lại.");
+  return null;
+}
+
+/* ---- swap_other: đổi chỗ với bản kia (nhánh S22) ---- */
+/** Những trường của đời gốc giữ lại khi đổi chỗ: đầu vào để tua lại (lựa chọn, actLog, trọng tâm từng năm), trạng thái tua lại, nhật ký đã đọc. */
+const SWAP_KEEP = ["choices", "actLog", "actSeq", "focusLog", "log", "seen", "decades", "auto", "script", "override", "replay", "replayActs", "replayDone", "uiDone", "scriptFocus", "scriptStrict", "nextAi", "aiReady", "aiPending", "weird", "forkOf", "uiNotes"];
+/**
+ * custom "swap_other" (canonOnEffect gọi trước mọi phần khác của effect):
+ *  1. đang ở mùa và effect là chung kết thì kết mùa trước (giữ 3 vết của mùa);
+ *  2. lấy canon event trước canon event mở mùa này (dấu ấn của nó), dựng đời phản thực bằng resumeFrom với cửa kế tiếp;
+ *  3. tự chơi bản kia tới tuổi hiện tại, chép 3 vết sang, thay nội dung của chính object L (G.life vẫn trỏ vào L);
+ *  4. trả phần còn lại của effect (bỏ swap_other, season_end) để applyEffect áp lên đời mới.
+ * Không có canon event trước, hoặc bản kia không sống tới tuổi này: không đổi gì, phần còn lại vẫn áp lên đời cũ.
+ * Bản tua lại đi đúng đường đời gốc tới chung kết này rồi đổi chỗ y như vậy (đầu vào giữ nguyên trong SWAP_KEEP).
+ */
+function canonSwap(L, e) {
+  const lw = L.lw, se = lw.season, land = Argon.landingOf(e);
+  const scars = se ? se.scars : null, cur = se ? se.from : L.age + 1;
+  let rec = null;
+  lw.swapping = true;
+  try { if (se && land !== null) rec = exitSeason(L, "landing", land); } finally { lw.swapping = false; }
+  const rest = { ...e }, keep = customParts(e.custom).filter(p => p !== "swap_other" && !p.startsWith("season_end"));
+  if (keep.length) rest.custom = keep.join("|"); else delete rest.custom;
+  swapOther(L, scars, cur, rec);
+  let out = canonOnEffect(L, rest);
+  if (land !== null) out = sureMigrate(canonOwnOnly(L, out, false));
+  return out;
+}
+function swapOther(L, scars, before, rec) {
+  const prev = L.lw.cz.marks.filter(m => /^canon_/.test(m.storylet) && m.key && m.age < before && m.alt_indices && m.alt_indices.length).pop();
+  if (!prev) return false;
+  const n = Object.keys(prev.altLabels || {}).length, k = otherDoor(n, prev.choice_index);
+  const alt = prev.alt_indices.includes(k) ? k : prev.alt_indices[0];
+  const A = L.age, src = L.replay ? { ...L, actLog: L.replayActs || [] } : L;
+  const was = typeof NAR !== "undefined" ? NAR.enabled : false;
+  let P = null;
+  try {
+    P = resumeFrom(src, { key: prev.key, index: alt, age: prev.age });
+    if (P) {
+      if (typeof NAR !== "undefined") NAR.enabled = false;
+      P.auto = true; autoChain(P); let g = 0;   // resumeFrom dừng ngay sau lựa chọn rẽ, có thể còn cảnh đang chờ
+      while (P.alive && P.age < A && g++ < 130) { stepYear(P); if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; } }
+      P.auto = false;
+    }
+  } catch (err) { P = null; }
+  finally { if (typeof NAR !== "undefined") NAR.enabled = was; }
+  if (!P || !P.alive || P.age < A || P.pending) { log(L, P && !P.alive ? `Bản kia của bạn đã mất năm ${P.age} tuổi. Khe gương khép lại.` : "Khe gương mờ đi trước khi bạn kịp bước qua.", "other"); return false; }
+  swapScars(L, P, scars);
+  const kept = {}; for (const f of SWAP_KEEP) kept[f] = L[f];
+  const codex = Object.assign({}, P.codex || {}, L.codex || {});   // trang sổ tay đã học thì vẫn nhớ
+  for (const f of Object.keys(L)) delete L[f];
+  Object.assign(L, P, kept);
+  L.curMark = null; L.pending = null; L.codex = codex;
+  if (rec) { L.lw.canon.seasons.push({ ...rec, swapped: true }); L.lw.canon.seasons.sort((a, b) => a.from - b.from); }
+  L.lw.swap = { age: A, fork: prev.age, key: prev.key, index: alt };
+  log(L, "Bạn đổi chỗ với bản kia.", "other big");
+  return true;
+}
+/** Chép 3 vết của mùa sang đời mới: vật gài (đồ, nợ), lời hứa còn treo, và ký ức của người mang vết nếu người đó có trong đời kia. */
+function swapScars(L, P, scars) {
+  if (!scars) return;
+  for (const k of ["do", "no"]) {
+    const x = scars[k]; if (!x) continue;
+    const p = L.lw.plants.find(q => q.key === x.key);
+    if (p && !P.lw.plants.some(q => q.key === p.key && q.kind === p.kind)) { P.lw.plants.push({ ...p }); P.lw.sflags.add(Argon.plantFlag(p)); }
+    if (x.key.startsWith("promise:")) for (const pr of L.lw.promises) if (pr.kept === null && "promise:" + pr.to === x.key && P.ar.state.npcs.has(pr.to)) P.lw.promises.push({ ...pr, mark: null });
+  }
+  const who = scars.nguoi && scars.nguoi.npc, toks = who && L.lw.mem.tokens.get(who);
+  if (toks && P.lw.cast.has(who)) P.lw.mem.tokens.set(who, (P.lw.mem.tokens.get(who) || []).concat(toks.map(t => ({ ...t }))));
+}
+
+/* ---- Task 8b, đợt sửa sau lượt chơi thử (21b) ---- */
+/** Tên gọi trong một họ tên đầy đủ theo kiểu tên của nước c (họ trước: tên gọi là chữ cuối). */
+function givenOf(name, c) { const t = String(name || "").trim().split(/\s+/), p = c && NAMES[c.nm]; return (p && p.first === false ? t[t.length - 1] : t[0]) || ""; }
+/** Các tên gọi đang có chủ: bạn, và mọi người còn sống trong dàn nhân vật. */
+function takenGivens(L) {
+  const s = new Set([givenOf(L.name, L.birthC || L.c)]);
+  for (const m of L.lw.cast.values()) if (m.alive) { s.add(m.name); s.add(givenOf(m.name, L.c)); if (L.birthC) s.add(givenOf(m.name, L.birthC)); }
+  return s;
+}
+/** Họ tên cho người mới của mùa: tên gọi chưa ai dùng, không là tên người thật nổi tiếng. Chỉ rút thêm khi trùng. */
+function canonFreshName(L, r, sex) {
+  const p = NAMES[L.c.nm], pool = p[sex], sur = (sex === "F" && p.SF) || p.S, fmt = (g, s) => p.first === false ? `${s} ${g}` : `${g} ${s}`;
+  let name = makeName(r, L.c, sex);
+  const tier = freeTier(L, pool);
+  if (tier.has(givenOf(name, L.c)) || nameBlocked(name)) {
+    const free = pool.filter(g => !tier.has(g));
+    for (let k = 0; k < 12; k++) { name = fmt(free.length ? free[Math.floor(r() * free.length)] : pick(r, pool), pick(r, sur)); if (!nameBlocked(name)) break; }
+  }
+  return name;
+}
+/** Tên gọi phải tránh, chặt nhất mà bể tên còn cho phép: (1) bạn và mọi người đang sống trong đời bạn; (2) bạn, người trong nhà và người của mùa;
+ *  (3) chỉ bạn. Bể tên mỗi nước chỉ 3–8 tên, dàn nhân vật lúc sinh đã dùng gần hết, nên khi hết tên thì nới dần chứ không trùng với chính bạn. */
+const FAMILY_ROLES_NAME = new Set(["mother", "father", "sibling", "spouse", "child", "season"]);
+function nameTiers(L) {
+  const me = givenOf(L.name, L.birthC || L.c), all = new Set([me]), close = new Set([me]);
+  for (const m of L.lw.cast.values()) { if (!m.alive) continue; const gs = [m.name, givenOf(m.name, L.c), L.birthC ? givenOf(m.name, L.birthC) : m.name];
+    for (const g of gs) { all.add(g); if (FAMILY_ROLES_NAME.has(m.role) || (m.roles || []).some(x => FAMILY_ROLES_NAME.has(x))) close.add(g); } }
+  return [all, close, new Set([me])];
+}
+function freeTier(L, pool) { const T = nameTiers(L); return T.find(t => pool.some(g => !t.has(g))) || new Set(); }
+/** Canon event chỉ nối nhân quả về người ở chỗ trống `who` khi chữ của cảnh (tiêu đề, đoạn mở, cửa) thật sự nhắc tới người đó. */
+function canonMentions(L, view, who) {
+  const name = castName(L, who); if (!name || name === "ai đó") return false;
+  return canonMentionsText(view, name);
+}
+/** Chữ của cảnh (tiêu đề, đoạn mở, nhãn và gợi ý của cửa) có nhắc tới `s` không (không phân biệt hoa thường). */
+function canonMentionsText(view, s) {
+  if (!s || typeof s !== "string") return false;
+  const k = s.toLowerCase();
+  return [view.title, view.text, ...(view.choices || []).map(c => (c.label || "") + " " + (c.hint || ""))].some(x => typeof x === "string" && x.toLowerCase().includes(k));
+}
+/** Dòng "Mùa N: …". Cùng năm có mùa vừa bị cắt (dòng cắt đánh dấu ở otherSelfOnExit) thì gộp: "X khép lại giữa chừng. Mùa N: Y." đặt sau cùng. */
+function seasonEnterLog(L, n, d) {
+  log(L, `Mùa ${n}: ${d.vn}.`, "big");
+  const lg = L.log, me = lg[lg.length - 1];
+  for (let i = lg.length - 2; i >= 0 && lg[i].age === L.age; i--) if (lg[i].cut) { const c = lg.splice(i, 1)[0]; me.text = c.text + " " + me.text; break; }
+}
+/** Chung kết của mùa: ghi một ghi chú giao diện (không phải quyết định, không đụng mô phỏng) để trang hiện thẻ chung kết. */
+function seasonLandingNote(L, se, rec) {
+  const d = seasonDef(rec.id), l = d && rec.landing ? d.landings.find(x => x.id === rec.landing) : null;
+  if (!l || !l.line) return;
+  (L.uiNotes = L.uiNotes || []).push({ kind: "landing", age: L.age, n: se && Number.isInteger(se.n) ? se.n : null, vn: d.vn, color: d.color, weird: d.weird || null, line: l.line });
+  if (L.uiNotes.length > 6) L.uiNotes.splice(0, L.uiNotes.length - 6);
+}
+
+/* ---- Câu kết cho mọi mùa (góp ý 19/10): "bạn đã để lại điều gì ở giai đoạn này?" ----
+   Chung kết đã có câu riêng (landing.line). Mùa bị cắt, dang dở lúc chết, hay tự khép lại thì dựng một câu từ trạng thái mùa:
+   nhịp đang dở (từ các thẻ mùa đã ra), người mới của mùa, 3 vết. Không rút rng: biến thể chọn theo băm (id mùa, tuổi vào mùa). */
+const SEASON_PHASE_VN = ["khi mọi chuyện vừa mở màn", "khi biến cố vừa nổ ra", "ngay giữa cú lật", "lúc đang chạm đáy", "khi chỉ còn một bước tới hồi kết"];
+/** Nhịp xa nhất mùa này đã tới, đọc từ lịch sử thẻ mùa (ss_<mùa>_<nhịp>_<thẻ>). */
+function seasonBeatReached(L, se) {
+  const pre = "ss_" + se.id + "_"; let b = 0;
+  for (const h of L.lw.history) if (h.age >= se.from && h.id.startsWith(pre)) { const k = parseInt(h.id.slice(pre.length), 10); if (k > b) b = k; }
+  return Math.max(0, Math.min(4, b));
+}
+function seasonEndLine(L, se, reason) {
+  if (!L || !L.lw || !se) return "";
+  const phase = SEASON_PHASE_VN[seasonBeatReached(L, se)];
+  // Người: người mới đầu tiên của mùa (tên + nhãn), không có thì người mang vết.
+  let name = "", label = "";
+  const cid = se.cast && Object.values(se.cast)[0], m = cid && L.lw.cast.get(cid);
+  if (m && m.name) { name = m.name; label = m.label || ""; }
+  else if (se.scars && se.scars.nguoi && se.scars.nguoi.npc) { const n = castName(L, se.scars.nguoi.npc); if (n && n !== "ai đó") name = n; }
+  const sc = se.scars || {}, no = sc.no && sc.no.label ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
+  const thing = sc.do && sc.do.label && sc.do.key !== "job" ? sc.do.label : "";
+  const v = strHash(se.id + "@" + se.from) % 2, pickWho = name && (v === 0 || (!no && !thing));
+  // Chỉ nói điều có thật trong đời này (người mới của mùa, vết, nhịp); thiếu dữ liệu thì câu trung tính, không bịa thêm.
+  const whoTxt = name ? `${name}${label ? ` (${label})` : ""}` : "";
+  if (reason === "cut") {
+    if (pickWho) return `Mùa này bị cắt ngang ${phase}; bạn chưa kịp gặp lại ${whoTxt} lần cuối.`;
+    if (no) return `Mùa này bị cắt ngang ${phase}; ${no} vẫn còn treo lại.`;
+    if (thing) return `Mùa này bị cắt ngang ${phase}; ${thing} ở lại với mùa ấy.`;
+    return `Mùa này bị cắt ngang ${phase}.`;
+  }
+  if (reason === "death") {
+    if (no) return `Bạn ra đi ${phase}, vẫn còn vướng ${no}.`;
+    if (pickWho) return `Bạn ra đi ${phase}, khi còn đang đi cùng ${whoTxt}.`;
+    if (thing) return `Bạn ra đi ${phase}, vẫn còn giữ ${thing}.`;
+    return `Bạn ra đi ${phase}, khi mùa này còn dang dở.`;
+  }
+  if (pickWho) return `Mùa này tự khép lại ${phase}, cùng với ${whoTxt}.`;
+  if (no) return `Mùa này tự khép lại ${phase}; ${no} vẫn còn đó.`;
+  if (thing) return `Mùa này tự khép lại ${phase}; ${thing} ở lại với mùa ấy.`;
+  return `Mùa này tự khép lại ${phase}.`;
+}
+
+/* ---- Di cư của mùa (reset, chung kết): chắc chắn thành, không tung 55% như lời mời di cư thường ---- */
+function sureMigrate(e) {
+  if (!e || !e.custom) return e;
+  const parts = customParts(e.custom); if (!parts.includes("migrate_now")) return e;
+  return { ...e, custom: parts.map(p => p === "migrate_now" ? "migrate_sure" : p).join("|") };
+}
+/** Như migrate_now (cùng bộ lọc nơi đến, cùng chi phí đi lại) nhưng không có nhánh "thủ tục không thành". */
+function migrateSure(L) {
+  L.flags.migAsked = true;
+  const dest = pickWeighted(L.r, COUNTRIES.filter(d => d.g > L.c.g * 1.5 && d.g > 15000), d => d.b + (d.g > 40000 ? 1 : 0));
+  if (!dest) { log(L, "Không tìm được nơi nào nhận bạn.", "bad"); return false; }
+  L.savings -= incomeAt(L.c, .5) * .8;
+  L.migrated = true; L.c = dest;
+  log(L, `Bạn chuyển sang sống ở ${dest.n}.`, "good big"); addSt(L, "rel", -12); addSt(L, "happy", -4); getJob(L);
+  return true;
+}
+
+/* ---- R24: hệ số thu nhập của mùa chỉ nhân vào lương trong mùa ---- */
+/** Một năm thu nhập GỐC (bỏ hệ số mùa): đơn vị cho money:<x>, borrow / repay, cược với NPC, tiền AI cho. Ngoài mùa = householdIncome. */
+function seasonYearlyBase(L) {
+  const h = householdIncome(L), m = seasonIncomeMult(L);
+  return Math.max(300, m !== 1 && earnsOwnLiving(L) ? h / m : h);
+}
+/** Một năm thu nhập CÓ hệ số mùa, cho custom money_season:<x>. Trong mùa: thu nhập hiện tại; ở chung kết (mùa vừa kết năm nay): gốc × hệ số mùa ấy. */
+function seasonMoneyYearly(L) {
+  if (L.lw && L.lw.season) return Math.max(300, householdIncome(L));
+  const last = L.lw && L.lw.canon && L.lw.canon.seasons[L.lw.canon.seasons.length - 1];
+  return seasonYearlyBase(L) * (last && last.to === L.age && last.mult ? last.mult : 1);
 }
 
 </script>
@@ -39344,7 +39940,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   document.getElementById("codexBtn").textContent=`Sổ tay (${Object.keys(L.codex||{}).length})`;
   const ab=document.getElementById("aiBtn");ab.textContent=NAR.status==="off"?"AI chưa kết nối":`AI kể chuyện: ${NAR.enabled?(NAR.status==="busy"?"đang viết…":"bật"):"tắt"}`;ab.classList.toggle("on",NAR.enabled&&NAR.status!=="off");ab.classList.toggle("warn",NAR.status==="off");ab.title=NAR.status==="off"?"Bấm để xem vì sao chưa có AI và cách bật":"";ab.disabled=false;renderCodex();
   document.getElementById("auto").textContent=`Tự chơi: ${G.autoDecide?"bật":"tắt"}`;document.getElementById("auto").classList.toggle("on",G.autoDecide);renderWant(L);
-  if(typeof seasonTheme==="function"){seasonTheme(L);seasonBanner(L);weirdMenu(L)}
+  if(typeof seasonTheme==="function"){seasonTheme(L);seasonBanner(L);weirdMenu(L)}if(typeof seasonNotes==="function")seasonNotes(L);
   const pend=!!(L.pending||G.card);document.body.classList.toggle("pending",pend&&L.alive);
   // thước đời
   document.getElementById("rulerHead").innerHTML=`Năm thứ <b>${L.age}</b> trên tuổi thọ trung bình <b>${L.le}</b> ở ${esc(L.birthC?L.birthC.n:L.c.n)}`;
@@ -39381,8 +39977,8 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
     const timed=g.bw<50&&L.ar;
     const long=String(p.text||"").length>420;
     if(G.freshKey!==key){G.freshKey=key;dec.classList.add("fresh");dec.onpointermove=()=>dec.classList.remove("fresh")}
-    dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT" tabindex="-1"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
-     ${becauseHTML(L,p)}<h3 id="decT">${esc(p.title)}</h3><p class="txt${long?" long":""}" id="decTxt">${esc(p.text)}</p>${long?`<button class="readmore" id="readmore" aria-controls="decTxt" aria-expanded="false">Đọc hết</button>`:""}${m?matrixHtml(m):""}
+    dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT" tabindex="-1"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":p.canon?"Một ngã rẽ lớn":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":p.canon&&p.canon.ai==="done"?" · AI viết lại":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
+     <h3 id="decT">${esc(p.title)}</h3>${becauseHTML(L,p)}<p class="txt${long?" long":""}" id="decTxt">${esc(p.text)}</p>${long?`<button class="readmore" id="readmore" aria-controls="decTxt" aria-expanded="false">Đọc hết</button>`:""}${m?matrixHtml(m):""}
      ${p.npc&&L.ar&&L.ar.dd[key]?`<div class="signal">${esc(npcSignalVN(L,p.npc,key))}</div>`:""}
      ${canDD?`<div><button class="btn" id="dd" ${g.bw<ddCost?"disabled":""}>Thẩm định (−${ddCost} băng thông)</button> <span class="note">${g.bw<ddCost?"Không đủ băng thông để thẩm định.":"Làm rõ các con số và đọc tín hiệu của đối phương."}</span></div>`:""}
      ${p.tempt&&p.npc&&L.ar&&g.tier!=="autopilot"?temptationVN(L,p.npc,p.tempt.stake,p.tempt.roundsLeft):""}
@@ -39400,7 +39996,8 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
       G.timerIv=setInterval(()=>{if(G.acting)return;const bar=document.getElementById("timerbar");if(!bar||!L.pending||L.pending.key!==key){clearInterval(G.timerIv);return}const left=Math.max(0,1-(performance.now()-t0)/total);bar.style.width=(left*100)+"%";
         const tl=document.getElementById("timerLeft");if(tl)tl.textContent=Math.ceil(left*total/1000);
         if(left<=0){clearInterval(G.timerIv);G.timerKey=null;const pickI=timerPick(L,p,argonGate(L));log(L,"Bạn không kịp nghĩ. Bạn làm điều dễ nhất.","bad");resolve(L,pickI);render()}},250)}
-    const ddb=document.getElementById("dd");if(ddb)ddb.onclick=()=>{if(uiOp(L,{t:"dd",key,cost:ddCost}))render()}}
+    const ddb=document.getElementById("dd");if(ddb)ddb.onclick=()=>{if(uiOp(L,{t:"dd",key,cost:ddCost}))render()};
+    if(p.canon&&typeof canonAiRewrite==="function")canonAiRewrite(L,p,dec.querySelector(".decision"))}
   else if(narratorWaiting(L))dec.innerHTML=`<div class="decision micro"><div class="dhead"><b>Người kể chuyện đang viết một tình huống cho tuổi ${L.nextAi}…</b></div><p class="note">Lần đầu, trình duyệt sẽ hỏi bạn có cho phép trang này dùng Claude không. Có thể tắt AI kể chuyện trong menu để chơi với kịch bản sẵn.</p></div>`;
   else if(!document.querySelector("#dec #qy"))dec.innerHTML="";
   placeWant(L,wf);
@@ -39421,6 +40018,7 @@ function renderLog(L){const ents=L.log.slice(-160).reverse();const groups=[];for
 function logItem(e){const t=String(e.text),tone=e.tone||"";
   if(/\bchoice\b/.test(tone)){const SEP=" — bạn chọn: ",k=t.indexOf(SEP);if(k>0)return`<li class="e choice"><span class="t">${esc(t.slice(0,k))}</span><span class="c">Bạn chọn: ${esc(t.slice(k+SEP.length))}</span></li>`}
   if(/\bdoor\b/.test(tone)){const m=t.match(/^Cánh cửa đã đóng:\s*(.*)$/);return`<li class="e door"><span class="st">Cửa đã đóng</span>${esc(m?m[1]:t)}</li>`}
+  if(/\bother\b/.test(tone))return`<li class="e other"><span class="st">Bản kia của bạn</span>${esc(t)}</li>`;
   return`<li class="e ${esc(tone)}">${esc(t)}</li>`}
 
 function trustOf(op,m){if(op>=.5)return["hi",m&&m.roles.includes("child")?"quấn bạn":"tin bạn"];if(op>=.1)return["hi","quý bạn"];if(op>-.1)return["mid","bình thường"];if(op>-.35)return["warm","dè chừng"];return["lo","giận bạn"]}

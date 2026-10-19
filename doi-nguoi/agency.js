@@ -69,7 +69,8 @@ CHỈ TRẢ VỀ JSON đúng khuôn:
  "co":[],"bo_co":[],"viec_lon":[{"loai":"...","gia_tri":"..."}],"thoi_quen":{},"bi_mat":null,"chuyen":null,"chon":null}`;
 
 /* ---- Gói bối cảnh gửi AI ---- */
-function isFreeScene(p) { return !!p && (p.ai || p.story || p.choices.some(c => c._fx)); }
+/** Cảnh tự do: gõ gì cũng được, không phải chọn nút. Canon event và thẻ có chung kết mùa thì KHÔNG (đã nổ thì không tránh được: gõ xong vẫn đi qua một cửa, theo chon hoặc def). */
+function isFreeScene(p) { return !!p && !(p.canon || p.choices.some(c => c._fx && Argon.landingOf(c._fx) !== null)) && (p.ai || p.story || p.choices.some(c => c._fx)); }
 function actPacket(L, text) {
   const pk = statePacket(L);
   pk.nguoi_than = [...L.lw.cast.values()].filter(m => m.alive).map(m => ({ id: m.id, ten: m.name, vai: roleVN(m), tuoi: L.age + m.age_offset, tin: +(Argon.opinionOf(L.ar.state, L.lw.mem, m.id)).toFixed(2) })).slice(0, 14);

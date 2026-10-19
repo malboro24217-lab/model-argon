@@ -23,7 +23,7 @@ python3 doi-nguoi/tests/build.py   # nhúng các script vào doi-nguoi/index.htm
 ```
 `build.py` nhúng từng file host vào khối `<script id="…">` cùng tên trong `index.html`. `canon.js` nằm sau `money.js` và có mặt ở cả ba nơi: trang, `tests/.head.js`, `publish/files.txt`.
 
-`canon-ui.js` đã có chỗ sẵn là `<script id="canonui">` trong `index.html`, nhưng chưa có trong `build.py`. Task 8b sẽ thêm khóa `'canonui'` vào ba danh sách của `build.py`: `srcs`, danh sách của `.head.js`, danh sách của `publish`. Trước khi có bước đó, `canon-ui-test.js` tự nạp thẳng `doi-nguoi/canon-ui.js`.
+`canon-ui.js` được nhúng vào `<script id="canonui">` của `index.html`: khóa `'canonui'` có trong cả ba danh sách của `build.py` (`srcs`, `.head.js`, `publish`) từ Task 8b.
 
 ## Test
 ```sh
@@ -79,17 +79,21 @@ Các dòng `cd argon && …` chạy từ thư mục gốc của repo.
 - **Trong mùa:**
   - tiền, nghề, nơi ở và dàn nhân vật có thể đổi hẳn;
   - có 2–3 người mới (nhánh kỳ dị 1–2) và một câu đùa lặp lại;
-  - ba "vết" của đời cũ quay lại ở cú lật và chung kết, kèm dòng "↩ Vì năm N…": một người, một đồ vật hay kỹ năng, một món nợ hay lời hứa.
+  - ba "vết" của đời cũ quay lại ở cú lật và chung kết: một người, một đồ vật hay kỹ năng, một món nợ hay lời hứa;
+  - dưới tiêu đề thẻ có dòng "↩ Có liên quan đến lựa chọn năm N tuổi · Xem lại", mở ra thấy đúng lựa chọn cũ và vài hệ quả (chỉ khi chữ của thẻ thật sự nhắc tới người hay vật đó).
 - **Chung kết:**
   - người chơi chọn cách đáp xuống: nghề mới, nước mới, hôn nhân, tiền…;
   - biến cố mới nổ giữa mùa thì mùa cũ bị cắt ngang.
 - **Màn kết:**
   - mục "Các mùa của đời bạn" liệt kê từng mùa với khoảng tuổi và cách nó khép lại: dòng chung kết, "bị cắt ngang", hoặc "dang dở" khi chết giữa mùa;
   - Tấm bia có thêm một dòng tên các mùa.
-- **Sắp có (Task 8b):**
+- **Task 8b thêm:**
   - dòng "Bản kia của bạn": ở dòng thời gian kia, nếu chọn cửa khác, bạn đã vào mùa nào và đáp xuống đâu;
-  - AI viết lại chữ biến cố khi trang có quyền `sample`;
-  - các custom `swap_other`, `remark`, `age_skip`, `longevity` mà vài nhánh kỳ dị dùng (hiện chưa có tác dụng).
+  - AI viết lại chữ biến cố khi trang có quyền `sample` (ghi vào actLog `canon_text`, tua lại khớp);
+  - thẻ nhỏ "Mùa N khép lại: …" ở trên cùng khi một mùa đáp xuống (tự tắt sau 7 giây), và một dòng kết cho mọi mùa ở màn kết (cả mùa bị cắt, dang dở, tự khép lại), dựng từ dữ liệu thật của đời đó;
+  - gõ hành động riêng ở thẻ biến cố vẫn đưa về đúng một cửa (I1); di cư của mùa luôn thành (`migrate_sure`, I2);
+  - các custom `swap_other`, `remark`, `age_skip`, `longevity`;
+  - R24: hệ số thu nhập của mùa chỉ nhân lương; thưởng theo hệ số phải khai báo `money_season:<x>`.
 
 ### Độ điên
 - Menu có ô "Độ điên" với ba mức:
@@ -112,7 +116,7 @@ Các dòng `cd argon && …` chạy từ thư mục gốc của repo.
    - thêm id vào `NORMAL_SEASONS` trong `Canon.ts` (danh sách dự phòng khi mùa của cửa đã chơi);
    - mùa cần người chơi tự lập thì thêm vào `NEEDS_INDEPENDENT`.
 4. Muốn thẻ Codex làm cảnh phụ trong mùa: gắn tag trong `CODEX_SEASON_TAGS` (`canon/codexPlants.ts`). Đồng thời thêm id vào `NORMAL_SEASON_IDS` ở cùng file, và sửa phép kiểm "5 id mùa thường" trong `argon/src/canon-test.ts`.
-5. Theo `argon/docs/canon/authoring-rules.md` (quy tắc 1–10) và `argon/docs/content-guide.md` §4–5.
+5. Theo `argon/docs/canon/authoring-rules.md` (quy tắc 1–14) và `argon/docs/content-guide.md` §4–5.
 6. Chạy `canon-content-test.ts`, `canon-test.ts` và `npx tsc --noEmit`. Sau đó bundle, chạy `build.py` và các test host.
 
 ### Thêm một nhánh kỳ dị
@@ -123,12 +127,12 @@ Các dòng `cd argon && …` chạy từ thư mục gốc của repo.
    - màu: viễn tưởng thuộc dải xanh–tím, phi lý thuộc dải vàng–cam;
    - `trigger` có một câu thoại trong ngoặc kép;
    - `when` ("Mọc từ") chỉ đọc trường có thật của FactContext và phải đúng ở ít nhất một bối cảnh fuzz.
-3. Theo đủ 10 quy tắc trong `argon/docs/canon/authoring-rules.md`. Quan trọng nhất:
+3. Theo đủ 14 quy tắc trong `argon/docs/canon/authoring-rules.md`. Quan trọng nhất:
    - khoảng tuổi trong `when`;
    - cổng tuổi của landing đổi nghề;
    - câu khẳng định nợ, việc, nhà, vợ chồng, con phải đúng với mọi bối cảnh;
    - lựa chọn có `tier` không đứng đầu.
-4. Custom phía host dùng được: `become:<p>`, `migrate_now`, `move_city`, `marry`, `marry:<tên>`, `spouse_leave`, `have_child`, `job_lose`, `borrow:x`, `repay:x`, `explode_hook`, `return_home`, `retire`. Còn `age_skip:<n>`, `longevity:<n>`, `remark`, `swap_other` thì chờ Task 8b mới có tác dụng.
+4. Custom phía host dùng được: `become:<p>`, `migrate_now` (trong reset và chung kết host đổi thành `migrate_sure`), `move_city`, `marry`, `marry:<tên>`, `spouse_leave`, `have_child`, `job_lose`, `borrow:x`, `repay:x`, `money_season:x` (R24), `explode_hook`, `return_home`, `retire`, `age_skip:<n>`, `longevity:<n>`, `remark`, `swap_other`.
 5. Chạy `canon-content-test.ts` (kiểm cả nhánh mới), `canon-test.ts` và `npx tsc --noEmit`, rồi bundle, `build.py`, `canon-test.js`.
 
 ## Tính năng tiền (18/10/2026)
