@@ -514,6 +514,8 @@ function resumeFrom(L, fork) {
   if (!L || !L.lw || !fork || !fork.key) return null;
   const ageOf = {}; for (const m of L.lw.cz.marks) if (m.key) ageOf[m.key] = m.age;
   const forkAge = fork.age != null ? fork.age : ageOf[fork.key]; if (forkAge == null) return null;
+  // Tạm khóa (19/10): sau swap_other, bản tua lại để rẽ chưa chắc đi lại đúng đời đã đổi chỗ (probe p3, seed 1337: lệch ngay năm sau khi đổi). Chưa rõ gốc → không cho rẽ từ năm đổi chỗ trở đi.
+  if (L.lw.swap && forkAge >= L.lw.swap.age) return null;
   const acts0 = L.actLog || [];
   let choices, acts;
   if (fork.removeAct != null) {
