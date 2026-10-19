@@ -11,11 +11,12 @@ const OUT = path.resolve(opt("out", path.join(os.tmpdir(), "want-states"))); fs.
 const PAGE = path.resolve(opt("page", new URL("../index.html", import.meta.url).pathname));
 const body = fs.readFileSync(PAGE, "utf8");
 const mock = `<script>
-window.__fail = false; window.__hang = false; window.__calls = 0;
+window.__fail = false; window.__hang = false; window.__deny = false; window.__calls = 0;
 const fake = async (i, o) => { const t = "Lời cuối (AI)."; if (o && o.onText) o.onText({ text: t, delta: t }); return { text: t, truncated: false }; };
 fake.json = async (prompt) => {
   if (/"cau_go":"[^"]/.test(prompt)) { window.__calls++;
     if (window.__hang) await new Promise(() => {});
+    if (window.__deny) throw Object.assign(new Error("denied"), { code: "not_granted" });   // người chơi bấm từ chối quyền ở lần gọi đầu
     if (window.__fail) throw new Error("down");
     return { ke: "Bạn nói thẳng điều mình nghĩ.", ket_qua: "thanh", chi_so: { happy: 2 }, nguoi: [], co: [], chon: 0 }; }
   // người kể chuyện tự viết cảnh: trả lỗi để game dùng kịch bản sẵn (không cần cho test này)
@@ -75,6 +76,8 @@ for (const width of [390, 1366]) {
     const lab = await page.textContent("#wantLead"), ph = await page.getAttribute("#wantIn", "placeholder");
     assert.strictEqual(lab, "Bạn muốn làm theo cách khác?"); assert.strictEqual(ph, "Nhập hành động hoặc lời bạn muốn nói…");
     assert(await page.$("#dec .decision #want.incard #wantIn"), `${width}: ô nhập trong thẻ`);
+    // iOS phóng to trang khi ô nhập < 16px nhận tiêu điểm
+    assert(parseFloat(await page.evaluate(() => getComputedStyle(document.getElementById("wantIn")).fontSize)) >= 16, `${width}: ô nhập ≥ 16px`);
     await shotCard(page, `w${width}-0-ready.png`);
     if (width > 800) {
       // thẻ mới hiện dưới con trỏ đứng yên: phương án 1 không được tô như đang được khuyên chọn; tiêu điểm ở thẻ, không ở phương án 1
@@ -93,6 +96,13 @@ for (const width of [390, 1366]) {
       assert(await page.evaluate(() => document.querySelector('details[data-fold="money"]').open), `${width}: khung gập nhớ trạng thái mở`);
       assert(/"money":true/.test(await page.evaluate(() => localStorage.getItem("mlcd.fold") || "")), `${width}: lưu trong localStorage`);
     }
+    // đang gõ mà render() chạy (vd. người kể chuyện xong việc): ô không bị blur, giữ chữ và vùng chọn
+    await page.click("#wantIn"); await page.keyboard.type("abc def");
+    const kept = await page.evaluate(async () => { const i = document.getElementById("wantIn"); let blur = 0; i.addEventListener("blur", () => blur++); i.setSelectionRange(2, 5);
+      render(); await new Promise(r => setTimeout(r, 30)); render();
+      return { blur, focus: document.activeElement === i, sel: [i.selectionStart, i.selectionEnd], val: i.value }; });
+    assert.deepStrictEqual(kept, { blur: 0, focus: true, sel: [2, 5], val: "abc def" }, `${width}: render() không làm ô mất tiêu điểm`);
+    await page.fill("#wantIn", "");
     // đang trả lời
     await page.evaluate(() => { window.__hang = true; });
     await page.fill("#wantIn", "tôi xin thêm một ngày để nghĩ"); await page.press("#wantIn", "Enter"); await page.waitForTimeout(250);
@@ -115,6 +125,27 @@ for (const width of [390, 1366]) {
     await page.evaluate(() => { window.__fail = false; }); await page.click("#wantRetry");
     await page.waitForSelector("#actcard", { timeout: 5000 }).catch(async e => { throw new Error(`${width}: không ra thẻ sau khi gửi lại: ${await page.textContent("#wantMsg")} · ${await page.evaluate(() => window.__calls)}`); });
     assert(/tôi xin thêm một ngày để nghĩ/.test(await page.textContent("#actcard")), `${width}: gửi lại thành công`);
+    await ctx.close(); }
+  // lỗi rồi chọn cách có sẵn: lỗi và "Gửi lại" không theo sang cảnh khác
+  { const { ctx, page } = await open(width, true);
+    await page.evaluate(() => { window.__fail = true; });
+    await page.fill("#wantIn", "tôi im lặng"); await page.press("#wantIn", "Enter");
+    await page.waitForSelector("#wantRetry:not([hidden])", { timeout: 5000 });
+    await page.evaluate(() => document.querySelector("#dec [data-i]:not([disabled])").click()); await page.waitForTimeout(100);
+    const c = await page.evaluate(() => ({ msg: document.getElementById("wantMsg").innerText, retry: document.getElementById("wantRetry").hidden }));
+    assert(!/chưa trả lời/.test(c.msg) && c.retry, `${width}: đổi cảnh thì xóa lỗi cũ (${c.msg})`);
+    await ctx.close(); }
+  // bị từ chối quyền (not_granted): chuyển sang "chưa có AI", không thử lại, không mời gửi lại
+  { const { ctx, page } = await open(width, true);
+    await page.evaluate(() => { window.__deny = true; });
+    await page.fill("#wantIn", "tôi viết thư xin lỗi"); await page.press("#wantIn", "Enter");
+    await page.waitForFunction(() => !G.acting, null, { timeout: 5000 }); await page.waitForTimeout(100);
+    const d = await page.evaluate(() => ({ st: NAR.status, off: !document.getElementById("wantOff").hidden, retry: document.getElementById("wantRetry").hidden,
+      msg: document.getElementById("wantMsg").innerText, calls: window.__calls, menu: document.getElementById("aiBtn").textContent, txt: document.getElementById("wantOff").textContent }));
+    assert.strictEqual(d.st, "off", `${width}: NAR.status off sau khi bị từ chối`); assert(d.off, `${width}: hiện lời giải thích`); assert(d.retry, `${width}: không có Gửi lại`);
+    assert(!/chưa trả lời/.test(d.msg), `${width}: không báo lỗi chung`); assert.strictEqual(d.calls, 1, `${width}: không gọi lại lần hai`);
+    assert(/AI chưa kết nối/.test(d.menu), `${width}: menu`); assert(/tải lại trang/.test(d.txt), `${width}: gợi ý tải lại trang`);
+    await shotCard(page, `w${width}-4-denied.png`);
     await ctx.close(); }
 }
 await browser.close();

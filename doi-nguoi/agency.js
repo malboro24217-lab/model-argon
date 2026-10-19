@@ -177,7 +177,12 @@ async function agencyAct(L, text, sample) {
   let act = null, raw = null;
   for (let attempt = 0; attempt < 2 && !act; attempt++) {
     try { raw = await withTimeout(sample.json(prompt, { modelTier: "default", cache: false }), AGENCY_TIMEOUT); act = Argon.sanitizeAct(raw, castIds, L.age); }
-    catch (e) { act = null; /* thử lại */ }
+    catch (e) {
+      act = null;
+      // Bị từ chối quyền dùng Claude (hoặc tài khoản tắt / trang không khai báo): không thử lại, báo cho giao diện là AI chưa có.
+      if (e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "not_declared")) { NAR.status = "off"; return { ok: false, off: true, error: "Trang chưa được phép dùng Claude." }; }
+      /* thử lại */
+    }
   }
   if (!act) return { ok: false, error: "Người kể chuyện chưa trả lời — thử lại" };
   if (!L.alive) return { ok: false, error: "Đời đã khép lại." };
