@@ -1,7 +1,7 @@
 // Task 20d (ruling R25): lúc vào mùa, host không tự đổi nghề hay tiền khi mùa không khai báo.
 // Với mỗi mùa trong 105 mùa: nuôi một đời tự lập, có việc (mùa đang chạy thì cắt trước), gọi enterSeason, rồi so trước / sau:
 //   - nghề (L.job) chỉ đổi khi reset.effects khai báo job_* / become / retire;
-//   - tiền ròng (L.savings) chỉ đổi khi reset khai báo cash, money, borrow, repay hay di chuyển (move_city / migrate_now);
+//   - tiền ròng (L.savings) chỉ đổi khi reset khai báo cash, money, money_season (Task 8b), borrow, repay hay di chuyển (move_city / migrate_now);
 //   - thu nhập chỉ nhân đúng rules.income (khi reset không có custom đổi thu nhập).
 // Run: node doi-nguoi/tests/season-entry-test.js
 const fs = require('fs'); const assert = require('assert');
@@ -18,7 +18,7 @@ function grow(seed, toAge) {
 }
 const defs = [...Argon.SEASONS, ...Argon.WEIRD.map(b => b.season)];
 assert.strictEqual(defs.length, 105, '105 mùa');
-const MONEY = /^(borrow|repay|restructure|move_city|migrate_now|return_home)(:|$)/, JOB = /^(job_[a-z_]+|become|retire)(:|$)/;
+const MONEY = /^(money_season|borrow|repay|restructure|move_city|migrate_now|return_home)(:|$)/, JOB = /^(job_[a-z_]+|become|retire)(:|$)/;
 let checked = 0, jobSame = 0, moneySame = 0, incomeExact = 0;
 for (const [i, d] of defs.entries()) {
   const P = grow(5000 + i * 37, 30 + (i % 20)); G.life = P;

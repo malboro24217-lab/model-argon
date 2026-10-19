@@ -306,7 +306,7 @@ const S34: WeirdBranch = weird("S34", "sf", ["mau", "danh"],
       ],
       /* chung_ket */
       [
-        card("s34_ket", "Ba con đường trên tờ giấy", (c, k) => `Hạn chót của viện là sáng thứ Hai. ${cap(k.npc("co_giao"))} mang sang một nồi cháo và một lời khuyên: ${n(c, "s34_di") >= 2 ? "giấy tờ đã sẵn, đi thì đi cho sớm." : n(c, "s34_vien") >= 2 ? "hợp đồng đã ký thì con đi, nhưng đừng để con đi một mình trong lòng." : "đứa nhỏ cần một nơi không ai đếm bậc thang thay nó."} Còn ${noOr(c, k)} thì vẫn chưa trả, đi đâu cũng phải mang theo. ${k.gag()}`,
+        card("s34_ket", "Ba con đường trên tờ giấy", (c, k) => `Hạn chót của viện là sáng thứ Hai. ${cap(k.npc("co_giao"))} mang sang một nồi cháo và một lời khuyên: ${n(c, "s34_di") >= 2 ? (migrateOk(c) ? "giấy tờ đã sẵn, đi thì đi cho sớm." : "giấy tờ ra nước ngoài không xin được, nên muốn đi thì chỉ đi được trong nước.") : n(c, "s34_vien") >= 2 ? "hợp đồng đã ký thì con đi, nhưng đừng để con đi một mình trong lòng." : "đứa nhỏ cần một nơi không ai đếm bậc thang thay nó."} Còn ${noOr(c, k)} thì vẫn chưa trả, đi đâu cũng phải mang theo. ${k.gag()}`,
           (c) => finale(c, [
             { l: S34_DI, label: "Cả nhà đổi nước mà đi", hint: "Con được tự do, cả nhà làm lại từ đầu ở đất lạ", ok: migrateOk },
             { l: S34_XA, label: "Để con đi học ở viện xa", hint: "Con bay cao, nhà vắng tiếng cười" },
@@ -597,7 +597,7 @@ const S38: WeirdBranch = weird("S38", "sf", ["dat", "tien"],
       ],
       /* chung_ket */
       [
-        card("s38_ket", "Thành phố xin cập bến", (c, k) => `Sau mấy năm trôi nổi, thành phố xin cập bến một nước giàu ven biển. Mỗi cư dân được chọn: nhận giấy tờ ở lại nước đó, theo thành phố ra khơi tiếp, hay về lại đất liền cũ. ${n(c, "s38_tieng") >= 4 ? "Hội đồng muốn bạn ở lại dẫn đoàn." : n(c, "s38_bien") >= 2 ? "Thuyền trưởng đã giữ cho bạn một chỗ trên boong." : "Không ai giữ chỗ cho bạn, nên bạn được chọn thật tự do."} Trên bờ, ${noOr(c, k)} vẫn đang chờ bạn. ${k.gag()}`,
+        card("s38_ket", "Thành phố xin cập bến", (c, k) => `Sau mấy năm trôi nổi, thành phố xin cập bến một nước giàu ven biển. ${migrateOk(c) ? "Mỗi cư dân được chọn: nhận giấy tờ ở lại nước đó, theo thành phố ra khơi tiếp, hay về lại đất liền cũ." : "Nước ấy chỉ cấp giấy tờ ở lại cho một số ít người, và tên bạn không có trong danh sách: bạn được chọn theo thành phố ra khơi tiếp, hay về lại đất liền cũ."} ${n(c, "s38_tieng") >= 4 ? "Hội đồng muốn bạn ở lại dẫn đoàn." : n(c, "s38_bien") >= 2 ? "Thuyền trưởng đã giữ cho bạn một chỗ trên boong." : "Không ai giữ chỗ cho bạn, nên bạn được chọn thật tự do."} Trên bờ, ${noOr(c, k)} vẫn đang chờ bạn. ${k.gag()}`,
           (c) => finale(c, [
             { l: S38_DI, label: "Nhận giấy tờ, ở lại nước mới", hint: "Đổi nước, làm lại từ đầu trên đất liền khác", ok: migrateOk },
             { l: S38_VE, label: "Về lại đất liền cũ", hint: "Mất tiền cọc, về gần người quen" },

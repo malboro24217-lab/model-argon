@@ -207,7 +207,7 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
     beats: [
       /* mo_man */
       [
-        card("x33_mo_bi_ngo", "Giám khảo hội thi bí ngô", (c, k) => `Hội thi bí ngô to nhất vùng mời bạn làm giám khảo, với một nhiệm vụ duy nhất: nói không với mọi quả bí. Một trăm hai mươi quả xếp hàng, mỗi quả có một người chủ đang run. Hội kỷ lục gửi kèm giấy báo: người giữ danh hiệu được trả một khoản nhỏ mỗi năm, miễn chữ không vẫn còn được đếm. ${k.gag()}`,
+        card("x33_mo_bi_ngo", "Giám khảo hội thi bí ngô", (c, k) => `Hội thi bí ngô to nhất vùng mời bạn làm giám khảo, với một nhiệm vụ duy nhất: nói không với mọi quả bí. Một trăm hai mươi quả xếp hàng, mỗi quả có một người chủ đang run. Hội kỷ lục gửi kèm giấy báo: người giữ danh hiệu được trả một khoản nhỏ mỗi năm, cho tới lễ trao danh hiệu cuối cùng. ${k.gag()}`,
           [C("Nhận lời, nói không cả trăm lần", { money: 0.1, counters: { x33_khong: 1 }, flags: ["x33_giam_khao"] }, "Có tiền công, mất một trăm hai mươi người quen"),
            C("Từ chối lời mời", { happy: 1, counters: { x33_khong: 1 }, flags: ["x33_tu_choi_moi"] }, "Đúng chất, và chính lời từ chối lên báo")]),
         card("x33_mo_bua_com", "Bữa cơm không có chữ có", (c, k) => `Cả nhà biến bữa cơm thành một cuộc thử: ai cũng hỏi bạn những câu chỉ có thể trả lời là có. "Ăn thêm bát nữa không?" ${cap(k.npc("nguoi_dem"))} ngồi ở đầu bàn, bút đã mở nắp.`,

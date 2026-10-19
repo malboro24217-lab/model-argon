@@ -273,7 +273,7 @@ const S04 = weird("S04", "sf", ["ky", "mau"],
     beats: [
       /* mo_man */
       [
-        card("s04_mo_thu", "Lần tua đầu tiên", (c, k) => `Bạn thử trên một chuyện nhỏ: câu nói hớ trong bữa cơm tối qua. Vặn ngược một vòng, bữa cơm dọn ra lại, cả nhà ngồi đúng chỗ cũ. Sáng ra, ví bạn mỏng đi đúng bằng tiền một bữa cơm: chiếc đồng hồ đã thu phí, và năm nào nó cũng sẽ thu. ${k.gag()}`,
+        card("s04_mo_thu", "Lần tua đầu tiên", (c, k) => `Bạn thử trên một chuyện nhỏ: câu nói hớ trong bữa cơm tối qua. Vặn ngược một vòng, bữa cơm dọn ra lại, cả nhà ngồi đúng chỗ cũ. Sáng ra, ví bạn mỏng đi một khoản: chiếc đồng hồ đã bắt đầu thu phí, và năm nào nó cũng thu. ${k.gag()}`,
           [C("Nói lại câu khác, khéo hơn", { flags: ["s04_tua_1"], counters: { s04_tua: 1 }, rel: 2 }, "Bữa cơm vui, bạn biết mình vừa gian lận"),
            C("Để nguyên câu nói hớ", { flags: ["s04_khong_tua"], happy: 1 }, "Thật thà, chịu ánh mắt của cả nhà")]),
         card("s04_mo_tho", "Ông thợ ở chợ cũ", (c, k) => `${cap(k.npc("tho_dong_ho"))} cầm chiếc đồng hồ lên, tay run nhẹ. Ông bảo cái này đã dừng từ đời trước, ông từng sửa cho nó một lần và thề không sửa lần nữa.`,

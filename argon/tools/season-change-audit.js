@@ -11,6 +11,8 @@
  *                                                                                      # "bảng sinh bằng…" thì chỉ thay phần giữa chúng)
  *   node --experimental-strip-types argon/tools/season-change-audit.js --json          # in JSON
  *   ... --root <thư mục repo khác>   # kiểm một bản khác của repo (vd. bản trước khi sửa)
+ * Thoát 1 khi còn mùa lớp (c) hay mùa của bản demo không ở lớp (a). Hàm dò thay đổi tình thế và mâu thuẫn nằm ở
+ * argon/src/canon-r25.ts, dùng chung với canon-content-test (luôn lấy từ repo chứa công cụ này, kể cả khi có --root).
  *
  * Phần kiểm tĩnh (script làm):
  *  1. Thay đổi khai báo lúc vào mùa, chắc chắn xảy ra với mọi người vào mùa:
@@ -40,7 +42,8 @@ const E = await import(pathToFileURL(join(ROOT, "argon/src/engine/index.ts")).hr
 const { randomCtx } = await import(pathToFileURL(join(ROOT, "argon/src/fuzz-ctx.ts")).href);
 const { SEASONS, WEIRD, createRng } = E;
 const ALL = [...SEASONS, ...WEIRD.map((b) => b.season)];
-const DEMO = new Set(["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi", "w_S08", "w_X36", "w_S35", "w_X14", "w_X47", "w_S05", "w_S47", "w_X33"]);
+const R25 = await import(pathToFileURL(join(HERE, "../src/canon-r25.ts")).href);
+const DEMO = new Set(R25.DEMO_SEASONS);
 
 /* ------------------------------------------------------------------ nguồn: file và dòng khai báo của mỗi mùa */
 const CANON = join(ROOT, "argon/src/engine/narrative/canon");
@@ -87,7 +90,6 @@ function kit(def, rec, empty) {
     gag: () => def.gag.lines[0] ?? "",
   };
 }
-const effectsOf = (ch) => [ch.effects, ...(ch.effects.gamble ? [ch.effects.gamble.win, ch.effects.gamble.lose] : [])];
 /** Khóa (cờ / bộ đếm) do một effect đặt. */
 function keysSet(e, out) {
   for (const f of e.flags ?? []) out.add("flag:" + f);
@@ -101,29 +103,6 @@ function build(def, card, c, rec = new Set(), empty = false) {
   try { if (card.when && !card.when(t)) return null; return card.build(t, kit(def, rec, empty)); } catch { return null; }
 }
 
-/* ------------------------------------------------------------------ thay đổi tình thế trong một effect */
-const KIND_OF = [
-  [/^(borrow|repay|restructure)(:|$)/, "nợ"],
-  [/^(job_new|job_lose|job_lose_maybe|job_switch|retire|become|study)(:|$)/, "việc"],
-  [/^(move_city|migrate_now|return_home)(:|$)/, "nơi ở"],
-  [/^(marry|spouse_leave|have_child)(:|$)/, "quan hệ"],
-  [/^(age_skip|longevity)(:|$)/, "luật mùa"],
-];
-/** Các thay đổi tình thế (không gồm cờ) trong effect. moneyMin: ngưỡng |money| (đầu mùa: mọi khoản; mở màn: ≥ 0.3). */
-function situation(e, moneyMin) {
-  const out = [];
-  if (!e) return out;
-  if (e.money !== undefined && Math.abs(e.money) >= moneyMin && e.money !== 0) out.push({ kind: "tiền", what: `tiền ${e.money > 0 ? "+" : "−"}${Math.abs(e.money)} năm thu nhập` });
-  for (const p of (e.custom ?? "").split("|").filter(Boolean)) {
-    if (p.startsWith("season_end")) continue;
-    const k = KIND_OF.find(([re]) => re.test(p));
-    if (k) out.push({ kind: k[1], what: p });
-  }
-  if (e.buy) out.push({ kind: "quyền tiếp cận", what: `mua ${e.buy.name}` });
-  if (e.sell) out.push({ kind: "quyền tiếp cận", what: `bán ${e.sell.name ?? e.sell.kind}` });
-  if (e.income_mult !== undefined && (e.income_mult >= 1.2 || e.income_mult <= 0.8)) out.push({ kind: "việc", what: `thu nhập ×${e.income_mult}` });
-  return out;
-}
 /** Trường FactContext / kit cho biết một loại thay đổi được thẻ đọc lại. */
 const READS_FOR = {
   "tiền": ["ctx:savings", "ctx:own_cash", "ctx:broke", "ctx:rich", "ctx:debt"],
@@ -147,43 +126,9 @@ const HOST_USE = {
 /* ------------------------------------------------------------------ phân tích một mùa */
 function analyse(def) {
   const own = fileOf(def.id);
-  const changes = [], weak = [];
-  // 1. reset
-  if (def.reset.cash !== undefined) changes.push({ kind: "tiền", what: `tiền riêng về ${def.reset.cash}× thu nhập`, src: "reset.cash" });
-  const re = def.reset.effects;
-  if (re) {
-    for (const s of situation(re, 0)) changes.push({ ...s, src: "reset.effects" });
-    for (const f of re.flags ?? []) changes.push({ kind: "cờ", what: f, src: "reset.effects", flag: "flag:" + f });
-  }
-  // 2. luật mùa
-  const inc = def.rules.income;
-  if (inc !== undefined && inc !== 1) {
-    if (inc <= 0.8 || inc >= 1.2) changes.push({ kind: "luật mùa", what: `thu nhập từ lương ×${inc}`, src: "rules.income" });
-    else weak.push(`thu nhập ×${inc} (nhỏ hơn ngưỡng 0.8/1.2)`);
-  }
-  const y = def.rules.yearly;
-  if (y) {
-    const s = situation(y, 0);
-    if (s.length) changes.push({ kind: "luật mùa", what: "mỗi năm: " + s.map((x) => x.what).join(", "), src: "rules.yearly" });
-    else weak.push(`luật năm chỉ đổi chỉ số (${Object.keys(y).join(", ")})`);
-  }
-  if ((def.rules.flags ?? []).length) weak.push(`cờ thế giới ${def.rules.flags.join(", ")} (không ai đọc)`);
-  // 3. thẻ mở màn chắc chắn ra (không when) mà mọi lựa chọn đều đổi tình thế
-  const conditional = [];
-  for (const card of def.beats[0]) {
-    const kinds = new Map(); let all = true, seen = 0;
-    for (const c of CTX) {
-      const v = build(def, card, { ...c, season: def.id, season_beat: 0 });
-      if (!v) continue; seen++;
-      for (const ch of v.choices) {
-        const s = effectsOf(ch).flatMap((e) => situation(e, 0.3));
-        if (!s.length) all = false; else s.forEach((x) => kinds.set(x.kind + ":" + x.what.replace(/:.*/, ""), x));
-      }
-    }
-    if (!seen) continue;
-    if (all && !card.when) for (const x of kinds.values()) changes.push({ ...x, src: `mở màn ${card.id} (mọi lựa chọn)` });
-    else if (kinds.size) conditional.push(`${card.id}: ${[...kinds.values()].map((x) => x.what).join(", ")}`);
-  }
+  // 1–3. reset, luật mùa, thẻ mở màn: dùng chung với bộ kiểm (argon/src/canon-r25.ts)
+  const { changes, weak, conditional } = R25.entryChanges(def, CTX, (d, card, c) => build(d, card, c));
+  for (const f of def.reset.effects?.flags ?? []) changes.push({ kind: "cờ", what: f, src: "reset.effects", flag: "flag:" + f });
   // 4. đọc: mọi thẻ, mọi bối cảnh, ba chế độ cờ (không cờ, đủ cờ của mùa, một nửa)
   const setBy = new Map(); // khóa → {card, beat}
   const reads = new Map(); // khóa đọc → Set(card id)
@@ -228,41 +173,11 @@ function analyse(def) {
   return { changes: changes.filter((c) => c.kind !== "cờ" || c.used), weak, conditional, unread };
 }
 
-/* ------------------------------------------------------------------ mâu thuẫn đã biết (lớp c), mỗi mục có hàm dò */
-const T = (def, id) => def.beats.flat().find((c) => c.id === id);
-const text = (def, id, over = {}) => { const card = T(def, id); if (!card) return ""; const v = build(def, card, { ...CTX[12], season: def.id, ...over }); return v ? [v.title, v.text, ...v.choices.flatMap((c) => [c.label, c.hint ?? ""])].join(" | ") : ""; };
-const choicesOf = (def, id, over = {}) => { const card = T(def, id); const v = card && build(def, card, { ...CTX[12], season: def.id, ...over }); return v ? v.choices : []; };
-const has = (a, pred) => a.changes.some(pred);
-const yearlyMoney = (a, sign) => has(a, (x) => x.src === "rules.yearly" && x.what.includes(`tiền ${sign < 0 ? "−" : "+"}`));
-const CONTRADICTIONS = {
-  tron_chay: { claim: "Cả mùa là trốn nợ (gã đòi nợ áo hoa, món nợ bị bán lại), nhưng người không nợ vào mùa vẫn không có khoản nợ nào.",
-    fix: "reset.effects thêm borrow:0.5; thẻ mở màn kể tờ giấy vay nóng.", open: (d, a) => !has(a, (x) => x.kind === "nợ" && /borrow/.test(x.what)) },
-  vu_an_gia_toc: { claim: "Bạn được cả họ giao giữ căn nhà cũ (người giữ chìa, nghi phạm), nhưng reset chỉ có dàn mới; hệ số 0.9 gần như không thấy.",
-    fix: "rules.yearly money −0.03: người giữ chìa gánh tiền giữ nhà; thẻ va_mo_chia_khoa và va_day_to_cao nhắc khoản đó.", open: (d, a) => !a.changes.length },
-  ngoi_sao: { claim: "Lời kể hứa thu nhập ×3 và nổi tiếng; người chưa có lương (từ 8 tuổi vào được) không đổi gì, cờ no_privacy không ai đọc.",
-    fix: "reset.effects money +0.3 (tiền bản quyền đoạn clip, ai cũng nhận); ns_mo_clip kể khoản đó.", open: (d, a) => !has(a, (x) => x.src !== "rules.income") },
-  lam_lai: { claim: "ll_mo_trang_tay: \"Mọi thứ của đời trước đã mất: tiền, chỗ ở\" trong khi người có nhà riêng vẫn giữ căn nhà.",
-    fix: "Chữ rẽ theo home_owner: căn nhà cũ vẫn đứng tên bạn, nhưng ở lại phía sau.", open: (d) => /đã mất: tiền, chỗ ở/.test(text(d, "ll_mo_trang_tay", { home_owner: true })) },
-  w_S07: { claim: "Ký hợp đồng lên trạm sao Hỏa, \"lương gấp ba\", nhận ca trực; nghề trong host vẫn là nghề cũ, người chưa có việc vẫn không có lương để nhân ba.",
-    fix: "s07_mo_buong: ca ngoài trời job_switch:build, ca nhà kính job_switch:farm (cả hai lựa chọn).", open: (d, a) => !has(a, (x) => x.kind === "việc") },
-  w_S33: { claim: "Nhánh chỉ mở cho người vừa mất việc, rồi kể \"nhận việc, lương gấp ba\"; host không cho việc nào, ×3 của 0 vẫn là 0.",
-    fix: "s33_mo_phong: cả hai lựa chọn job_switch:office.", open: (d, a) => !has(a, (x) => x.kind === "việc") },
-  w_S48: { claim: "\"Mỗi lần buồn sẽ bị trừ tiền thẳng vào tài khoản\", \"tin nhắn trừ tiền đầu tiên tới\"; một lựa chọn không mất đồng nào.",
-    fix: "rules.yearly money −0.05: tiền phạt buồn mỗi năm.", open: (d, a) => !yearlyMoney(a, -1) },
-  w_S50: { claim: "\"Hệ thống xóa luôn mọi khoản nợ mang tên bạn\" (nhánh chỉ mở khi đang nợ); nợ trong host vẫn còn nguyên.",
-    fix: "reset.effects repay:50 (sổ nợ trắng tinh).", open: (d, a) => !has(a, (x) => /repay/.test(x.what)) },
-  w_X07: { claim: "x07_day_bua_com: \"Xin hãng nghỉ một năm không lương\" — hợp đồng khuôn mặt không phải một chỗ làm có lương.",
-    fix: "Nhãn đổi thành \"Xin hãng tạm ngưng hợp đồng một năm\".", open: (d) => /không lương/.test(text(d, "x07_day_bua_com")) },
-  w_X12: { claim: "\"Để ông ấy khép sổ: Nhẹ nợ hôm nay\" mà không trả đồng nợ nào; \"quyết định thôi việc\" trong khi host vẫn giữ việc (chỉ ×0.3).",
-    fix: "Lựa chọn khép sổ thêm repay:0.5; chữ về chỗ làm đổi thành \"lương chỉ còn trả qua người nhà, bớt gần hết\".",
-    open: (d) => choicesOf(d, "x12_mo_vong_hoa").some((c) => /Nhẹ nợ/.test(c.hint ?? "") && !/repay/.test(c.effects.custom ?? "")) || /thôi việc/.test(text(d, "x12_kd_tai_khoan", { has_job: true })) },
-  w_X25: { claim: "\"Từ nay lương hưu sẽ trả bằng dưa\" (sẽ hỏng sau năm mươi ngày); host vẫn trả đủ bằng tiền.",
-    fix: "rules.yearly money −0.05: phần lương hưu về bằng dưa, bán không kịp thì hỏng.", open: (d, a) => !yearlyMoney(a, -1) },
-  w_X33: { claim: "x33_day_quang_cao: \"một khoản tiền bằng ba năm thu nhập\", lựa chọn chỉ cho money 0.6.",
-    fix: "Chữ đổi thành \"hơn nửa năm thu nhập\".", open: (d) => /ba năm thu nhập/.test(text(d, "x33_day_quang_cao")) },
-  w_X40: { claim: "\"Mình mượn tạm ít tiền\", \"kiểm tra ví và thấy thiếu đúng số tiền một đôi giày\"; một lựa chọn không mất đồng nào.",
-    fix: "rules.yearly money −0.05: mỗi năm người kia tiêu một ít tiền của bạn.", open: (d, a) => !yearlyMoney(a, -1) },
-};
+/* ------------------------------------------------------------------ mâu thuẫn đã sửa (lớp c): hàm dò dùng chung với bộ kiểm */
+const CONTRADICTIONS = R25.CONTRADICTIONS;
+/** Bối cảnh để dựng chữ cho hàm dò (một người lớn bất kỳ trong bộ fuzz). */
+const PROBE_BASE = CTX[12];
+
 /** Ghi chú tay cho các mùa còn ở lớp b hay có điều kiện (đọc chữ, không dò được). */
 const NOTES = {
   xu_nguoi: "migrate_now đầu mùa phụ thuộc Task 8b (di cư tất định, I2); cửa vào mùa đã gate can_migrate (R14).",
@@ -301,7 +216,7 @@ const ADDED = {
 const rows = ALL.map((def) => {
   const a = analyse(def);
   const k = CONTRADICTIONS[def.id];
-  const contra = k && k.open(def, a);
+  const contra = k && k.open(R25.probeOf(def, a.changes, PROBE_BASE, (d, card, c) => build(d, card, c)));
   const cls = contra ? "c" : a.changes.length ? "a" : "b";
   return { id: def.id, vn: def.vn, src: where(def.id), demo: DEMO.has(def.id), cls, contra: k ? { ...k, open: !!contra } : null, ...a };
 });
@@ -344,3 +259,6 @@ if (md) {
   writeFileSync(md, doc.includes(A) && doc.includes(B) ? doc.slice(0, doc.indexOf(A) + A.length) + "\n" + sum + table + doc.slice(doc.indexOf(B)) : table);
   console.log(`  bảng: ${md}`);
 }
+
+// Lớp (c) còn mở, hay mùa của bản demo không ở lớp (a): thoát 1 (chạy với --root trên bản cũ thì thoát 1 là đúng).
+if (count("c") || demoMiss.length) process.exit(1);
