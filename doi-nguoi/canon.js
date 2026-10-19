@@ -76,6 +76,7 @@ function canonOnEffect(L, e) {
   if (e.custom && customParts(e.custom).includes("swap_other") && !lw.swapping) return canonSwap(L, e);   // Task 8b: đổi đời trước, phần còn lại áp lên đời mới
   if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
   if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
+  if (lw.season && Argon.settledPlant(e, lw.season.scars && lw.season.scars.no)) lw.season.noSettled = true;   // vết "no" đã trả / giữ lời giữa mùa: câu kết không nói "còn treo"
   const land = Argon.landingOf(e);
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
@@ -595,7 +596,7 @@ function seasonEndLine(L, se, reason) {
   else if (se.scars && se.scars.nguoi && se.scars.nguoi.npc) { const pm = L.lw.cast.get(se.scars.nguoi.npc); if (pm && pm.name) { name = pm.name; alive = !!pm.alive; } }
   // Vết chọn lúc VÀO mùa; chỉ nhắc nếu lúc RA mùa nó vẫn còn thật: nợ / lời hứa chưa xong, đồ vẫn còn giữ.
   const sc = se.scars || {};
-  const no = sc.no && sc.no.label && scarStillOpen(L, sc.no) ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
+  const no = sc.no && sc.no.label && scarStillOpen(L, sc.no, se) ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
   const thing = sc.do && sc.do.label && sc.do.key !== "job" && scarStillHeld(L, sc.do) ? sc.do.label : "";
   const v = strHash(se.id + "@" + se.from) % 2, whoOk = reason === "cut" ? !!name : !!name && alive, pickWho = whoOk && (v === 0 || (!no && !thing));
   // Chỉ nói điều có thật trong đời này (người mới của mùa, vết, nhịp); thiếu dữ liệu thì câu trung tính, không bịa thêm.
@@ -648,17 +649,19 @@ function seasonMoneyYearly(L) {
   return seasonYearlyBase(L) * (last && last.to === L.age && last.mult ? last.mult : 1);
 }
 
-/** Vết "nợ / lời hứa" còn mở lúc này: lời hứa chưa giữ hay bội (kept === null), còn nợ ngân hàng, hay vật gài nợ / hứa còn trong sổ (chưa dùng, chưa trả). */
-function scarStillOpen(L, x) {
+/** Vết "nợ / lời hứa" còn mở lúc này: lời hứa chưa giữ hay bội (kept === null), còn nợ ngân hàng, hay vật gài nợ / hứa còn trong sổ
+ *  và chưa được trả / giữ lời trong mùa (se.noSettled). `used` của 20c chỉ là "đã dùng một lần", không phải "đã trả". */
+function scarStillOpen(L, x, se) {
   const key = String((x && x.key) || ""); if (!key) return false;
   if (key.startsWith("promise:")) { const to = key.slice(8); return L.lw.promises.some(p => p.to === to && p.kept === null); }
   if (key === "bank") { const d = (L.ar && L.ar.state.capitals.capitalAssets.debt) || 0; return d > 0 || (L.debt || 0) > 0; }
-  return L.lw.plants.some(p => p.key === key && !p.used && !p.spent && !p.paid);
+  if (se && se.noSettled && se.scars && se.scars.no && se.scars.no.key === key) return false;
+  return L.lw.plants.some(p => p.key === key);
 }
 /** Vết "đồ" còn giữ lúc này: vật gài còn trong sổ, hoặc tài sản loại đó vẫn còn sở hữu. */
 function scarStillHeld(L, x) {
   const key = String((x && x.key) || ""); if (!key) return false;
-  if (L.lw.plants.some(p => p.key === key && !p.used && !p.spent)) return true;
+  if (L.lw.plants.some(p => p.key === key)) return true;
   const h = typeof holdingsOf === "function" ? holdingsOf(L) : null;
   return !!(h && h.assets.some(a => a.kind === key));
 }

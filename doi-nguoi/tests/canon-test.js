@@ -563,14 +563,32 @@ async function t8b() {
     assert.strictEqual(seasonEndLine(P, { ...se, scars: { no: { key: 'promise:nobody', label: 'trả lại chiếc xe' } } }, 'cut'), 'Mùa này bị cắt ngang khi mọi chuyện vừa mở màn.', 'closed promise is not mentioned');
     assert.strictEqual(seasonEndLine(P, { ...se, scars: { no: { key: 'giay_no_da_tra', label: 'tờ giấy nợ' }, do: { key: 'house_gone', label: 'căn nhà cũ' } } }, 'lapsed'), 'Mùa này tự khép lại khi mọi chuyện vừa mở màn.', 'dropped plant / sold asset are not mentioned');
     const dead = [...P.lw.cast.values()].find(x => !x.alive);
-    if (dead) assert(!seasonEndLine(P, { ...se, scars: { nguoi: { npc: dead.id, label: dead.name } } }, 'death').includes(dead.name), 'a dead person is not a companion'); }
+    if (dead) assert(!seasonEndLine(P, { ...se, scars: { nguoi: { npc: dead.id, label: dead.name } } }, 'death').includes(dead.name), 'a dead person is not a companion');
+    // Vật gài nợ chưa trả: VẪN được nhắc dù 20c đã đánh dấu used (đã dùng một lần ≠ đã trả); trả giữa mùa (noSettled) thì không.
+    const dp = { kind: 'debt', key: 't8b_giay_no', label: 'tờ giấy nợ viết tay', age: 5, weight: 1, used: true };
+    P.lw.plants.push(dp);
+    assert.strictEqual(seasonEndLine(P, { ...se, scars: { no: { key: dp.key, label: dp.label, kind: 'debt' } } }, 'death'), 'Bạn ra đi khi mọi chuyện vừa mở màn, vẫn còn vướng tờ giấy nợ viết tay.', 'unpaid used plant debt is mentioned');
+    assert.strictEqual(seasonEndLine(P, { ...se, noSettled: true, scars: { no: { key: dp.key, label: dp.label, kind: 'debt' } } }, 'death'), 'Bạn ra đi khi mọi chuyện vừa mở màn, khi mùa này còn dang dở.', 'settled plant debt is not mentioned');
+    P.lw.plants.pop(); }
+  // Đường thật: vết "no" là vật gài nợ; trả giữa mùa (repay) → noSettled, câu kết lúc chết không nhắc; không trả → có nhắc.
+  for (const pay of [false, true]) {
+    const Q = grow(3301, 32, P => P.income > 0 && P.lw.season === null); G.life = Q;
+    const dp = { kind: 'debt', key: 't8b_no_that', label: 'khoản vay của chú Tư', age: 20, weight: 9 };
+    Q.lw.plants.push(dp); enterSeason(Q, 'lam_lai');
+    assert(Q.lw.season.scars.no && Q.lw.season.scars.no.key === dp.key, 'the debt plant is the season no-scar');
+    if (pay) applyEffect(Q, { custom: 'repay:0.1', log: 'Bạn trả bớt một phần.' });
+    assert.strictEqual(!!Q.lw.season.noSettled, pay, 'noSettled follows a mid-season repay');
+    const rec = exitSeason(Q, 'death');
+    assert.strictEqual(rec.line.includes(dp.label), !pay, (pay ? 'settled' : 'unpaid') + ' debt in the ending line: ' + rec.line);
+  }
 
   // 8b.17 (góp ý 19/10) Dòng "↩ Có liên quan…": dưới tiêu đề, thu gọn; mọi lựa chọn được trích là lựa chọn có thật của đời đó.
   { const seen = [], oScene = scene;
-    scene = function (L, o) { if (o && o.causes && o.causes.length && L.t8bCause) seen.push({ L, o, html: becauseHTML(L, o), quoted: o.causes.map(m => m.choice) }); return oScene(L, o); };   // quoted: chữ lúc hiện thẻ (remark của S04/S28/S40 có thể sửa dấu mốc về sau)
+    scene = function (L, o) { if (o && o.causes && o.causes.length && L.t8bCause) seen.push({ L, o, html: becauseHTML(L, o), quoted: o.causes.map(m => m.choice), shownLabel: o.causes.map(m => m.altLabels && m.choice_index >= 0 ? m.altLabels[m.choice_index] : undefined) }); return oScene(L, o); };   // quoted: chữ lúc hiện thẻ (remark của S04/S28/S40 có thể sửa dấu mốc về sau)
     try { for (let i = 0; i < 12; i++) { const P = createLife(8800 + i * 7, { auto: true }); P.t8bCause = true; G.life = P; runToDeath(P); } } finally { scene = oScene; }
     assert(seen.length > 50, 'cause lines checked: ' + seen.length);
-    for (const { L, o, html, quoted } of seen) {
+    for (const { L, o, html, quoted, shownLabel } of seen) {
+      quoted.forEach((q, i) => { if (q && shownLabel[i] !== undefined) assert.strictEqual(q, shownLabel[i], 'at show time the quote is the label of the door that was taken'); });
       assert(/^<details class="because"[^>]*><summary><span class="because-mark"[^>]*>↩<\\/span><span class="because-s">Có liên quan đến (lựa chọn|chuyện) năm \\d+ tuổi/.test(html) && html.includes('Xem lại'), 'short collapsed line: ' + html.slice(0, 160));
       for (const m of o.causes) {
         assert(L.lw.cz.marks.includes(m), 'cause mark belongs to this life');
