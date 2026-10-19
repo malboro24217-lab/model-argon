@@ -37,6 +37,7 @@ node doi-nguoi/tests/readers-test.js      # bảng MEM_READERS (báo "X sẽ nh�
 node doi-nguoi/tests/fork-test.js         # "Thử lại từ năm N": đời rẽ giống bản gốc trước chỗ rẽ, chơi tiếp được, tua lại khớp (khoảng 1,5 phút)
 node doi-nguoi/tests/replay-test.js       # tất định: 200 đời có sương mù, AI, tiền, perk; vẽ giao diện không đổi đời; tua lại khớp 100%; đời giả định giữ nguyên các năm trước (ledger 2026-10-18-tat-dinh)
 node doi-nguoi/tests/canon-test.js        # canon event và Mùa: 120 đời tự chơi (≥ 2 canon event ở đời tới 60, tối đa 4, cách nhau ≥ 8 năm), cắt mùa, người phụ thuộc, hệ số thu nhập, tua lại (khoảng 1,5 phút)
+node doi-nguoi/tests/canon-plants-test.js # vật gài được dùng dần: vết không lặp giữa hai mùa liền nhau, `what` ít dùng lại, trả nợ / giữ lời, tua lại (khoảng 1,5 phút)
 node doi-nguoi/tests/canon-ui-test.js     # màn kết "Các mùa của đời bạn" (dang dở, bị cắt ngang), banner, màu mùa đủ tương phản ở cả 105 mùa
 node doi-nguoi/tests/season-entry-test.js # R25: vào mùa, host không tự đổi nghề hay tiền khi mùa không khai báo (cả 105 mùa)
 node doi-nguoi/tests/canon-play.mjs --weird 0,1,2 --seeds 11,22 --out /tmp/canon-play   # chơi thật trên Chromium như người chơi, chụp biến cố, banner mùa, thẻ mùa, chung kết, màn kết, Tấm bia; bảng ảnh ở <out>/index.html, summary.json mỗi đời; thêm --width 1366 --dark cho máy tính; thoát 1 nếu lỗi console, lộ undefined/NaN/null hay id vai, banner lệch mùa, kỳ dị ở Độ điên 0

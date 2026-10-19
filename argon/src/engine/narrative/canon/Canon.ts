@@ -111,6 +111,8 @@ const aliveSet = (c: FactContext): Set<string> => new Set(Object.values(c.cast).
  *  3. NPC còn sống mang một vai trong who.roles có |opinion| lớn nhất (hòa thì id nhỏ hơn);
  *  4. tài sản đang có, theo thứ tự what.owns (c.asset_names);
  *  5. thiếu chỗ bắt buộc → null.
+ * Vật gài: chưa dùng trước rồi dùng lâu nhất (strongestPlant). fromPlayer chỉ tính mầm còn tươi (chưa từng điền chỗ trống
+ * hay thành vết, Task 20c): mầm dùng lại vẫn điền được nhưng không tính là "từ người chơi".
  * `noi` = N("place") nếu có N (generateCanon luôn đưa), không thì "".
  */
 export function fillSlots(seed: CanonSeed, c: FactContext, plants: Plant[], N?: Names): Slots | null {
@@ -136,12 +138,13 @@ export function fillSlots(seed: CanonSeed, c: FactContext, plants: Plant[], N?: 
       if (best) s.who = best;
     }
     if (w.required && !s.who) return null;
+    if (usedPlant && usedPlant.used !== undefined) s.fromPlayer--;   // Task 20c: mầm người đã dùng không tính "từ người chơi"
   }
 
   if (seed.what) {
     const w = seed.what;
     const p = w.plants ? strongestPlant(plants.filter((x) => x !== usedPlant), w.plants) : undefined;
-    if (p) { s.what = p; s.fromPlayer++; }
+    if (p) { s.what = p; if (p.used === undefined) s.fromPlayer++; }
     else for (const k of w.owns ?? []) {
       const label = c.asset_names[k];
       if (label) { s.what = { kind: "asset", key: k, label }; break; }

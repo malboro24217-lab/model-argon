@@ -6,6 +6,9 @@ import { SEASONS_NORMAL } from "./engine/narrative/canon/seasons/index.ts";
 import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, ABS_SEASON_IDS, WEIRD, ABSURD_KY, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, CANON_SEEDS } from "./engine/index.ts";
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
 import { actorRole, ELEVATED_SEEDS } from "./engine/narrative/turning/kit.ts";
+import { GRANDPA_KEYS } from "./engine/narrative/canon/weird/abs_01.ts";
+import { freshPlant, rankPlants, usePlants, eventPlants, settledPlant, dropPlants, scarPlants } from "./engine/index.ts";
+import { HEIRLOOMS } from "./engine/narrative/canon/weird/abs_11.ts";
 
 let fails = 0;
 const ok = (cond: boolean, msg: string) => { if (!cond) { fails++; console.log("FAIL " + msg); } };
@@ -59,7 +62,30 @@ const nm = (id: string) => ({ n1: "Lan", n2: "Hùng", n3: "Mai" } as Record<stri
 ok(strongestPlant([], ["debt"]) === undefined, "không có mầm → undefined");
 ok(strongestPlant([pl("debt", "a", 1, 20), pl("object", "b", 5, 20)], ["debt"])?.key === "a", "lọc theo loại");
 ok(strongestPlant([pl("debt", "a", 1, 20), pl("promise", "b", 3, 22), pl("debt", "c", 2, 25)], ["debt", "promise"])?.key === "b", "weight cao nhất");
-ok(strongestPlant([pl("debt", "a", 3, 30), pl("debt", "b", 3, 22), pl("debt", "c", 3, 26)], ["debt"])?.key === "b", "hòa weight → gài sớm hơn");
+ok(strongestPlant([pl("debt", "a", 3, 30), pl("debt", "b", 3, 22), pl("debt", "c", 3, 26)], ["debt"])?.key === "a", "hòa weight → gài gần đây hơn");
+/* Task 20c (I3): mầm được dùng dần */
+ok(strongestPlant([pl("debt", "a", 1, 20), pl("debt", "b", 9, 30, { used: 31 })], ["debt"])?.key === "a", "mầm chưa dùng thắng mầm đã dùng, kể cả nặng hơn");
+ok(strongestPlant([pl("debt", "a", 1, 20, { used: 40 }), pl("debt", "b", 1, 30, { used: 35 }), pl("debt", "c", 1, 25, { used: 40 })], ["debt"])?.key === "b", "cả ba đã dùng → dùng lâu nhất");
+ok(strongestPlant([pl("debt", "a", 1, 20, { used: 40 }), pl("debt", "c", 1, 25, { used: 40 })], ["debt"])?.key === "c", "cùng tuổi dùng → gài gần đây hơn");
+ok(strongestPlant([pl("debt", "a", 1, 20), pl("debt", "c", 1, 20)], ["debt"])?.key === "a", "hòa hết → mầm đứng trước trong sổ");
+ok(freshPlant(pl("debt", "a", 1, 20)) && !freshPlant(pl("debt", "a", 1, 20, { used: 0 })), "freshPlant: used = 0 vẫn là đã dùng");
+{
+  const book = [pl("object", "o", 1, 20), pl("person", "p", 1, 21, { npc: "n1" }), pl("person", "q", 1, 22, { npc: "n2" }), pl("debt", "d", 1, 23)];
+  ok(eq(eventPlants({ who: "n1", what: book[0]! }, book), [{ kind: "object", key: "o" }, { kind: "person", key: "p" }]), "eventPlants: what + mầm người của who");
+  ok(eq(eventPlants({ what: { kind: "asset", key: "house" } }, book), []), "eventPlants: tài sản không phải mầm");
+  usePlants(book, [{ kind: "object", key: "o" }, { kind: "person", key: "p" }], 30);
+  ok(book[0]!.used === 30 && book[1]!.used === 30 && book[2]!.used === undefined && book[3]!.used === undefined, "usePlants: ghi tuổi đúng mầm");
+  usePlants(book, [{ kind: "debt", key: "o" }], 31);
+  ok(book[0]!.used === 30 && book[3]!.used === undefined, "usePlants: khớp cả loại lẫn khóa");
+  ok(settledPlant({ custom: "money:1|repay:1" }, { key: "d", kind: "debt" })?.key === "d", "settledPlant: repay trả mầm nợ ở vết no");
+  ok(settledPlant({ custom: "repay" }, { key: "h", kind: "promise" })?.kind === "promise", "settledPlant: repay khép lời hứa");
+  ok(settledPlant({ memory: { npc: "n1", tag: "KEPT_PROMISE", weight: 0.1 } }, { key: "h", kind: "promise" })?.key === "h", "settledPlant: giữ lời → lời hứa xong");
+  ok(settledPlant({ memory: { npc: "n1", tag: "KEPT_PROMISE", weight: 0.1 } }, { key: "d", kind: "debt" }) === null, "settledPlant: giữ lời không trả nợ");
+  ok(settledPlant({ custom: "repay:1" }, { key: "bank" }) === null && settledPlant({ custom: "repay:1" }, undefined) === null, "settledPlant: vết không từ mầm → null");
+  ok(settledPlant({ custom: "borrow:1|repayx" }, { key: "d", kind: "debt" }) === null && settledPlant({ money: 1 }, { key: "d", kind: "debt" }) === null, "settledPlant: không repay → null");
+  ok(dropPlants(book, { kind: "debt", key: "d" }) === 1 && book.length === 3 && !book.some((p) => p.key === "d"), "dropPlants: bỏ mầm đã trả");
+  ok(dropPlants(book, null) === 0 && book.length === 3, "dropPlants(null): không đổi");
+}
 ok(plantFlag({ kind: "object", key: "dong_ho" }) === "plant:object:dong_ho", "plantFlag");
 const sc = (over: Partial<FactContext>): FactContext => { const o = ctx({ cast: {}, opinion: {}, asset_names: {}, job: "", debt: 0, ...over }); if (!over.nemesis) delete o.nemesis; return o; };
 ok(eq(pickScars(sc({}), [], [], nm), {}), "không có gì → trường trống");
@@ -82,16 +108,38 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
 }
 {
   const c = sc({ asset_names: { house: "căn nhà gỗ" }, job: "thợ may" });
-  ok(eq(pickScars(c, [pl("object", "dong_ho", 2, 20), pl("skill", "han", 4, 25), pl("debt", "x", 9, 20)], [], nm).do, { key: "han", label: "nhãn han" }), "đồ: plant object/skill/animal mạnh nhất");
+  ok(eq(pickScars(c, [pl("object", "dong_ho", 2, 20), pl("skill", "han", 4, 25), pl("debt", "x", 9, 20)], [], nm).do, { key: "han", label: "nhãn han", kind: "skill" }), "đồ: plant object/skill/animal mạnh nhất");
   ok(eq(pickScars(c, [], [], nm).do, { key: "house", label: "căn nhà gỗ" }), "đồ: tài sản đầu tiên");
   ok(eq(pickScars(sc({ job: "thợ may" }), [], [], nm).do, { key: "job", label: "thợ may" }), "đồ: chức danh nghề");
 }
 {
   const c = sc({ debt: 2 });
-  ok(eq(pickScars(c, [pl("debt", "vay", 1, 22), pl("promise", "hua", 2, 30), pl("object", "o", 9, 20)], [{ to: "n1", what: "lo cho em" }], nm).no, { key: "hua", label: "nhãn hua" }), "nợ/hứa: plant debt/promise mạnh nhất");
+  ok(eq(pickScars(c, [pl("debt", "vay", 1, 22), pl("promise", "hua", 2, 30), pl("object", "o", 9, 20)], [{ to: "n1", what: "lo cho em" }], nm).no, { key: "hua", label: "nhãn hua", kind: "promise" }), "nợ/hứa: plant debt/promise mạnh nhất");
   ok(eq(pickScars(c, [], [{ to: "n1", what: "lo cho em" }, { to: "n2", what: "khác" }], nm).no, { key: "promise:n1", label: "lo cho em" }), "nợ/hứa: lời hứa đầu tiên");
   ok(eq(pickScars(c, [], [], nm).no, { key: "bank", label: "món nợ ngân hàng" }), "nợ/hứa: nợ ngân hàng");
   ok(pickScars(sc({ debt: 0 }), [], [], nm).no === undefined, "không nợ → trống");
+}
+{
+  /* Task 20c (I3): vết của hai mùa liền nhau khác nhau khi đời có hơn một mầm đúng loại */
+  const book = [pl("object", "o1", 1, 20), pl("object", "o2", 1, 26), pl("debt", "d1", 1, 22), pl("promise", "h1", 1, 24)];
+  const c = sc({ debt: 1 });
+  const s1 = pickScars(c, book, [], nm);
+  ok(s1.do?.key === "o2" && s1.no?.key === "h1", "vết mùa 1: mầm gài gần nhất");
+  ok(eq(scarPlants(s1), [{ kind: "object", key: "o2" }, { kind: "promise", key: "h1" }]), "scarPlants: hai vết từ mầm");
+  ok(eq(scarPlants({ do: { key: "house", label: "căn nhà" }, no: { key: "bank", label: "nợ" } }), []), "scarPlants: vết không từ mầm → rỗng");
+  usePlants(book, scarPlants(s1), 30);
+  const s2 = pickScars(c, book, [], nm);
+  ok(s2.do?.key === "o1" && s2.no?.key === "d1", "vết mùa 2: mầm chưa dùng thắng");
+  usePlants(book, scarPlants(s2), 40);
+  ok(pickScars(c, book, [], nm).do?.key === "o2", "vết mùa 3: hết mầm mới → mầm dùng lâu nhất");
+  /* prev: không mang lại vết của mùa trước khi còn ứng viên khác (mầm đã dùng, lời hứa, nợ ngân hàng, tài sản, nghề) */
+  const one = [pl("debt", "d1", 1, 22, { used: 30 })];
+  const s3 = pickScars(c, one, [], nm, { no: { key: "d1", label: "x", kind: "debt" } });
+  ok(s3.no?.key === "bank", "prev: mầm nợ duy nhất vừa làm vết → nợ ngân hàng");
+  ok(pickScars(c, one, [], nm, s3).no?.key === "d1", "prev: mùa sau quay lại mầm nợ");
+  ok(pickScars(sc({ debt: 0 }), one, [], nm, { no: { key: "d1", label: "x" } }).no?.key === "d1", "prev: chỉ một ứng viên → mang lại");
+  ok(pickScars(sc({ asset_names: { house: "căn nhà gỗ" }, job: "thợ may" }), [], [], nm, { do: { key: "house", label: "x" } }).do?.key === "job", "prev: đồ tránh tài sản mùa trước → nghề");
+  ok(eq(rankPlants(book, ["object"]).map((p) => p.key), ["o2", "o1"]) && rankPlants(book, ["skill"]).length === 0, "rankPlants: thứ tự như strongestPlant");
 }
 {
   const alive = (id: string) => id !== "n2";
@@ -169,6 +217,11 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
     const s4 = fillSlots(SEED, base({ asset_names: { house: "căn nhà gỗ" }, owns: new Set(["house"]) }), []);
     ok(s4?.what?.kind === "asset" && s4.what.label === "căn nhà gỗ" && s4.fromPlayer === 0, "fillSlots: không plant → tài sản");
     ok(fillSlots(SEED, base(), []) === null, "fillSlots: thiếu chỗ bắt buộc → null");
+    /* Task 20c: fromPlayer chỉ đếm mầm còn tươi; mầm đã dùng vẫn điền được nhưng không tính "từ người chơi" */
+    const s5 = fillSlots(SEED, base({ nemesis: "n2" }), [{ ...debt, used: 31 }, pl("person", "ban_cu", 2, 15, { npc: "n1", used: 31 })]);
+    ok(s5?.who === "n1" && s5.what?.kind === "debt" && s5.fromPlayer === 0, "fillSlots: mầm đã dùng → fromPlayer 0");
+    const s6 = fillSlots(SEED, base(), [{ ...debt, key: "cu", used: 31 }, { ...debt, key: "moi", age: 10 }]);
+    ok(!!s6?.what && s6.what.key === "moi" && s6.fromPlayer === 1, "fillSlots: mầm chưa dùng thắng mầm đã dùng");
     const ev = gen(base(), "tien", [debt]);
     ok(!!ev && ev.slots.what?.kind === "debt" && ev.slots.fromPlayer >= 1, "canon: slot what từ plant debt");
     ok(ev?.slots.noi === "Hải Phòng", "canon: noi = N(place)");
@@ -332,8 +385,7 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
   const ROLE_CAST: Record<string, string> = { friend: "childhood_friend", neighbor: "neighbor", rival: "rival", mentor: "mentor", boss: "first_boss", official: "official", spouse: "spouse", sibling: "sibling", child: "child", mother: "mother", father: "father", partner: "partner", creditor: "creditor" };
   const c0 = ctx({ cast: Object.fromEntries(Object.values(ROLE_CAST).map((r) => [r, "NPC_" + r])) });
   const ids = new Set(TURNING_STORYLETS.map((s) => s.id));
-  const KEEP_ECHO = new Set(["tp_c01_1"]); // host test turning-points-test dùng cảnh tp_c01_echo_1
-  let npcBad = 0, personPlants = 0, objectPlants = 0, legacyBad = 0, unplantedUnlinked = 0, linkLost = 0, withLater = 0, planted2 = 0, echoesLeft = 0, pressureBad = 0, plantBad = 0, tagBad = 0;
+  let npcBad = 0, personPlants = 0, objectPlants = 0, legacyBad = 0, personUnbound = 0, noPayoff = 0, linkLost = 0, withLater = 0, planted2 = 0, echoesLeft = 0, pressureBad = 0, plantBad = 0, tagBad = 0;
   for (const d of TURNING_CATALOG) {
     const root = TURNING_STORYLETS.find((s) => s.id === d.id)!;
     ok(eq(root.meta?.season, CODEX_SEASON_TAGS[d.id]), `meta.season của ${d.id}`);
@@ -351,6 +403,8 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
         if (!eq(gotPlant, cx.plant)) plantBad++;
         /* người của thẻ ({person}) mang npc của chính họ; vật gài khác không bao giờ bị gắn npc nhầm */
         const role = actorRole(d), roleKey = cx.plant.kind === "person" && cx.plant.key === d.id + "_" + role;
+        /* Task 20c (I8): vật gài người phải là {person} của thẻ (khóa <fork>_<vai>) và gắn được npc lúc build */
+        if (cx.plant.kind === "person" && (!roleKey || !gotNpc)) personUnbound++;
         const castFull = view2.choices[i]!.effects.plant?.npc;
         if (roleKey ? gotNpc !== (c0.cast as Record<string, string>)[ROLE_CAST[role!]!] || castFull !== undefined : gotNpc !== undefined || castFull !== undefined) npcBad++;
         if (cx.plant.kind === "person") personPlants++; else objectPlants++;
@@ -365,11 +419,10 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
         for (const st of ["keep", "pivot"] as const) if (Object.keys(linkedEffect(d.id, i, st, c0)).length) linkLost++;
       } else {
         if (fx.plant) plantBad++;
-        /* route không gài phải là route giữ echo vì mang liên kết keep/pivot (hoặc nằm trong danh sách giữ echo cho test host) */
-        const linked = ["keep", "pivot"].some((st) => Object.keys(linkedEffect(d.id, i, st as "keep" | "pivot", c0)).length);
-        if (!linked && !KEEP_ECHO.has(key)) unplantedUnlinked++;
         if (!fx.later || fx.later.storylet !== d.id + "_echo_" + i || !echo) withLater++;
       }
+      /* Task 20c (I8): mọi route giữ hoặc một vật gài, hoặc cảnh hậu quả (echo); không route nào mất cả hai */
+      if (!fx.plant && !(echo && fx.later?.storylet === d.id + "_echo_" + i)) noPayoff++;
     });
     if (!CODEX_SEASON_TAGS[d.id] && root.meta?.season) tagBad++;
   }
@@ -377,7 +430,9 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
   ok(withLater === 0, `route có plant không còn later/tp_open; route không plant giữ later + echo (lệch ${withLater})`);
   ok(npcBad === 0, `npc chỉ gắn cho vật gài là {person} của thẻ khi thẻ có người (lệch ${npcBad})`);
   ok(legacyBad === 0, `lời tổng kết route có vật gài không "dang dở" (lệch ${legacyBad})`);
-  ok(unplantedUnlinked === 0, `mọi route không gài đều mang liên kết keep/pivot hoặc nằm trong danh sách giữ echo (lệch ${unplantedUnlinked})`);
+  ok(personUnbound === 0, `mọi vật gài người là {person} của thẻ, khóa <fork>_<vai>, có npc (lệch ${personUnbound})`);
+  ok(noPayoff === 0, `mọi route giữ vật gài hoặc cảnh hậu quả (lệch ${noPayoff})`);
+  ok(Object.entries(CODEX_PLANTS).every(([k, v]) => { const d = TURNING_CATALOG.find((x) => k.startsWith(x.id + "_"))!; return v.plant?.kind !== "person" || v.plant.key === d.id + "_" + actorRole(d); }), "bảng CODEX_PLANTS: vật gài người chỉ dùng khóa <fork>_<vai>");
   ok(personPlants >= 200 && objectPlants >= 250, `đếm vật gài: ${objectPlants} không phải người, ${personPlants} người`);
   ok(linkLost === 0, `route có plant không mang liên kết keep/pivot bị mất cùng echo (có ${linkLost})`);
   ok(echoesLeft === 0, "route có plant không còn storylet _echo_");
@@ -386,6 +441,10 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
   ok(plantBad === 0 && tagBad === 0, "plant/tag khớp bảng");
   /* các route test cũ dựa vào echo vẫn phải còn echo */
   for (const id of ["tp_c01_1", "tp_c43_1", "tp_c38_0", "tp_l06_1", "tp_l36_1", "tp_c41_1", "tp_c37_0", "tp_c31_0"]) ok(!CODEX_PLANTS[id]?.plant, `${id} còn echo (có liên kết keep/pivot)`);
+  /* Task 20c: khóa vật gài mà nhánh kỳ dị đọc đích danh phải có route Codex gài (khóa chết dong_ho_cua_ong đã bỏ) */
+  const plantedKeys = new Set(Object.values(CODEX_PLANTS).flatMap((v) => (v.plant ? [v.plant.kind + ":" + v.plant.key] : [])));
+  for (const k of GRANDPA_KEYS) ok(plantedKeys.has("object:" + k), `abs_01 GRANDPA_KEYS: ${k} có route gài`);
+  for (const k of Object.keys(HEIRLOOMS)) ok(plantedKeys.has("object:" + k), `abs_11 HEIRLOOMS: ${k} có route gài`);
 }
 
 /* ---- Task 6b: 8 mầm đợt A ---- */

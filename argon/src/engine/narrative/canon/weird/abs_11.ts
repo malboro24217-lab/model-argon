@@ -95,10 +95,10 @@ const X20_CU = land("x20_cuoi_dung_nguoi", "Tờ giấy cũ được hủy. Bạ
 const X20_MOT_MINH = land("x20_mot_minh", "Hủy xong mọi giấy tờ, bạn ở một mình, trả án phí bằng cả năm thu nhập và thấy nhẹ nhõm lạ lùng.", { money: -1, happy: 3 });
 
 /* X13: đồ ông bà để lại (đúng khóa vật gài), nhãn cố định để cửa, biến cố và thẻ cùng nói về một món. */
-const HEIRLOOMS: Record<string, string> = {
+export const HEIRLOOMS: Record<string, string> = {
   ban_do_cua_ong: "tấm bản đồ ông để lại", ban_do_kho_bau_cua_ong: "tờ bản đồ kho chôn của ông",
-  vat_vang_trong_heo_dat: "vật bằng vàng ông gửi trong con heo đất", dong_ho_cua_ong: "chiếc đồng hồ ông để lại",
-};
+  vat_vang_trong_heo_dat: "vật bằng vàng ông gửi trong con heo đất",
+};   // chỉ khóa có route Codex gài (Task 20c bỏ khóa chết dong_ho_cua_ong); canon-test kiểm
 const heirloomKey = (c: FactContext): string | undefined => plantKey(c, "object", Object.keys(HEIRLOOMS));
 const museumItem = (c: FactContext): string => HEIRLOOMS[heirloomKey(c) ?? ""] ?? "chiếc tủ gỗ cũ trong nhà";
 /* X16: con chó của người chơi (đúng khóa vật gài), một tên dùng ở cửa, biến cố và thẻ. */

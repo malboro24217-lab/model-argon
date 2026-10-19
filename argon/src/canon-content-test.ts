@@ -375,7 +375,7 @@ ok(SEASON_STORYLETS.length === compiled.length, "SEASON_STORYLETS = mùa thườ
 
 /** Vật gài mẫu cho fuzz (randomCtx không có vật gài): đủ 8 loại, khóa giống bảng Codex. */
 const FUZZ_PLANTS: [PlantKind, string, string][] = [
-  ["object", "radio_cua_bo", "chiếc radio cũ của bố"], ["object", "dong_ho_cua_ong", "chiếc đồng hồ ông để lại"],
+  ["object", "radio_cua_bo", "chiếc radio cũ của bố"], ["object", "vat_vang_trong_heo_dat", "vật bằng vàng ông gửi trong heo đất"],
   ["object", "ban_do_cua_ong", "bản đồ ông để lại"], ["object", "chiec_cap_tren_mai_ton", "chiếc cặp bị ném lên mái tôn"],
   ["animal", "con_vet_biet_mat_khau", "con vẹt biết mật khẩu cửa"], ["animal", "con_vit_deo_chuong", "con vịt đầu đàn đeo chuông"],
   ["animal", "con_cho_lam_nhan_chung", "con chó bị gọi là nhân chứng"], ["animal", "con_meo_ngu_giua_bien_ban", "con mèo ngủ giữa chồng biên bản"],
