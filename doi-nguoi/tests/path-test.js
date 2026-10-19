@@ -23,9 +23,15 @@ assert.strictEqual(Argon.PATH_LIST.length, 96, 'registry has 96 paths');
 { let hit1 = 0, hit2 = 0, n = 0;
   // 200 đời, ngưỡng 70%/60%: tỉ lệ thật đo trên ~500 hạt giống là ~77%/~67% ở cả bản cũ lẫn bản tách rng (ledger 2026-10-18-tat-dinh).
   // Phần trượt là người chơi tự động rẽ sang con đường khác trong 12 năm, không phải thẻ ca sĩ hỏng. Ngưỡng 80% trên 30 đời cũ nằm sát mép.
+  // Từ Task 20 canon event nổ sớm (từ 25 tuổi) và Mùa chiếm phần lớn các năm sau đó, thay chỗ thẻ đời thường (gồm nhịp con đường đời):
+  // ở bản ghép canon-int singer_b2 còn 58,7% (Task 20 riêng 60,8%, 8b riêng 66,7%). Phép đo này kiểm nhịp truyện của con đường
+  // nối nhau, nên tắt canon event trong vòng đo này (như baseline của argon/tools/canon-stats.js); mức có canon in ra để theo dõi.
+  const realArgon = Argon; Argon = Object.assign(Object.create(null), Argon, { generateCanon: () => null });
+  try {
   for (let s = 0; s < 200; s++) { const P = grow(900 + s * 7, 20); if (!P.alive) continue; n++;
     customEffect(P, 'become:singer'); const at = P.age; let g = 0; while (P.alive && P.age < at + 12 && g++ < 40) stepYear(P);
     const ids = P.lw.history.filter(h => h.age > at).map(h => h.id); if (ids.includes('singer_b1')) hit1++; if (ids.includes('singer_b2')) hit2++; }
+  } finally { Argon = realArgon; }
   console.log({ lives: n, singer_b1: hit1, singer_b2: hit2 });
   assert(hit1 >= n * 0.7, 'singer_b1 fires in ≥70% of lives within 12 years');
   assert(hit2 >= n * 0.6, 'singer_b2 fires in ≥60% of lives within 12 years');

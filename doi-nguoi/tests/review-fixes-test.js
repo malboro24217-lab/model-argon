@@ -41,7 +41,7 @@ const fake = (fn, delay = 0) => ({ json: async (p) => { if (delay) await new Pro
     assert(!P.pending, 'auto resolved the story scene');
   }
   { // R5: positive income/money gains are capped per year across many acts
-    const P = grow(91, 30, P => !P.pending && P.income > 0); const inc0 = P.income, sav0 = P.savings, y = Math.max(300, householdIncome(P));
+    const P = grow(91, 30, P => !P.pending && P.income > 0); const inc0 = P.income, sav0 = P.savings, y = typeof seasonYearlyBase === 'function' ? seasonYearlyBase(P) : Math.max(300, householdIncome(P));   // R24: tiền AI cho tính trên lương gốc (đời này đang ở vu_an_gia_toc ×0.9 từ Task 20)
     for (let k = 0; k < 10; k++) await agencyAct(P, "làm thêm " + k, fake(() => ({ ke: "x", ket_qua: "thanh", chi_so: { income_mult: 2, money: 3 } })));
     assert(P.income <= inc0 * 2 + 1, 'income at most x2 per year, got x' + (P.income / inc0).toFixed(2));
     assert(P.savings - sav0 <= y * 3.3, 'money gain at most ~3 years of income per year');
