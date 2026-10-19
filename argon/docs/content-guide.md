@@ -1,6 +1,6 @@
 # Hướng dẫn viết gói "con đường đời"
 
-Bạn viết nội dung cho game mô phỏng một đời người **"Một Lần Chào Đời"**. Người chơi sinh ra ở một trong khoảng 40 nước (theo số liệu thật), sống từ 0 đến chết, và ra quyết định từng năm. Mỗi **con đường đời** là một danh tính người chơi có thể trở thành (ca sĩ, cảnh sát, người tị nạn…). Danh sách 96 con đường nằm trong `src/engine/narrative/paths/registry.ts`.
+Bạn viết nội dung cho game mô phỏng một đời người **"Almost Anyone"**. Người chơi sinh ra ở một trong khoảng 40 nước (theo số liệu thật), sống từ 0 đến chết, và ra quyết định từng năm. Mỗi **con đường đời** là một danh tính người chơi có thể trở thành (ca sĩ, cảnh sát, người tị nạn…). Danh sách 96 con đường nằm trong `src/engine/narrative/paths/registry.ts`.
 
 **Gói mẫu bắt buộc phải đọc trước khi viết:** `src/engine/narrative/paths/singer.ts`, cùng bộ helper `src/engine/narrative/paths/kit.ts`. Gói của bạn phải có cùng hình dạng và cùng độ kỹ như gói mẫu.
 

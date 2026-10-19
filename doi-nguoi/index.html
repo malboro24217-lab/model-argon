@@ -1,4 +1,4 @@
-<title>Một Lần Chào Đời</title>
+<title>Almost Anyone</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
@@ -100,6 +100,7 @@ h1,h2,h3,h4,p{margin:0}
 .menu .q{border:0;background:none;padding:8px 10px;font-size:13.5px;color:var(--muted);border-radius:4px;min-height:40px;white-space:nowrap}
 .menu .q:hover:not(:disabled){color:var(--print);background:var(--inset)}
 .menu .q.on{color:var(--pen)}
+.menu .q.warn{color:var(--ochre);text-decoration:underline dotted;text-underline-offset:3px}
 .menu .q:disabled{opacity:.6}
 #moreBtn{display:none}
 
@@ -114,7 +115,7 @@ h1,h2,h3,h4,p{margin:0}
 .cells{display:grid;grid-template-columns:repeat(var(--cols-desk,90),minmax(0,1fr));gap:2px;position:relative}
 .cells i{height:18px;background:var(--rule-soft);border-radius:1px;position:relative;min-width:0}
 .cells i.y{background:color-mix(in oklab,var(--rule),var(--pen) var(--h))}
-.cells i.end{background:var(--print)}
+.cells i.end{background:var(--print);padding:0;margin:0;max-width:none;display:block}  /* ô năm mất trùng tên lớp với section.end: chặn padding/margin của màn kết */
 .cells i.now{outline:2px solid var(--pen);outline-offset:1px;z-index:1;animation:ink 1.2s ease-out}
 .cells i.le{box-shadow:inset 0 0 0 1.5px var(--seal)}
 .cells i.le:not(.y):not(.end){background:transparent}
@@ -183,8 +184,11 @@ h1,h2,h3,h4,p{margin:0}
 .tag.lt{color:var(--pen)}
 .tag.door{color:var(--seal);transform:rotate(-1.2deg)}
 .tag.money{color:var(--ochre)}
-.ch:not([disabled]):hover{background:color-mix(in oklab,var(--pen) 7%,transparent)}
-.ch:not([disabled]):hover .key{background:var(--pen);border-color:var(--pen);color:var(--pen-ink)}
+/* Rê chuột chỉ tô khi con trỏ thật sự di chuyển trên thẻ mới (#dec.fresh bị gỡ ở pointermove): thẻ mới hiện ra dưới con trỏ
+   đứng yên không được trông như game đang khuyên chọn phương án 1. */
+#dec:not(.fresh) .ch:not([disabled]):hover{background:color-mix(in oklab,var(--pen) 7%,transparent)}
+#dec:not(.fresh) .ch:not([disabled]):hover .key{background:var(--pen);border-color:var(--pen);color:var(--pen-ink)}
+.decision:focus{outline:none}
 .ch:focus-visible{outline-offset:-2px}
 .ch.locked{cursor:not-allowed}
 .ch.locked b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--seal);text-decoration-thickness:1.5px}
@@ -226,6 +230,51 @@ h1,h2,h3,h4,p{margin:0}
 .want-msg{font-size:13px;color:var(--muted)}
 .want-msg.err{color:var(--seal)}
 .want-hint{font-size:13px;color:var(--muted)}
+.want-err{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.want-err .want-msg{font-size:13.5px;font-weight:500}
+.want-retry{min-height:34px;padding:4px 12px;font-size:13.5px}
+/* đang chờ AI trả lời */
+#want.busy #wantIn{opacity:1;color:var(--muted)}
+#want.busy .want-msg{color:var(--pen);font-weight:500}
+.dots::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:dots 1.2s steps(4,end) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+/* trong thẻ quyết định: một "lựa chọn thứ tư" do bạn tự viết */
+#want.incard{margin-top:4px;padding:12px 0 2px;border-top:0;gap:8px}
+#want.incard .want-row{flex-wrap:wrap;border:0;padding:0;gap:8px 10px}
+#want.incard label{flex:1 0 100%;font-family:var(--f-ui);font-size:16px;font-weight:600;white-space:normal;display:flex;align-items:center;gap:10px}
+#want.incard label::before{content:"✎";flex:none;width:28px;height:28px;border:1.5px dashed var(--pen);border-radius:3px;display:grid;place-items:center;color:var(--pen);font-size:14px}
+#want.incard #wantIn{flex:1 1 200px;font-family:var(--f-ui);font-style:normal;font-size:15.5px;color:var(--print);background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:9px 12px;min-height:44px}
+#want.incard #wantIn:focus{border-color:var(--pen);box-shadow:0 0 0 1px var(--pen)}
+#want.incard #wantGo{min-height:44px}
+#want.incard .want-hint,#want.incard .want-msg{padding-left:38px}
+#want.incard .want-err{padding-left:38px}#want.incard .want-err .want-msg{padding-left:0}
+/* AI chưa sẵn sàng: nói rõ vì sao và cách bật, không làm mờ ô */
+.want-off{font-size:14px;line-height:1.5;background:var(--inset);border-left:3px solid var(--ochre);border-radius:3px;padding:9px 12px}
+.want-off b{font-weight:600}
+.want-off details{margin-top:4px}
+.want-off summary{cursor:pointer;color:var(--pen);font-weight:500;font-size:13.5px;min-height:28px;display:inline-flex;align-items:center}
+.want-off details p{margin-top:6px;font-size:13.5px;color:var(--muted)}
+#want.incard .want-off{margin-left:38px}
+#want:not(.incard) .want-off{margin-top:2px}
+.ai-info{background:var(--sheet);border:1px solid var(--rule);border-left:3px solid var(--ochre);border-radius:3px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;font-size:14.5px;margin-bottom:18px}
+.ai-info h3{font-size:15.5px;font-weight:700}
+.ai-info p{max-width:62ch}
+.ai-info .btn{align-self:flex-start}
+
+/* Khung "Xem chi tiết": giữ cột bên gọn, chi tiết mở khi cần (nhớ theo người xem trong localStorage) */
+details.fold{border-top:1px dashed var(--rule);padding-top:4px}
+details.fold>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13.5px;color:var(--pen);font-weight:500;padding:6px 0;min-height:34px}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:"▾";flex:none;width:14px;text-align:center;font-size:13px;line-height:1;color:var(--muted);transform:rotate(-90deg);transition:transform .15s}
+details.fold[open]>summary::after{transform:none}
+details.fold>summary .sv{color:var(--print);font-weight:600;margin-left:auto}
+details.fold>summary .sv.neg{color:var(--seal)}
+details.fold>.fb{display:flex;flex-direction:column;gap:8px;padding:2px 0 6px}
+.fold .note p+p{margin-top:6px}
+.quick{font-size:13px;color:var(--muted);line-height:1.45}
+.quick b{color:var(--print);font-weight:600}
+.tierlab{display:block;font-size:12.5px;color:var(--muted);margin-bottom:-4px;line-height:1.4}
+.tierlab b{color:var(--print);font-weight:600}
 
 /* gợi ý tiền */
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -318,6 +367,13 @@ body.tunnel #wealthF .cash{outline:2px solid var(--seal);outline-offset:6px;bord
 .end .summary{font-size:17px;max-width:60ch}
 .end .acts{display:flex;gap:10px;flex-wrap:wrap}
 .end .ruler{border-bottom:0;padding:0}
+.end .brand{font-family:var(--f-story);font-weight:600;color:var(--pen);letter-spacing:.01em}
+/* Thước đời ở màn kết: máy tính một hàng; điện thoại tách hàng 50 năm, hàng nào cũng có mốc tuổi */
+.rl-rows{display:none}
+.rl-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--muted);margin-top:10px}
+.rl-legend span{display:inline-flex;align-items:center;gap:6px}
+.rl-legend .sw.dead{width:10px;background:var(--print)}
+.rl-legend .sw.ss{width:14px;height:4px;background:var(--muted);border-radius:1px}
 .end .panel{background:none;border:0;border-radius:0;padding:0;gap:10px}
 .epitaph{font-family:var(--f-story);font-size:18.5px;line-height:1.7;border-top:3px double var(--print);border-bottom:3px double var(--print);padding:18px 0}
 .epitaph .label{border:0;padding:0;font-family:var(--f-ui);margin-bottom:6px}
@@ -504,9 +560,21 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
   body.pending .decision{gap:9px;padding:13px 14px 4px}
   body.pending .dhead .keys{display:none}
   body.pending .decision h3{font-size:21px}
-  body.pending .decision .txt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:15.5px;line-height:1.55}
-  body.pending .decision .txt.open{display:block}
+  body.pending .decision .txt{font-size:15.5px;line-height:1.55}
+  /* Chỉ thu gọn cảnh thật sự dài (render() gắn .long khi > 420 ký tự); cảnh ngắn hiện trọn. */
+  body.pending .decision .txt.long:not(.open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
   body.pending .readmore{display:inline;border:0;background:none;color:var(--pen);font-weight:500;padding:0;font-size:13.5px;margin-top:-6px;align-self:flex-start;min-height:28px}
+  body.pending #want.incard{padding-bottom:12px}
+  #want.incard .want-hint{display:block;font-size:12.5px}
+  #want.incard .want-hint,#want.incard .want-msg,#want.incard .want-err{padding-left:0}
+  #want.incard .want-off{margin-left:0}
+  #want.incard label{font-size:15.5px}
+  .end .ruler .rl-one,.end .ruler>.ruler-legend{display:none}
+  .end .rl-rows{display:flex;flex-direction:column;gap:12px}
+  .end .rl-rows .cells{grid-template-columns:repeat(50,minmax(0,1fr))}
+  .end .rl-rows .cells i{height:14px}
+  .end .rl-rows .cells i.dec::after{display:block}
+  .end .rl-rows .ticks{display:grid;grid-template-columns:repeat(50,minmax(0,1fr));font-size:11.5px}
   body.pending .cause,body.pending .gate{font-size:13px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;padding-left:10px}
   body.pending .timer{gap:4px}
   body.pending .timer .row{flex-wrap:nowrap;font-size:12.5px}
@@ -523,7 +591,7 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
   body[data-tab="nguoi"] .board [data-tab="nguoi"],body[data-tab="doi"] .board [data-tab="doi"]{display:flex;margin-bottom:24px}
   .board .left-stats{display:none!important}
   body:not([data-tab="nam"]) .board #dec{display:none!important}
-  #codex{order:-5;margin-bottom:18px}
+  #codex,#aiInfo{order:-5;margin-bottom:18px}
   #dec{order:-4}
   .focus-sec{order:-3}
   .decision{padding:16px 16px 18px}
@@ -537,12 +605,13 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
   #foci button:nth-child(odd){border-left:0}
   #foci button:nth-child(2){border-top:0}
   #foci button:last-child:nth-child(odd){grid-column:1/-1}
-  #want{position:fixed;left:0;right:0;bottom:var(--tabs-h,46px);z-index:31;background:var(--paper);padding:8px var(--gut-r) 6px var(--gut);border-top:1.5px solid var(--print);gap:2px}
-  #want .want-row{border-bottom:1px solid var(--rule);padding-bottom:4px;gap:8px}
+  #want:not(.incard){position:fixed;left:0;right:0;bottom:var(--tabs-h,46px);z-index:31;background:var(--paper);padding:8px var(--gut-r) 6px var(--gut);border-top:1.5px solid var(--print);gap:2px}
+  #want:not(.incard) .want-row{border-bottom:1px solid var(--rule);padding-bottom:4px;gap:8px}
   #want label{font-size:17px}
   #wantIn{font-size:16.5px;padding:6px 2px}
   #wantGo{min-height:38px;min-width:56px}
   .want-msg:empty,.want-hint{display:none}
+  #want:not(.incard) .want-off{font-size:13px;padding:6px 10px}
   .dock{display:block;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);padding:0 var(--gut-r) env(safe-area-inset-bottom,0px) var(--gut)}
   .tabs{display:grid;grid-template-columns:repeat(4,1fr)}
   .tabs button{border:0;background:none;padding:10px 0 12px;font-size:13.5px;font-weight:500;color:var(--muted);min-height:46px;position:relative}
@@ -38122,7 +38191,7 @@ function _rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>
 
 async function _fontsReady(d) {
   if (!document.fonts || !document.fonts.load) return;
-  const all = [d.name, d.epitaph, d.nearMiss, d.remembered, d.birth, d.cause, ...d.peers.map(p => p.name + p.country), ...(d.seasons || []).map(s => s.vn)].join(" ") + " 0123456789 Một Lần Chào Đời Suýt nữa Cùng giây ấy Người nhớ bạn nhất Các mùa";
+  const all = [d.name, d.epitaph, d.nearMiss, d.remembered, d.birth, d.cause, ...d.peers.map(p => p.name + p.country), ...(d.seasons || []).map(s => s.vn)].join(" ") + " 0123456789 Almost Anyone Suýt nữa Cùng giây ấy Người nhớ bạn nhất Các mùa";
   const T = TOMB.serif, S = TOMB.sans;
   try {
     await Promise.race([Promise.all([
@@ -38246,7 +38315,7 @@ function _drawTomb(c, d, seed, P) {
   const end = y;
   // Chân giấy: tên trò chơi, lời rào, con dấu bên phải
   c.fillStyle = ink.print; c.fillRect(X, H - 190, CW, 2);
-  c.font = `600 42px ${T}`; c.fillStyle = ink.print; c.fillText("Một Lần Chào Đời", X, H - 122);
+  c.font = `600 42px ${T}`; c.fillStyle = ink.print; c.fillText("Almost Anyone", X, H - 122);
   c.font = `400 25px ${S}`; c.fillStyle = ink.muted; c.fillText("Mô phỏng theo số liệu thật. Không phải người thật.", X, H - 82);
   c.save(); c.translate(W - X - 78, H - 118); c.rotate(-0.21); c.globalAlpha = 0.85; c.strokeStyle = ink.seal; c.fillStyle = ink.seal;
   c.lineWidth = 4; c.beginPath(); c.arc(0, 0, 70, 0, Math.PI * 2); c.stroke(); c.lineWidth = 2; c.beginPath(); c.arc(0, 0, 60, 0, Math.PI * 2); c.stroke();
@@ -38965,6 +39034,15 @@ function canonCustom(L, kind, arg) {
 const app=document.getElementById("app");
 const store={get(){try{return JSON.parse(localStorage.getItem("mlcd.lives")||"[]")}catch(e){return[]}},
   add(x){try{const a=store.get();a.unshift(x);localStorage.setItem("mlcd.lives",JSON.stringify(a.slice(0,10)))}catch(e){}}};
+/* Khung "Xem chi tiết" ở hai cột bên. Mở/đóng nhớ theo người xem (localStorage, có thể không dùng được: khi đó mặc định đóng).
+   phone:true = trên điện thoại hiện thẳng, không gói (tab Tiền là chỗ riêng, đừng bắt bấm thêm). */
+const FOLD_KEY="mlcd.fold";
+const folds={get(){try{return JSON.parse(localStorage.getItem(FOLD_KEY)||"{}")||{}}catch(e){return{}}},
+  set(k,v){try{const o=folds.get();o[k]=v;localStorage.setItem(FOLD_KEY,JSON.stringify(o))}catch(e){}}};
+function fold(key,summary,inner,o={}){if(o.phone&&isPhone())return inner;
+  const cur=document.querySelector(`details[data-fold="${key}"]`),open=cur?cur.open:!!folds.get()[key];  // khung đang có trên trang là nguồn đúng nhất (sự kiện toggle đến trễ)
+  return`<details class="fold" data-fold="${key}"${open?" open":""}><summary>${summary}</summary><div class="fb">${inner}</div></details>`}
+document.addEventListener("toggle",e=>{const d=e.target;if(d&&d.matches&&d.matches("details[data-fold]"))folds.set(d.dataset.fold,d.open)},true);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 let G={life:null,peers:[],speed:1,paused:false,timer:null,acc:0,last:0,autoDecide:false,yearMs:2600,logYears:4,tabKey:null,focusKey:null};
 const BIRTHS_PER_SEC=4.2,DEATHS_PER_SEC=2.0;
@@ -38978,19 +39056,19 @@ function leaveBoard(){document.body.classList.remove("tunnel","pending","playing
 /* ---------- Mở đầu ---------- */
 function intro(){stop();leaveBoard();clearInterval(G.timerIv);const past=store.get();const t0=performance.now();
   app.innerHTML=`<section class="intro">
-  <div><h1>Một lần chào đời</h1>
+  <div><h1>Almost Anyone</h1>
    <p class="lede">Mỗi giây có khoảng bốn em bé ra đời. Bạn sẽ là một trong số đó, sinh ra ở đâu và trong gia đình nào là do may rủi, đúng theo tỷ lệ sinh thực tế của ${COUNTRIES.length} quốc gia. Rồi bạn sống trọn cuộc đời ấy.</p>
    <div class="counter"><div><b id="cb">0</b><span>em bé chào đời từ lúc bạn mở trang</span></div><div><b id="cd">0</b><span>người qua đời</span></div></div>
   </div>
   <div class="panel">
    <div class="field"><span class="k">Một năm trôi qua trong</span><div class="seg" id="len" role="group" aria-label="Độ dài một năm">
      <button data-ms="1300">~1 giây</button><button class="on" data-ms="2600">~2,5 giây</button><button data-ms="5000">~5 giây</button></div>
-     <span class="note">Lúc chơi vẫn tăng tốc hoặc tạm dừng được. Từ 6 tuổi, một người kể chuyện AI sẽ viết thêm tình huống riêng cho cuộc đời này (trang sẽ xin phép dùng Claude lần đầu).</span></div>
+     <span class="note">Lúc chơi vẫn tăng tốc hoặc tạm dừng được. Từ 6 tuổi, một người kể chuyện AI sẽ viết thêm tình huống riêng cho cuộc đời này, và ở mỗi quyết định bạn được tự nhập cách làm của mình thay vì chọn cách có sẵn (trang sẽ xin phép dùng Claude lần đầu).</span></div>
    <button class="btn primary" id="born">Chào đời</button>
    ${(()=>{const m=META.get();return m.lives?`<span class="note">Kiếp thứ ${m.lives+1}. Ký ức tiền kiếp: ${m.perks.map(id=>(PERKS.find(x=>x.id===id)||{vi:id}).vi).join(", ")}.</span>`:""})()}
    ${past.length?`<div class="field"><span class="k">Các kiếp trước</span><div class="past">${past.map(p=>`<div class="row"><span>${esc(p.name)}, ${esc(p.country)}</span><span>${p.age} tuổi</span></div>`).join("")}</div></div>`:""}
   </div></section>
-  <p class="foot">Số liệu gần đúng (khoảng năm 2023) cho ${COUNTRIES.length} quốc gia chiếm phần lớn số ca sinh trên thế giới: số ca sinh, tuổi thọ theo giới tính, tử vong dưới 5 tuổi, GDP bình quân (PPP), hệ số Gini, số năm đi học, tỷ lệ học đại học, tỷ suất sinh và mức hài lòng với cuộc sống. Tham chiếu UN World Population Prospects 2024, UN IGME, World Bank, UNDP và World Happiness Report qua Our World in Data. Thu nhập quy đổi theo giá cả ở Việt Nam để dễ hình dung. Cái chết và bệnh tật xảy ra theo tỷ lệ thống kê, không mô tả chi tiết.</p>`;
+  <p class="foot">Số liệu gần đúng (khoảng năm 2023) cho ${COUNTRIES.length} quốc gia chiếm phần lớn số ca sinh trên thế giới: số ca sinh, tuổi thọ theo giới tính, tử vong dưới 5 tuổi, GDP bình quân (PPP), hệ số Gini, số năm đi học, tỷ lệ học đại học, tỷ suất sinh và mức hài lòng với cuộc sống. Tham chiếu UN World Population Prospects 2024, UN IGME, World Bank, UNDP và World Happiness Report qua Our World in Data. Tiền tính bằng đô la sức mua (PPP); con số “≈ … đ/tháng” đi kèm là quy ra giá cả ở Việt Nam để dễ hình dung. Cái chết và bệnh tật xảy ra theo tỷ lệ thống kê, không mô tả chi tiết.</p>`;
   const cb=document.getElementById("cb"),cd=document.getElementById("cd");
   const tick=()=>{if(!document.body.contains(cb))return;const s=(performance.now()-t0)/1000;cb.textContent=Math.floor(s*BIRTHS_PER_SEC).toLocaleString("vi-VN");cd.textContent=Math.floor(s*DEATHS_PER_SEC).toLocaleString("vi-VN");requestAnimationFrame(tick)};tick();
   document.querySelectorAll("#len button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#len button").forEach(x=>x.classList.toggle("on",x===b));G.yearMs=+b.dataset.ms});
@@ -39027,9 +39105,14 @@ function rulerCells(L){const n=rulerN(L),cells=[];const spans=typeof seasonSpans
     const sp=spans.findLast(x=>i>=x.from&&i<=(x.aheadTo||x.to));if(sp){cls+=i>sp.to?" ss ahead":" ss";st+=(st?";":"")+`--sc:${sp.color}`}
     cells.push(`<i class="${cls.trim()}"${st?` style="${st}"`:""} title="${i} tuổi"></i>`)}
   const ticks=Array.from({length:Math.ceil(n/10)},(_,k)=>`<span style="grid-column:span ${Math.min(10,n-k*10)}">${k*10}</span>`).join("");
-  return{n,cells:cells.join(""),ticks}}
+  return{n,list:cells,cells:cells.join(""),ticks}}
 function rulerHTML(L,id){const r=rulerCells(L);
   return`<div class="cells" id="${id}" style="--cols-desk:${r.n};--cols-phone:${Math.ceil(r.n/2)}">${r.cells}</div><div class="ticks" style="--n:${r.n}">${r.ticks}</div>`}
+/* Màn kết trên điện thoại: mỗi hàng đúng 50 năm (0–49, 50–99…), dưới mỗi hàng có mốc 10 năm, để biết ô nào là năm nào. */
+function rulerRowsHTML(L){const r=rulerCells(L),rows=[];
+  for(let a=0;a<r.n;a+=50){const k=Math.min(50,r.n-a);
+    rows.push(`<div class="rl-row"><div class="cells" style="--cols-desk:50;--cols-phone:50">${r.list.slice(a,a+k).join("")}</div><div class="ticks">${Array.from({length:Math.ceil(k/10)},(_,j)=>`<span style="grid-column:span ${Math.min(10,k-j*10)}">${a+j*10}</span>`).join("")}</div></div>`)}
+  return`<div class="rl-rows" aria-hidden="true">${rows.join("")}</div>`}
 
 /* ---------- Bàn chơi ---------- */
 function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.storyLoading=false;G.logYears=4;G.tabKey=null;G.focusKey=null;
@@ -39064,17 +39147,22 @@ function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.story
    <aside class="col" id="left"></aside>
    <main class="col">
      <div id="codex" hidden></div>
+     <div id="aiInfo" hidden></div>
      <div id="dec" data-tab="nam"></div>
-     <form id="want" autocomplete="off"><div class="want-row"><label for="wantIn" id="wantLead">Tôi muốn</label><input id="wantIn" maxlength="200" enterkeyhint="go"><button class="btn pen" id="wantGo" type="submit">Làm</button></div>
-       <span class="want-msg" id="wantMsg" role="status" aria-live="polite"></span><span class="want-hint" id="wantHint">Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.</span></form>
+     <div id="wantHome"></div>
+     <form id="want" autocomplete="off"><div class="want-row" id="wantRow"><label for="wantIn" id="wantLead">Tôi muốn</label><input id="wantIn" maxlength="200" enterkeyhint="go"><button class="btn pen" id="wantGo" type="submit">Làm</button></div>
+       <div class="want-off" id="wantOff" hidden></div>
+       <div class="want-err" id="wantErr"><span class="want-msg" id="wantMsg" role="status" aria-live="polite"></span><button type="button" class="btn want-retry" id="wantRetry" hidden>Gửi lại</button></div>
+       <span class="want-hint" id="wantHint">Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.</span></form>
      <section class="sec" data-tab="nam"><h2>Nhật ký <span class="k">mới nhất trước</span></h2><div class="log" id="log"></div><button class="more" id="logMore" hidden></button></section>
    </main>
    <aside class="col">
-     <section class="sec" id="wealthF" data-tab="tien"><h2>Tiền <span class="k">quy theo giá Việt Nam</span></h2>
+     <section class="sec" id="wealthF" data-tab="tien"><h2>Tiền <span class="k" title="Đô la sức mua (PPP)">đơn vị: $ sức mua</span></h2>
        <div id="moneySum" class="sec"></div>
        <div class="sec" id="lifeBox" style="gap:6px"></div>
-       <div class="ledger" id="wealth"></div>
-       <div class="sec" id="chipBox" style="gap:6px"><span class="k">Bạn có thể làm ngay</span><div class="chips" id="moneyChips"></div><p class="note" id="chipNote" hidden></p></div>
+       <div id="wealth"></div>
+       <div class="sec" id="chipBox" style="gap:6px"></div>
+       <div id="moneyHelp"></div>
      </section>
      <section class="sec" data-tab="nguoi"><h2>Người quanh bạn <span class="k">họ nghĩ gì về bạn</span></h2><div class="castlist" id="cast"></div></section>
      <section class="sec" id="storiesF" data-tab="doi" hidden><h2>Chuyện đang dở</h2><div class="stories" id="stories"></div></section>
@@ -39088,10 +39176,10 @@ function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.story
   document.querySelectorAll("#speed button").forEach(b=>b.onclick=()=>{G.speed=+b.dataset.s;document.querySelectorAll("#speed button").forEach(x=>x.classList.toggle("on",x===b))});
   document.getElementById("pause").onclick=()=>{G.paused=!G.paused;render()};
   document.getElementById("auto").onclick=()=>{if(G.acting)return;G.autoDecide=!G.autoDecide;L.auto=G.autoDecide;if(L.pending&&G.autoDecide)resolve(L,autoChoice(L));render()};
-  document.getElementById("aiBtn").onclick=()=>{if(NAR.status==="off")return;NAR.enabled=!NAR.enabled;render()};
+  document.getElementById("aiBtn").onclick=()=>{if(NAR.status==="off"){closeMenu();showAiInfo();return}NAR.enabled=!NAR.enabled;render()};
   document.getElementById("codexBtn").onclick=()=>{const c=document.getElementById("codex");c.hidden=!c.hidden;closeMenu();renderCodex();if(!c.hidden)setTab("nam")};
   document.getElementById("quit").onclick=()=>{closeMenu();if(G.life.alive){G.paused=true;render();setTab("nam");askQuit()}else intro()};
-  document.getElementById("want").onsubmit=e=>{e.preventDefault();wantSubmit()};
+  document.getElementById("want").onsubmit=e=>{e.preventDefault();wantSubmit()};document.getElementById("wantRetry").onclick=()=>wantSubmit();
   const top=document.getElementById("top"),mb=document.getElementById("moreBtn");
   mb.onclick=()=>{const o=top.classList.toggle("open");mb.setAttribute("aria-expanded",o)};
   document.querySelectorAll(".tabs [data-t]").forEach(b=>b.onclick=()=>setTab(b.dataset.t));
@@ -39104,13 +39192,13 @@ function setTab(t){if(!document.getElementById("dock"))return;document.body.data
 /* Phần neo đáy (ô Tôi muốn + tab) đổi chiều cao: đo thật rồi đệm đáy trang đúng bằng thế, không gì bị che. */
 function watchDock(){const measure=()=>{const w=document.getElementById("want"),d=document.getElementById("dock");if(!w||!d)return;const r=document.documentElement;
     if(getComputedStyle(d).display==="none"){r.style.removeProperty("--dock-h");r.style.removeProperty("--tabs-h");return}
-    const th=d.offsetHeight;r.style.setProperty("--tabs-h",th+"px");r.style.setProperty("--dock-h",(th+(w.hidden?0:w.offsetHeight))+"px")};
+    const th=d.offsetHeight;r.style.setProperty("--tabs-h",th+"px");r.style.setProperty("--dock-h",(th+(w.hidden||w.classList.contains("incard")?0:w.offsetHeight))+"px")};
   if(G.dockRO)G.dockRO.disconnect();
   if("ResizeObserver"in window){G.dockRO=new ResizeObserver(measure);G.dockRO.observe(document.getElementById("want"));G.dockRO.observe(document.getElementById("dock"))}
   if(!G.dockResize){G.dockResize=true;addEventListener("resize",()=>{const f=G.measureDock;if(f)f()})}
   G.measureDock=measure;measure()}
 
-function askQuit(){const d=document.getElementById("dec");d.innerHTML=`<div class="decision"><div class="dhead"><b>Rời khỏi cuộc đời này?</b></div><p class="txt">Cuộc đời đang sống sẽ không được lưu.</p>
+function askQuit(){parkWant();const d=document.getElementById("dec");d.innerHTML=`<div class="decision"><div class="dhead"><b>Rời khỏi cuộc đời này?</b></div><p class="txt">Cuộc đời đang sống sẽ không được lưu.</p>
   <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="qy">Thoát về trang đầu</button><button class="btn pen" id="qn">Sống tiếp</button></div></div>`;
   document.getElementById("qy").onclick=intro;document.getElementById("qn").onclick=()=>{G.paused=false;render()}}
 
@@ -39121,27 +39209,54 @@ function start(){stop();G.last=performance.now();G.acc=0;const loop=t=>{G.timer=
 function stop(){if(G.timer)cancelAnimationFrame(G.timer);G.timer=null}
 
 /* ---- Ô "Tôi muốn…" ---- */
-function wantBlock(L){if(NAR.status==="off")return"off";if(G.acting||G.card||G.storyLoading||L.storyDue)return"busy";return""}
-function renderWant(L){const w=document.getElementById("want");if(!w)return;const wasHidden=w.hidden;w.hidden=!!G.autoDecide||!L.alive;
-  const off=NAR.status==="off";const inp=document.getElementById("wantIn");const pend=L.pending&&!G.card;
-  document.getElementById("wantLead").textContent=pend?"Tôi chọn cách khác:":"Tôi muốn";
-  inp.placeholder=off?"cần AI kể chuyện để tự quyết":pend?"tự viết cách xử lý của bạn…":L.age<18?"đi học thêm, làm lành với bạn, tập một môn…":"mở quán phở, làm lành với bố, đi học lại…";
-  inp.disabled=!!wantBlock(L);document.getElementById("wantGo").disabled=inp.disabled;
-  const msg=document.getElementById("wantMsg");if(G.acting){msg.textContent="Đang diễn ra…";msg.classList.remove("err")}
-  document.getElementById("wantHint").hidden=!!msg.textContent;
-  if(wasHidden!==w.hidden&&G.measureDock)G.measureDock()}
-async function wantSubmit(){const L=G.life;const inp=document.getElementById("wantIn"),msg=document.getElementById("wantMsg");
-  if(!L||!L.alive||G.acting||G.card||G.autoDecide)return;const text=inp.value.trim();if(!text){inp.focus();return}
+/* Trạng thái AI của ô tự nhập (chỉ đọc NAR, không đổi logic agency):
+   "off"  trang không dùng được Claude (narratorInit không lấy được NAR.sample: mở ngoài claude.ai, chưa cho phép, tài khoản tắt),
+   "init" đang hỏi quyền lúc mở trang, "" sẵn sàng. Đang chờ AI trả lời là G.acting; lỗi là kết quả {ok:false,error} của agencyAct. */
+function aiState(){return NAR.status==="off"?"off":!NAR.sample?"init":""}
+function wantBlock(L){const a=aiState();if(a)return a;if(G.acting||G.card||G.storyLoading||L.storyDue)return"busy";return""}
+const AI_WHY=`<p>Khi bạn tự nhập một hành động, người kể chuyện AI (Claude) đọc lại đời bạn rồi kể chuyện gì xảy ra. Trang này chưa kết nối được Claude: thường là vì game đang được mở ngoài claude.ai (tệp tải về, bản xem thử), vì bạn chưa bấm cho phép khi trang hỏi dùng Claude, hoặc vì tài khoản đang tắt tính năng này.</p><p>Cách bật: mở Almost Anyone ngay trên claude.ai, đăng nhập, rồi bấm cho phép khi trang hỏi. Trong lúc chưa có AI, bạn vẫn sống trọn đời được bằng các lựa chọn có sẵn.</p>`;
+function setWantMsg(k,html){const m=document.getElementById("wantMsg");if(!m)return;m.dataset.k=k;m.innerHTML=html;m.classList.toggle("err",k==="err")}
+function renderWant(L){const w=document.getElementById("want");if(!w)return;const wasHidden=w.hidden,wasIn=w.classList.contains("incard");
+  const pend=!!(L.pending&&!G.card),ai=aiState();
+  w.hidden=!!G.autoDecide||!L.alive||(ai==="off"&&!pend&&isPhone());
+  w.classList.toggle("incard",pend);w.classList.toggle("busy",!!G.acting);
+  const inp=document.getElementById("wantIn"),go=document.getElementById("wantGo");
+  document.getElementById("wantLead").textContent=pend?"Bạn muốn làm theo cách khác?":"Tôi muốn";
+  inp.placeholder=pend?"Nhập hành động hoặc lời bạn muốn nói…":L.age<18?"đi học thêm, làm lành với bạn, tập một môn…":"mở quán phở, làm lành với bố, đi học lại…";
+  document.getElementById("wantRow").hidden=ai==="off"&&!pend;inp.hidden=go.hidden=ai==="off";  // trong thẻ vẫn giữ câu hỏi, chỉ thay ô nhập bằng lời giải thích
+  const off=document.getElementById("wantOff");off.hidden=ai!=="off";
+  if(ai==="off"&&!off.dataset.on){off.dataset.on="1";off.innerHTML=`<b>Tự nhập hành động cần người kể chuyện AI.</b> Trang này chưa kết nối được Claude, nên lúc này chỉ chọn được các cách có sẵn.<details><summary>Vì sao, và cách bật</summary>${AI_WHY}</details>`}
+  inp.disabled=!!wantBlock(L);go.disabled=inp.disabled;go.textContent=G.acting?"Đang gửi…":"Làm";go.setAttribute("aria-busy",G.acting?"true":"false");
+  const msg=document.getElementById("wantMsg"),k=msg.dataset.k||"";
+  if(G.acting)setWantMsg("busy",`<span class="dots">Người kể chuyện đang viết chuyện gì xảy ra</span>`);
+  else if(ai==="init"&&k!=="err")setWantMsg("init","Đang kết nối người kể chuyện…");
+  else if(k==="busy"||k==="init")setWantMsg("","");
+  const k2=msg.dataset.k||"",retry=document.getElementById("wantRetry");
+  retry.hidden=!(k2==="err"&&!G.acting&&!inp.disabled&&inp.value.trim());
+  document.getElementById("wantErr").hidden=!msg.textContent&&retry.hidden;
+  const hint=document.getElementById("wantHint");hint.hidden=!!msg.textContent||ai==="off";
+  hint.textContent=pend?"Gõ một hành động hay một câu nói, như một lựa chọn thứ tư. Người kể chuyện AI sẽ kể chuyện gì xảy ra.":"Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.";
+  if((wasHidden!==w.hidden||wasIn!==pend)&&G.measureDock)G.measureDock()}
+/* Ô tự nhập nằm trong thẻ quyết định khi có cảnh đang chờ, ngoài thẻ thì về chỗ cũ (#wantHome).
+   Chuyển chính nút form chứ không dựng lại: giữ chữ đã gõ, vị trí con trỏ và tiêu điểm qua mỗi lần render(). */
+function parkWant(){const w=document.getElementById("want"),h=document.getElementById("wantHome");if(!w||!h)return null;
+  const inp=document.getElementById("wantIn"),f=document.activeElement===inp?[inp.selectionStart,inp.selectionEnd]:null;
+  if(w.previousElementSibling!==h)h.after(w);return f}
+function placeWant(L,f){const w=document.getElementById("want");if(!w)return;
+  const a=L.pending&&!G.card?document.querySelector("#dec .decision:not(.actcard)"):null;if(a&&w.parentNode!==a)a.appendChild(w);
+  const inp=document.getElementById("wantIn");if(f&&document.activeElement!==inp&&!inp.disabled){inp.focus({preventScroll:true});try{inp.setSelectionRange(f[0],f[1])}catch(e){}}}
+async function wantSubmit(){const L=G.life;const inp=document.getElementById("wantIn");
+  if(!L||!L.alive||G.acting||G.card||G.autoDecide||wantBlock(L))return;const text=inp.value.trim();if(!text){inp.focus();return}
   G.acting=true;render();
-  try{const r=await agencyAct(L,text);if(G.life!==L)return;if(r.ok){inp.value="";msg.textContent="";G.card=r.card;G.card.typed=text;G.card.age=L.age}else{msg.textContent=r.error;msg.classList.add("err")}}
+  try{const r=await agencyAct(L,text);if(G.life!==L)return;if(r.ok){inp.value="";setWantMsg("","");G.card=r.card;G.card.typed=text;G.card.age=L.age}else setWantMsg("err",esc(r.error))}
   finally{G.acting=false;clearInterval(G.timerIv);G.timerKey=null;render();if(!L.alive)setTimeout(ending,1400)}}
 /* Gợi ý tiền: điền sẵn vào ô Tôi muốn, đưa con trỏ vào, không tự gửi. */
 function prefillWant(text){const L=G.life,inp=document.getElementById("wantIn"),msg=document.getElementById("wantMsg");if(!L||!inp)return;
   const why=G.autoDecide?"auto":L.pending&&!G.card?"pending":wantBlock(L);
-  if(why){msg.classList.add("err");msg.textContent=why==="off"?"Gợi ý này đi qua ô “Tôi muốn…”, cần AI kể chuyện. Trang này hiện không dùng được AI; bạn vẫn đổi được mức sống ở trên."
-      :why==="auto"?"Đang tự chơi. Tắt “Tự chơi” trong menu để tự quyết.":why==="pending"?"Chọn xong quyết định đang chờ rồi dùng gợi ý này.":"Đợi chuyện đang diễn ra xong rồi thử lại.";
-    document.getElementById("wantHint").hidden=true;return}
-  msg.textContent="";msg.classList.remove("err");document.getElementById("wantHint").hidden=false;
+  if(why){setWantMsg("note",why==="off"?"Gợi ý này đi qua ô “Tôi muốn…”, cần AI kể chuyện. Trang này hiện không dùng được AI; bạn vẫn đổi được mức sống ở trên."
+      :why==="init"?"Người kể chuyện đang kết nối, thử lại sau giây lát.":why==="auto"?"Đang tự chơi. Tắt “Tự chơi” trong menu để tự quyết.":why==="pending"?"Chọn xong quyết định đang chờ rồi dùng gợi ý này.":"Đợi chuyện đang diễn ra xong rồi thử lại.");msg.classList.add("err");
+    document.getElementById("wantHint").hidden=true;document.getElementById("wantErr").hidden=false;return}
+  setWantMsg("","");document.getElementById("wantHint").hidden=false;
   inp.value=text;inp.focus({preventScroll:true});inp.setSelectionRange(text.length,text.length);
   const f=document.getElementById("want");f.classList.remove("filled");void f.offsetWidth;f.classList.add("filled");
   if(!isPhone())f.scrollIntoView({block:"nearest",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
@@ -39178,7 +39293,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   document.getElementById("where").textContent=`${L.c.n}${L.migrated?` (sinh ở ${L.birthC.n})`:""} · ${stateLine(L)}`;
   document.getElementById("pause").innerHTML=G.paused?`${ICON_PLAY}Tiếp tục`:`${ICON_PAUSE}Tạm dừng`;
   document.getElementById("codexBtn").textContent=`Sổ tay (${Object.keys(L.codex||{}).length})`;
-  const ab=document.getElementById("aiBtn");ab.textContent=NAR.status==="off"?"AI kể chuyện: không có":`AI kể chuyện: ${NAR.enabled?(NAR.status==="busy"?"đang viết…":"bật"):"tắt"}`;ab.classList.toggle("on",NAR.enabled&&NAR.status!=="off");ab.disabled=NAR.status==="off";renderCodex();
+  const ab=document.getElementById("aiBtn");ab.textContent=NAR.status==="off"?"AI chưa kết nối":`AI kể chuyện: ${NAR.enabled?(NAR.status==="busy"?"đang viết…":"bật"):"tắt"}`;ab.classList.toggle("on",NAR.enabled&&NAR.status!=="off");ab.classList.toggle("warn",NAR.status==="off");ab.title=NAR.status==="off"?"Bấm để xem vì sao chưa có AI và cách bật":"";ab.disabled=false;renderCodex();
   document.getElementById("auto").textContent=`Tự chơi: ${G.autoDecide?"bật":"tắt"}`;document.getElementById("auto").classList.toggle("on",G.autoDecide);renderWant(L);
   if(typeof seasonTheme==="function"){seasonTheme(L);seasonBanner(L);weirdMenu(L)}
   const pend=!!(L.pending||G.card);document.body.classList.toggle("pending",pend&&L.alive);
@@ -39206,6 +39321,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   // quyết định
   const dec=document.getElementById("dec");
   const fa=document.activeElement,fb=fa&&fa.closest?fa.closest("#dec [data-i]"):null,fi=fb?fb.dataset.i:null;
+  const wf=parkWant();
   if(G.card)renderActCard(L,dec);
   else if(G.storyLoading&&L.storyDue)dec.innerHTML=`<div class="decision"><div class="dhead"><b>Chuyện đang dở</b><span>${L.age} tuổi</span></div><h3>${esc(L.storyDue.title)}</h3><p class="note">Chuyện đang tiếp diễn…</p></div>`;
   else if(L.pending){const p=L.pending;const key=p.key||p.id+L.age;
@@ -39214,8 +39330,10 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
     const ddCost=35;const canDD=L.ar&&p.fog&&!L.ar.dd[key]&&g.tier!=="autopilot";
     const nOk=states.filter(s=>s==="show").length;
     const timed=g.bw<50&&L.ar;
-    dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
-     ${becauseHTML(L,p)}<h3 id="decT">${esc(p.title)}</h3><p class="txt" id="decTxt">${esc(p.text)}</p><button class="readmore" id="readmore" aria-controls="decTxt">Đọc hết</button>${m?matrixHtml(m):""}
+    const long=String(p.text||"").length>420;
+    if(G.freshKey!==key){G.freshKey=key;dec.classList.add("fresh");dec.onpointermove=()=>dec.classList.remove("fresh")}
+    dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT" tabindex="-1"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
+     ${becauseHTML(L,p)}<h3 id="decT">${esc(p.title)}</h3><p class="txt${long?" long":""}" id="decTxt">${esc(p.text)}</p>${long?`<button class="readmore" id="readmore" aria-controls="decTxt" aria-expanded="false">Đọc hết</button>`:""}${m?matrixHtml(m):""}
      ${p.npc&&L.ar&&L.ar.dd[key]?`<div class="signal">${esc(npcSignalVN(L,p.npc,key))}</div>`:""}
      ${canDD?`<div><button class="btn" id="dd" ${g.bw<ddCost?"disabled":""}>Thẩm định (−${ddCost} băng thông)</button> <span class="note">${g.bw<ddCost?"Không đủ băng thông để thẩm định.":"Làm rõ các con số và đọc tín hiệu của đối phương."}</span></div>`:""}
      ${p.tempt&&p.npc&&L.ar&&g.tier!=="autopilot"?temptationVN(L,p.npc,p.tempt.stake,p.tempt.roundsLeft):""}
@@ -39223,10 +39341,12 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
      <div class="choices">${p.choices.map((c,i)=>choiceHTML(L,p,c,i,states[i],g,yearly)).join("")}</div></article>`;
     if(G.acting)dec.querySelectorAll("[data-i]").forEach(b=>b.disabled=true);
     dec.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(G.acting)return;clearInterval(G.timerIv);G.timerKey=null;const mb=memSnapshot(L);resolve(L,+b.dataset.i);const t=rememberToast(L,mb);render();if(t)showToast(t)});
-    const rm=document.getElementById("readmore");rm.onclick=()=>{const t=document.getElementById("decTxt");const o=t.classList.toggle("open");rm.textContent=o?"Thu gọn":"Đọc hết"};
+    const rm=document.getElementById("readmore");if(rm){const t=document.getElementById("decTxt");
+      if(t.scrollHeight<=t.clientHeight+2&&!t.classList.contains("open")){t.classList.remove("long");rm.remove()}  // không bị cắt thật thì khỏi nút
+      else rm.onclick=()=>{const o=t.classList.toggle("open");rm.textContent=o?"Thu gọn":"Đọc hết";rm.setAttribute("aria-expanded",o)}}
     if(G.tabKey!==key){G.tabKey=key;setTab("nam")}
     if(fi!==null){const b=dec.querySelector(`[data-i="${fi}"]:not([disabled])`);if(b)b.focus({preventScroll:true})}
-    else if(G.focusKey!==key){G.focusKey=key;const a=document.activeElement;if(!a||a===document.body){const b=dec.querySelector("[data-i]:not([disabled])");if(b)b.focus({preventScroll:true})}}
+    else if(G.focusKey!==key){G.focusKey=key;const a=document.activeElement;if(!a||a===document.body){const art=dec.querySelector(".decision");if(art)art.focus({preventScroll:true})}}  // tiêu điểm vào thẻ, không vào phương án 1: phím 1–n và Tab vẫn dùng được, không gợi ý chọn sẵn
     if(timed&&G.timerKey!==key){clearInterval(G.timerIv);G.timerKey=key;const total=(6+24*(g.bw/100))*1000;const t0=performance.now();
       G.timerIv=setInterval(()=>{if(G.acting)return;const bar=document.getElementById("timerbar");if(!bar||!L.pending||L.pending.key!==key){clearInterval(G.timerIv);return}const left=Math.max(0,1-(performance.now()-t0)/total);bar.style.width=(left*100)+"%";
         const tl=document.getElementById("timerLeft");if(tl)tl.textContent=Math.ceil(left*total/1000);
@@ -39234,6 +39354,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
     const ddb=document.getElementById("dd");if(ddb)ddb.onclick=()=>{if(uiOp(L,{t:"dd",key,cost:ddCost}))render()}}
   else if(narratorWaiting(L))dec.innerHTML=`<div class="decision micro"><div class="dhead"><b>Người kể chuyện đang viết một tình huống cho tuổi ${L.nextAi}…</b></div><p class="note">Lần đầu, trình duyệt sẽ hỏi bạn có cho phép trang này dùng Claude không. Có thể tắt AI kể chuyện trong menu để chơi với kịch bản sẵn.</p></div>`;
   else if(!document.querySelector("#dec #qy"))dec.innerHTML="";
+  placeWant(L,wf);
   renderLog(L);
   if(!L.alive)document.body.classList.remove("tunnel");
   renderCast(L);
@@ -39266,35 +39387,57 @@ function renderPeers(L){const n=rulerN(L);
     const line=dead?`mất năm ${p.deathAge} tuổi (${p.cause})`:(p.tl[L.age]||p.tl[p.tl.length-1]);const a=dead?p.deathAge:L.age;
     return`<div class="peer${dead?" dead":""}"><div class="pl" style="--a:${Math.round(a/n*100)}%"></div><span><b class="n">${esc(p.name)}</b>, ${esc(p.c.n)} · ${esc(line)}</span></div>`}).join("")}
 
+/* Cột Tiền: số đọc nhanh (tiền mặt, nợ, mức sống) luôn hiện; bảng thu chi, của cải, gợi ý và cách tính nằm trong "Xem chi tiết".
+   moneySummaryHTML (money.js) giữ nguyên: ở đây chỉ gói khối .flow của nó vào khung gập. */
 function renderMoney(L,g){
-  document.getElementById("moneySum").innerHTML=typeof moneySummaryHTML==="function"?moneySummaryHTML(L):"";
+  const ms=document.getElementById("moneySum");ms.innerHTML=typeof moneySummaryHTML==="function"?moneySummaryHTML(L):"";
+  const fl=ms.querySelector(".flow"),f=L.ar&&L.ar.lastFlow;
+  if(fl&&f){const t=document.createElement("div");t.innerHTML=fold("flow",`Thu chi năm qua <span class="sv${f.net<0?" neg":""}">${f.net<0?"−":"+"}${fmtPPP(Math.abs(f.net))}</span>`,fl.outerHTML,{phone:true});fl.replaceWith(...t.childNodes)}
   const can=typeof canHandleMoney==="function"&&canHandleMoney(L),h=can?holdingsOf(L):null;
   const lb=document.getElementById("lifeBox");
-  if(h)lb.innerHTML=`<span class="k">Mức sống</span><div class="life" role="radiogroup" aria-label="Mức sống">${LIFESTYLES.map(([k,n])=>`<button${k==="tan_tien"?' id="frugal"':""} data-ly="${k}" role="radio" aria-checked="${h.lifestyle===k}"${h.lifestyle===k?' class="on"':""}>${n}</button>`).join("")}</div><span class="note">Mức sống quyết định phần lớn tiền chi mỗi năm. Tằn tiện để dành nhanh nhưng lâu ngày thì mệt mỏi.</span>`;
+  if(h)lb.innerHTML=`<span class="k">Mức sống</span><div class="life" role="radiogroup" aria-label="Mức sống">${LIFESTYLES.map(([k,n])=>`<button${k==="tan_tien"?' id="frugal"':""} data-ly="${k}" role="radio" aria-checked="${h.lifestyle===k}"${h.lifestyle===k?' class="on"':""}>${n}</button>`).join("")}</div>`;
   else if(L.ar&&L.ar.started&&g.tier!=="autopilot")lb.innerHTML=`<button class="btn${L.ar.frugal?" on":""}" id="frugal">Sống dưới mức thu nhập: ${L.ar.frugal?"bật":"tắt"}</button>`;
   else lb.innerHTML=L.age<18?`<span class="note">Từ 18 tuổi bạn tự chọn mức sống, mua bán, gửi tiết kiệm.</span>`:"";
   lb.querySelectorAll("[data-ly]").forEach(b=>b.onclick=()=>{if(!canHandleMoney(L))return;if(b.dataset.ly!==h.lifestyle){uiOp(L,{t:"ly",v:b.dataset.ly});render()}});
   const fr=document.getElementById("frugal");if(fr&&!fr.dataset.ly)fr.onclick=()=>{uiOp(L,{t:"frugal",v:!L.ar.frugal});render()};
-  const w=typeof wealthPanelHTML==="function"?wealthPanelHTML(L):"";const wl=document.getElementById("wealth");wl.innerHTML=w;wl.hidden=!w;
+  const w=typeof wealthPanelHTML==="function"?wealthPanelHTML(L):"";const wl=document.getElementById("wealth");wl.hidden=!w;
+  const nAs=(w.match(/class="st r"/g)||[]).length;
+  wl.innerHTML=w?fold("assets",`Của cải và khoản vay${nAs?` <span class="sv">${nAs} khoản</span>`:""}`,`<div class="ledger">${w}</div>`,{phone:true}):"";
   const sug=typeof moneySuggestions==="function"&&L.alive?moneySuggestions(L):[];const cb=document.getElementById("chipBox");cb.hidden=!sug.length;
-  document.getElementById("moneyChips").innerHTML=sug.map((c,i)=>`<button type="button" class="chip${c.warn?" warn":""}" data-c="${i}">${esc(c.text)}</button>`).join("");
-  document.querySelectorAll("#moneyChips .chip").forEach(b=>b.onclick=()=>prefillWant(sug[+b.dataset.c].text));
-  const note=document.getElementById("chipNote"),off=NAR.status==="off";note.hidden=!(sug.length&&(off||G.autoDecide));
-  note.textContent=off?"Các gợi ý này đi qua ô “Tôi muốn…”, cần AI kể chuyện. Trang này hiện không dùng được AI.":"Đang tự chơi. Tắt “Tự chơi” trong menu để dùng các gợi ý này.";
-  const nw=sug.filter(c=>c.warn).length,tb=document.getElementById("tabMoney");tb.hidden=!nw;tb.textContent=nw}
+  const off=NAR.status==="off",nw=sug.filter(c=>c.warn).length;
+  const chips=`<div class="chips" id="moneyChips">${sug.map((c,i)=>`<button type="button" class="chip${c.warn?" warn":""}" data-c="${i}">${esc(c.text)}</button>`).join("")}</div>`+
+    (sug.length&&(off||G.autoDecide)?`<p class="note" id="chipNote">${off?"Các gợi ý này đi qua ô “Tôi muốn…”, cần AI kể chuyện. Trang này hiện chưa kết nối được AI.":"Đang tự chơi. Tắt “Tự chơi” trong menu để dùng các gợi ý này."}</p>`:"");
+  cb.innerHTML=sug.length?fold("chips",`Gợi ý tài chính <span class="sv${nw?" neg":""}">${nw?`${nw} cần chú ý`:`${sug.length} gợi ý`}</span>`,chips,{phone:true}):"";
+  if(isPhone()&&sug.length)cb.insertAdjacentHTML("afterbegin",`<span class="k">Bạn có thể làm ngay</span>`);
+  cb.querySelectorAll("#moneyChips .chip").forEach(b=>b.onclick=()=>prefillWant(sug[+b.dataset.c].text));
+  const tb=document.getElementById("tabMoney");tb.hidden=!nw;tb.textContent=nw;
+  document.getElementById("moneyHelp").innerHTML=fold("money","Tiền tính thế nào?",`<div class="note"><p>Mọi con số tiền trong game tính bằng <b>đô la sức mua</b> ($, PPP): một đô mua được lượng hàng như một đô ở Mỹ, dù bạn sống ở nước nào. Nhờ vậy đời ở các nước so được với nhau.</p>
+    <p>Dòng “≈ … triệu đ/tháng” là cùng khoản đó quy ra giá cả ở Việt Nam (1 $ ≈ ${VND_PER_PPP.toLocaleString("vi-VN")} đ), chia theo tháng, chỉ để bạn dễ hình dung.</p>
+    ${h?`<p>Mức sống quyết định phần lớn tiền chi mỗi năm. Tằn tiện để dành nhanh nhưng lâu ngày thì mệt mỏi.</p>`:""}</div>`)}
 
 function argonPanel(L,g,bwRow){if(!L.ar||!L.ar.started)return"";
-  const tiers=["autopilot","awakened","sovereign"].map(t=>`<span${g.tier===t?' class="on"':""}>${AR.TIER_VN[t]}</span>`).join("");
+  const TIP={autopilot:"Sống theo quán tính, chỉ thấy các cách quen thuộc",awakened:"Thấy thêm cách làm có rủi ro, được thẩm định trước khi quyết",sovereign:"Thấy cả “lựa chọn thứ ba”"};
+  const tiers=["autopilot","awakened","sovereign"].map(t=>`<span title="${TIP[t]}"${g.tier===t?' class="on"':""}>${AR.TIER_VN[t]}</span>`).join("");
   const warn=g.locked?`<p class="note seal">Đang khóa: ${esc(lockWhy(L,g))}</p>`:g.scarcity?`<p class="note seal">Lo toan ${g.scarcity.reason==="stress"?"căng thẳng":"tiền bạc"} đang lấy mất ${Math.round(g.scarcity.bandwidth_tax)} điểm băng thông mỗi quý.</p>`:"";
   const badges=[g.scarcity?`<span class="badge bad">Bẫy khan hiếm</span>`:"",g.ratRace?`<span class="badge bad">Vòng xoáy chuột chạy</span>`:""].join("");
-  return`<section class="sec bw-sec" data-tab="nam"><h2>Băng thông <span class="k">còn ${Math.round(g.bw)}</span></h2>${bwRow("Đầu óc")}
-   <p class="note">Vạch đỏ là ${Argon.BANDWIDTH_LOCK_LEVEL}. Xuống dưới vạch, các lựa chọn <b style="color:var(--pen)">đường dài</b> bị khóa.</p>${warn}${badges?`<div style="display:flex;gap:6px;flex-wrap:wrap">${badges}</div>`:""}
-   <div class="tier" aria-label="Tầng tự chủ">${tiers}</div></section>`}
+  const lv=Argon.BANDWIDTH_LOCK_LEVEL,bw=Math.round(g.bw);
+  const quick=g.locked?"":bw<lv+10?`Sắp chạm vạch đỏ ${lv}: dưới vạch, lựa chọn <b>đường dài</b> bị khóa.`:bw<50?`Đầu óc đang căng: mỗi quyết định có đồng hồ đếm ngược. Dưới ${lv} thì khóa lựa chọn <b>đường dài</b>.`:`Còn đủ sức tính đường dài. Dưới vạch đỏ ${lv} thì các lựa chọn <b>đường dài</b> bị khóa.`;
+  const help=`<div class="note"><p><b>Băng thông</b> là sức để nghĩ và xoay xở trong năm, tối đa 100. Lo tiền, nợ nần, căng thẳng làm nó tụt; nghỉ ngơi và bớt lo làm nó hồi lại.</p>
+    <p>Dưới 50: số liệu trong thẻ mờ đi và bạn chỉ có ít giây để chọn. Dưới ${lv}: các lựa chọn có nhãn “đường dài” và lựa chọn của tầng cao bị khóa (gạch ngang, có ổ khóa và lý do). Khi tiền trả nợ tiêu dùng ngốn quá nhiều thu nhập, hay bạn thiếu tiền nhiều quý liền, chúng cũng bị khóa.</p>
+    <p><b>Tầng tự chủ</b> cho biết bạn thấy được bao nhiêu lựa chọn. <b>Tự lái</b>: sống theo quán tính, chỉ thấy các cách quen thuộc. <b>Thức tỉnh</b>: thấy thêm cách làm có rủi ro, được thẩm định trước khi quyết. <b>Tự chủ</b>: thấy cả “lựa chọn thứ ba”. Vượt qua khủng hoảng khi đầu óc còn thảnh thơi thì lên tầng; buông xuôi quá lâu thì tụt lại Tự lái. Ô có dấu ? là lựa chọn chưa mở ở tầng của bạn.</p></div>`;
+  return`<section class="sec bw-sec" data-tab="nam"><h2>Băng thông <span class="k">còn ${bw}/100</span></h2>${bwRow("Sức nghĩ")}
+   ${quick?`<p class="quick">${quick}</p>`:""}${warn}${badges?`<div style="display:flex;gap:6px;flex-wrap:wrap">${badges}</div>`:""}
+   <span class="tierlab"><b>Tầng tự chủ</b> · tầng càng cao, càng thấy nhiều lựa chọn</span>
+   <div class="tier" aria-label="Tầng tự chủ: ${AR.TIER_VN[g.tier]}">${tiers}</div>
+   ${fold("bw","Hai thước này là gì?",help)}</section>`}
 function choiceDoors(c){const e=c._fx;if(!e)return[];const out=new Set(e.close_doors||[]);if(e.secret)out.add("clean_record");if(e.gamble){for(const d of [...(e.gamble.win.close_doors||[]),...(e.gamble.lose.close_doors||[])])out.add(d);if(e.gamble.win.secret||e.gamble.lose.secret)out.add("clean_record")}return[...out].filter(d=>!(G.life&&G.life.lw&&G.life.lw.cz.doors.has(d)))}
 function matrixHtml(m){return `<div class="mx"><table><tr><th></th>${m.them.map(t=>`<th>${esc(m.who||"Họ")}: ${esc(t)}</th>`).join("")}</tr>${m.me.map((a,i)=>`<tr><th>Bạn: ${esc(a)}</th>${m.them.map((b,j)=>{const c=m.cells[i][j];const hide=m.hideOffDiag&&i!==j;return`<td class="${m.fogged?"fog":""}">${hide?"?":`<b>${m.fogged?"≈":""}${fmtCell(c[0],m.unit)}</b> / ${fmtCell(c[1],m.unit)}`}</td>`}).join("")}</tr>`).join("")}</table><span class="note">Mỗi ô: bạn / ${esc(m.who||"họ")}, đơn vị ${esc(m.unit)}${m.fogged?". Con số là ước lượng, băng thông thấp thì càng mờ":""}</span></div>`}
-function fmtCell(v,u){return u==="$ PPP"?(v<0?"−":"")+fmtPPP(Math.abs(v)):(v>0?"+":"")+v}
+function fmtCell(v,u){if(u==="$ PPP")return(v<0?"−":"")+fmtPPP(Math.abs(v));const r=Math.round(v*10)/10;return(r>0?"+":r<0?"−":"")+Math.abs(r).toLocaleString("vi-VN")}  // số đã làm mờ là số thực: làm tròn 1 chữ số
 function codexHtml(L){const ids=Object.keys(L.codex||{});if(!ids.length)return`<span class="note">Chưa có trang nào. Mỗi tình huống bạn gặp sẽ mở thêm một khái niệm của lý thuyết trò chơi.</span>`;
   return ids.map(id=>`<div class="c"><b>${esc(CONCEPTS[id][0])}</b><span class="note">mở ở tuổi ${L.codex[id]}</span><span>${esc(CONCEPTS[id][1])}</span></div>`).join("")}
+function showAiInfo(){const b=document.getElementById("aiInfo");if(!b)return;b.hidden=false;
+  b.innerHTML=`<div class="ai-info" role="note"><h3>Vì sao chưa có người kể chuyện AI?</h3>${AI_WHY}<button class="btn" id="aiInfoClose">Đã hiểu</button></div>`;
+  document.getElementById("aiInfoClose").onclick=()=>{b.hidden=true};setTab("nam");b.scrollIntoView({block:"nearest"})}
 function renderCodex(){const L=G.life,c=document.getElementById("codex");if(!c||c.hidden)return;const n=Object.keys(L.codex||{}).length;
   c.innerHTML=`<div class="codex"><div class="codexhead"><span class="k">Sổ tay lý thuyết trò chơi: ${n}/${Object.keys(CONCEPTS).length} trang</span><button class="btn" id="codexClose">Đóng</button></div>${codexHtml(L)}</div>`;
   document.getElementById("codexClose").onclick=()=>{c.hidden=true}}
@@ -39314,9 +39457,10 @@ function ending(){
   const bars = `<div class="peer me"><div class="pl" style="--a:${Math.round(L.age / n * 100)}%"></div><span><b class="n">Bạn</b>, ${esc(L.birthC.n)} · sống ${L.age} năm</span></div>` +
     G.peers.map(p => `<div class="peer${p.deathAge < 5 ? " dead" : ""}"><div class="pl" style="--a:${Math.round(p.deathAge / n * 100)}%"></div><span><b class="n">${esc(p.name)}</b>, ${esc(p.c.n)} · sống đến ${p.deathAge} tuổi, ${esc(p.cause)}.</span></div>`).join("");
   app.innerHTML = `<section class="end">
-   <div><p class="closed">Cuộc đời đã khép lại${L.forkOf ? ` · đời rẽ từ năm ${L.forkOf.age} tuổi` : ""}</p><h2>${esc(L.name)}, ${L.age} tuổi</h2>
+   <div><p class="closed"><span class="brand">Almost Anyone</span> · Cuộc đời đã khép lại${L.forkOf ? ` · đời rẽ từ năm ${L.forkOf.age} tuổi` : ""}</p><h2>${esc(L.name)}, ${L.age} tuổi</h2>
      <p class="summary">Sinh ra ở ${esc(L.birthC.n)}${L.migrated ? `, mất ở ${esc(L.c.n)}` : ""}. Qua đời vì ${esc(L.cause)}. ${diff >= 0 ? `Sống lâu hơn tuổi thọ trung bình nơi sinh ${diff} năm.` : `Ít hơn tuổi thọ trung bình nơi sinh ${-diff} năm.`}</p></div>
-   <div class="ruler">${rulerHTML(L, "endmap")}</div>
+   <div class="ruler" aria-label="Thước đời, mỗi ô là một năm"><div class="rl-one">${rulerHTML(L, "endmap")}</div>${rulerRowsHTML(L)}
+     <div class="rl-legend"><span>1 ô = 1 năm</span><span><i class="sw"></i>nhạt: năm buồn, đậm: năm vui</span><span><i class="sw le"></i>tuổi thọ trung bình</span><span><i class="sw dead"></i>năm mất</span>${safe(() => typeof seasonSpans === "function" && seasonSpans(L).length) ? `<span><i class="sw ss"></i>vạch màu: các Mùa</span>` : ""}</div></div>
    ${safe(() => typeof seasonsEndHTML === "function" ? seasonsEndHTML(L) : "")}
 
    <div class="epitaph"><span class="label">Văn bia</span>${eul.length ? (() => { const lead = epitaphLine(eul) || firstSentence(eul[0]); const norm = s => s.replace(/\s*\(năm bạn (\d+) tuổi\)/g, " năm bạn $1 tuổi").replace(/\s+/g, " ").trim();
