@@ -557,10 +557,27 @@ export const ABS_SEASON_IDS: string[] = Array.from({ length: 50 }, (_, i) => "w_
  * Mùa khoa học viễn tưởng (w_S*) không nhận: giọng nghiêm hơn, hài xóm giềng làm loãng mùa.
  */
 const ABSURD_FORKS: string[] = Array.from({ length: 50 }, (_, i) => "tp_a" + String(i + 1).padStart(2, "0"));
+/**
+ * Cặp (thẻ phi lý, mùa phi lý) KHÔNG gắn (review Task 20 B2):
+ *  - mùa được nâng thẳng từ thẻ đó (trigger gọi lại `tp_aNN_seen`): gắn vào thì thẻ gốc kể lại tiền đề như chuyện mới, ngược thời gian;
+ *  - thẻ trùng mô-típ với mùa (cùng một trò đùa lặp hai lần, hoặc mâu thuẫn trạng thái).
+ */
+export const ABSURD_TAG_EXCLUDE: Record<string, string[]> = {
+  tp_a03: ["w_X22", "w_X08", "w_X43"],   // X22 nâng từ a03 "Bạn già hơn trên giấy"; X08/X43 cùng mô-típ tuổi/giấy khai sinh
+  tp_a23: ["w_X23"],                     // X23 nâng từ a23 "Thiệp mời từ hội ngủ trưa"
+  tp_a42: ["w_X50"],                     // X50 nâng từ a42 "Tờ lịch bị in hai tháng bảy"
+  tp_a46: ["w_X34"],                     // áo mưa giống bạn × nhà thiết kế áo mưa
+  tp_a28: ["w_X12", "w_X50"],            // đài báo bạn mất tích × người đã chết hợp pháp / lịch thừa ngày
+  tp_a04: ["w_X42"],                     // nhầm quan tài × ông bầu tang lễ
+  tp_a26: ["w_X36"],                     // karaoke gọi sai nghề × thuyền trưởng karaoke
+  tp_a16: ["w_X02"],                     // mèo chiếm ghế chủ tọa × gia tộc mèo
+  tp_a25: ["w_X16", "w_X45"],            // chó làm nhân chứng × phát ngôn viên của chó / nhân chứng voi
+  tp_a36: ["w_X47"],                     // tượng sáp giống bạn × tượng đài ngượng
+};
 
 export const CODEX_SEASON_TAGS: Record<string, string[]> = (() => {
   const out: Record<string, string[]> = {};
   for (const [season, forks] of Object.entries(SEASON_FORKS)) for (const f of forks) (out[f] ??= []).push(season);
-  for (const f of ABSURD_FORKS) (out[f] ??= []).push(...ABS_SEASON_IDS);
+  for (const f of ABSURD_FORKS) (out[f] ??= []).push(...ABS_SEASON_IDS.filter((s) => !(ABSURD_TAG_EXCLUDE[f] ?? []).includes(s)));
   return out;
 })();

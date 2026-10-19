@@ -1245,6 +1245,7 @@ var Argon = (() => {
   var engine_exports = {};
   __export(engine_exports, {
     ABSURD_KY: () => ABSURD_KY,
+    ABSURD_TAG_EXCLUDE: () => ABSURD_TAG_EXCLUDE,
     ABS_SEASON_IDS: () => ABS_SEASON_IDS,
     ALLOWED_FLAGS: () => ALLOWED_FLAGS,
     ALL_ARCHETYPES: () => ALL_ARCHETYPES,
@@ -3387,10 +3388,31 @@ var Argon = (() => {
     ngoi_sao: ["tp_c06", "tp_c10", "tp_c26", "tp_c49", "tp_a01", "tp_a03", "tp_a05", "tp_a06", "tp_a09", "tp_a11", "tp_a12", "tp_a13", "tp_a16", "tp_a18", "tp_a20", "tp_a21", "tp_a26", "tp_a28", "tp_a29", "tp_a30", "tp_a31", "tp_a32", "tp_a34", "tp_a36", "tp_a37", "tp_a44", "tp_a46", "tp_a48", "tp_l02", "tp_l10", "tp_l18"],
     lam_lai: ["tp_c05", "tp_c08", "tp_c22", "tp_c23", "tp_c29", "tp_c37", "tp_m01", "tp_m04", "tp_m05", "tp_m08", "tp_m12", "tp_m15", "tp_m17", "tp_m20", "tp_m21", "tp_m22", "tp_m23", "tp_m24", "tp_m26", "tp_m27", "tp_m29", "tp_m30", "tp_m33", "tp_m36", "tp_m40", "tp_m46", "tp_m47", "tp_a02", "tp_a07", "tp_a08", "tp_a14", "tp_a19", "tp_a24", "tp_a27", "tp_a35", "tp_a41", "tp_a42"],
     xu_nguoi: ["tp_c04", "tp_c09", "tp_c11", "tp_c14", "tp_c36", "tp_m25", "tp_l19", "tp_l36"]
-  }, ABS_SEASON_IDS = Array.from({ length: 50 }, (_, i) => "w_X" + String(i + 1).padStart(2, "0")), ABSURD_FORKS = Array.from({ length: 50 }, (_, i) => "tp_a" + String(i + 1).padStart(2, "0")), CODEX_SEASON_TAGS = (() => {
+  }, ABS_SEASON_IDS = Array.from({ length: 50 }, (_, i) => "w_X" + String(i + 1).padStart(2, "0")), ABSURD_FORKS = Array.from({ length: 50 }, (_, i) => "tp_a" + String(i + 1).padStart(2, "0")), ABSURD_TAG_EXCLUDE = {
+    tp_a03: ["w_X22", "w_X08", "w_X43"],
+    // X22 nâng từ a03 "Bạn già hơn trên giấy"; X08/X43 cùng mô-típ tuổi/giấy khai sinh
+    tp_a23: ["w_X23"],
+    // X23 nâng từ a23 "Thiệp mời từ hội ngủ trưa"
+    tp_a42: ["w_X50"],
+    // X50 nâng từ a42 "Tờ lịch bị in hai tháng bảy"
+    tp_a46: ["w_X34"],
+    // áo mưa giống bạn × nhà thiết kế áo mưa
+    tp_a28: ["w_X12", "w_X50"],
+    // đài báo bạn mất tích × người đã chết hợp pháp / lịch thừa ngày
+    tp_a04: ["w_X42"],
+    // nhầm quan tài × ông bầu tang lễ
+    tp_a26: ["w_X36"],
+    // karaoke gọi sai nghề × thuyền trưởng karaoke
+    tp_a16: ["w_X02"],
+    // mèo chiếm ghế chủ tọa × gia tộc mèo
+    tp_a25: ["w_X16", "w_X45"],
+    // chó làm nhân chứng × phát ngôn viên của chó / nhân chứng voi
+    tp_a36: ["w_X47"]
+    // tượng sáp giống bạn × tượng đài ngượng
+  }, CODEX_SEASON_TAGS = (() => {
     let out = {};
     for (let [season2, forks] of Object.entries(SEASON_FORKS)) for (let f9 of forks) (out[f9] ??= []).push(season2);
-    for (let f9 of ABSURD_FORKS) (out[f9] ??= []).push(...ABS_SEASON_IDS);
+    for (let f9 of ABSURD_FORKS) (out[f9] ??= []).push(...ABS_SEASON_IDS.filter((s) => !(ABSURD_TAG_EXCLUDE[f9] ?? []).includes(s)));
     return out;
   })();
 
@@ -22830,7 +22852,7 @@ var Argon = (() => {
     let [lo, hi] = def.years, r = Math.min(Math.max(rngNext, 0), 0.999999), len = Math.min(hi, lo + Math.floor(r * (hi - lo + 1)), SEASON_END_MAX - age);
     return Math.max(SEASON_MIN, len);
   }
-  var beatGap = (len) => Math.max(1, Math.round(len / 4)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child", "swap_other"]);
+  var beatGap = (len) => Math.max(1, Math.floor(len / 4)), DURABLE_CUSTOM = /* @__PURE__ */ new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child", "swap_other"]);
   function isDurable(e) {
     return (e.custom ?? "").split("|").some((p) => p.startsWith("become:") || p.startsWith("marry:") || DURABLE_CUSTOM.has(p)) || e.buy || e.sell || e.income_mult !== void 0 && (e.income_mult >= 1.2 || e.income_mult <= 0.8) ? !0 : e.money !== void 0 && Math.abs(e.money) >= 1;
   }
@@ -23986,10 +24008,10 @@ var Argon = (() => {
     }
     let pool = feasible;
     if (!pool.length) return null;
-    let score2 = (f9) => 3 * f9.slots.fromPlayer + f9.seed.axes.reduce((t, a) => t + (c.pressure[a] ?? 0), 0) + (f9.seed.axes.includes(axis) ? ON_AXIS_BONUS : 0) - (c.flags.has(`canon_${f9.seed.id}`) ? USED_PENALTY : 0), top = Math.max(...pool.map(score2)), best = pool.filter((f9) => score2(f9) === top), { seed, slots } = best.length === 1 ? best[0] : rng.pick(best), doors = [], kinds = /* @__PURE__ */ new Set(), seedCands = shuffle(seed.doors.filter((d) => seasonOpen(c, d.season) && (!d.when || d.when(c, slots))), rng), take = (distinct) => {
+    let score2 = (f9) => 3 * f9.slots.fromPlayer + f9.seed.axes.reduce((t, a) => t + (c.pressure[a] ?? 0), 0) + (f9.seed.axes.includes(axis) ? ON_AXIS_BONUS : 0) - (c.flags.has(`canon_${f9.seed.id}`) ? USED_PENALTY : 0), top = Math.max(...pool.map(score2)), best = pool.filter((f9) => score2(f9) === top), { seed, slots } = best.length === 1 ? best[0] : rng.pick(best), doors = [], seedCands = shuffle(seed.doors.filter((d) => seasonOpen(c, d.season) && (!d.when || d.when(c, slots))), rng), take = (distinct) => {
       for (let d of seedCands) {
         if (doors.length >= 3) break;
-        kinds.has(d.kind) || distinct && doors.some((x) => x.season === d.season) || (doors.push(seedDoor(d, d.season, slots, c, N)), kinds.add(d.kind));
+        doors.some((x) => x.kind === d.kind) || distinct && doors.some((x) => x.season === d.season) || doors.push(seedDoor(d, d.season, slots, c, N));
       }
     };
     if (take(!0), doors.length < 3 && fillGeneric(doors, 3, slots, c, N, rng, !0), doors.length < 3 && take(!1), doors.length < 3 && fillGeneric(doors, 3, slots, c, N, rng), c.weird > 0 && c.pressure.ky * c.weird >= WEIRD_DOOR_AT) {
@@ -24277,7 +24299,7 @@ var Argon = (() => {
         let ai = ten(s, N, "");
         return `${ai} g\u1ECDi b\u1EA1n v\xE0o ph\xF2ng. Tr\xEAn b\xE0n c\xF3 ba b\u1EA3n di ch\xFAc vi\u1EBFt tay, m\u1ED7i b\u1EA3n g\u1EA1ch m\u1ED9t c\xE1i t\xEAn; m\u1ED9t trong ba c\xE1i t\xEAn \u1EA5y l\xE0 c\u1EE7a b\u1EA1n.${thu} ${ai} mu\u1ED1n b\u1EA1n ch\u1ECDn b\u1EA3n n\xE0o \u0111\u01B0\u1EE3c gi\u1EEF l\u1EA1i.`;
       }
-      return `${s.who ? nguoiNha(s, c) ? `${ten(s, N, "")} \u0111\u1EB7t l\xEAn b\xE0n ba b\u1EA3n di ch\xFAc vi\u1EBFt tay c\u1EE7a b\u1ED1 m\u1EB9` : `${ten(s, N, "")} mang t\u1EDBi ba b\u1EA3n di ch\xFAc vi\u1EBFt tay c\u1EE7a b\u1ED1 m\u1EB9 b\u1EA1n, n\xF3i l\xE0 \u0111\u01B0\u1EE3c nh\u1EDD gi\u1EEF h\u1ED9 t\u1EEB nhi\u1EC1u n\u0103m tr\u01B0\u1EDBc` : "D\u1ECDn t\u1EE7 c\u1EE7a b\u1ED1 m\u1EB9, b\u1EA1n t\xECm th\u1EA5y ba b\u1EA3n di ch\xFAc vi\u1EBFt tay"}, m\u1ED7i b\u1EA3n g\u1EA1ch m\u1ED9t c\xE1i t\xEAn. Kh\xF4ng b\u1EA3n n\xE0o ghi ng\xE0y.${thu} Ai gi\u1EEF \u0111\u01B0\u1EE3c b\u1EA3n n\xE0o l\xE0 chuy\u1EC7n c\u1EE7a c\u1EA3 h\u1ECD.`;
+      return `${s.who ? nguoiNha(s, c) ? `${ten(s, N, "")} \u0111\u1EB7t l\xEAn b\xE0n ba b\u1EA3n di ch\xFAc vi\u1EBFt tay c\u1EE7a b\u1ED1 m\u1EB9` : `${ten(s, N, "")} mang t\u1EDBi m\u1ED9t phong b\xEC b\u1ED1 m\u1EB9 b\u1EA1n g\u1EEDi gi\u1EEF t\u1EEB nhi\u1EC1u n\u0103m tr\u01B0\u1EDBc. B\xEAn trong l\xE0 ba b\u1EA3n di ch\xFAc vi\u1EBFt tay` : "D\u1ECDn t\u1EE7 c\u1EE7a b\u1ED1 m\u1EB9, b\u1EA1n t\xECm th\u1EA5y ba b\u1EA3n di ch\xFAc vi\u1EBFt tay"}, m\u1ED7i b\u1EA3n g\u1EA1ch m\u1ED9t c\xE1i t\xEAn. Kh\xF4ng b\u1EA3n n\xE0o ghi ng\xE0y.${thu} Ai gi\u1EEF \u0111\u01B0\u1EE3c b\u1EA3n n\xE0o l\xE0 chuy\u1EC7n c\u1EE7a c\u1EA3 h\u1ECD.`;
     },
     doors: [
       {

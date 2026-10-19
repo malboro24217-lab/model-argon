@@ -240,14 +240,14 @@ export function generateCanon(c: FactContext, axis: Axis, plants: Plant[], rng: 
   const { seed, slots } = best.length === 1 ? best[0]! : rng.pick(best);
 
   const doors: ResolvedDoor[] = [];
-  const kinds = new Set<string>();
   // Ba cửa khác kiểu; ưu tiên ba mùa khác nhau (Task 20): cửa của mầm khác mùa, rồi cửa chung khác mùa, rồi mới nhận trùng mùa.
   const seedCands = shuffle(seed.doors.filter((d) => seasonOpen(c, d.season) && (!d.when || d.when(c, slots))), rng);
   const take = (distinct: boolean) => {
     for (const d of seedCands) {
       if (doors.length >= 3) break;
-      if (kinds.has(d.kind) || (distinct && doors.some((x) => x.season === d.season))) continue;
-      doors.push(seedDoor(d, d.season, slots, c, N)); kinds.add(d.kind);
+      // đọc thẳng `doors` (không giữ tập kiểu riêng): fillGeneric chen cửa vào giữa hai lượt take (review B1)
+      if (doors.some((x) => x.kind === d.kind) || (distinct && doors.some((x) => x.season === d.season))) continue;
+      doors.push(seedDoor(d, d.season, slots, c, N));
     }
   };
   take(true);

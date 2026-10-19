@@ -251,7 +251,7 @@ const DI_CHUC: CanonSeed = {
     }
     const mo = !s.who ? "Dọn tủ của bố mẹ, bạn tìm thấy ba bản di chúc viết tay"
       : nguoiNha(s, c) ? `${ten(s, N, "")} đặt lên bàn ba bản di chúc viết tay của bố mẹ`
-      : `${ten(s, N, "")} mang tới ba bản di chúc viết tay của bố mẹ bạn, nói là được nhờ giữ hộ từ nhiều năm trước`;
+      : `${ten(s, N, "")} mang tới một phong bì bố mẹ bạn gửi giữ từ nhiều năm trước. Bên trong là ba bản di chúc viết tay`;
     return `${mo}, mỗi bản gạch một cái tên. Không bản nào ghi ngày.${thu} Ai giữ được bản nào là chuyện của cả họ.`;
   },
   doors: [

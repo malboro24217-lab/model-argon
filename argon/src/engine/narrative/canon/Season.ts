@@ -76,7 +76,7 @@ export function seasonLength(def: SeasonDef, age: number, rngNext: number): numb
  * Khoảng năm giữa hai nhịp. 5 nhịp có 4 khoảng: nhịp mở màn ở năm vào mùa, chung kết rơi vào khoảng năm cuối mùa
  * (Task 20: trước là len/5, chung kết đáp ở 4/5 độ dài nên mùa ngắn hơn khai báo một phần năm).
  */
-export const beatGap = (len: number): number => Math.max(1, Math.round(len / 4));
+export const beatGap = (len: number): number => Math.max(1, Math.floor(len / 4));   // floor: mùa 6 năm vẫn giữ nhịp "đáy" trước chung kết (review)
 
 const DURABLE_CUSTOM = new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child", "swap_other"]);
 /** Thay đổi bền, đủ làm chung kết: đổi con đường, đổi nước/thành phố, hôn nhân, con, mua/bán, thu nhập ×k, tiền ≥ 1 năm. */
