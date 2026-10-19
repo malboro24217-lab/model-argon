@@ -9,6 +9,8 @@
 // Thoát mã 1 nếu có: lỗi console/page, chữ "undefined"/"NaN"/"null" lộ ra, id vai ASCII (season/spouse/ex_spouse/rival),
 // tên biến cố hay nhãn cửa thiếu dấu, banner lệch với mùa đang chạy, cửa/mùa kỳ dị ở Độ điên 0, đời không chơi xong.
 // Chạy được cả khi chưa có setWeird (Task 8b: khi đó gán L.weird) và khi canon-ui.js chưa được ghép (không có banner).
+// Từ bản ghép canon-int: chụp thêm ô tự nhập trong thẻ biến cố (21c), dòng nguyên nhân mở ra (8b), thẻ "Mùa N khép lại" (8b, ảnh cả màn hình);
+// kiểm tên "Almost Anyone" ở <title> và màn kết, thẻ biến cố có ô tự nhập, mùa nào ở màn kết cũng có dòng kết.
 import { chromium } from "/tmp/claude-0/pw/node_modules/playwright-core/index.mjs";
 import fs from "fs";
 import path from "path";
@@ -74,6 +76,10 @@ function snapshot(logFrom) {
   out.enabled = [...document.querySelectorAll("#dec [data-i]:not([disabled])")].map(x => +x.dataset.i);
   out.foci = [...document.querySelectorAll("#foci button:not([disabled])")].map(x => x.dataset.f);
   out.focus = L.focus || null;
+  const w = document.getElementById("want"); out.want = w ? { incard: w.classList.contains("incard") && !!w.closest("#dec .decision"), hidden: w.hidden, text: w.innerText.replace(/\s+/g, " ").trim().slice(0, 300) } : null;
+  out.because = !!document.querySelector("#dec .because");
+  const lc = document.getElementById("landing-card"); out.landingCard = lc && lc.classList.contains("show") ? lc.innerText.replace(/\s+/g, " ").trim() : null;
+  out.title = document.title;
   return out;
 }
 function pageText() {
@@ -93,7 +99,7 @@ async function playLife(browser, html, seed, weird) {
   const S = { seed, weird, weirdLabel: WEIRD_VN[weird], width: WIDTH, theme: DARK ? "dark" : "light", page: PAGE, tag,
     started: new Date().toISOString(), weirdMethod: null, bannerWired: null, hasSetWeird: null, name: null, country: null,
     deathAge: null, cause: null, decisions: 0, choices: [], focusChanges: [], canonEvents: [], seasons: [], weirdSeen: { doorsOffered: 0, doorsPicked: 0, seasons: [] },
-    otherSelf: [], notes: [], tombSeasonsLine: null, shots: [], consoleErrors: [], pageErrors: [], warnings: [], textIssues: [], failures: [], domClicks: 0 };
+    otherSelf: [], landingCards: [], becauseShots: 0, notes: [], tombSeasonsLine: null, shots: [], consoleErrors: [], pageErrors: [], warnings: [], textIssues: [], failures: [], domClicks: 0 };
   page.on("pageerror", e => S.pageErrors.push(String(e.message || e)));
   page.on("console", m => { if (m.type() === "error" && !BENIGN_CONSOLE.some(r => r.test(m.text()))) S.consoleErrors.push(m.text()); else if (m.type() === "warning") S.warnings.push(m.text().slice(0, 300)); });
   const rnd = mulberry32((seed ^ Math.imul(weird + 1, 0x9E3779B1)) >>> 0);
@@ -124,7 +130,7 @@ async function playLife(browser, html, seed, weird) {
       if (o.el) {
         // Ảnh một phần tử: ẩn tạm thanh trên cùng / ô Tôi muốn (khi nằm ngoài thẻ) / tab dính (sticky, fixed) để chúng không đè lên phần tử.
         await page.evaluate(() => { let st = document.getElementById("__cp"); if (!st) { st = document.createElement("style"); st.id = "__cp"; document.head.appendChild(st); }
-          st.textContent = "#top,.dock,#want:not(.incard),#toast{visibility:hidden!important}"; });  // ô tự nhập trong thẻ là một phần của thẻ
+          st.textContent = "#top,.dock,#want:not(.incard),#toast,#landing-card{visibility:hidden!important}"; });  // ô tự nhập trong thẻ là một phần của thẻ; thẻ chung kết (cố định) chụp riêng
         const loc = page.locator(o.el).first();
         try { await loc.scrollIntoViewIfNeeded({ timeout: 2000 }); await loc.screenshot({ path: p, timeout: 5000 }); }
         finally { await page.evaluate(() => { const st = document.getElementById("__cp"); if (st) st.textContent = ""; }); }
@@ -143,6 +149,14 @@ async function playLife(browser, html, seed, weird) {
     if (!t.includes(se.vn) || !t.includes(`Mùa ${se.n}`)) S.failures.push(`${where}: banner "${t}" lệch với mùa đang chạy Mùa ${se.n}: ${se.vn} (a${snap.age})`);
     return t;
   };
+  /** Thẻ "Mùa N khép lại" (8b): cố định ở đáy màn hình, tự tắt sau 7 giây; chụp cả khung nhìn để thấy nó so với thẻ quyết định và ô tự nhập. */
+  const landingCard = async r => {
+    await page.waitForTimeout(350); await refresh();
+    if (r.reason === "landing" && !snap.landingCard) { S.notes.push(`ra mùa ${r.id} bằng chung kết mà không thấy thẻ "khép lại" (a${snap.age})`); return; }
+    if (!snap.landingCard) return;
+    S.landingCards.push({ age: snap.age, text: snap.landingCard });
+    await shot("landing-card", `Thẻ khép mùa: ${snap.landingCard}`, { top: false });
+  };
   const t0 = Date.now();
   try {
     await page.setContent(html, { waitUntil: "load" }); await page.waitForTimeout(400);
@@ -156,6 +170,8 @@ async function playLife(browser, html, seed, weird) {
     if (born.weird !== weird) S.failures.push(`Độ điên không đặt được: muốn ${weird}, ra ${born.weird}`);
     Object.assign(S, { name: born.name, country: born.country, weirdMethod: born.how });
     await shot("birth", `Giấy khai sinh: ${born.name}, ${born.country}`);
+    const title = await page.evaluate(() => document.title);
+    if (title !== "Almost Anyone") S.failures.push(`<title> là "${title}", không phải "Almost Anyone"`);
     await click("#go"); await page.waitForTimeout(200);
     if (!(await click('#speed [data-s="16"]'))) await page.evaluate(() => { G.speed = 16; });
     await refresh(); S.bannerWired = snap.bannerWired; S.hasSetWeird = snap.hasSetWeird;
@@ -190,7 +206,13 @@ async function playLife(browser, html, seed, weird) {
         const wd = snap.enabled.filter(i => doors[i].weird);
         S.weirdSeen.doorsOffered += doors.filter(d => d.weird).length;
         if (weird === 0 && doors.some(d => d.weird)) S.failures.push(`cửa kỳ dị ở Độ điên 0 (a${snap.age}): ${doors.filter(d => d.weird).map(d => d.season).join(", ")}`);
+        if (!snap.want || !snap.want.incard || snap.want.hidden) S.failures.push(`thẻ biến cố "${p.title}" không có ô tự nhập trong thẻ (a${snap.age}): ${JSON.stringify(snap.want)}`);
+        ev.want = snap.want ? snap.want.text : null;
         await shot(wd.length ? "canon-weird" : "canon", `Biến cố (${p.canon.axis}): ${p.title} · cửa: ${doors.map(d => d.label + " → " + (d.vn || d.season) + (d.weird ? ` [${d.weird}]` : "")).join(" | ")}`, { el: "#dec .decision" });
+        if (snap.because && S.becauseShots < 2) { S.becauseShots++;
+          ev.because = await page.evaluate(() => { const d = document.querySelector("#dec .because"); d.open = true; d.dispatchEvent(new Event("toggle")); return d.innerText.replace(/\s+/g, " ").trim(); });
+          await shot("cause-open", `Dòng nguyên nhân mở ra: ${ev.because}`, { el: "#dec .decision" });
+          await page.evaluate(() => { const d = document.querySelector("#dec .because"); if (d) d.open = false; }); }
         const i = weird > 0 && wd.length && rnd() < 0.5 ? pickOf(wd) : pickOf(snap.enabled);
         ev.picked = i; if (doors[i].weird) S.weirdSeen.doorsPicked++;
         S.choices.push([snap.age, p.id, i]);
@@ -219,6 +241,7 @@ async function playLife(browser, html, seed, weird) {
         const i = pickOf(snap.enabled); S.choices.push([snap.age, p.id, i]);
         await click(`#dec [data-i="${i}"]`); await page.waitForTimeout(80); await refresh();
         if (snap.seasons.length > nBefore) { const r = snap.seasons[snap.seasons.length - 1];
+          await landingCard(r);
           await shot("landing", `Ra Mùa: ${r.vn} (${r.reason}${r.landingLine ? `: ${r.landingLine}` : ""})`, { el: "#log .yr", wait: 300 }); }
         await setPaused(false);
         continue;
@@ -227,7 +250,7 @@ async function playLife(browser, html, seed, weird) {
       const i = pickOf(snap.enabled); S.choices.push([snap.age, p.id, i]);
       await click(`#dec [data-i="${i}"]`);
       await refresh();
-      if (snap.seasons.length > nBefore && !snap.season && snap.alive) { const r = snap.seasons[snap.seasons.length - 1]; await setPaused(true); await shot("landing", `Ra Mùa: ${r.vn} (${r.reason})`, { el: "#log .yr", wait: 300 }); await setPaused(false); }
+      if (snap.seasons.length > nBefore && !snap.season && snap.alive) { const r = snap.seasons[snap.seasons.length - 1]; await setPaused(true); await landingCard(r); await shot("landing", `Ra Mùa: ${r.vn} (${r.reason})`, { el: "#log .yr", wait: 300 }); await setPaused(false); }
     }
     // màn kết
     await page.waitForSelector("section.end", { timeout: 15000 }); await page.waitForTimeout(1200);
@@ -237,7 +260,11 @@ async function playLife(browser, html, seed, weird) {
     const hasList = await page.$(".seasons-end");
     if (hasList) await shot("end-seasons", `Các mùa của đời bạn: ${snap.seasons.map(s => `${s.vn} ${s.from}–${s.to} (${s.reason})`).join(" · ")}`, { el: ".seasons-end" });
     else if (snap.seasons.length) S.failures.push(`đời có ${snap.seasons.length} mùa mà màn kết không có "Các mùa của đời bạn"`);
-    if (hasList) { const t = await page.textContent(".seasons-end"); if (!t.includes("Các mùa của đời bạn")) S.failures.push("thiếu tiêu đề \"Các mùa của đời bạn\""); }
+    if (hasList) { const t = await page.textContent(".seasons-end"); if (!t.includes("Các mùa của đời bạn")) S.failures.push("thiếu tiêu đề \"Các mùa của đời bạn\"");
+      S.endSeasonRows = await page.evaluate(() => [...document.querySelectorAll(".seasons-end li")].map(li => li.innerText.replace(/\s+/g, " ").trim()));
+      if (S.endSeasonRows.length !== snap.seasons.length) S.notes.push(`màn kết có ${S.endSeasonRows.length} dòng mùa, đời có ${snap.seasons.length} mùa`); }
+    const brand = await page.evaluate(() => document.querySelector("section.end").innerText.includes("Almost Anyone"));
+    if (!brand) S.failures.push("màn kết không có tên \"Almost Anyone\"");
     const otherEnd = await page.evaluate(() => { const t = document.querySelector("section.end").innerText; return t.split("\n").filter(l => /Bản kia|dòng thời gian kia/i.test(l)); });
     for (const l of otherEnd) S.otherSelf.push({ age: "end", text: l });
     if (otherEnd.length) await shot("other-self", `Bản kia của bạn (màn kết): ${otherEnd.join(" / ")}`, { full: true });
@@ -272,6 +299,7 @@ function contactSheet() {
    <ol class="ev">${S.canonEvents.map(e => `<li>${e.age} tuổi · <b>${H(e.title)}</b> (${H(e.axis)}): ${e.doors.map((d, i) => `<span class="${i === e.picked ? "pk" : ""}${d.weird ? " wd" : ""}">${H(d.label)} → ${H(d.vn || d.season)}</span>`).join(" · ")}</li>`).join("")}</ol>
    <ol class="ss">${S.seasons.map(s => `<li>${H(s.vn)}${s.weird ? ` [${H(s.weird)}]` : ""} ${s.from}–${s.to} · ${H(s.reason)}${s.landingLine ? ` · <i>${H(s.landingLine)}</i>` : ""}</li>`).join("")}</ol>
    ${S.otherSelf.length ? `<p class="meta">Bản kia: ${S.otherSelf.map(o => H(o.text)).join(" / ")}</p>` : ""}
+   ${(S.landingCards || []).length ? `<p class="meta">Thẻ khép mùa: ${S.landingCards.map(o => H(o.age + " tuổi: " + o.text)).join(" / ")}</p>` : ""}
    ${(S.notes || []).length ? `<ul class="meta">${S.notes.map(f => `<li>${H(f)}</li>`).join("")}</ul>` : ""}
    ${S.failures.length ? `<ul class="fail">${S.failures.map(f => `<li>${H(f)}</li>`).join("")}</ul>` : `<p class="ok">Không lỗi.</p>`}
    <div class="grid">${S.shots.map(s => `<figure><a href="${H(S.tag)}/${H(s.file)}"><img loading="lazy" src="${H(S.tag)}/${H(s.file)}" alt=""></a><figcaption><b>${H(s.kind)}</b> · ${s.age} tuổi<br>${H(s.caption)}</figcaption></figure>`).join("")}</div></section>`;
