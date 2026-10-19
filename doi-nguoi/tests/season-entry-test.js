@@ -18,7 +18,9 @@ function grow(seed, toAge) {
 }
 const defs = [...Argon.SEASONS, ...Argon.WEIRD.map(b => b.season)];
 assert.strictEqual(defs.length, 105, '105 mùa');
-const MONEY = /^(borrow|repay|restructure|move_city|migrate_now|return_home)(:|$)/, JOB = /^(job_[a-z_]+|become|retire)(:|$)/;
+// Di cư (migrate_now, host đổi thành migrate_sure từ Task 8b/I2) là thay đổi nơi ở có khai báo: sang nước mới thì host tìm việc lại (getJob),
+// nên nghề đổi theo là hợp lệ. Trước 8b di cư đầu mùa trượt 45% nên hạt giống của xu_nguoi tình cờ không đổi nghề.
+const MONEY = /^(borrow|repay|restructure|move_city|migrate_now|migrate_sure|return_home)(:|$)/, JOB = /^(job_[a-z_]+|become|retire|migrate_now|migrate_sure)(:|$)/;
 let checked = 0, jobSame = 0, moneySame = 0, incomeExact = 0;
 for (const [i, d] of defs.entries()) {
   const P = grow(5000 + i * 37, 30 + (i % 20)); G.life = P;
