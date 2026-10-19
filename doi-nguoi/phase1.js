@@ -431,7 +431,7 @@ function funeralLine(r, came) {
 }
 
 /* ================= CÁC MÙA CỦA ĐỜI BẠN (canon event, Task 8a) =================
-   Chỉ đọc L.lw.canon.seasons = [{ id, from, to, reason: "landing" | "cut" | "death", landing }] và L.lw.season (canon.js ghi).
+   Chỉ đọc L.lw.canon.seasons = [{ id, from, to, reason: "landing" | "cut" | "lapsed" | "death", landing }] và L.lw.season (canon.js ghi).
    Không có dữ liệu mùa thì mọi hàm trả rỗng: màn kết, thước đời và Tấm bia giữ nguyên như trước.
      canonSeasonDef(id)  → SeasonDef qua seasonDef(id) của canon.js (id kỳ dị viết hoa kiểu "w_S01") | null
      canonSeasonsOf(L)   → [{ n, id, vn, color, weird, from, to, reason, line }] theo thứ tự; mùa còn chạy lúc chết mà host chưa ghi thì thêm "death"
@@ -466,7 +466,7 @@ function seasonSpans(L) {
     return { from: s.from, to: s.to != null ? s.to : s.from, color: s.color, aheadTo: null };
   });
 }
-const SEASON_END_VN = { death: ["dang dở", "seal"], cut: ["bị cắt ngang", "cut"] };
+const SEASON_END_VN = { death: ["dang dở", "seal"], cut: ["bị cắt ngang", "cut"], lapsed: ["tự khép lại", "cut"] };
 function seasonsEndHTML(L) {
   const ss = canonSeasonsOf(L).filter(s => s.reason !== "running"); if (!ss.length) return "";
   const kind = { sf: "nhánh viễn tưởng", abs: "nhánh phi lý" };

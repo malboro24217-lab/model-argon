@@ -166,13 +166,14 @@ function metaApply(L, m) { if (!m || !m.lives) return; const codex = Array.isArr
   if (m.perks.includes("mentor")) { const me = castRole(L, "mentor"); if (me) Argon.setEdge(L.ar.state.graph, me.id, "player", 0.5, 0); }
   L.perks = m.perks.slice(); }
 
-/* ---- Thao tác giao diện có đổi trạng thái: thẩm định (tốn băng thông), mức sống, sống dưới mức thu nhập ----
+/* ---- Thao tác giao diện có đổi trạng thái: thẩm định (tốn băng thông), mức sống, sống dưới mức thu nhập, Độ điên ----
    Đi qua uiOp để được ghi vào actLog (kind "ui", kèm số lựa chọn đã có lúc bấm); bản tua lại áp lại đúng chỗ đó. */
 function applyUiOp(L, op) {
   if (!op || !L.ar) return false;
   if (op.t === "dd") return dueDiligence(L, op.key, op.cost);
   if (op.t === "ly") { if (!canHandleMoney(L)) return false; moneyEffect(L, { lifestyle: op.v }); return true; }
   if (op.t === "frugal") { L.ar.frugal = !!op.v; return true; }
+  if (op.k === "weird") { if (!(op.v === 0 || op.v === 1 || op.v === 2)) return false; L.weird = op.v; return true; }   // setWeird (canon.js)
   return false;
 }
 function uiOp(L, op) {

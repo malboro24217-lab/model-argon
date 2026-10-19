@@ -1,4 +1,4 @@
-// Task 7: canon event và Mùa ở phía host (vòng năm, vào/ra mùa). Run: node doi-nguoi/tests/canon-test.js
+// Task 7 + 8b: canon event và Mùa ở phía host (vòng năm, vào/ra mùa, Độ điên, bản kia, chữ AI, custom của host). Run: node doi-nguoi/tests/canon-test.js
 const fs = require('fs'); const assert = require('assert');
 eval(fs.readFileSync(__dirname + '/.head.js', 'utf8') + `
 function grow(seed, toAge, pred) { for (let k = 0; k < 400; k++) { const P = createLife(seed + k * 101, { auto: true }); let g = 0; while (P.alive && P.age < toAge && g++ < 130) stepYear(P); if (P.alive && P.age === toAge && !P.pending && (!pred || pred(P))) return P; } throw new Error('no life'); }
@@ -217,5 +217,230 @@ for (let i = 0; i < 30; i++) { const P = lives[i]; G.life = P; const R = replayL
   const a = JSON.stringify(P.lw.history), b = JSON.stringify(R.lw.history);
   if (a !== b || Math.round(R.savings) !== Math.round(P.savings)) { mism++; if (mism < 3) console.log('replay mismatch seed', P.seed, a.length, b.length); } }
 assert.strictEqual(mism, 0, 'replay matches history and savings on 30 lives');
-console.log('PASS canon-test');
+// ===== Task 8b: Độ điên, bản kia của bạn, chữ AI, swap_other / remark / age_skip / longevity, id viết hoa =====
+async function t8b() {
+  const played = Argon.playedFlag, t1 = Date.now();
+  const runToDeath = P => { let g = 0; while (P.alive && g++ < 130) stepYear(P); return P; };
+  const hist = P => JSON.stringify(P.lw.history);
+  /** Cài một cảnh thử vào canonYear (đời thật, bản tua lại và bản kia cùng đi qua), trả về hàm gỡ. */
+  const hook = fn => { const orig = canonYear; canonYear = L => fn(L) || orig(L); return () => { canonYear = orig; }; };
+  const one = (id, L, title, eff, after) => { scene(L, { id, key: id + '@' + L.age, title, text: 'Cảnh thử của Task 8b.', choices: [{ label: 'Nhận', fx: L2 => { applyEffect(L2, eff); if (after) after(L2); } }], def: 0 }); return true; };
+  const canonAges = P => P.lw.history.filter(h => /^canon_/.test(h.id)).map(h => h.age);
+  function lifeWith(pred, from) { for (let k = 0; k < 300; k++) { const P = createLife((from || 1) + k * 37, { auto: true }); G.life = P; runToDeath(P); if (pred(P)) return P; } throw new Error('no life'); }
+
+  // 8b.1 build.py nối canon-ui.js; setWeird là hàm toàn cục (ô Độ điên gọi window.setWeird).
+  assert.strictEqual(typeof seasonBanner, 'function', 'canon-ui.js is in .head.js');
+  assert.strictEqual(typeof setWeird, 'function', 'setWeird exists');
+
+  // 8b.2 Độ điên = 0 từ tuổi 20 (trọng tâm 5): 200 đời, pressure.ky ép = 30 mỗi năm → không còn cửa kỳ dị nào.
+  { const origScene = canonScene, W = { canon: 0, weird: 0 }, C = { canon: 0, weird: 0 }; let lives = 0;
+    canonScene = function (L, ev) { const w = L.t8bWatch; if (w) { w.canon++; if (ev.doors.some(d => d.weird || (seasonDef(d.season) || {}).weird)) w.weird++; } return origScene(L, ev); };
+    try {
+      for (let i = 0; i < 230 && lives < 200; i++) {
+        const P = createLife(50001 + i * 13, { auto: true }); G.life = P; let g = 0;
+        while (P.alive && P.age < 20 && g++ < 130) stepYear(P);
+        if (!P.alive) continue;
+        while (P.pending) resolve(P, autoChoice(P));
+        assert.strictEqual(setWeird(P, 0), true, 'setWeird ok'); assert.strictEqual(P.weird, 0);
+        const op = P.actLog[P.actLog.length - 1]; assert.deepStrictEqual([op.kind, op.age, op.op.k, op.op.v], ['ui', 20, 'weird', 0], 'uiOp recorded');
+        P.t8bWatch = W;
+        while (P.alive && g++ < 130) { P.lw.pressure.ky = 30; stepYear(P); }
+        lives++;
+      }
+      // Đối chứng: Độ điên 1, cùng ép ky = 30 từ tuổi 20 → có cửa kỳ dị.
+      for (let i = 0; i < 25; i++) { const P = createLife(50001 + i * 13, { auto: true }); G.life = P; let g = 0;
+        while (P.alive && g++ < 130) { if (P.age >= 20) { P.t8bWatch = C; P.lw.pressure.ky = 30; } stepYear(P); } }
+    } finally { canonScene = origScene; }
+    console.log({ weird0_lives: lives, canon_after_20: W.canon, weird_doors_after_20: W.weird, control_canon: C.canon, control_weird_doors: C.weird });
+    assert.strictEqual(lives, 200, '200 lives');
+    assert(W.canon > 100, 'canon events still happen (' + W.canon + ')');
+    assert.strictEqual(W.weird, 0, 'no weird door after setWeird(0)');
+    assert(C.weird > 0, 'control: weird doors appear at Độ điên 1'); }
+
+  // 8b.2b Đổi Độ điên giữa đời (2 lúc 25, 0 lúc 40) → replayLife khớp history và tiền; bỏ thao tác thì đời khác đi.
+  { let differs = 0;
+    for (let i = 0; i < 6; i++) {
+      const P = createLife(7001 + i * 29, { auto: true }); G.life = P; let g = 0;
+      while (P.alive && g++ < 130) { stepYear(P); if (P.age === 25 && !P.pending) setWeird(P, 2); if (P.age === 40 && !P.pending) setWeird(P, 0); }
+      assert(setWeird(P, 1) === false, 'dead life: no setWeird');
+      const R = replayLife(P.seed, P.choices, null, P.actLog);
+      assert.strictEqual(hist(R), hist(P), 'replay history matches after mid-life Độ điên changes (seed ' + P.seed + ')');
+      assert.strictEqual(Math.round(R.savings), Math.round(P.savings), 'replay savings');
+      assert.strictEqual(R.weird, P.weird, 'replay ends on the same level');
+      const Q = replayLife(P.seed, P.choices, null, P.actLog.filter(a => !(a.kind === 'ui' && a.op.k === 'weird')));
+      if (hist(Q) !== hist(P)) differs++;
+    }
+    assert(differs > 0, 'the recorded level matters for at least one life'); }
+
+  // 8b.3 Bản kia của bạn: dòng lúc vào mùa (log tone "other"), dòng lúc hết mùa (replayLife, G.life giữ nguyên).
+  { const P = lifeWith(P => P.log.some(e => e.tone === 'other'), 11);
+    const e = P.log.find(e => e.tone === 'other'); assert(/^Ở dòng thời gian kia, bạn vừa bước vào Mùa: \\S/.test(e.text), 'enter line: ' + e.text);
+    assert(!/undefined|\\{/.test(e.text));
+    // otherSelfLine trên canon event thật
+    const ev = { doors: [{ season: 'ngoi_sao' }, { season: 'lam_lai' }, { season: 'w_S19' }] };
+    assert.strictEqual(otherSelfLine(P, ev, 0), 'Ở dòng thời gian kia, bạn vừa bước vào Mùa: ' + seasonDef('lam_lai').vn + '.');
+    assert.strictEqual(otherSelfLine(P, ev, 2), 'Ở dòng thời gian kia, bạn vừa bước vào Mùa: ' + seasonDef('ngoi_sao').vn + '.', 'wraps around');
+    // otherSelfEnd: đời đang sống, đang ở mùa mở từ canon event.
+    let L = null;
+    for (let k = 0; k < 200 && !L; k++) { const Q = createLife(900 + k * 41, { auto: true }); G.life = Q; let g = 0;
+      while (Q.alive && g++ < 130) { stepYear(Q); if (Q.lw.season && Q.lw.season.other && Q.age >= Q.lw.season.from + 3 && !Q.pending) { L = Q; break; } } }
+    assert(L, 'a life inside a season opened by a canon door');
+    const sentinel = { seed: -1, sentinel: true }; G.life = sentinel;
+    const before = hist(L) + '|' + Math.round(L.savings) + '|' + L.choices.length;
+    assert.strictEqual(otherSelfEnd(L), '', 'auto life → ""');
+    L.auto = false; const line = otherSelfEnd(L);
+    assert(/^Ở dòng thời gian kia, /.test(line) && !/undefined|NaN|\\{/.test(line), 'end line: ' + line);
+    assert.strictEqual(G.life, sentinel, 'G.life restored');
+    assert.strictEqual(hist(L) + '|' + Math.round(L.savings) + '|' + L.choices.length, before, 'otherSelfEnd does not change the life');
+    L.replay = true; assert.strictEqual(otherSelfEnd(L), '', 'replay → ""'); L.replay = false;
+    L.script = {}; assert.strictEqual(otherSelfEnd(L), '', 'script → ""'); L.script = null;
+    // Ra mùa ở đời thật (không tự chơi) → nhật ký có dòng "Bản kia của bạn" lúc hết mùa.
+    const n0 = L.log.filter(e => e.tone === 'other').length; exitSeason(L, 'cut');
+    assert.strictEqual(L.log.filter(e => e.tone === 'other').length, n0 + 1, 'exit writes one other-self line');
+    console.log('other self:', e.text, '|', line); G.life = L; }
+
+  // 8b.4 Chữ AI của canon event: canonAiRewrite (NAR.sample giả) → effects giữ nguyên, actLog canon_text, bản tua lại hiện đúng title.
+  { const fake = { title: 'Lá thư đến muộn hai mươi năm', text: 'Một phong bì cũ nằm trong hộp thư, tên bạn viết bằng nét chữ đã phai. Người gửi biết bạn rõ hơn bạn tưởng.', doors: ['Mở thư ngay', 'Đốt nó đi', 'Đi tìm người gửi'] };
+    let P = null, sc = null;
+    for (let k = 0; k < 120 && !P; k++) { const Q = createLife(3100 + k * 53, {}); G.life = Q; let g = 0;
+      while (Q.alive && g++ < 2000) { if (Q.pending) { if (Q.pending.canon && Q.pending.choices.length === 3) { P = Q; sc = Q.pending; break; } resolve(Q, autoChoice(Q)); continue; }
+        if (Q.storyDue) { Q.storyDue = null; continue; } stepYear(Q); } }
+    assert(P, 'a non-auto life reaches a 3-door canon scene');
+    const fx0 = sc.choices.map(c => c.fx), e0 = JSON.stringify(sc._choiceEffects), streamed = [];
+    const was = { s: NAR.sample, en: NAR.enabled, st: NAR.status };
+    NAR.sample = async (prompt, o) => { assert(prompt.includes(P.c.n) && prompt.includes('"tuoi":' + P.age), 'prompt has country and age'); const js = JSON.stringify(fake); o.onText({ text: js.slice(0, 60) }); streamed.push(1); o.onText({ text: js }); return { text: 'Đây: ' + js + ' xong.' }; };
+    NAR.enabled = true; NAR.status = 'ready';
+    const el = { textContent: sc.text }, dom = { querySelector: s => s === '#decTxt' ? el : null };
+    let ok; try { ok = await canonAiRewrite(P, sc, dom); assert.strictEqual(await canonAiRewrite(P, sc, dom), false, 'runs once per scene'); } finally { NAR.sample = was.s; NAR.enabled = was.en; NAR.status = was.st; }
+    assert.strictEqual(ok, true, 'rewrite applied'); assert(streamed.length, 'streamed');
+    assert.strictEqual(sc.title, fake.title); assert.strictEqual(sc.text, fake.text); assert.deepStrictEqual(sc.choices.map(c => c.label), fake.doors);
+    assert.strictEqual(el.textContent, fake.text, 'text streamed into the scene element');
+    assert(sc.choices.every((c, i) => c.fx === fx0[i]) && JSON.stringify(sc._choiceEffects) === e0, 'effects unchanged');
+    const rec = P.actLog.find(a => a.kind === 'canon_text'); assert(rec && rec.key === sc.key && rec.age === P.age && rec.raw.title === fake.title, 'actLog canon_text');
+    // Không có sample / bản tua lại → không chạy.
+    assert.strictEqual(await canonAiRewrite(P, { ...sc, canon: { ...sc.canon, ai: undefined } }, null), false, 'no NAR.sample → false');
+    const key = sc.key; resolve(P, 1);
+    P.auto = true; autoChain(P); runToDeath(P);
+    const R = replayLife(P.seed, P.choices, null, P.actLog);
+    assert.strictEqual(hist(R), hist(P), 'replay with canon_text matches history');
+    assert.strictEqual(Math.round(R.savings), Math.round(P.savings), 'replay savings');
+    const mk = R.lw.cz.marks.find(m => m.key === key); assert(mk && mk.title === fake.title && mk.choice === fake.doors[1], 'replay shows the AI title and label');
+    const R0 = replayLife(P.seed, P.choices, null, P.actLog.filter(a => a.kind !== 'canon_text'));
+    assert.strictEqual(hist(R0), hist(P), 'text only: same history without canon_text'); assert.strictEqual(Math.round(R0.savings), Math.round(P.savings), 'text only: same savings');
+    assert.notStrictEqual(R0.lw.cz.marks.find(m => m.key === key).title, fake.title, 'template title without canon_text');
+    // canon_text giả, hỏng (thiếu nhãn) → bỏ qua, không lỗi.
+    const bad = P.actLog.map(a => a.kind === 'canon_text' ? { ...a, raw: { title: 'X y z', text: 'quá ngắn' } } : a);
+    assert.strictEqual(hist(replayLife(P.seed, P.choices, null, bad)), hist(P), 'bad canon_text ignored'); }
+
+  // 8b.5 swap_other (S22): đời có ≥ 2 canon event; history trước canon event thứ nhất giữ nguyên, sống tiếp tới chết, tua lại khớp.
+  { const S22 = seasonDef('w_S22'), DOI = S22.landings.find(l => l.id === 's22_doi_cho');
+    assert(Argon.isDurable(DOI.effects), 'swap landing is durable');
+    let base = null, T = 0, first = null;
+    for (let k = 0; k < 300 && !base; k++) { const P = createLife(1201 + k * 17, { auto: true }); G.life = P; runToDeath(P); const ca = canonAges(P);
+      if (ca.length >= 1 && ca[0] >= 20 && (ca.length === 1 || ca[1] > ca[0] + 10) && P.age >= ca[0] + 15) { base = P; first = ca[0]; T = ca[0] + 9; } }
+    assert(base, 'a life whose first canon event leaves room for S22');
+    const X = (base.lw.canon.seasons.find(s => s.from === first) || base.lw.season).id;
+    let swapped = 0, captured = null, yearlyAt = 0, post = null;
+    const origSwap = swapOther; swapOther = function (L, ...a) { const r = origSwap(L, ...a); if (r && !L.replay) { captured = L.savings; yearlyAt = Math.max(300, householdIncome(L)); swapped++; } return r; };
+    // Canon event thứ hai (nhánh S22, một cửa) lúc T; chung kết "Đổi chỗ" lúc T + 1. Bản kia không có cờ của mùa X nên không gặp lại cảnh này.
+    const s22ev = L => ({ id: 'canon_S22_' + L.age, seed: 'S22', axis: 'ky', age: L.age, slots: { fromPlayer: 0 }, title: 'Bản kia gõ cửa gương', text: 'Hình phản chiếu của bạn bước ra khỏi gương.', doors: [{ kind: 'ky', label: 'Bắt tay bản kia', hint: '', season: 'w_S22', weird: 'S22' }] });
+    const fired = new WeakSet();
+    const unhook = hook(L => L.seed !== base.seed || L.forkOf ? false
+      : L.age >= T && !fired.has(L) && L.lw.canon.n === 1 ? (fired.add(L), scene(L, canonScene(L, s22ev(L))), true)
+      : L.lw.season && L.lw.season.id === 'w_S22' && L.age > L.lw.season.from ? one('t8b_s22', L, 'Khe gương', DOI.effects, L2 => { if (!L2.replay) post = L2.savings; }) : false);
+    try {
+      const P = createLife(base.seed, { auto: true }); G.life = P; let g = 0;
+      while (P.alive && !(P.lw.season && P.lw.season.id === 'w_S22' && P.age > P.lw.season.from) && g++ < 130) { stepYear(P); if (P.lw.season && P.lw.season.id === 'w_S22' && P.age === P.lw.season.from) break; }
+            assert(P.alive && P.lw.season && P.lw.season.id === 'w_S22' && P.lw.canon.n === 2, 'in S22 after a second canon event');
+      const firstIdx = P.lw.cz.marks.filter(m => /^canon_/.test(m.storylet))[0].choice_index;
+      const pre = P.lw.history.filter(h => h.age < first).map(h => h.id).join(), atFirst = P.lw.history.filter(h => h.age === first)[0].id;
+      stepYear(P);
+      assert.strictEqual(swapped, 1, 'swapped once'); assert(P.lw.swap && P.lw.swap.fork === first, 'forked at the first canon event: ' + JSON.stringify(P.lw.swap));
+      assert.strictEqual(P.lw.history.filter(h => h.age < first).map(h => h.id).join(), pre, 'history before the first canon event is unchanged');
+      assert.strictEqual(P.lw.history.filter(h => h.age === first)[0].id, atFirst, 'the first canon event itself is the same');
+      const mk = P.lw.cz.marks.find(m => m.key === P.lw.swap.key); assert(mk && mk.choice_index === P.lw.swap.index && mk.choice_index !== firstIdx, 'new life took the other door at the first canon event');
+      assert(P.lw.canon.seasons.some(s => s.id === 'w_S22' && s.swapped && s.reason === 'landing'), 'S22 season kept in the season list');
+      assert(P.log.some(e => e.text === 'Bạn đổi chỗ với bản kia.'), 'log line');
+      assert(Math.abs(post - (captured - yearlyAt)) < 1, 'money −1 applied to the new life after the swap: ' + post + ' vs ' + (captured - yearlyAt));
+      runToDeath(P); assert(!P.alive && P.age > T, 'swapped life plays on to death (' + P.age + ')');
+      const R = replayLife(P.seed, P.choices, null, P.actLog || []);
+      assert.strictEqual(hist(R), hist(P), 'replay of the swapped life matches history');
+      assert.strictEqual(Math.round(R.savings), Math.round(P.savings), 'replay savings');
+      // Không có canon event trước mùa này: không đổi gì.
+      const Q = createLife(base.seed, { auto: true }); G.life = Q; while (Q.alive && Q.age < first - 1) stepYear(Q);
+      while (Q.pending) resolve(Q, autoChoice(Q));
+      const qh = hist(Q), qs = Q.savings, yq = Math.max(300, householdIncome(Q)); enterSeason(Q, 'w_S22'); applyEffect(Q, DOI.effects);
+      assert.strictEqual(Q.lw.swap, undefined, 'no earlier canon event → no swap'); assert.strictEqual(hist(Q), qh, 'history unchanged');
+      assert(Q.lw.canon.seasons.some(s => s.id === 'w_S22' && s.reason === 'landing'), 'season still lands');
+    } finally { unhook(); swapOther = origSwap; } }
+
+  // 8b.6 remark: đổi choice của một dấu ấn cũ, chạy hiệu ứng của lựa chọn mới; tua lại khớp.
+  { const P = createLife(4441, { auto: true }); G.life = P; while (P.alive && P.age < 40) stepYear(P);
+    while (P.pending) resolve(P, autoChoice(P));
+    const m = canonRemark(P); assert(m, 'a mark was rewritten');
+    assert(m.remark && m.choice === m.altLabels[m.choice_index] && m.choice !== m.remark.from, 'choice changed: ' + m.remark.from + ' → ' + m.choice);
+    assert.deepStrictEqual(m.alt_indices, [], 'rewritten mark leaves the counterfactual list');
+    assert(P.log.some(e => e.text.startsWith('Ký ức năm ' + m.age + ' tuổi được viết lại')), 'log line');
+    const m2 = canonRemark(P); assert(m2 && m2 !== m, 'next remark takes another mark');
+    let T = 0; const unhook = hook(L => L.seed === 5551 && L.age === 38 && !L.lw.sflags.has('t8b_rm') && (L.lw.sflags.add('t8b_rm'), one('t8b_rm', L, 'Ông thợ đồng hồ', { custom: 'remark', money: -1 })));
+    try { const Q = createLife(5551, { auto: true }); G.life = Q; runToDeath(Q);
+      assert(Q.lw.cz.marks.some(x => x.remark), 'remark ran in the hooked life');
+      const R = replayLife(Q.seed, Q.choices, null, Q.actLog || []);
+      assert.strictEqual(hist(R), hist(Q), 'remark replay matches'); assert.strictEqual(Math.round(R.savings), Math.round(Q.savings));
+      assert.deepStrictEqual(R.lw.cz.marks.filter(x => x.remark).map(x => x.key + '=' + x.choice), Q.lw.cz.marks.filter(x => x.remark).map(x => x.key + '=' + x.choice), 'same mark rewritten in replay');
+    } finally { unhook(); } }
+
+  // 8b.7 age_skip:<n> và longevity:<n>.
+  { const P = createLife(6661, { auto: true }); G.life = P; while (P.alive && P.age < 30) stepYear(P);
+    while (P.pending) resolve(P, autoChoice(P));
+    const a0 = P.age, cast0 = [...P.lw.cast.values()].filter(m => m.alive).map(m => [m.id, P.age + m.age_offset]);
+    customEffect(P, 'age_skip:3');
+    assert.strictEqual(P.age, a0 + 3, 'age +3');
+    for (const [id, age] of cast0) { const m = P.lw.cast.get(id); if (m.alive) assert.strictEqual(P.age + m.age_offset, age + 3, 'cast ages with you'); }
+    assert.strictEqual(P.map.length, P.age, 'ruler has one cell per year'); assert(P.map.every(Boolean), 'no empty year');
+    assert(P.log.some(e => e.text === '3 năm trôi qua mà bạn không hề hay biết. Giờ bạn đã ' + P.age + ' tuổi.'), 'skip line');
+    const q0 = deathQ(P); P.age += 30; const qOld = deathQ(P); customEffect(P, 'longevity:30');
+    assert.strictEqual(P.longevity, 30); assert.strictEqual(bioAge(P), P.age - 30);
+    assert(Math.abs(deathQ(P) - q0) < 1e-12 && deathQ(P) < qOld, 'longevity:30 → death risk of a body 30 years younger');
+    P.age -= 30;
+    // S08 thật: age_skip:20|longevity:20|repay:50 trong reset của mùa, qua một cảnh; tua lại khớp; đời vẫn tới chết.
+    const S08 = seasonDef('w_S08'); assert(/age_skip:20/.test(S08.reset.effects.custom));
+    const unhook = hook(L => L.seed === 6771 && L.age === 26 && !L.lw.sflags.has('t8b_s08') && (L.lw.sflags.add('t8b_s08'), one('t8b_s08', L, 'Hợp đồng ngủ đông', { custom: 'canon:ky|season:w_S08' })));
+    try { const Q = createLife(6771, { auto: true }); G.life = Q; let g = 0; while (Q.alive && Q.age < 26 && g++ < 130) stepYear(Q);
+      if (Q.alive) { assert(Q.lw.sflags.has('t8b_s08') && Q.age === 46, 'S08 skipped 20 years: ' + Q.age); assert.strictEqual(Q.longevity, 20); assert.strictEqual(Q.map.length, Q.age, 'no hole after the skip');
+        assert.strictEqual(Q.lw.season && Q.lw.season.from, Q.age, 'season starts after the skip'); }
+      runToDeath(Q); const R = replayLife(Q.seed, Q.choices, null, Q.actLog || []);
+      assert.strictEqual(hist(R), hist(Q), 'age_skip replay matches'); assert.strictEqual(R.age, Q.age); assert.strictEqual(Math.round(R.savings), Math.round(Q.savings));
+    } finally { unhook(); } }
+
+  // 8b.8 Id kỳ dị viết hoa (w_S01, ss_w_S01_…, weird_S01, season_played_w_S01): mọi chỗ host tra cứu dùng đúng id, không đổi hoa thường.
+  { let n = 0;
+    for (const b of Argon.WEIRD) { const id = b.season.id; assert(/[A-Z]/.test(id), id);
+      assert.strictEqual(seasonDef(id), b.season, 'seasonDef ' + id); assert(seasonCards(id).length >= 5, 'seasonCards ' + id);
+      assert(seasonCards(id).every(s => s.id.startsWith('ss_' + id + '_') && s.meta.season[0] === id), 'card ids keep case ' + id);
+      assert.strictEqual(seasonDef(id.toLowerCase()), null, 'no lowercase alias ' + id); n++; }
+    assert(n >= 100, 'all weird branches');
+    const P = createLife(3301, { auto: true }); G.life = P; while (P.alive && P.age < 30) stepYear(P);
+    while (P.pending) resolve(P, autoChoice(P)); if (P.lw.season) exitSeason(P, 'landing');
+    const b = Argon.WEIRD.find(x => x.id === 'S19');
+    const ev = { id: 'canon_S19_' + P.age, seed: 'S19', axis: 'ky', age: P.age, slots: { fromPlayer: 0 }, title: 'Thử', text: 'Thử id viết hoa.', doors: [{ kind: 'ky', label: 'Cửa A', hint: '', season: 'w_S19', weird: 'S19' }, { kind: 'ky', label: 'Cửa B', hint: '', season: 'w_S22', weird: 'S22' }, { kind: 'ky', label: 'Cửa C', hint: '', season: 'w_S06', weird: 'S06' }] };
+    scene(P, canonScene(P, ev)); resolve(P, 0);
+    assert.strictEqual(P.lw.season.id, 'w_S19', 'entered w_S19'); assert(P.lw.sflags.has('season_played_w_S19') && P.lw.sflags.has('weird_S19') && P.lw.sflags.has('canon_S19'), 'flags keep case');
+    assert.strictEqual(P.lw.season.other.season, 'w_S22', 'other door id keeps case');
+    assert(canonFacts(P).season === 'w_S19', 'fact context season');
+    assert(canonYear(P) && P.pending && /^ss_w_S19_0_/.test(P.pending.id), 'season card fires: ' + (P.pending && P.pending.id));
+    assert(P.lw.history.some(h => h.id === P.pending.id), 'history has the uppercase id'); }
+
+  // 8b.9 marryMember: bạn đời đã mất không bị đổi thành "người cũ".
+  { const P = grow(9101, 27, P => !P.married && P.income > 0);
+    customEffect(P, 'marry'); const sp = castRole(P, 'spouse'); assert(sp, 'married'); sp.alive = false; P.married = false; P.widowed = true;
+    const other = [...P.lw.cast.values()].find(m => m.alive && ['neighbor', 'partner', 'rival', 'childhood_friend', 'mentor'].includes(m.role));
+    assert(other, 'someone to marry'); customEffect(P, 'marry:' + other.name);
+    assert.strictEqual(other.role, 'spouse', 'new spouse'); assert.strictEqual(sp.role, 'spouse', 'late spouse keeps role spouse'); assert(sp.roles.includes('spouse'), 'late spouse keeps roles');
+    assert.strictEqual(roleVN(sp), 'bạn đời', 'not labelled người cũ'); }
+
+  console.log('8b sections', ((Date.now() - t1) / 1000).toFixed(1) + 's');
+}
+
+t8b().then(() => console.log('PASS canon-test'), e => { console.error(e); process.exit(1); });
 `);

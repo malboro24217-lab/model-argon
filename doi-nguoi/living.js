@@ -129,7 +129,7 @@ function leaveSpouse(m, quiet) {
 function roleVN(m) { return (m && ((m.role === "season" && m.label) || LW.ROLE_VN[m.role] || m.label)) || "người quen"; }   // người của mùa: nhãn riêng ("bà chủ vựa phế liệu")
 /** Cưới một người đã có trong dàn nhân vật (R20): thêm vai spouse cho chính người đó, không tạo NPC mới. */
 function marryMember(L, m) {
-  for (const o of L.lw.cast.values()) if (o !== m && (o.roles.includes("spouse") || o.role === "spouse")) leaveSpouse(o, true);
+  for (const o of L.lw.cast.values()) if (o !== m && o.alive && (o.roles.includes("spouse") || o.role === "spouse")) leaveSpouse(o, true);   // bạn đời đã mất vẫn là bạn đời đã mất, không thành "người cũ"
   // Vai chính thành spouse: ageCast báo cái chết theo m.role, nên người này mất thì bạn góa như mọi bạn đời khác.
   m.role = "spouse"; m.roles = m.roles.filter(r => r !== "season"); if (!m.roles.includes("spouse")) m.roles.push("spouse");
   L.married = true; L.spouse = m.name; L.flags.marriedAt = L.age; L.lw.counters.married_years = 0;
@@ -206,6 +206,17 @@ function runDueCustoms(L) {
   for (let qi = 0; qi < q.length;) { const it = q[qi]; if (it.at <= L.age && it.custom) { q.splice(qi, 1); customEffect(L, it.custom); if (L.pending) return true; } else qi++; }
   return false;
 }
+/** Dàn nhân vật già thêm một năm ở tuổi L.age (luồng npc): người mất, đổ bệnh, khỏe lại. livingYear và age_skip (canon.js) dùng chung. */
+function castYear(L) {
+  const lw = L.lw;
+  for (const ev of Argon.ageCast(lw.cast, L.age, L.ar.rng, L.c.g < 8000)) {
+    const r = roleVN(lw.cast.get(ev.id) || { role: ev.role });
+    if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
+      if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
+    else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
+    else log(L, `${ev.name} (${r}) khỏe lại.`, "good");
+  }
+}
 /* ---- Một năm của mạng lưới sống. Gọi từ lifeEvents. Trả về true nếu đã đặt L.pending ---- */
 function livingYear(L) {
   livingInit(L);
@@ -216,13 +227,7 @@ function livingYear(L) {
   habitYear(L);
   seasonYearly(L);   // luật năm của mùa: mỗi năm một lần, kể cả năm bận
   // 1. Dàn nhân vật già đi
-  for (const ev of Argon.ageCast(lw.cast, L.age, rng, L.c.g < 8000)) {
-    const r = roleVN(lw.cast.get(ev.id) || { role: ev.role });
-    if (ev.kind === "died") { log(L, `${ev.name} (${r}) qua đời.`, "bad big"); addSt(L, "happy", ev.role === "mother" || ev.role === "father" || ev.role === "spouse" || ev.role === "child" ? -15 : -5);
-      if (ev.role === "mother" || ev.role === "father") lw.sflags.add("parent_died"); if (ev.role === "spouse") { L.married = false; L.widowed = true; } if (ev.role === "child") { const k = L.kids.find(k => k.name === ev.name); if (k) k.alive = false; } }
-    else if (ev.kind === "fell_ill") log(L, `${ev.name} (${r}) đổ bệnh.`, "bad");
-    else log(L, `${ev.name} (${r}) khỏe lại.`, "good");
-  }
+  castYear(L);
   // 2. Người phụ thuộc: tiền chảy ra
   const deps = Argon.dependentCosts(lw.cast, L.age, L.c.g > 30000); const yearly = Math.max(300, householdIncome(L));
   let depTotal = 0; for (const d of deps) depTotal += d.frac * supportMult(L, d.role) * yearly;
