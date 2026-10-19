@@ -122,9 +122,9 @@ async function playLife(browser, html, seed, weird) {
       if (o.wait) await page.waitForTimeout(o.wait);
       if (o.el) await page.waitForFunction(() => !document.querySelector("#toast.show"), null, { timeout: 4000 }).catch(() => {});
       if (o.el) {
-        // Ảnh một phần tử: ẩn tạm thanh trên cùng / ô Tôi muốn / tab dính (sticky, fixed) để chúng không đè lên phần tử.
+        // Ảnh một phần tử: ẩn tạm thanh trên cùng / ô Tôi muốn (khi nằm ngoài thẻ) / tab dính (sticky, fixed) để chúng không đè lên phần tử.
         await page.evaluate(() => { let st = document.getElementById("__cp"); if (!st) { st = document.createElement("style"); st.id = "__cp"; document.head.appendChild(st); }
-          st.textContent = "#top,.dock,#want,#toast{visibility:hidden!important}"; });
+          st.textContent = "#top,.dock,#want:not(.incard),#toast{visibility:hidden!important}"; });  // ô tự nhập trong thẻ là một phần của thẻ
         const loc = page.locator(o.el).first();
         try { await loc.scrollIntoViewIfNeeded({ timeout: 2000 }); await loc.screenshot({ path: p, timeout: 5000 }); }
         finally { await page.evaluate(() => { const st = document.getElementById("__cp"); if (st) st.textContent = ""; }); }

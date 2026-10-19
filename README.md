@@ -1,4 +1,6 @@
-# Một Lần Chào Đời / Model Argon
+# Almost Anyone / Model Argon
+
+> Ngày 19/10/2026 game đổi tên từ “Một Lần Chào Đời” thành **Almost Anyone** (một tên dùng chung cho tiếng Việt và tiếng Anh). Engine vẫn là Model Argon. Thư mục, tên tệp, id và khóa lưu trữ giữ nguyên (`doi-nguoi/`, `mlcd.*`); các ledger và spec cũ giữ tên cũ như lịch sử.
 
 Trò chơi mô phỏng cuộc đời theo số liệu thực, có engine lý thuyết trò chơi Argon.
 Trang game: https://claude.ai/artifact/Smj8uxWFib5C34KjY714Sw
@@ -39,6 +41,7 @@ node doi-nguoi/tests/canon-ui-test.js     # màn kết "Các mùa của đời b
 node doi-nguoi/tests/canon-play.mjs --weird 0,1,2 --seeds 11,22 --out /tmp/canon-play   # chơi thật trên Chromium như người chơi, chụp biến cố, banner mùa, thẻ mùa, chung kết, màn kết, Tấm bia; bảng ảnh ở <out>/index.html, summary.json mỗi đời; thêm --width 1366 --dark cho máy tính; thoát 1 nếu lỗi console, lộ undefined/NaN/null hay id vai, banner lệch mùa, kỳ dị ở Độ điên 0
 node doi-nguoi/tests/ui-agency-test.mjs   # cần playwright-core và Chromium; sửa đường dẫn import ở dòng 2 cho đúng máy
 node doi-nguoi/tests/ui-test.mjs
+node doi-nguoi/tests/ui-want-states.mjs --out /tmp/want-states   # ô tự nhập trong thẻ quyết định, ba trạng thái AI (chưa có · đang trả lời · lỗi rồi gửi lại), phương án 1 không bị tô sẵn, khung "Xem chi tiết" nhớ trạng thái; chụp ở 390px và 1366px
 cd argon && node --experimental-strip-types src/agency-test.ts && node --experimental-strip-types src/narrative-test.ts && node --experimental-strip-types src/holdings-test.ts
 cd argon && node --experimental-strip-types src/canon-test.ts           # áp lực, vật gài, 3 vết, generator, 8 mầm, ánh xạ thẻ Codex
 cd argon && node --experimental-strip-types src/canon-content-test.ts   # mọi mùa, mầm và nhánh kỳ dị: cấu trúc, chữ, cổng tuổi, probe quy tắc 9 (dưới một phút)

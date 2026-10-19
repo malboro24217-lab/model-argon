@@ -1,4 +1,4 @@
-# Model Argon / Một Lần Chào Đời
+# Model Argon / Almost Anyone
 
 Đọc README.md trước: trong đó có cấu trúc thư mục, cách build, cách chạy test và tình trạng hiện tại.
 

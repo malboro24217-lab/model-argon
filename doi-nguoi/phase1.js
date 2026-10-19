@@ -253,7 +253,7 @@ function _rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>
 
 async function _fontsReady(d) {
   if (!document.fonts || !document.fonts.load) return;
-  const all = [d.name, d.epitaph, d.nearMiss, d.remembered, d.birth, d.cause, ...d.peers.map(p => p.name + p.country), ...(d.seasons || []).map(s => s.vn)].join(" ") + " 0123456789 Một Lần Chào Đời Suýt nữa Cùng giây ấy Người nhớ bạn nhất Các mùa";
+  const all = [d.name, d.epitaph, d.nearMiss, d.remembered, d.birth, d.cause, ...d.peers.map(p => p.name + p.country), ...(d.seasons || []).map(s => s.vn)].join(" ") + " 0123456789 Almost Anyone Suýt nữa Cùng giây ấy Người nhớ bạn nhất Các mùa";
   const T = TOMB.serif, S = TOMB.sans;
   try {
     await Promise.race([Promise.all([
@@ -377,7 +377,7 @@ function _drawTomb(c, d, seed, P) {
   const end = y;
   // Chân giấy: tên trò chơi, lời rào, con dấu bên phải
   c.fillStyle = ink.print; c.fillRect(X, H - 190, CW, 2);
-  c.font = `600 42px ${T}`; c.fillStyle = ink.print; c.fillText("Một Lần Chào Đời", X, H - 122);
+  c.font = `600 42px ${T}`; c.fillStyle = ink.print; c.fillText("Almost Anyone", X, H - 122);
   c.font = `400 25px ${S}`; c.fillStyle = ink.muted; c.fillText("Mô phỏng theo số liệu thật. Không phải người thật.", X, H - 82);
   c.save(); c.translate(W - X - 78, H - 118); c.rotate(-0.21); c.globalAlpha = 0.85; c.strokeStyle = ink.seal; c.fillStyle = ink.seal;
   c.lineWidth = 4; c.beginPath(); c.arc(0, 0, 70, 0, Math.PI * 2); c.stroke(); c.lineWidth = 2; c.beginPath(); c.arc(0, 0, 60, 0, Math.PI * 2); c.stroke();
