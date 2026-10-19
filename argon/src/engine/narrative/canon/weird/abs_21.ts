@@ -9,7 +9,7 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { C, cap, card, ending, land, noOr, pathOpen, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, migrateOk, noOr, pathOpen, season, weird } from "../kit.ts";
 
 type Names = (id: string) => string;
 
@@ -333,7 +333,7 @@ const X24 = weird("X24", "abs", ["tien", "dat", "ky"],
       ],
       [
         card("x24_ket", "Hải đăng hay đất liền", (c, k) => `Ngọn hải đăng trên đảo sáng lại lần đầu sau ba mươi năm. Bạn đứng dưới chân đèn, một tay cầm thư của ${k.npc("ba_moi_gioi")}, một tay cầm giấy nhắc ${noOr(c, k, "món nợ ở đất liền", "lời hứa ở đất liền")}. ${cnt(c, "x24_dao") >= 2 ? "Bạn đã thuộc từng tảng đá trên đảo." : "Bạn vẫn chưa thuộc đường ra bến."} ${c.flags.has("x24_chia_dao") ? "Nửa kia của đảo đang chờ bạn quyết cùng." : "Cả hòn đảo chỉ chờ một chữ ký của bạn."} ${k.gag()}`,
-          [ending(L24_DI, "Ở lại, nhập cư làm chúa đảo", "Đổi nước, đổi đời, bốn mươi con dê"),
+          (c) => [...(migrateOk(c) ? [ending(L24_DI, "Ở lại, nhập cư làm chúa đảo", "Đổi nước, đổi đời, bốn mươi con dê")] : []),
            ending(L24_BAN, "Bán đảo cho khu nghỉ dưỡng", "Giàu lên, mất vương quốc"),
            ending(L24_TANG, "Trao đảo cho bầy dê", "Nhẹ lòng, nhẹ cả túi")]),
       ],
@@ -357,7 +357,7 @@ const X25 = weird("X25", "abs", ["tien", "ky"],
   }),
   season({
     id: "w_X25", vn: "Vương quốc dưa", color: "#e8a33a", years: [5, 9], weird: "abs",
-    rules: { income: 0.9, flags: ["w_vuong_quoc_dua", "w_luong_huu_bang_dua"] },
+    rules: { income: 0.9, yearly: { money: -0.05 }, flags: ["w_vuong_quoc_dua", "w_luong_huu_bang_dua"] },
     reset: { cast: [{ key: "anh_quy", role: "official", label: "anh nhân viên quỹ hưu trí" }, { key: "ba_dua", role: "rival", label: "bà buôn dưa đầu chợ" }] },
     gag: { key: "dua_khap_noi", lines: [
       "Bạn mở tủ lạnh: ba quả dưa. Bạn mở tủ quần áo: năm quả dưa và một cái áo.",
@@ -368,7 +368,7 @@ const X25 = weird("X25", "abs", ["tien", "ky"],
     landings: [L25_GIAU, L25_VON, L25_TRANG, L25_SAP],
     beats: [
       [
-        card("x25_mo_dem", "Mười hai nghìn quả", (c, k) => `Bạn mất trọn một ngày để đếm. Mười hai nghìn quả, vỏ xanh sọc đậm, quả nào cũng dán tem của quỹ hưu trí, và theo tính toán sẽ bắt đầu hỏng sau năm mươi ngày. ${k.gag()}`,
+        card("x25_mo_dem", "Mười hai nghìn quả", (c, k) => `Bạn mất trọn một ngày để đếm. Mười hai nghìn quả, vỏ xanh sọc đậm, quả nào cũng dán tem của quỹ hưu trí, và theo tính toán sẽ bắt đầu hỏng sau năm mươi ngày. Năm nào quỹ cũng sẽ chở tới một đợt như thế, thay cho một phần tiền, và phần bán không kịp thì hỏng. ${k.gag()}`,
           [C("Thuê kho lạnh", { money: -0.3, flags: ["x25_kho_lanh"] }, "Dưa sống lâu hơn, tiền thì không"),
            C("Bày bán ngay trước cổng", { money: 0.1, counters: { x25_ban: 1 }, flags: ["x25_ban_cong"] }, "Có tiền liền, cả xóm gọi bạn là nhà dưa"),
            C("Gọi luật sư kiện quỹ", { money: -0.1, flags: ["x25_kien_quy"] }, "Có thể lấy lại tiền, chắc chắn mất thời gian")]),
@@ -671,7 +671,7 @@ const X29 = weird("X29", "abs", ["tinh", "ky"],
   }),
   season({
     id: "w_X29", vn: "Lời hứa tuổi thơ", color: "#e6a85c", years: [5, 8], weird: "abs",
-    rules: { flags: ["w_loi_hua_tuoi_tho"] },
+    rules: { flags: ["w_loi_hua_tuoi_tho"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "lop_truong", role: "neighbor", label: LOP_TRUONG }, { key: "co_giao", role: "mentor", label: "cô giáo chủ nhiệm cũ" }] },
     gag: { key: "dem_nguoc", lines: [
       "Lớp trưởng cũ lập nhóm chat tên Đếm Ngược Đến Bốn Mươi. Nhóm có bốn mươi hai thành viên, chỉ hai người không được nói.",
@@ -682,7 +682,7 @@ const X29 = weird("X29", "abs", ["tinh", "ky"],
     landings: [L29_CUOI, L29_BAN, L29_LOP_TRUONG],
     beats: [
       [
-        card("x29_mo_san_truong", "Giữa sân trường", (c, k) => `Cả lớp đứng vòng quanh hai người, ai cũng giơ điện thoại. ${cap(fr29(c, k.N))} đỏ mặt nhìn tờ giấy, rồi nhìn bạn, rồi nhìn cột cờ như muốn trèo lên trốn. ${k.gag()}`,
+        card("x29_mo_san_truong", "Giữa sân trường", (c, k) => `Cả lớp đứng vòng quanh hai người, ai cũng giơ điện thoại. ${cap(fr29(c, k.N))} đỏ mặt nhìn tờ giấy, rồi nhìn bạn, rồi nhìn cột cờ như muốn trèo lên trốn. Lớp trưởng tuyên bố từ nay năm nào cả lớp cũng họp để theo dõi hai người, ai cũng đóng quỹ, riêng hai người đóng gấp đôi. ${k.gag()}`,
           [C("Cười trừ, bảo hồi đó còn bé", { flags: ["x29_cuoi_tru"], counters: { x29_ban: 1 } }, "Qua chuyện, người kia hơi buồn"),
            C("Nghiêm túc hẹn gặp riêng", { flags: ["x29_hen_rieng"], counters: { x29_tinh: 1 } }, "Mở một cánh cửa, cả lớp hóng"),
            C("Xé tờ giấy trước mặt mọi người", { flags: ["x29_xe_giay"], happy: -2, counters: { x29_ban: -1 } }, "Dứt khoát, hơi tàn nhẫn")]),

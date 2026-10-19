@@ -7,7 +7,7 @@
  */
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, noOr, pathOpen, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, migrateOk, noOr, pathOpen, season, weird } from "../kit.ts";
 
 const f = (c: FactContext, x: string): boolean => c.flags.has(x);
 const n = (c: FactContext, x: string): number => c.counters[x] ?? 0;
@@ -195,7 +195,7 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
   }),
   season({
     id: "w_X33", vn: "Người nói Không", color: "#e8a33d", years: [5, 9], weird: "abs",
-    rules: { income: 1.1, flags: ["w_ong_khong"] },
+    rules: { income: 1.1, yearly: { money: 0.05 }, flags: ["w_ong_khong"] },
     reset: { cast: [{ key: "nguoi_dem", role: "official", label: "ông đếm chữ" }, { key: "nha_san_xuat", role: "partner", label: "cô quản lý chương trình" }] },
     gag: { key: "chu_khong", lines: [
       "Ông đếm chữ gạch thêm một vạch vào sổ, lẩm bẩm con số mới như đọc bảng cửu chương.",
@@ -207,7 +207,7 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
     beats: [
       /* mo_man */
       [
-        card("x33_mo_bi_ngo", "Giám khảo hội thi bí ngô", (c, k) => `Hội thi bí ngô to nhất vùng mời bạn làm giám khảo, với một nhiệm vụ duy nhất: nói không với mọi quả bí. Một trăm hai mươi quả xếp hàng, mỗi quả có một người chủ đang run. ${k.gag()}`,
+        card("x33_mo_bi_ngo", "Giám khảo hội thi bí ngô", (c, k) => `Hội thi bí ngô to nhất vùng mời bạn làm giám khảo, với một nhiệm vụ duy nhất: nói không với mọi quả bí. Một trăm hai mươi quả xếp hàng, mỗi quả có một người chủ đang run. Hội kỷ lục gửi kèm giấy báo: người giữ danh hiệu được trả một khoản nhỏ mỗi năm, miễn chữ không vẫn còn được đếm. ${k.gag()}`,
           [C("Nhận lời, nói không cả trăm lần", { money: 0.1, counters: { x33_khong: 1 }, flags: ["x33_giam_khao"] }, "Có tiền công, mất một trăm hai mươi người quen"),
            C("Từ chối lời mời", { happy: 1, counters: { x33_khong: 1 }, flags: ["x33_tu_choi_moi"] }, "Đúng chất, và chính lời từ chối lên báo")]),
         card("x33_mo_bua_com", "Bữa cơm không có chữ có", (c, k) => `Cả nhà biến bữa cơm thành một cuộc thử: ai cũng hỏi bạn những câu chỉ có thể trả lời là có. "Ăn thêm bát nữa không?" ${cap(k.npc("nguoi_dem"))} ngồi ở đầu bàn, bút đã mở nắp.`,
@@ -235,7 +235,7 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
         card("x33_day_mat_giong", "Mất giọng trước trận chung kết", (c, k) => `Một tuần trước đêm chung kết, bạn mất giọng hoàn toàn. Bác sĩ hỏi: "Có đau không?" Bạn chỉ còn cách lắc đầu. ${cap(k.npc("nguoi_dem"))} cãi nhau với ban tổ chức suốt ba tiếng xem cái lắc đầu có được tính không. ${k.gag()}`,
           [C("Lắc đầu thay chữ không suốt mùa", { counters: { x33_khong: 1 }, flags: ["x33_lac_dau"] }, "Kỷ lục còn, cổ bạn thì mỏi"),
            C("Nghỉ hẳn một mùa cho lành giọng", { health: 5, money: -0.2, flags: ["x33_nghi"] }, "Khỏe lại, kỷ lục đứng yên")]),
-        card("x33_day_quang_cao", "Hợp đồng chỉ cần một chữ có", (c, k) => `Một hãng nệm đề nghị một khoản tiền bằng ba năm thu nhập, đổi lấy một câu quảng cáo dài đúng một chữ: "Có." ${f(c, "x33_noi_co") ? "Bạn đã từng nói có một lần trên sóng, nên họ tin lần này cũng được." : "Họ nói chữ có đầu tiên của bạn sẽ là chữ có đắt nhất lịch sử."}`,
+        card("x33_day_quang_cao", "Hợp đồng chỉ cần một chữ có", (c, k) => `Một hãng nệm đề nghị một khoản tiền bằng hơn nửa năm thu nhập, đổi lấy một câu quảng cáo dài đúng một chữ: "Có." ${f(c, "x33_noi_co") ? "Bạn đã từng nói có một lần trên sóng, nên họ tin lần này cũng được." : "Họ nói chữ có đầu tiên của bạn sẽ là chữ có đắt nhất lịch sử."}`,
           [C("Nói \"có\", lấy tiền", { money: 0.6, counters: { x33_khong: -3 }, flags: ["x33_ban_chu"] }, "Giàu lên, danh hiệu thành chuyện cười"),
            C("Nói không với cả đống tiền", { happy: 2, counters: { x33_khong: 2 }, flags: ["x33_liem_chinh"] }, "Nghèo nhưng thẳng, người ta nể bạn thật")]),
       ],
@@ -257,6 +257,8 @@ const X33 = weird("X33", "abs", ["danh", "ky"],
 
 const L34_NTK = land("nha_thiet_ke_ao_mua", "Bạn mở xưởng thiết kế riêng. Trường phái Rách có tên trong giáo trình của các trường thời trang.", { custom: "become:fashion", happy: 5 });
 const L34_BAN = land("ban_thuong_hieu_rach", "Bạn bán thương hiệu Rách cho một tập đoàn may mặc, đủ tiền mua nhà, và không bao giờ phải mặc áo mưa rách nữa.", { money: 2.5, happy: -1 });
+/** Không ra nước ngoài được (chưa tự lập, hay không còn nước để đi): ở lại vá áo ở góc chợ. */
+const L34_O_LAI = land("o_lai_va_ao", "Bạn ở lại, mở một sạp vá áo mưa ở góc chợ, nhận may đo cho người quen, và để dành được một khoản kha khá.", { money: 1, happy: 3 });
 const L34_DI = land("xuong_o_xu_mua", "Bạn mang kéo và dây thun sang một đất nước mưa quanh năm, mở xưởng ở đó.", { custom: "migrate_now", money: -0.5 });
 
 const X34 = weird("X34", "abs", ["tien", "danh"],
@@ -277,7 +279,7 @@ const X34 = weird("X34", "abs", ["tien", "danh"],
       "Người ta bắt đầu thuê bạn ra mắt áo mưa để chống mưa: bạn trình diễn ở đâu, ở đó nắng.",
       "Lần đầu tiên, buổi ra mắt có mưa thật. Không ai mang áo mưa, kể cả bạn.",
     ] },
-    landings: [L34_NTK, L34_BAN, L34_DI],
+    landings: [L34_NTK, L34_BAN, L34_DI, L34_O_LAI],
     beats: [
       /* mo_man */
       [
@@ -319,7 +321,8 @@ const X34 = weird("X34", "abs", ["tien", "danh"],
           (c) => pick(
             pathOpen("fashion", c.age) ? ending(L34_NTK, "Mở xưởng thiết kế mang tên mình", "Thành nghề thật, vất vả thật") : undefined,
             ending(L34_BAN, "Bán thương hiệu Rách", "Có nhà, có tiền, hết là nhà thiết kế"),
-            ending(L34_DI, "Sang xứ mưa quanh năm mở xưởng", "Đất lạ, mưa nhiều, khách nhiều"))),
+            migrateOk(c) ? ending(L34_DI, "Sang xứ mưa quanh năm mở xưởng", "Đất lạ, mưa nhiều, khách nhiều")
+              : ending(L34_O_LAI, "Ở lại, mở sạp vá áo mưa ở góc chợ", "Không giàu, khách quen gọi bạn là thầy"))),
       ],
     ],
   }));
@@ -579,7 +582,7 @@ const X38 = weird("X38", "abs", ["danh", "mau"],
   }),
   season({
     id: "w_X38", vn: "Ngoại giao sân trường", color: "#eebc3a", years: [5, 9], weird: "abs",
-    rules: { flags: ["w_ngoai_giao_san_truong"] },
+    rules: { flags: ["w_ngoai_giao_san_truong"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "nguyen_thu", role: "neighbor", label: "cô bé nguyên thủ" }, { key: "hieu_pho", role: "first_boss", label: "thầy hiệu phó" }] },
     gag: { key: "hiep_uoc", lines: [
       "Hiệp ước đầu tiên được ký trên giấy gói kẹo: hai nước cùng dùng chung cái xích đu.",
@@ -591,7 +594,7 @@ const X38 = weird("X38", "abs", ["danh", "mau"],
     beats: [
       /* mo_man */
       [
-        card("x38_mo_quoc_thu", "Trình quốc thư trước cột cờ", (c, k) => `${cap(k.npc("nguyen_thu"))} yêu cầu một lễ trình quốc thư đúng nghi thức: đại sứ phải cúi chào, đọc to, và không được cười. Cả sân trường dừng chơi để xem. ${k.gag()}`,
+        card("x38_mo_quoc_thu", "Trình quốc thư trước cột cờ", (c, k) => `${cap(k.npc("nguyen_thu"))} yêu cầu một lễ trình quốc thư đúng nghi thức: đại sứ phải cúi chào, đọc to, và không được cười. Nghi thức còn gồm quà ngoại giao: mỗi năm một túi kẹo cho cả nước, đại sứ tự lo. Cả sân trường dừng chơi để xem. ${k.gag()}`,
           (c) => [C("Mặc vest đi trình quốc thư", { happy: 3, counters: { x38_uy_tin: 1 }, flags: ["x38_vest"] }, c.has_job && anyFlag(c, ["job_teach", "life_professor", "highland_teacher"]) ? "Lũ trẻ tin bạn tuyệt đối, đồng nghiệp thì cười" : "Lũ trẻ tin bạn tuyệt đối, các phụ huynh thì cười"),
            C("Nhận chức, giữ kín với người lớn", { flags: ["x38_bi_mat"] }, "Yên chuyện, nhưng bí mật nào cũng có ngày lộ")]),
         card("x38_mo_o_gach", "Tranh chấp ô gạch thứ tư", (c, k) => `Nước láng giềng bên bồn hoa tuyên bố ô gạch thứ tư là lãnh thổ lịch sử của họ, vì có lần họ làm rơi kẹo ở đó. Hai nguyên thủ đứng hai bên, tay khoanh trước ngực, chờ đại sứ lên tiếng.`,
@@ -722,7 +725,7 @@ const X40 = weird("X40", "abs", ["than", "ky"],
   }),
   season({
     id: "w_X40", vn: "Người của một ngày", color: "#e6a23c", years: [7, 12], weird: "abs",
-    rules: { flags: ["w_nguoi_mot_ngay"] },
+    rules: { flags: ["w_nguoi_mot_ngay"], yearly: { money: -0.05 } },
     reset: { cast: [{ key: "ban_cua_ho", role: "partner", label: "người bạn của người kia" }, { key: "cam_do", role: "creditor", label: "bà chủ tiệm cầm đồ" }] },
     gag: { key: "loi_nhan", lines: [
       "Tờ giấy dán trên gương: \"Mượn tạm ít tiền mua giày. Giày đẹp.\" Ký tên: Người Hôm Đó.",

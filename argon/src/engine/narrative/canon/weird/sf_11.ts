@@ -8,7 +8,7 @@
 import type { CastRole, FactContext } from "../../types.ts";
 import type { SeasonKit } from "../Season.ts";
 import type { Slots, WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, noOr, pathOpen, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, migrateOk, noOr, pathOpen, season, weird } from "../kit.ts";
 
 /* ---- helper ---- */
 /** Nối các phần câu, bỏ phần rỗng (không để lại khoảng trắng thừa). */
@@ -158,7 +158,7 @@ const S12 = weird("S12", "sf", ["mau", "ky"],
   }),
   season({
     id: "w_S12", vn: "Người đưa thư giữa hai năm", color: "#5a4fcf", years: [5, 9], weird: "sf",
-    rules: { flags: ["w_time_door"] },
+    rules: { flags: ["w_time_door"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "ba_trong_cua", role: "neighbor", label: "bà trông nhà vệ sinh" }, { key: "buu_ta", role: "mentor", label: "anh bưu tá bên kia cửa" }] },
     gag: { key: "tien_thoi_cu", lines: [
       "Bà trông cửa thu tiền vé, đếm hai lần, rồi thối lại bằng đồng tiền cũ không ai tiêu được.",
@@ -171,7 +171,7 @@ const S12 = weird("S12", "sf", ["mau", "ky"],
       /* mo_man */
       [
         card("s12_mo_thu", "Lá thư đầu tiên", (c, k) => J(
-          "Lần đầu bước qua, bạn chỉ mang theo cái điện thoại không có sóng.",
+          "Lần đầu bước qua, bạn chỉ mang theo cái điện thoại không có sóng. Bà trông cửa bán cho bạn tấm vé năm, giá không rẻ, mỗi năm mua lại một lần.",
           `Bên kia, ${k.npc("buu_ta")} ngồi bệt cạnh chiếc xe đạp tuột xích, thư rơi đầy vỉa hè, và nhờ bạn giao giúp một lá.`,
           "Địa chỉ trên phong bì là nhà bạn, từ hồi nó chưa là nhà bạn.", k.gag()),
           [C("Giao thư, đứng nhìn ngôi nhà thật lâu", { happy: 3, flags: ["s12_giao_thu"] }, "Thấy nhà mình từ hồi chưa có mình"),
@@ -434,6 +434,8 @@ const S14 = weird("S14", "sf", ["danh", "ky"],
 const L15_QUAN = land("nguoi_cua_vom", "Bạn ở lại, nhận một chức trong ban vận hành vòm, có thẻ vàng và một cái bàn nhìn ra lớp kính.", { custom: "become:official" });
 const L15_GAC = land("gac_cong_vom", "Bạn ở lại, nhận gác cổng chính của vòm, biết mặt từng người ra vào.", { custom: "become:security_guard" }); // gần nhất
 const L15_RA = land("tron_ra_vom", "Bạn chui qua khe cửa, dọn sang một thành phố khác, nơi trời còn mưa.", { custom: "move_city", happy: 4 });
+/** Không đi nước ngoài được (chưa tự lập, hay không còn nước để đi): ở lại nhận đền bù. */
+const L15_DEN_BU = land("o_lai_den_bu", "Bạn ở lại dưới vòm, nhận khoản đền bù của ban vận hành cho những năm bị nhốt, và tập quen với bầu trời không bao giờ mưa.", { money: 1, happy: 1 });
 const L15_XA = land("ra_vom_di_xa", "Bạn ra khỏi vòm và đi luôn sang nước khác, mang theo một chai không khí trong vòm.", { custom: "migrate_now" });
 
 const S15 = weird("S15", "sf", ["dat", "luat"],
@@ -455,7 +457,7 @@ const S15 = weird("S15", "sf", ["dat", "luat"],
       "Dự báo thời tiết có thêm mục mới: độ ẩm của lòng người. Hôm nay: thấp.",
       "Dự báo thời tiết báo có mưa. Cả thành phố đổ ra đường, cầm sẵn chậu.",
     ] },
-    landings: [L15_QUAN, L15_GAC, L15_RA, L15_XA],
+    landings: [L15_QUAN, L15_GAC, L15_RA, L15_XA, L15_DEN_BU],
     beats: [
       /* mo_man */
       [
@@ -517,7 +519,8 @@ const S15 = weird("S15", "sf", ["dat", "luat"],
             ...(pathOpen("official", c.age) ? [ending(L15_QUAN, "Ở lại, nhận chức trong ban vận hành", "Có quyền, sống cả đời dưới kính")]
               : pathOpen("security_guard", c.age) ? [ending(L15_GAC, "Ở lại, nhận gác cổng vòm", "Yên ổn, biết mọi chuyện ra vào")] : []),
             ending(L15_RA, "Ra ngoài, dọn sang thành phố khác", "Có mưa, bắt đầu lại từ đầu"),
-            ending(L15_XA, "Ra ngoài và đi hẳn sang nước khác", "Thật xa vòm, thật xa mọi thứ"),
+            migrateOk(c) ? ending(L15_XA, "Ra ngoài và đi hẳn sang nước khác", "Thật xa vòm, thật xa mọi thứ")
+              : ending(L15_DEN_BU, "Ở lại, nhận tiền đền bù của ban vận hành", "Có một khoản, sống tiếp dưới kính"),
           ]),
       ],
     ],
@@ -726,7 +729,7 @@ const S18 = weird("S18", "sf", ["tien", "luat"],
   }),
   season({
     id: "w_S18", vn: "Chủ trọ liên sao", color: "#5d7be0", years: [5, 10], weird: "sf",
-    rules: { flags: ["w_alien_tenant"] },
+    rules: { flags: ["w_alien_tenant"], yearly: { money: 0.03 } },
     reset: { cast: [{ key: "nguoi_thue", role: "neighbor", label: "người thuê phòng số 2" }, { key: "thanh_tra", role: "official", label: "ông thanh tra nhà ở cầm sổ tay" }] },
     gag: { key: "tien_thue", lines: [
       "Tiền thuê tháng này: một viên đá biết hát, hát lệch tông.",
@@ -740,7 +743,7 @@ const S18 = weird("S18", "sf", ["tien", "luat"],
       [
         card("s18_mo_hop_dong", "Điều khoản viết tay", (c, k) => J(
           "Hợp đồng có thêm một điều khoản người thuê tự viết tay: chủ nhà không mở cửa phòng số 2 vào những đêm không trăng.",
-          `${cap(k.npc("nguoi_thue"))} ký bằng một dấu tay có sáu ngón.`, k.gag()),
+          `${cap(k.npc("nguoi_thue"))} ký bằng một dấu tay có sáu ngón. Tiền phòng mỗi năm trả bằng một viên đá biết hát, và tiệm vàng đầu ngõ chịu mua lại với giá kha khá.`, k.gag()),
           [C("Đồng ý điều khoản", { flags: ["s18_dong_y"], counters: { s18_tin: 1 } }, "Giữ hòa khí, tò mò dài hạn"),
            C("Gạch điều khoản, đòi quyền kiểm tra", { flags: ["s18_kiem_tra"], counters: { s18_nghi: 1 } }, "Yên tâm hơn, người thuê có vẻ buồn")]),
         card("s18_mo_hang_xom", "Cây mọc ngược", () => J(
@@ -797,7 +800,7 @@ const S18 = weird("S18", "sf", ["tien", "luat"],
             ending(L18_DO, "Ở lại, bán két đồ lạ", "Có của, sống cạnh những thứ không ai hiểu"),
             pathOpen("tour_guide", c.age) ? ending(L18_DU_LICH, "Mở nhà trọ cho khách tham quan", "Nổi tiếng, nhà không còn là nhà")
               : ending(L18_DIEU_TRA, "Ký biên bản, giao hết cho thanh tra", "Sạch tay, mất nhà và một khoản phạt"),
-            ending(L18_DI, "Lên tàu đi cùng người thuê", "Bỏ lại tất cả, hạ cánh ở một nơi lạ"),
+            ...(migrateOk(c) ? [ending(L18_DI, "Lên tàu đi cùng người thuê", "Bỏ lại tất cả, hạ cánh ở một nơi lạ")] : []),
           ]),
       ],
     ],

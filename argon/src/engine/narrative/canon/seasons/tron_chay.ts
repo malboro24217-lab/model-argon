@@ -1,5 +1,6 @@
 /**
  * Mùa "Kẻ trốn chạy": bỏ chạy lúc nửa đêm, sống bằng một cái tên giả, và nồi cháo khuya thành thứ người ta nhớ.
+ * Đầu mùa (R25): chuyển đi nơi khác (move_city) và mang theo món vay nóng (borrow:0.5) mà gã áo hoa đi đòi; repay ở L_VE trả nó.
  * Gag: cái tên giả "Lâm" mà chính bạn cứ quên.
  */
 import type { SeasonDef } from "../Season.ts";
@@ -18,7 +19,7 @@ export const TRON_CHAY: SeasonDef = {
   id: "tron_chay", vn: "Kẻ trốn chạy", color: "#4f6377", years: [8, 14],
   rules: { income: 0.6, flags: ["w_tron_chay", "w_ten_gia"] },
   reset: {
-    cash: 0.2, effects: { custom: "move_city" },
+    cash: 0.2, effects: { custom: "move_city|borrow:0.5" },
     cast: [
       { key: "chu_tro", role: "neighbor", label: "bà chủ trọ" },
       { key: "ao_hoa", role: "creditor", label: "gã đòi nợ áo hoa" },
@@ -36,7 +37,7 @@ export const TRON_CHAY: SeasonDef = {
   beats: [
     /* mo_man */
     [
-      card("tc_mo_xe", "Chuyến xe lúc hai giờ sáng", (c, k) => `Hai giờ sáng, bạn xách một cái ba lô, bỏ lại chậu cây và nửa nồi cơm. Chuyến xe đêm còn đúng một ghế, cạnh một lồng gà rất có ý kiến. Sáng ra, xe thả bạn xuống một bến lạ ở ${k.noi}.`,
+      card("tc_mo_xe", "Chuyến xe lúc hai giờ sáng", (c, k) => `Hai giờ sáng, bạn xách một cái ba lô, bỏ lại chậu cây, nửa nồi cơm và tờ giấy vay nóng ký vội tuần trước, giờ đã thành một món nợ có người đi đòi. Chuyến xe đêm còn đúng một ghế, cạnh một lồng gà rất có ý kiến. Sáng ra, xe thả bạn xuống một bến lạ ở ${k.noi}.`,
         [C("Ngồi cạnh lồng gà, đi thẳng một mạch", { flags: ["tc_di_thang"], happy: -2 }, "Tới nhanh, ai hỏi thăm bến xe là lần ra"),
          C("Đổi ba chuyến xe cho rối dấu", { money: -0.1, health: -2, flags: ["tc_doi_xe"] }, "Tốn tiền và sức, khó bị lần theo")]),
       card("tc_mo_tro", "Phòng trọ không hỏi giấy", (c, k) => `${cap(k.npc("chu_tro"))} cho thuê căn gác mười mét vuông, không hỏi giấy tờ, chỉ hỏi bạn có biết sửa ống nước không. Bạn nói biết. ${k.gag()}`,

@@ -6,7 +6,7 @@
 import type { Choice, FactContext, PlantKind } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { C, cap, card, ending, finale as kitFinale, land, noOr, pathOpen, season, weird } from "../kit.ts";
+import { C, cap, card, ending, finale as kitFinale, land, migrateOk, noOr, pathOpen, season, weird } from "../kit.ts";
 
 const f = (c: FactContext, x: string): boolean => c.flags.has(x);
 const n = (c: FactContext, x: string): number => c.counters[x] ?? 0;
@@ -56,6 +56,8 @@ const X14_TRANG = land("x14_trang_tay", "Tòa tuyên lá thăm vô hiệu. Bạn
 /* ================================================================== X15 — Kiện hàng biết đi */
 
 const X15_O_LAI = land("x15_o_lai", "Bạn ở lại, giấy tờ hợp pháp sau nhiều năm chờ, và bắt đầu đời người di cư thật sự.", { custom: "migrate_now", money: -1 });
+/** Không làm được giấy ở lại (chưa tự lập, hay không còn nước để đi): ở lại không giấy tờ, gửi tiền về. */
+const X15_O_CHUI = land("x15_o_chui", "Bạn ở lại bến cảng ấy, sống không giấy tờ, làm công nhật cho bác gác kho và gửi về nhà một khoản lớn dành dụm từng đồng.", { money: -1, happy: -2 });
 const X15_VE = land("x15_ve_nha", "Bạn về nước, nộp phạt, mang theo ba từ ngoại ngữ và một cái tem đã bạc màu.", { money: -1.5, happy: 4 });
 const X15_THUYEN = land("x15_thuyen_vien", "Bạn ký hợp đồng thuyền viên trên chính con tàu từng chở mình, lần này có hộ chiếu và giường riêng.", { custom: "become:sailor", money: -0.5 });
 
@@ -193,10 +195,10 @@ export const ABS_11: WeirdBranch[] = [
              C("Đứng yên nghe hết điếu văn", { flags: ["x12_nghe_dieu_van"], know: 2, happy: 3 }, "Biết ai thương mình, lỡ mất thời điểm vàng")]),
           card("x12_mo_vong_hoa", "Vòng hoa của chủ nợ", (c, k) => `${cap(k.npc("chu_no"))} gửi vòng hoa to nhất đám, ruy băng ghi: xin chia buồn, khoản nợ xin khép lại. Ông lau nước mắt rất thật, rồi gạch tên bạn khỏi cuốn sổ ngay trước linh cữu.`,
             [C("Chạy tới nói thật với ông ấy", { flags: ["x12_thu_that"], counters: { x12_song: 1 }, rel: 2 }, "Giữ chữ tín, khoản nợ quay về nguyên vẹn"),
-             C("Để ông ấy khép sổ", { flags: ["x12_khep_so"], pressure: { luat: 1 } }, "Nhẹ nợ hôm nay, mang thêm một bí mật")]),
+             C("Để ông ấy khép sổ", { custom: "repay:0.5", flags: ["x12_khep_so"], pressure: { luat: 1 } }, "Nhẹ nợ hôm nay, mang thêm một bí mật")]),
         ],
         [
-          card("x12_kd_tai_khoan", "Tài khoản của người quá cố", (c, k) => `Ngân hàng khóa tài khoản của bạn${c.home_owner ? ", căn nhà đứng tên bạn chuyển sang chờ thừa kế" : c.independent ? ", chủ nhà đòi lại phòng" : ", tên bạn bị gạch khỏi hồ sơ cư trú của gia đình"}${c.has_job ? ", chỗ làm gửi thư chia buồn kèm quyết định thôi việc" : ", mọi đơn xin việc bị trả về vì người nộp đã mất"}. ${k.gag()} Trên giấy tờ, bạn không còn được làm gì, kể cả mắc nợ.`,
+          card("x12_kd_tai_khoan", "Tài khoản của người quá cố", (c, k) => `Ngân hàng khóa tài khoản của bạn${c.home_owner ? ", căn nhà đứng tên bạn chuyển sang chờ thừa kế" : c.independent ? ", chủ nhà đòi lại phòng" : ", tên bạn bị gạch khỏi hồ sơ cư trú của gia đình"}${c.has_job ? ", chỗ làm gửi thư chia buồn, từ nay lương chỉ trả qua người nhà và bớt gần hết" : ", mọi đơn xin việc bị trả về vì người nộp đã mất"}. ${k.gag()} Trên giấy tờ, bạn không còn được làm gì, kể cả mắc nợ.`,
             [C("Nhận làm việc vặt trả công ngày", { money: 0.1, health: -2, flags: ["x12_viec_vat"] }, "Sống tạm được, không ai bảo hiểm cho bạn"),
              C("Dọn về ở nhờ người thân", { rel: 3, happy: -2, flags: ["x12_o_nho"] }, "Có mái nhà, mất chút tự trọng")]),
           card("x12_kd_tu_do", "Tự do của người đã khuất", (c) => `Một tuần sau, bạn nhận ra không ai gọi điện đòi tiền, không ai mời họp, ${c.married ? "không ai nhắc ngày kỷ niệm cưới" : "không ai hỏi bao giờ lấy vợ lấy chồng"}. Bạn ngủ một mạch đến trưa lần đầu sau mười năm. "Chết sướng thế này thì sống làm gì," bạn nghĩ, rồi giật mình vì đã nghĩ thế.`,
@@ -287,7 +289,7 @@ export const ABS_11: WeirdBranch[] = [
     () => "Nhận di sản của người thừa kế bốc thăm",
     () => ({ title: "Lá thăm có tên bạn", text: `Một ông cụ giàu có, không vợ con, để lại di chúc lạ: tài sản thuộc về người được bốc ngẫu nhiên từ danh bạ thành phố. Trước mặt ba luật sư và một chiếc máy quay, lá thăm mở ra, và đó là tên bạn. "Chúc mừng," bà luật sư nói, "và xin lỗi trước về họ hàng của cụ."` }),
     season({ id: "w_X14", vn: "Người thừa kế bốc thăm", color: "#d4a017", years: [5, 9], weird: "abs",
-      rules: { flags: ["w_thua_ke_boc_tham"] },
+      rules: { flags: ["w_thua_ke_boc_tham"], yearly: { money: -0.05 } },
       reset: { cast: [{ key: "luat_su", role: "mentor", label: "bà luật sư của cụ" }, { key: "chau_cu", role: "rival", label: "người cháu đích tôn của cụ" }] },
       gag: { key: "ho_hang_moi", lines: [
         "Chuông cửa reo. Một người tự giới thiệu là cháu gọi cụ bằng ông trẻ, mang theo một túi cam và một tờ đơn kiện.",
@@ -298,7 +300,7 @@ export const ABS_11: WeirdBranch[] = [
       landings: [X14_GIAU, X14_CHIA, X14_TRANG],
       beats: [
         [
-          card("x14_mo_biet_thu", "Căn biệt thự hai mươi phòng", (c, k) => `${cap(k.npc("luat_su"))} giao cho bạn một chùm chìa khóa nặng hai cân và bản kê tài sản dài bốn trang. Căn biệt thự có hai mươi phòng, ba phòng chưa ai tìm thấy cửa. ${k.gag()}`,
+          card("x14_mo_biet_thu", "Căn biệt thự hai mươi phòng", (c, k) => `${cap(k.npc("luat_su"))} giao cho bạn một chùm chìa khóa nặng hai cân và bản kê tài sản dài bốn trang. Căn biệt thự có hai mươi phòng, ba phòng chưa ai tìm thấy cửa. Người giữ chìa chịu tiền điện nước và án phí của nó cho tới ngày tòa xử xong, đóng theo năm. ${k.gag()}`,
             [C("Dọn vào ở ngay", { flags: ["x14_don_vao"], happy: 3, money: 0.1 }, "Sống như vua, thành bia cố định"),
              C("Ở nhà cũ, khóa biệt thự lại", { flags: ["x14_khoa_cua"], counters: { x14_cung: 1 } }, "An toàn, đồ trong đó cứ mất dần")]),
           card("x14_mo_chau", "Người cháu đích tôn", (c, k) => `${cap(k.npc("chau_cu"))} hẹn bạn ở quán nước, mặc vest dù trời ba mươi sáu độ. Người ấy nói nhẹ nhàng: ông cụ lẩm cẩm, lá thăm là trò đùa, gia đình sẽ kiện tới cùng. "Hoặc," người ấy đẩy một tờ giấy qua bàn, "bạn ký nhường lại và nhận một phần mười."`,
@@ -349,7 +351,7 @@ export const ABS_11: WeirdBranch[] = [
         "Cái tem giờ đã bạc màu, chỉ còn đọc được chữ DỄ. Người gác kho bảo thế cũng đúng.",
         "Bạn bóc cái tem ra, dán vào cuốn sổ tay. Lưng áo nhẹ hẳn, như vừa mất một người bảo lãnh.",
       ] },
-      landings: [X15_O_LAI, X15_VE, X15_THUYEN],
+      landings: [X15_O_LAI, X15_VE, X15_THUYEN, X15_O_CHUI],
       beats: [
         [
           card("x15_mo_ben", "Bến cảng không biết tên", (c, k) => `Bạn đứng giữa bãi container, không hộ chiếu, không điện thoại, túi áo còn đúng chiếc bút bi của kho. ${k.gag()} ${cap(k.npc("gac_kho"))} chỉ tay về phía văn phòng cảng, rồi lắc đầu, rồi lại chỉ.`,
@@ -384,7 +386,8 @@ export const ABS_11: WeirdBranch[] = [
           card("x15_ket", "Con tàu cập bến lần nữa", (c, k) => `${k.gag()} Con tàu năm xưa chở bạn sang lại cập bến, lần này có danh sách hành khách đàng hoàng. ${f(c, "x15_bao_lanh") ? "Người bảo lãnh nhắn: giấy tờ ở lại đã có cửa, chỉ chờ bạn gật đầu." : f(c, "x15_chap_nhan") ? "Vé về đã nằm sẵn trong túi từ hôm bạn chấp nhận quyết định." : x15Legal(c) ? "Giấy phép ở tạm của bạn sắp được xét gia hạn." : `Lệnh về nước vẫn còn hiệu lực${f(c, "x15_muon_o") ? ", dù bạn đã nói muốn ở lại" : ""}; muốn ở, chỉ còn một lần kháng cáo.`} Ở nhà, ${noOr(c, k)} vẫn chờ; ở đây, cuộc đời mới chưa có tên bạn trên giấy.`,
             (c) => {
               const home = ending(X15_VE, "Về nước, nộp phạt", "Mất tiền, được về nhà");
-              const stay = x15Legal(c) ? ending(X15_O_LAI, "Ở lại, chờ giấy tờ hợp pháp", "Đời mới ở xứ lạ, trả giá bằng nhiều năm")
+              const stay = !migrateOk(c) ? ending(X15_O_CHUI, "Ở lại không giấy tờ, gửi tiền về nhà", "Có việc ở bến, không có tên trên giấy")
+                : x15Legal(c) ? ending(X15_O_LAI, "Ở lại, chờ giấy tờ hợp pháp", "Đời mới ở xứ lạ, trả giá bằng nhiều năm")
                 : ending(X15_O_LAI, "Kháng cáo lần cuối để được ở lại", "Tốn hai năm thu nhập, chờ thêm nhiều năm", { effects: { ...X15_O_LAI.effects, money: -2 } });
               const sail = pathOpen("sailor", c.age) ? [ending(X15_THUYEN, "Xin làm thuyền viên trên con tàu ấy", "Có hộ chiếu, đời lênh đênh")] : [];
               return f(c, "x15_chap_nhan") ? [home, stay, ...sail] : [...sail, stay, home];
@@ -458,7 +461,7 @@ export const ABS_11: WeirdBranch[] = [
     () => "Để cả con phố đổi theo tên mình",
     () => ({ title: "Tấm biển tên phố mới", text: `Sáng nay, công nhân tháo tấm biển cũ ở đầu phố nhà bạn và treo lên một tấm biển mới mang đúng họ tên bạn. Hội đồng giải thích: cần đặt tên phố theo một người tốt còn sống, và tên bạn được nhiều phiếu nhất vì dễ đọc. "Từ giờ," bà trưởng hội khu phố vỗ vai bạn, "cả phố này soi vào bạn mà sống."` }),
     season({ id: "w_X17", vn: "Con phố mang tên tôi", color: "#cc8a1e", years: [6, 11], weird: "abs",
-      rules: { flags: ["w_pho_ten_toi"] },
+      rules: { flags: ["w_pho_ten_toi"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "to_truong", role: "neighbor", label: "bà trưởng hội khu phố" }, { key: "ban_banh", role: "rival", label: "ông bán bánh đầu phố" }] },
       gag: { key: "bien_pho", lines: [
         "Tấm biển phố in sai một dấu, tên bạn thành một từ khác hẳn nghĩa. Cả phố thống nhất không ai nhắc tới.",
@@ -472,7 +475,7 @@ export const ABS_11: WeirdBranch[] = [
           card("x17_mo_le", "Lễ gắn biển", (c, k) => `Lễ gắn biển có băng rôn, có đội trống thiếu nhi, và một bài phát biểu bạn phải tự viết về chính mình. ${k.gag()}`,
             [C("Phát biểu khiêm tốn, cúi chào", { flags: ["x17_khiem_ton"], rel: 2, counters: { x17_guong: 1 } }, "Ai cũng quý, ai cũng chờ bạn sơ hở"),
              C("Phát biểu thật lòng, kể cả cái dở", { flags: ["x17_that_long"], happy: 2 }, "Nhẹ người, có người lắc đầu")]),
-          card("x17_mo_quy_tac", "Bản quy tắc gương mẫu", (c, k) => `${cap(k.npc("to_truong"))} dán lên cửa nhà bạn một tờ quy tắc: không cãi nhau to tiếng, không phơi quần áo ra mặt phố, không về nhà sau mười giờ đêm, không nợ tiền ai. "Người mang tên phố," bà nói, "thì phải sạch như tấm biển."`,
+          card("x17_mo_quy_tac", "Bản quy tắc gương mẫu", (c, k) => `${cap(k.npc("to_truong"))} dán lên cửa nhà bạn một tờ quy tắc: không cãi nhau to tiếng, không phơi quần áo ra mặt phố, không về nhà sau mười giờ đêm, không nợ tiền ai, và đóng quỹ khu phố hằng năm gấp đôi nhà khác. "Người mang tên phố," bà nói, "thì phải sạch như tấm biển."`,
             [C("Ký cam kết tuân thủ", { flags: ["x17_cam_ket"], counters: { x17_guong: 1 }, happy: -2 }, "Được lòng hàng xóm, mất tự do"),
              C("Gỡ tờ quy tắc xuống", { flags: ["x17_go_quy_tac"], happy: 2, counters: { x17_guong: -1 } }, "Sống như cũ, cả phố xì xào")]),
         ],
@@ -630,7 +633,7 @@ export const ABS_11: WeirdBranch[] = [
     () => "Sống chung với người cưới nhầm, chờ hủy giấy",
     () => ({ title: "Đám cưới tập thể, nhầm một cặp", text: `Sau mấy lần gặp mặt do người nhà mai mối, bạn và người hứa hôn đăng ký vào một đám cưới tập thể có một trăm cặp đôi và một người đọc tên rất nhanh. Bạn ký vào tờ giấy được đưa tới, quay sang thì thấy người đứng cạnh không phải người hứa hôn, chỉ trùng họ tên với người ấy. "Giấy đã ký, đã đóng dấu," cán bộ nói, "muốn hủy thì làm đơn, chờ thủ tục."` }),
     season({ id: "w_X20", vn: "Hôn nhân giấy tờ", color: "#c7922f", years: [5, 8], weird: "abs",
-      rules: { flags: ["w_hon_nhan_giay"] },
+      rules: { flags: ["w_hon_nhan_giay"], yearly: { money: -0.03 } },
       reset: { cast: [{ key: "nguoi_kia", role: "neighbor", label: "người cưới nhầm" }, { key: "can_bo", role: "official", label: "anh cán bộ hộ tịch" }] },
       gag: { key: "trung_ten", lines: [
         "Ở văn phòng hộ tịch, người ta gọi tên người kia. Cả người kia lẫn người hứa hôn của bạn cùng đứng dậy. Cán bộ thở dài, ghi thêm chữ A và chữ B.",
@@ -641,7 +644,7 @@ export const ABS_11: WeirdBranch[] = [
       landings: [X20_YEU, X20_CU, X20_MOT_MINH],
       beats: [
         [
-          card("x20_mo_chung_nha", "Căn hộ cho hai người lạ", (c, k) => `Theo quy định, cặp vừa đăng ký phải ở chung một địa chỉ tới khi thủ tục hủy được duyệt. ${cap(k.npc("nguoi_kia"))} xách vali đến, đặt một chậu cây lên bàn của bạn và hỏi phòng tắm ở đâu. ${k.gag()}`,
+          card("x20_mo_chung_nha", "Căn hộ cho hai người lạ", (c, k) => `Theo quy định, cặp vừa đăng ký phải ở chung một địa chỉ tới khi thủ tục hủy được duyệt. ${cap(k.npc("nguoi_kia"))} xách vali đến, đặt một chậu cây lên bàn của bạn và hỏi phòng tắm ở đâu. Lệ phí giữ hồ sơ hủy nộp theo năm, hai người chia đôi. ${k.gag()}`,
             [C("Chia nhà bằng một vạch phấn", { flags: ["x20_vach_phan"], happy: 1 }, "Rạch ròi, ngày nào cũng có người giẫm vạch"),
              C("Nấu cơm mời người kia ăn chung", { flags: ["x20_an_chung"], rel: 2, counters: { x20_gan: 1 } }, "Dễ thở hơn, khó giữ khoảng cách")]),
           card("x20_mo_nguoi_yeu", "Ba người, một cái bàn", () => "Người hứa hôn của bạn đến chơi, mang theo hộp bánh và vẻ mặt cố bình tĩnh. Ba người ngồi quanh một cái bàn, người kia rót nước, và không ai biết nên ngồi ghế nào.",

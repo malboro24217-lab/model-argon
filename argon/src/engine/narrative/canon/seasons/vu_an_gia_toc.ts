@@ -1,6 +1,8 @@
 /**
  * Mùa "Vụ án gia tộc": người lớn nhất họ mất, để lại một căn nhà, một hộp sắt khóa số và hai bản di chúc.
  * Bạn bị giao giữ chìa, nên vừa là thám tử vừa là nghi phạm. Gag: nhóm chat của họ đổi tên sau mỗi trận cãi.
+ * Thay đổi tình thế (R25): người giữ chìa gánh tiền giữ căn nhà cũ mỗi năm (rules.yearly), cho tới khi vụ việc ngã ngũ.
+ * Người chưa đủ 18 tuổi không ra riêng một mình: chung kết thay L_RA_RIENG bằng sổ tiết kiệm L_GUI_SO.
  */
 import type { SeasonDef } from "../Season.ts";
 import { C, cap, card, ending, finale, land, noOr } from "../kit.ts";
@@ -10,6 +12,8 @@ const L_LUAT = land("hoc_luat", "Bạn đọc luật nhiều tới mức đi thi
 const L_PHAN = land("nhan_phan", "Bạn nhận trọn phần thừa kế, dùng một phần khép lại chuyện cũ, rồi ký vào biên bản cuối cùng.", { money: 2, custom: "repay:1", happy: 3 });
 const L_PHAN_NHO = land("nhan_phan_nho", "Bạn nhận phần thừa kế nhỏ của mình, khép được một nửa chuyện cũ, rồi ký vào biên bản cuối cùng.", { money: 1, custom: "repay:0.5", happy: 1 });
 const L_RA_RIENG = land("ra_rieng", "Bạn rời cả họ, chuyển sang thành phố khác, chỉ giữ lại số điện thoại của một người.", { custom: "move_city", rel: -3 });
+/** Người chưa đủ 18 tuổi: phần thừa kế gửi vào sổ tiết kiệm đứng tên mình (không ra riêng một mình). */
+const L_GUI_SO = land("gui_so_tiet_kiem", "Phần thừa kế của bạn được gửi vào một sổ tiết kiệm đứng tên bạn, chờ tới năm mười tám tuổi. Bà cô út giữ hộ cuốn sổ, và mỗi năm lại đưa ra cho bạn xem một lần.", { money: 1, happy: 2 });
 
 const has = (c: { flags: Set<string> }, f: string) => c.flags.has(f);
 type Ctx = { flags: Set<string>; counters: Record<string, number> };
@@ -36,9 +40,14 @@ const VERDICT: Record<ReturnType<typeof verdict>, (k: K) => string> = {
 const phanOf = (c: Ctx, label: string) => (verdict(c) === "hoa" || verdict(c) === "thang"
   ? ending(L_PHAN, label, "Phần trọn vẹn, đủ khép chuyện cũ") : ending(L_PHAN_NHO, label, "Phần nhỏ, chỉ đủ khép một nửa chuyện cũ"));
 
+/** Ra riêng ở thành phố khác chỉ khi đã đủ 18 tuổi; trẻ hơn thì phần của mình vào sổ tiết kiệm. */
+const raRieng = (c: { age: number }) => (c.age >= 18
+  ? ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về")
+  : ending(L_GUI_SO, "Gửi phần của mình vào sổ tiết kiệm", "Chờ đủ lớn, bà cô út giữ hộ"));
+
 export const VU_AN_GIA_TOC: SeasonDef = {
   id: "vu_an_gia_toc", vn: "Vụ án gia tộc", color: "#7a3b45", years: [8, 16],
-  rules: { income: 0.9, flags: ["w_vu_an_gia_toc"] },
+  rules: { income: 0.9, yearly: { money: -0.03 }, flags: ["w_vu_an_gia_toc"] },
   reset: {
     cast: [
       { key: "anh_ho", role: "rival", label: "người anh họ đeo đồng hồ to" },
@@ -53,7 +62,7 @@ export const VU_AN_GIA_TOC: SeasonDef = {
     "Nhóm chat của họ giờ tên là “Họ hàng ơi, bình tĩnh”. Không ai bình tĩnh.",
     "Nhóm chat của họ đổi về tên cũ “Đại gia đình yêu thương”. Lần này, hình như có người tin thật.",
   ] },
-  landings: [L_LUAT, L_PHAN, L_PHAN_NHO, L_RA_RIENG],
+  landings: [L_LUAT, L_PHAN, L_PHAN_NHO, L_RA_RIENG, L_GUI_SO],
   beats: [
     /* mo_man */
     [
@@ -63,7 +72,7 @@ export const VU_AN_GIA_TOC: SeasonDef = {
       card("va_mo_doc", "Buổi đọc di chúc bị hoãn", (c, k) => `${cap(k.npc("cong_chung"))} tới, mở cặp, rồi xin hoãn vì quên kính. Trong mười lăm phút chờ, ${k.npc("anh_ho")} kịp đề nghị bán căn nhà, chia đều, “cho nhanh”.`,
         [C("Đồng ý chia nhanh cho êm", { money: 0.1, flags: ["va_chia_nhanh"], counters: { va_hoa: 1 } }, "Có chút tiền ngay, mất quyền hỏi về sau"),
          C("Đòi chờ đọc di chúc đã", { flags: ["va_cho_doc"], counters: { va_nghi: 1 } }, "Đúng thủ tục, anh họ bắt đầu ghi thù")]),
-      card("va_mo_chia_khoa", "Người giữ chìa", () => "Vì là người duy nhất không đòi gì trong bữa cơm, bạn được cả họ giao giữ chìa khóa căn nhà. Chiếc chìa nhỏ xíu mà nặng như một lời buộc tội chưa nói ra.",
+      card("va_mo_chia_khoa", "Người giữ chìa", (c) => `Vì là người duy nhất không đòi gì trong bữa cơm, bạn được cả họ giao giữ chìa khóa căn nhà, kèm luôn tiền điện nước và thuế đất của nó cho tới khi vụ việc ngã ngũ${c.independent ? "" : ", trích từ tiền để dành của bạn"}. Chiếc chìa nhỏ xíu mà nặng như một lời buộc tội chưa nói ra.`,
         (c, k) => [
           C("Nhận chìa, lập sổ ghi ai ra vào", { flags: ["va_so_ra_vao"], counters: { va_nghi: 1 } }, "Có sổ sách, mất lòng người hay ghé"),
           C(`Gửi chìa cho ${k.npc("co_ut")} giữ hộ`, { flags: ["va_dua_chia"], counters: { va_hoa: 1 } }, "Nhẹ người, chìa nằm trong tay người khác"),
@@ -98,7 +107,7 @@ export const VU_AN_GIA_TOC: SeasonDef = {
     ],
     /* day */
     [
-      card("va_day_to_cao", "Lá đơn có mười một chữ ký", (c, k) => `${cap(k.npc("anh_ho"))} nộp đơn, ${has(c, "va_dua_chia") ? `nói bạn gửi chìa cho ${k.npc("co_ut")} chỉ để che mắt, còn giấy tờ nhà thì bạn đã lấy từ trước.` : "nói bạn là người giữ chìa nên chính bạn lấy giấy tờ nhà."} Lá đơn có chữ ký của mười một người họ hàng, trong đó có hai người bạn từng cho vay tiền.`,
+      card("va_day_to_cao", "Lá đơn có mười một chữ ký", (c, k) => `${cap(k.npc("anh_ho"))} nộp đơn, ${has(c, "va_dua_chia") ? `nói bạn gửi chìa cho ${k.npc("co_ut")} chỉ để che mắt, còn giấy tờ nhà thì bạn đã lấy từ trước.` : "nói bạn là người giữ chìa nên chính bạn lấy giấy tờ nhà."} Lá đơn có chữ ký của mười một người họ hàng, trong đó có hai người bạn từng cho vay tiền. Không ai trong số họ từng góp một đồng tiền điện nước cho căn nhà bạn giữ.`,
         [C("Thuê luật sư, cãi tới cùng", { money: -0.3, flags: ["va_thue_ls"] }, "Tốn tiền, giữ được tên mình"),
          C("Tự đọc luật, tự bào chữa", { know: 5, health: -3, flags: ["va_tu_hoc_luat"] }, "Rẻ, mất ngủ, hiểu luật hơn mình tưởng")]),
       card("va_day_o_khoa", "Ổ khóa lạ trên cửa nhà cũ", (c, k) => `Sáng nay căn nhà cũ có ổ khóa mới, không phải của bạn. ${has(c, "va_thay_khoa") ? "Ổ khóa bạn thay hôm trước bị tháo ra, vứt dưới gốc hoa giấy." : "Giàn hoa giấy đã bị chặt sát gốc."} Hàng xóm kể ${k.npc("anh_ho")} đưa người tới dọn đồ từ lúc trời chưa sáng. ${k.gag()}`,
@@ -116,12 +125,12 @@ export const VU_AN_GIA_TOC: SeasonDef = {
         // Ra riêng chỉ mở thêm khi đã đốt sổ hay giữ hòa khí (hoặc khi chưa đủ tuổi thi luật, để luôn có 2 lựa chọn).
         (c) => finale(c.age,
           [ending(L_LUAT, "Đi thi vào nghề luật, làm cho ra lẽ", "Bắt đầu một nghề mới, cả họ thành khách hàng")],
-          [phanOf(c, "Nhận phần của mình, khép hồ sơ"), ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về")],
+          [phanOf(c, "Nhận phần của mình, khép hồ sơ"), raRieng(c)],
           has(c, "va_dot_so") || (c.counters.va_hoa ?? 0) >= 4 ? 3 : 2), (c) => c.age <= 50),
       card("va_ket_hoa_giay", "Giàn hoa giấy mọc lại", (c, k) => `${VERDICT[verdict(c)](k)} Trong lá đơn năm ấy, chính chuyện riêng của bạn từng bị đem ra làm cớ buộc tội: ${noOr(c, k)}. Giờ giàn hoa giấy trước căn nhà cũ đã đâm chồi lại, và bạn muốn khép chuyện đó cho xong. ${k.gag()}`,
         (c) => [
           phanOf(c, "Nhận phần thừa kế, trả dứt chuyện cũ"),
-          ending(L_RA_RIENG, "Rời cả họ, ra riêng ở thành phố khác", "Nhẹ đầu, ít người gọi về"),
+          raRieng(c),
         ]),
     ],
   ],
