@@ -3,7 +3,7 @@
 
 /* ================= HỆ QUẢ NHÌN THẤY ĐƯỢC (Giai đoạn 1) =================
    Hai phần, đều chỉ là hiển thị: không rút rng, không đổi kết quả, chơi lại không bị ảnh hưởng.
-   1) Dòng "↩ Vì năm 22 tuổi bạn …" nằm TRÊN tiêu đề thẻ, thay cho câu nối vào cuối p.text.
+   1) Dòng "↩ Có liên quan đến lựa chọn năm 22 tuổi · Xem lại" nằm DƯỚI tiêu đề thẻ (mở ra mới thấy lựa chọn cũ đầy đủ), thay cho câu nối vào cuối p.text.
    2) Báo nhẹ "X sẽ nhớ điều này." sau một lựa chọn để lại ký ức, CHỈ KHI trong kho có thẻ về sau đọc lại đúng ký ức ấy.
    Xem causality-line.md để biết chỗ dán. */
 
@@ -18,10 +18,25 @@ function becauseLine(L, marks) {
   const title = String(m.title || "").trim();
   return `Vì năm ${m.age} tuổi ${what}${title ? ` (${title})` : ""}${more}.`;
 }
-/* Markup cho render() trong index.html, đặt ngay trước <h3 id="decT">. */
+/* Dòng ngắn dưới tiêu đề: "↩ Có liên quan đến lựa chọn năm N tuổi · Xem lại" (góp ý 19/10). */
+function becauseShort(L, marks) {
+  if (!marks || !marks.length) return "";
+  const ages = [...new Set(marks.map(m => m.age))].sort((a, b) => a - b), last = ages[ages.length - 1];
+  // Dấu ấn không có lựa chọn (đời đưa đẩy) thì nói "chuyện", không gán cho bạn một lựa chọn không có thật.
+  const what = marks.some(m => m.age === last && m.choice) ? "lựa chọn" : "chuyện";
+  return ages.length > 1 ? `Có liên quan đến ${what} năm ${last} tuổi và ${ages.length - 1} lần trước đó` : `Có liên quan đến ${what} năm ${last} tuổi`;
+}
+/* Markup cho render() trong index.html, đặt ngay SAU <h3 id="decT">. Thu gọn mặc định; "Xem lại" mở ra lựa chọn cũ đầy đủ và các chuyện liên quan.
+   Trạng thái mở nhớ theo khóa cảnh (G.becauseOpen) để render() vẽ lại không đóng mất. */
 function becauseHTML(L, p) {
   if (!p.causes || !p.causes.length) return "";
-  return `<p class="because" title="${esc(causeLine(L, p.causes))}"><span class="because-mark" aria-hidden="true">↩</span>${esc(becauseLine(L, p.causes))}</p>`;
+  const key = p.key || p.id + "@" + L.age, open = typeof G !== "undefined" && G && G.becauseOpen === key;
+  const rows = p.causes.slice().sort((a, b) => a.age - b.age).map(m => {
+    const ev = (m.consequences || []).filter(c => !(c.age === L.age && c.text === p.title)).slice(-3);
+    return `<li><b>Năm ${m.age} tuổi${m.title ? ` · ${esc(m.title)}` : ""}:</b> ${m.choice ? `bạn đã chọn “${esc(m.choice)}”.` : "bạn để mọi chuyện trôi."}`
+      + ev.map(c => `<span class="because-ev">→ ${c.age} tuổi: ${esc(c.text)}</span>`).join("") + `</li>`;
+  }).join("");
+  return `<details class="because" data-k="${esc(key)}"${open ? " open" : ""} ontoggle="if(window.G)G.becauseOpen=this.open?this.dataset.k:(G.becauseOpen===this.dataset.k?null:G.becauseOpen)"><summary><span class="because-mark" aria-hidden="true">↩</span><span class="because-s">${esc(becauseShort(L, p.causes))}</span><span class="because-more">Xem lại</span></summary><ul class="because-body">${rows}</ul></details>`;
 }
 
 /* ---------- 2. "Họ sẽ nhớ điều này" ---------- */
@@ -271,14 +286,26 @@ const TOMB_PRESETS = [
   { name: 92, cell: 20, rg: 5, epi: 44, epiLines: 3, body: 36, peer: 56, rem: true },
   { name: 88, cell: 18, rg: 4, epi: 42, epiLines: 2, body: 34, peer: 54, rem: false }
 ];
+/* Hai cỡ gọn hơn, chỉ thử khi có dòng "Các mùa": giữ cả dòng mùa lẫn "Người nhớ bạn nhất" trước khi phải bỏ dòng mùa. */
+const TOMB_SEASON_PRESETS = [
+  { name: 88, cell: 18, rg: 4, epi: 42, epiLines: 2, body: 34, peer: 54, rem: true },
+  { name: 84, cell: 16, rg: 3, epi: 40, epiLines: 2, body: 32, peer: 50, rem: true }
+];
 async function tombstoneCanvas(L, cf) {
   const d = tombstoneData(L, cf); await _fontsReady(d);
   const cv = document.createElement("canvas"); cv.width = TOMB.W; cv.height = TOMB.H;
   const c = cv.getContext("2d");
-  // Bố cục chọn như khi không có dòng "Các mùa"; dòng mùa chỉ thêm vào nếu bố cục ấy vẫn vừa (không đẩy mục khác ra ngoài).
+  // Có dòng "Các mùa": thử từ rộng tới gọn (kể cả hai cỡ gọn hơn chỉ dùng cho trường hợp này), giữ "Người nhớ bạn nhất".
+  // Không cỡ nào vừa thì như cũ: bố cục chọn khi không có dòng mùa, dòng mùa chỉ thêm nếu bố cục ấy vẫn vừa.
+  if (d.seasons && d.seasons.length) {
+    const PS = TOMB_PRESETS.filter(p => p.rem).concat(TOMB_SEASON_PRESETS).find(p => _drawTomb(c, d, L.seed, p) <= TOMB.H - 200);
+    if (PS) { _drawTomb(c, d, L.seed, PS); cv.tombPreset = PS; return cv; }
+  }
   const base = { ...d, seasons: [] }, fits = P => _drawTomb(c, base, L.seed, P) <= TOMB.H - 200;
   const P = TOMB_PRESETS.find(fits) || TOMB_PRESETS[TOMB_PRESETS.length - 1];
-  if (!(d.seasons && d.seasons.length && _drawTomb(c, d, L.seed, P) <= TOMB.H - 200)) _drawTomb(c, base, L.seed, P);
+  const withSeasons = !!(d.seasons && d.seasons.length && _drawTomb(c, d, L.seed, P) <= TOMB.H - 200);
+  if (!withSeasons) _drawTomb(c, base, L.seed, P);
+  cv.tombPreset = withSeasons ? P : { ...P, noSeasons: true };
   return cv;
 }
 function _drawTomb(c, d, seed, P) {
@@ -444,14 +471,14 @@ function canonSeasonsOf(L) {
   const raw = lw.canon && Array.isArray(lw.canon.seasons) ? lw.canon.seasons.slice() : [];
   const cur = lw.season;
   if (cur && cur.id && !raw.some(s => s && s.id === cur.id && s.from === cur.from))
-    raw.push({ id: cur.id, from: cur.from, to: L.alive ? null : L.age, end: cur.end, reason: L.alive ? "running" : "death", landing: null });
+    raw.push({ id: cur.id, from: cur.from, to: L.alive ? null : L.age, end: cur.end, reason: L.alive ? "running" : "death", landing: null, line: !L.alive && typeof seasonEndLine === "function" ? seasonEndLine(L, cur, "death") : "" });
   return raw.filter(s => s && s.id).map((s, i) => {
     const def = canonSeasonDef(s.id);
     const land = def && s.landing ? (def.landings || []).find(x => x.id === s.landing) : null;
     return {
       n: i + 1, id: s.id, vn: def ? def.vn : "Một mùa không tên", color: def && /^#[0-9a-f]{6}$/i.test(def.color) ? def.color : "#56655D",
       weird: def && def.weird ? def.weird : null, from: Number.isFinite(s.from) ? s.from : null, to: Number.isFinite(s.to) ? s.to : null,
-      end: Number.isFinite(s.end) ? s.end : null, reason: s.reason || "", line: land ? land.line : ""
+      end: Number.isFinite(s.end) ? s.end : null, reason: s.reason || "", line: land ? land.line : (typeof s.line === "string" ? s.line : "")
     };
   });
 }
@@ -473,7 +500,7 @@ function seasonsEndHTML(L) {
   return `<div class="panel seasons-end"><span class="label">Các mùa của đời bạn</span><ol class="slist">${ss.map(s => {
     const r = SEASON_END_VN[s.reason], ages = seasonAgesVN(s);
     return `<li class="sm" style="--sc:${s.color}"><span class="sm-n">Mùa ${s.n}</span><span class="sm-b"><b>${esc(s.vn)}</b>${s.weird ? ` <span class="sm-k">${kind[s.weird] || ""}</span>` : ""}</span>`
-      + `<span class="sm-a">${ages ? esc(ages) : ""}${r ? `<span class="sm-st ${r[1]}">${r[0]}</span>` : ""}</span>${!r && s.line ? `<span class="sm-l">${esc(s.line)}</span>` : ""}</li>`;
+      + `<span class="sm-a">${ages ? esc(ages) : ""}${r ? `<span class="sm-st ${r[1]}">${r[0]}</span>` : ""}</span>${s.line ? `<span class="sm-l">${esc(s.line)}</span>` : ""}</li>`;   // mọi mùa đều có câu kết: chung kết, hoặc câu sinh từ trạng thái mùa (cắt, dang dở, tự khép)
   }).join("")}</ol></div>`;
 }
 

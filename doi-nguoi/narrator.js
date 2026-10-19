@@ -32,7 +32,7 @@ function clampFx(fx) {
   return o;
 }
 function applyFx(L, fx, npcMap) {
-  const yearly = Math.max(300, householdIncome(L));
+  const yearly = typeof seasonYearlyBase === "function" ? seasonYearlyBase(L) : Math.max(300, householdIncome(L));   // R24
   const tone = (fx.money || 0) < 0 || (fx.health || 0) < 0 || (fx.happy || 0) < -5 ? "bad" : (fx.money || 0) > 0 || (fx.happy || 0) > 5 ? "good" : "";
   if (fx.game && L.ar) { const npc = npcMap[fx.game.npc]; if (npc) { const r = argonPlay(L, npc, fx.game.move, yearly * fx.game.stake_frac, npc.id);
       const o = r.outcome; log(L, `${fx.log || ""} → ${AR.CELL_VN[o.cell]}. ${npc.name} đã ${o.npcMove === "cooperate" ? "hợp tác" : "phản bội"}. Bạn ${o.payoffA.capital >= 0 ? "nhận" : "mất"} ${fmtPPP(Math.abs(o.payoffA.capital))}.`, o.cell === "win_win" || o.cell === "arbitrage" ? "good" : o.cell === "sucker" || o.cell === "mutual_destruction" ? "bad" : "");

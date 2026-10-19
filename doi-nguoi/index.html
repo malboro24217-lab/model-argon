@@ -347,9 +347,17 @@ details.panel[open]>summary .label::after{content:" −"}
 /* ===== Giai đoạn 1: dán vào cuối <style> trong doi-nguoi/index.html (trước khối @media điện thoại) ===== */
 
 /* Dòng "↩ Vì năm…" trên tiêu đề thẻ */
-.because{display:flex;gap:8px;align-items:baseline;font-family:var(--f-story);font-style:italic;font-size:15px;color:var(--pen);margin:-4px 0 -6px;max-width:62ch}
-.because-mark{font-style:normal;font-weight:700;flex:none}
-.decision.micro .because{font-size:14px}
+.because{margin:-6px 0 0;font-size:13.5px;color:var(--muted);max-width:62ch}
+.because summary{display:flex;flex-wrap:wrap;gap:0 6px;align-items:baseline;cursor:pointer;list-style:none;width:fit-content}
+.because summary::-webkit-details-marker{display:none}
+.because-mark{font-weight:700;color:var(--pen);flex:none}
+.because-more{color:var(--pen);text-decoration:underline;text-underline-offset:2px}
+.because-more::before{content:"·";color:var(--muted);margin-right:6px;display:inline-block;text-decoration:none}
+.because[open] .because-more{font-weight:600}
+.because-body{margin:6px 0 2px;padding:0 0 0 18px;font-family:var(--f-story);font-size:14.5px;line-height:1.5;color:var(--print)}
+.because-body li{margin:3px 0}
+.because-ev{display:block;font-family:var(--f-ui);font-size:13px;color:var(--muted)}
+.decision.micro .because{font-size:13px}
 
 /* Báo "X sẽ nhớ điều này." */
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:50;max-width:min(92vw,520px);
@@ -357,6 +365,12 @@ details.panel[open]>summary .label::after{content:" −"}
   padding:9px 14px;font-family:var(--f-story);font-style:italic;font-size:15.5px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
 .toast.bad{color:var(--seal);border-left-color:var(--seal)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+/* Thẻ chung kết của mùa: không chặn, tự tắt, bấm để tắt sớm; nổi trên cả chế độ đường hầm; nằm trên chỗ của toast, không che thanh điều khiển */
+.landing-card{position:fixed;left:50%;bottom:calc(var(--dock-h,0px) + 76px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:51;width:min(92vw,520px);background:var(--sheet);color:var(--print);border:1px solid var(--rule);border-left:5px solid var(--season-mark,var(--pen));border-radius:3px;box-shadow:var(--shadow);padding:10px 14px 11px;opacity:0;transition:opacity .3s,transform .3s;cursor:pointer}
+.landing-card.show{opacity:1;transform:translate(-50%,0)}
+.landing-card .lc-h{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted);margin:0 0 3px}
+.landing-card .lc-t{font-family:var(--f-story);font-style:italic;font-size:15.5px;line-height:1.45;margin:0}
+@media (prefers-reduced-motion:reduce){.landing-card{transition:none}}
 html.playing .toast{bottom:calc(var(--dock-h,0px) + 12px + env(safe-area-inset-bottom,0px))}
 
 /* Thẻ thập kỷ trong nhật ký */
@@ -440,7 +454,8 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
   .sb-head{grid-area:head;flex-wrap:nowrap}
   .sb-t{font-size:17.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sb-n{font-size:12.5px}
-  .sb-kind,.sb-beat{display:none}
+  .sb-beat{display:none}
+  .sb-kind{font-size:10.5px;padding:0 4px;flex:none} .sb-kf{display:none}
   .sb-meta{grid-area:meta;font-size:12.5px;gap:2px 10px}
   .sb-track{grid-area:track;height:3px;margin-top:0}
   body.pending .season-banner{padding:6px 12px 8px;margin-top:8px}
@@ -759,8 +774,8 @@ function lifeExp(c,sex){return Math.round(c.le+(sex==="F"?2.4:-2.4))}
 
 /* ================= TẠO MỘT CUỘC ĐỜI ================= */
 function randomCountry(r){return pickWeighted(r,COUNTRIES,c=>c.b)}
-function makeName(r,c,sex){const p=NAMES[c.nm];const g=pick(r,p[sex]),s=pick(r,(sex==="F"&&p.SF)||p.S);return p.first===false?`${s} ${g}`:`${g} ${s}`}
-function spouseName(r,c,sex){const p=NAMES[c.nm];return pick(r,p[sex==="M"?"F":"M"])}
+function makeName(r,c,sex){const p=NAMES[c.nm];const one=()=>{const g=pick(r,p[sex]),s=pick(r,(sex==="F"&&p.SF)||p.S);return p.first===false?`${s} ${g}`:`${g} ${s}`};let n=one();for(let k=0;k<8&&typeof nameBlocked==="function"&&nameBlocked(n);k++)n=one();return n}
+function spouseName(r,c,sex,L){const p=NAMES[c.nm],pool=p[sex==="M"?"F":"M"];return L&&typeof freshGiven==="function"?freshGiven(L,r,pool):pick(r,pool)}
 
 function createLife(seed,opts={}){
   const r=makeRng(seed);
@@ -914,7 +929,7 @@ function lifeEvents(L){const r=L.r,x=L.age,c=L.c;
     ["Một trận lũ quét qua vùng bạn sống.","happy",-7,"bad",c.g<20000],["Bạn đi chơi xa lần đầu tiên.","happy",5,"good"]]);
     if(ev[4]!==false){log(L,ev[0],ev[3]);addSt(L,ev[1],ev[2])}}
 }
-function bornChild(L){const r=L.r,c=L.c,x=L.age;const k={name:pick(r,NAMES[c.nm][r()<.5?"M":"F"]),born:x,alive:true};L.kids.push(k);Argon.addCastMember(L.ar.state,L.lw.cast,L.ar.rng,"child",k.name,-x,0.6);
+function bornChild(L){const r=L.r,c=L.c,x=L.age;const pool=NAMES[c.nm][r()<.5?"M":"F"];const k={name:typeof freshGiven==="function"?freshGiven(L,r,pool):pick(r,pool),born:x,alive:true};L.kids.push(k);Argon.addCastMember(L.ar.state,L.lw.cast,L.ar.rng,"child",k.name,-x,0.6);
   log(L,`Con bạn ra đời: bé ${k.name}.`,"good big");addSt(L,"happy",6);addSt(L,"rel",4);
   if(L.sex==="F"&&r()<maternalRisk(c))die(L,"biến chứng khi sinh con");return k}
 function lifePassive(L){const r=L.r,x=L.age,c=L.c;
@@ -930,7 +945,7 @@ function lifePassive(L){const r=L.r,x=L.age,c=L.c;
 function lifeDecision(L){const r=L.r,x=L.age,c=L.c;if(L.pending||!L.alive)return;
   // hôn nhân
   if(!L.married&&x>=17&&x<=45){const early=c.g<8000?.05:0;const p=(x<20?.02:.04)+early+L.st.rel/100*.14-(x>35?.04:0);
-    if(r()<p){const nm=spouseName(r,c,L.sex);L.pending={id:"marry",data:nm,title:`Bạn và ${nm}`,
+    if(r()<p){const nm=spouseName(r,c,L.sex,L);L.pending={id:"marry",data:nm,title:`Bạn và ${nm}`,
       text:`Hai người quen nhau đã lâu và nghĩ đến chuyện kết hôn.`,choices:[{label:"Kết hôn",hint:"+hạnh phúc, +quan hệ"},{label:"Chưa phải lúc",hint:"Có thể gặp người khác sau"}],def:0};return}}
   // di cư
   if(!L.migrated&&!L.flags.migAsked&&x>=21&&x<=40&&c.g<25000&&L.job&&r()<.035*({bold:2.2,curious:1.4,kind:.7,tough:1}[temperOf(L)]||1)){L.flags.migAsked=true;
@@ -39182,7 +39197,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   document.getElementById("codexBtn").textContent=`Sổ tay (${Object.keys(L.codex||{}).length})`;
   const ab=document.getElementById("aiBtn");ab.textContent=NAR.status==="off"?"AI kể chuyện: không có":`AI kể chuyện: ${NAR.enabled?(NAR.status==="busy"?"đang viết…":"bật"):"tắt"}`;ab.classList.toggle("on",NAR.enabled&&NAR.status!=="off");ab.disabled=NAR.status==="off";renderCodex();
   document.getElementById("auto").textContent=`Tự chơi: ${G.autoDecide?"bật":"tắt"}`;document.getElementById("auto").classList.toggle("on",G.autoDecide);renderWant(L);
-  if(typeof seasonTheme==="function"){seasonTheme(L);seasonBanner(L);weirdMenu(L)}
+  if(typeof seasonTheme==="function"){seasonTheme(L);seasonBanner(L);weirdMenu(L)}if(typeof seasonNotes==="function")seasonNotes(L);
   const pend=!!(L.pending||G.card);document.body.classList.toggle("pending",pend&&L.alive);
   // thước đời
   document.getElementById("rulerHead").innerHTML=`Năm thứ <b>${L.age}</b> trên tuổi thọ trung bình <b>${L.le}</b> ở ${esc(L.birthC?L.birthC.n:L.c.n)}`;
@@ -39217,7 +39232,7 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
     const nOk=states.filter(s=>s==="show").length;
     const timed=g.bw<50&&L.ar;
     dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":p.canon?"Một ngã rẽ lớn":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":p.canon&&p.canon.ai==="done"?" · AI viết lại":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
-     ${becauseHTML(L,p)}<h3 id="decT">${esc(p.title)}</h3><p class="txt" id="decTxt">${esc(p.text)}</p><button class="readmore" id="readmore" aria-controls="decTxt">Đọc hết</button>${m?matrixHtml(m):""}
+     <h3 id="decT">${esc(p.title)}</h3>${becauseHTML(L,p)}<p class="txt" id="decTxt">${esc(p.text)}</p><button class="readmore" id="readmore" aria-controls="decTxt">Đọc hết</button>${m?matrixHtml(m):""}
      ${p.npc&&L.ar&&L.ar.dd[key]?`<div class="signal">${esc(npcSignalVN(L,p.npc,key))}</div>`:""}
      ${canDD?`<div><button class="btn" id="dd" ${g.bw<ddCost?"disabled":""}>Thẩm định (−${ddCost} băng thông)</button> <span class="note">${g.bw<ddCost?"Không đủ băng thông để thẩm định.":"Làm rõ các con số và đọc tín hiệu của đối phương."}</span></div>`:""}
      ${p.tempt&&p.npc&&L.ar&&g.tier!=="autopilot"?temptationVN(L,p.npc,p.tempt.stake,p.tempt.roundsLeft):""}

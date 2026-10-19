@@ -232,6 +232,17 @@ async function t8b() {
   assert.strictEqual(typeof seasonBanner, 'function', 'canon-ui.js is in .head.js');
   assert.strictEqual(typeof setWeird, 'function', 'setWeird exists');
 
+  // 8b.11b (21b) Tên trên 225 đời tự chơi của mục 8b.2: người mới của mùa, con, bạn đời không trùng tên gọi đang có chủ, ở mức chặt nhất
+  // mà bể tên còn cho phép (bể 3–8 tên/giới; dàn nhân vật lúc sinh đã dùng gần hết); không bao giờ trùng tên gọi của bạn; không ai mang tên người thật.
+  const NM = { season: 0, kids: 0, spouses: 0, clash: [], real: [], me: [], tier: [0, 0, 0] };
+  const oSCM = seasonCastMember, oBorn = bornChild, oSp = spouseName;
+  const judge = (L, T, g, what) => { const nm = NAMES[L.c.nm], pool = nm.M.includes(g) ? nm.M : nm.F.includes(g) ? nm.F : null; if (!pool) return;
+    const k = T.findIndex(t => pool.some(x => !t.has(x))); if (k >= 0) { NM.tier[k]++; if (T[k].has(g)) NM.clash.push(what + ' ' + g); }
+    if (T[2].has(g) && pool.some(x => !T[2].has(x))) NM.me.push(what + ' ' + g); };
+  seasonCastMember = function (L, nc, r, ar) { const T = nameTiers(L), m = oSCM(L, nc, r, ar); NM.season++; judge(L, T, givenOf(m.name, L.c), 'season'); return m; };
+  bornChild = function (L) { const T = nameTiers(L), n0 = L.kids.length; const out = oBorn(L); const k = L.kids[n0]; if (k) { NM.kids++; judge(L, T, k.name, 'child'); } return out; };
+  spouseName = function (r, c, sex, L) { const T = L && L.lw ? nameTiers(L) : null, n = oSp(r, c, sex, L); if (T) { NM.spouses++; judge(L, T, n, 'spouse'); } return n; };
+  const nameCheck = P => { for (const m of P.lw.cast.values()) if (nameBlocked(m.name)) NM.real.push(m.name); if (nameBlocked(P.name)) NM.real.push(P.name); };
   // 8b.2 Độ điên = 0 từ tuổi 20 (trọng tâm 5): 200 đời, pressure.ky ép = 30 mỗi năm → không còn cửa kỳ dị nào.
   { const origScene = canonScene, W = { canon: 0, weird: 0 }, C = { canon: 0, weird: 0 }; let lives = 0;
     canonScene = function (L, ev) { const w = L.t8bWatch; if (w) { w.canon++; if (ev.doors.some(d => d.weird || (seasonDef(d.season) || {}).weird)) w.weird++; } return origScene(L, ev); };
@@ -245,17 +256,22 @@ async function t8b() {
         const op = P.actLog[P.actLog.length - 1]; assert.deepStrictEqual([op.kind, op.age, op.op.k, op.op.v], ['ui', 20, 'weird', 0], 'uiOp recorded');
         P.t8bWatch = W;
         while (P.alive && g++ < 130) { P.lw.pressure.ky = 30; stepYear(P); }
-        lives++;
+        nameCheck(P); lives++;
       }
       // Đối chứng: Độ điên 1, cùng ép ky = 30 từ tuổi 20 → có cửa kỳ dị.
       for (let i = 0; i < 25; i++) { const P = createLife(50001 + i * 13, { auto: true }); G.life = P; let g = 0;
-        while (P.alive && g++ < 130) { if (P.age >= 20) { P.t8bWatch = C; P.lw.pressure.ky = 30; } stepYear(P); } }
+        while (P.alive && g++ < 130) { if (P.age >= 20) { P.t8bWatch = C; P.lw.pressure.ky = 30; } stepYear(P); } nameCheck(P); }
     } finally { canonScene = origScene; }
     console.log({ weird0_lives: lives, canon_after_20: W.canon, weird_doors_after_20: W.weird, control_canon: C.canon, control_weird_doors: C.weird });
     assert.strictEqual(lives, 200, '200 lives');
     assert(W.canon > 100, 'canon events still happen (' + W.canon + ')');
     assert.strictEqual(W.weird, 0, 'no weird door after setWeird(0)');
     assert(C.weird > 0, 'control: weird doors appear at Độ điên 1'); }
+  seasonCastMember = oSCM; bornChild = oBorn; spouseName = oSp;
+  console.log({ names_season: NM.season, names_kids: NM.kids, names_spouses: NM.spouses, tier_all_cast: NM.tier[0], tier_family: NM.tier[1], tier_player: NM.tier[2], clashes: NM.clash.length, real: NM.real.length });
+  assert(NM.season > 200 && NM.kids > 50, 'names checked on many new people');
+  assert.deepStrictEqual(NM.clash.slice(0, 5), [], 'no given-name clash at the strictest tier the pool allows');
+  assert.deepStrictEqual(NM.me, [], 'never the player given name'); assert.deepStrictEqual(NM.real, [], 'no famous real names');
 
   // 8b.2b Đổi Độ điên giữa đời (2 lúc 25, 0 lúc 40) → replayLife khớp history và tiền; bỏ thao tác thì đời khác đi.
   { let differs = 0;
@@ -341,7 +357,7 @@ async function t8b() {
     assert(base, 'a life whose first canon event leaves room for S22');
     const X = (base.lw.canon.seasons.find(s => s.from === first) || base.lw.season).id;
     let swapped = 0, captured = null, yearlyAt = 0, post = null;
-    const origSwap = swapOther; swapOther = function (L, ...a) { const r = origSwap(L, ...a); if (r && !L.replay) { captured = L.savings; yearlyAt = Math.max(300, householdIncome(L)); swapped++; } return r; };
+    const origSwap = swapOther; swapOther = function (L, ...a) { const r = origSwap(L, ...a); if (r && !L.replay) { captured = L.savings; yearlyAt = seasonYearlyBase(L); swapped++; } return r; };
     // Canon event thứ hai (nhánh S22, một cửa) lúc T; chung kết "Đổi chỗ" lúc T + 1. Bản kia không có cờ của mùa X nên không gặp lại cảnh này.
     const s22ev = L => ({ id: 'canon_S22_' + L.age, seed: 'S22', axis: 'ky', age: L.age, slots: { fromPlayer: 0 }, title: 'Bản kia gõ cửa gương', text: 'Hình phản chiếu của bạn bước ra khỏi gương.', doors: [{ kind: 'ky', label: 'Bắt tay bản kia', hint: '', season: 'w_S22', weird: 'S22' }] });
     const fired = new WeakSet();
@@ -438,6 +454,171 @@ async function t8b() {
     assert(other, 'someone to marry'); customEffect(P, 'marry:' + other.name);
     assert.strictEqual(other.role, 'spouse', 'new spouse'); assert.strictEqual(sp.role, 'spouse', 'late spouse keeps role spouse'); assert(sp.roles.includes('spouse'), 'late spouse keeps roles');
     assert.strictEqual(roleVN(sp), 'bạn đời', 'not labelled người cũ'); }
+
+
+  // 8b.10 (21b) Giới tính theo nhãn người mới của mùa: chữ có dấu ở cuối từ vẫn khớp (cô, bà, chị, mẹ, góa phụ / bố, chú, lão).
+  { for (const l of ['cô hướng dẫn hòa nhập', 'bà chủ vựa phế liệu', 'chị bán vé', 'mẹ nuôi', 'góa phụ đầu ngõ', 'cô']) { assert(CANON_FEMALE.test(l) && !CANON_MALE.test(l), 'female: ' + l); }
+    for (const l of ['bố già', 'chú bảo vệ', 'lão thợ rèn', 'ông gác đêm', 'người đàn ông lạ', 'lão']) { assert(CANON_MALE.test(l) && !CANON_FEMALE.test(l), 'male: ' + l); }
+    for (const l of ['cố vấn', 'bàn tay', 'chút', 'nữa đêm']) assert(!CANON_FEMALE.test(l) && !CANON_MALE.test(l), 'neither: ' + l);
+    const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(P, 'w_S08');
+    const m = P.lw.cast.get(P.lw.season.cast.huong_dan), nm = NAMES[P.c.nm];
+    assert(nm.F.concat(nm.SF || []).includes(givenOf(m.name, P.c)) || nm.F.some(x => m.name.includes(x)), 'cô hướng dẫn gets a female name: ' + m.name); }
+
+  // 8b.11 (21b) Tên: không người thật nổi tiếng; makeName rút lại khi ghép trúng.
+  { assert(nameBlocked('Joseph Kabila') && nameBlocked('Kabila Joseph') && nameBlocked('Hồ Chí Minh') && !nameBlocked('Joseph Kamau'), 'blocklist');
+    NAMES.t8b = { M: ['Joseph', 'Joseph'], F: ['An'], S: ['Kabila', 'Kamau'] };
+    const seq = [0.1, 0.1, 0.1, 0.9]; let k = 0; const r = () => seq[k++ % seq.length];
+    assert.strictEqual(makeName(r, { nm: 't8b' }, 'M'), 'Joseph Kamau', 'blocked combination redrawn'); delete NAMES.t8b; }
+
+  // 8b.12 (21b) Canon event chỉ in "Vì năm…" về người ở chỗ trống khi chữ của cảnh nhắc tới người đó.
+  { const P = grow(4441, 34, P => P.lw.season === null);
+    const who = [...P.lw.cast.values()].filter(m => m.alive).map(m => m.id).find(id => { try { return Argon.resolveCauses(P.lw.cz, [Argon.prov.opinion(id)]).length > 0; } catch { return false; } });
+    assert(who, 'a cast member with a recorded opinion cause');
+    const mk = (txt, id) => ({ id: 'canon_t8b' + id + '_' + P.age, seed: 't8b', axis: 'tinh', age: P.age, slots: { who, fromPlayer: 0 }, title: 'Một lá thư', text: txt, doors: [{ kind: 'a', label: 'Mở thư', hint: '', season: 'ngoi_sao' }, { kind: 'b', label: 'Cất đi', hint: '', season: 'lam_lai' }] });
+    const a = canonScene(P, mk('Một lá thư không đề tên người gửi nằm trên bàn.', 'a'));
+    assert(!a.causes || !a.causes.length, 'no cause line when the text does not mention the person');
+    const b = canonScene(P, mk('Lá thư của ' + castName(P, who) + ' nằm trên bàn.', 'b'));
+    assert(b.causes && b.causes.length > 0, 'cause line when the text mentions the person'); }
+
+  // 8b.13 (21b) Nhật ký: mùa bị cắt rồi mùa mới cùng năm → một dòng, dòng cắt đọc trước.
+  { const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null);
+    enterSeason(P, 'ngoi_sao'); enterSeason(P, 'lam_lai');
+    const at = P.log.filter(e => e.age === P.age), cut = at.filter(e => e.text.includes('khép lại giữa chừng'));
+    assert.strictEqual(cut.length, 1, 'one line mentions the cut');
+    assert(cut[0].text.startsWith(seasonDef('ngoi_sao').vn + ' khép lại giữa chừng.') && cut[0].text.endsWith('Mùa ' + P.lw.season.n + ': ' + seasonDef('lam_lai').vn + '.'), 'merged: ' + cut[0].text);
+    assert.strictEqual(P.log[P.log.length - 1], cut[0], 'merged line is the newest entry (shown first)');
+    assert(!at.some(e => e !== cut[0] && e.text.includes(seasonDef('lam_lai').vn)), 'no separate line for the new season'); }
+
+  // 8b.14 (21b) Văn bia không bao giờ nói "0 năm".
+  { const P = lives[0], A0 = Argon, orig = A0.lifeTopology;   // Argon là namespace chỉ đọc: thay cả biến bằng một bản sao có lifeTopology giả
+    Argon = { ...A0, lifeTopology: (s, n) => { const T = orig(s, n); return { ...T, sovereignty: { ...T.sovereignty, ticks_sovereign: 1, ticks_autopilot: 1, agency_peak: 0.6, relapses: 0 } }; } };
+    let txt; try { txt = eulogyVN(P)[0]; } finally { Argon = A0; }
+    assert(!/(^|\\D)0 năm/.test(txt), 'no "0 năm": ' + txt); assert(txt.includes('chưa kịp'), 'rephrased: ' + txt); }
+
+  // 8b.15 (21b) Chung kết: ghi chú giao diện (thẻ chung kết), không phải quyết định, không ghi khi tua lại.
+  { const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(P, 'lam_lai');
+    const land = seasonDef('lam_lai').landings[0], c0 = P.choices.length, d0 = P.lw.decisions, h0 = P.lw.history.length;
+    applyEffect(P, land.effects);
+    const n = (P.uiNotes || []).filter(x => x.kind === 'landing');
+    assert.strictEqual(n.length, 1, 'one landing note'); assert.strictEqual(n[0].line, land.line); assert.strictEqual(n[0].vn, seasonDef('lam_lai').vn);
+    assert(P.choices.length === c0 && P.lw.decisions === d0 && P.lw.history.length === h0, 'not a decision');
+    const Q = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(Q, 'lam_lai'); Q.replay = true; applyEffect(Q, land.effects); Q.replay = false;
+    assert(!(Q.uiNotes || []).length, 'no note while replaying'); }
+
+
+  // 8b.16 (góp ý 19/10, luật dữ liệu thật) Câu kết của mọi mùa: không rỗng, không undefined, mọi tên riêng là người / vật có thật trong đời đó.
+  { let rows = 0, bad = [];
+    const capsOf = s => s.match(/(?<=[\\s(“])\\p{Lu}\\p{L}*/gu) || [];
+    for (const P of lives) {
+      const known = [...P.lw.cast.values()].map(m => m.name + ' ' + (m.label || '')).concat(P.lw.plants.map(p => p.label || ''), P.lw.promises.map(p => p.what || ''), [P.name]).join(' | ');
+      for (const s of P.lw.canon.seasons) { if (s.reason === 'landing') continue; rows++;
+        if (!s.line || /undefined|NaN|null|\\{/.test(s.line)) bad.push(s.id + ':' + s.reason + ':' + s.line);
+        for (const w of capsOf(s.line)) if (!known.includes(w)) bad.push('unknown name ' + w + ' in ' + s.line); }
+      const h = seasonsEndHTML(P), n = (h.match(/<li class="sm"/g) || []).length;
+      if (n && (h.match(/class="sm-l"/g) || []).length !== n) bad.push('row without ending line, seed ' + P.seed);
+      if (/undefined|NaN/.test(h)) bad.push('undefined in end list, seed ' + P.seed); }
+    assert(rows > 100, 'many cut / dang dở / lapsed seasons checked (' + rows + ')');
+    assert.deepStrictEqual(bad.slice(0, 5), [], 'ending lines'); }
+  // Thiếu dữ liệu → câu trung tính, không bịa người hay vật.
+  { const P = lives[3], se = { id: 'lam_lai', from: P.age + 1, cast: {}, scars: {} };
+    assert.strictEqual(seasonEndLine(P, se, 'cut'), 'Mùa này bị cắt ngang khi mọi chuyện vừa mở màn.');
+    assert.strictEqual(seasonEndLine(P, se, 'death'), 'Bạn ra đi khi mọi chuyện vừa mở màn, khi mùa này còn dang dở.');
+    assert.strictEqual(seasonEndLine(P, se, 'lapsed'), 'Mùa này tự khép lại khi mọi chuyện vừa mở màn.');
+    const m = [...P.lw.cast.values()].find(x => x.alive) || [...P.lw.cast.values()][0];
+    const l2 = seasonEndLine(P, { ...se, scars: { nguoi: { npc: m.id, label: m.name } } }, 'cut');
+    assert(l2.includes(m.name), 'scar person named: ' + l2);
+    const l3 = seasonEndLine(P, { ...se, scars: { no: { key: 'bank', label: 'món nợ ngân hàng' } } }, 'death');
+    assert.strictEqual(l3, 'Bạn ra đi khi mọi chuyện vừa mở màn, vẫn còn vướng món nợ ngân hàng.'); }
+
+  // 8b.17 (góp ý 19/10) Dòng "↩ Có liên quan…": dưới tiêu đề, thu gọn; mọi lựa chọn được trích là lựa chọn có thật của đời đó.
+  { const seen = [], oScene = scene;
+    scene = function (L, o) { if (o && o.causes && o.causes.length && L.t8bCause) seen.push({ L, o, html: becauseHTML(L, o) }); return oScene(L, o); };
+    try { for (let i = 0; i < 12; i++) { const P = createLife(8800 + i * 7, { auto: true }); P.t8bCause = true; G.life = P; runToDeath(P); } } finally { scene = oScene; }
+    assert(seen.length > 50, 'cause lines checked: ' + seen.length);
+    for (const { L, o, html } of seen) {
+      assert(/^<details class="because"[^>]*><summary><span class="because-mark"[^>]*>↩<\\/span><span class="because-s">Có liên quan đến (lựa chọn|chuyện) năm \\d+ tuổi/.test(html) && html.includes('Xem lại'), 'short collapsed line: ' + html.slice(0, 160));
+      for (const m of o.causes) {
+        assert(L.lw.cz.marks.includes(m), 'cause mark belongs to this life');
+        if (m.choice) { assert(L.choices.some(c => c.key === m.key), 'quoted choice was made in this life: ' + m.key);
+          if (m.altLabels && !m.remark) assert.strictEqual(m.altLabels[m.choice_index], m.choice, 'quoted text is the label that was chosen'); }
+      }
+      for (const [, q] of html.matchAll(/bạn đã chọn (“[^”]*”)/g)) assert(o.causes.some(m => '“' + esc(m.choice) + '”' === q), 'quoted text comes from a cause mark: ' + q);
+    }
+    const P = lives[0], w = { age: 7, title: 'Đời đưa đẩy', choice: '', consequences: [] };
+    assert.strictEqual(becauseShort(P, [w]), 'Có liên quan đến chuyện năm 7 tuổi', 'no choice → neutral wording'); }
+
+
+  // 8b.18 (review I1) Gõ "cách khác" ở canon event hay thẻ chung kết vẫn đi qua đúng một cửa: vào mùa của cửa đó, canon.n tăng; tua lại khớp.
+  { const act = { ke: 'Bạn ngồi im rất lâu, rồi đứng dậy.', ket_qua: 'nua_voi', chi_so: {}, nguoi: [], co: [], bo_co: [], viec_lon: [], chon: null };
+    let done = 0;
+    for (let k = 0; k < 160 && done < 2; k++) { const P = createLife(3100 + k * 53, {}); G.life = P; let g = 0, sc = null;
+      while (P.alive && g++ < 2000) { if (P.pending) { if (P.pending.canon && P.pending.choices.length === 3) { sc = P.pending; break; } resolve(P, autoChoice(P)); continue; } if (P.storyDue) { P.storyDue = null; continue; } stepYear(P); }
+      if (!sc) continue;
+      assert.strictEqual(isFreeScene(sc), false, 'canon scene is not a free scene');
+      const n0 = P.lw.canon.n, h0 = P.lw.history.filter(h => h.id === sc.id).length, chon = done === 0 ? null : 2, want = sc.canon.seasons[chon === null ? sc.def : chon];
+      applyAct(P, { ...act, chon }, 'scene', 'Tôi chọn cách khác: không làm gì cả', chon);
+      assert.strictEqual(P.lw.canon.n, n0 + 1, 'canon.n advances');
+      assert.strictEqual(P.lw.history.filter(h => h.id === sc.id).length, h0, 'one history entry');
+      assert(P.lw.season && P.lw.season.id === want && P.lw.season.from === P.age, 'entered the season of the mapped door: ' + (P.lw.season && P.lw.season.id) + ' vs ' + want);
+      P.auto = true; autoChain(P); runToDeath(P);
+      const R = replayLife(P.seed, P.choices, null, P.actLog);
+      assert.strictEqual(hist(R), hist(P), 'replay matches after a typed act on a canon scene'); done++; }
+    assert.strictEqual(done, 2, 'two canon scenes answered by typing');
+    // Thẻ chung kết: gõ vẫn đáp xuống một chung kết (không thành "lapsed").
+    let fin = 0;
+    for (const id of ['lam_lai', 'ngoi_sao', 'tron_chay', 'vu_an_gia_toc']) { const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null); G.life = P; enterSeason(P, id);
+      P.lw.counters.season_beat = 4; P.lw.counters.season_next = P.age; const st = nextSeasonCard(P); if (!st) continue;
+      fireSeasonCard(P, st); const p = P.pending; if (!p || !p.choices.some(c => c._fx && Argon.landingOf(c._fx) !== null)) continue;
+      assert.strictEqual(isFreeScene(p), false, 'finale card is not a free scene');
+      applyAct(P, act, 'scene', 'Tôi làm theo ý mình', null);
+      const last = P.lw.canon.seasons[P.lw.canon.seasons.length - 1];
+      assert(last && last.id === id && last.reason === 'landing' && last.landing, 'typed finale still lands: ' + JSON.stringify(last)); fin++; }
+    assert(fin >= 1, 'a finale card was answered by typing'); }
+
+  // 8b.19 (review I2) Di cư của mùa (reset xu_nguoi, chung kết có migrate_now) luôn thành; lời mời di cư thường vẫn tung 55%.
+  { let n = 0, ok = 0;
+    for (let k = 0; k < 400 && n < 40; k++) { const P = createLife(9001 + k * 61, { auto: true }); let g = 0; while (P.alive && P.age < 30 && g++ < 60) stepYear(P);
+      if (!P.alive || P.pending || P.lw.season || !canMigrate(P) || !canonIndependent(P)) continue;
+      n++; G.life = P; enterSeason(P, 'xu_nguoi'); if (P.migrated && P.c !== P.birthC) ok++;
+      assert(!P.log.some(e => e.age === P.age && /Thủ tục không thành/.test(e.text)), 'no failed paperwork line'); }
+    assert.strictEqual(n, 40, '40 eligible adults'); assert.strictEqual(ok, 40, 'xu_nguoi migrates every time (' + ok + '/40)');
+    const L0 = Argon.WEIRD.map(b => b.season).flatMap(d => d.landings.map(l => ({ d, l }))).find(x => /(^|\\|)migrate_now(\\||$)/.test(x.l.effects.custom || ''));
+    assert(L0, 'a landing with migrate_now'); let m = 0, t = 0;
+    for (let k = 0; k < 400 && t < 12; k++) { const P = createLife(9301 + k * 67, { auto: true }); let g = 0; while (P.alive && P.age < 30 && g++ < 60) stepYear(P);
+      if (!P.alive || P.pending || P.lw.season || !canMigrate(P) || !canonIndependent(P)) continue;
+      t++; enterSeason(P, L0.d.id); if (P.migrated) continue; applyEffect(P, L0.l.effects); if (P.migrated) m++; else t--; }
+    assert(t >= 8 && m === t, 'landing migrate_now always succeeds (' + m + '/' + t + ')');
+    assert.strictEqual(sureMigrate({ custom: 'season_end:x|migrate_now' }).custom, 'season_end:x|migrate_sure');
+    assert.strictEqual(sureMigrate({ money: 1 }).money, 1); }
+
+
+  // 8b.20 (R24) Hệ số thu nhập của mùa chỉ nhân vào lương; money / borrow / repay / chung kết tính trên lương gốc; money_season khai báo rõ thì nhân.
+  { const all = [...Argon.SEASONS, ...Argon.WEIRD.map(b => b.season)], big = all.slice().sort((a, b) => (b.rules.income ?? 1) - (a.rules.income ?? 1))[0];
+    assert(big.rules.income >= 50, 'the ×50 season: ' + big.id);
+    const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null && canonIndependent(P) && !P.retired); G.life = P;
+    const base0 = seasonYearlyBase(P); enterSeason(P, big.id);
+    assert(Math.abs(P.income - base0 * big.rules.income) < 1e-6 * P.income + 1, 'salary ×' + big.rules.income);
+    assert(Math.abs(seasonYearlyBase(P) - base0) < 1, 'base unit stays the base salary');
+    const d = (f) => { const s0 = P.savings; f(); return P.savings - s0; };
+    assert(Math.abs(d(() => applyEffect(P, { money: 1 })) - base0) < 1, 'money:1 in season = 1 base year, not ×50');
+    assert(Math.abs(d(() => applyEffect(P, { money: -0.5 })) + 0.5 * base0) < 1, 'fixed loss unchanged');
+    const debt0 = P.ar.state.capitals.capitalAssets.debt; customEffect(P, 'borrow:1'); const debt1 = P.ar.state.capitals.capitalAssets.debt;
+    assert(Math.abs(debt1 - debt0 - base0) < 1, 'borrow:1 = 1 base year');
+    customEffect(P, 'repay:0.2'); assert(Math.abs(debt1 - P.ar.state.capitals.capitalAssets.debt - 0.2 * base0) < 1, 'repay:0.2 = 0.2 base year');
+    assert(Math.abs(d(() => customEffect(P, 'money_season:1')) - P.income) < 1, 'money_season:1 = one ×50 year');
+    // 5 năm trong mùa: thu nhập nhận về ≈ 5 × lương gốc × hệ số; chung kết tính trên lương gốc.
+    P.lw.season.end = P.age + 50; P.lw.canon.last = P.age; let inc = 0, years = 0, why = [];   // không để canon event mới cắt mùa trong 5 năm đo
+    for (let k = 0; k < 5 && P.alive; k++) { P.auto = true; while (P.pending) resolve(P, autoChoice(P)); stepYear(P); while (P.pending) resolve(P, autoChoice(P)); P.auto = false;
+      if (P.lw.season && P.lw.season.id === big.id && P.ar.lastFlow && P.ar.lastFlow.age === P.age) { inc += (P.ar.lastFlow.rows.find(r => r[0] === 'Thu nhập') || [0, 0])[1]; years++; } else why.push(P.age + ':' + (P.lw.season && P.lw.season.id) + ':' + (P.ar.lastFlow && P.ar.lastFlow.age) + ':' + P.alive); }
+    assert(P.alive && P.lw.season && P.lw.season.id === big.id && years === 5, 'five season years ' + why.join(' ') + ' ' + JSON.stringify(P.lw.canon.seasons.slice(-2)));
+    const perYear = inc / 5, salary = P.income;
+    console.log({ R24_base0: Math.round(base0), R24_income_per_year: Math.round(perYear), R24_salary_now: Math.round(salary) });
+    assert(perYear > 0.6 * base0 * big.rules.income && perYear < 1.6 * salary, 'wages in season are ×' + big.rules.income);
+    const land = big.landings.find(l => l.effects.money) || big.landings[0], k = land.effects.money || 0, baseAfter = seasonYearlyBase(P);
+    const dl = d(() => applyEffect(P, land.effects));
+    assert(!P.lw.season, 'landed');
+    if (k) { assert(Math.abs(dl - k * baseAfter) <= Math.abs(k) * baseAfter * 0.02 + 1, 'landing money on base: ' + dl + ' vs ' + k * baseAfter);
+      assert(Math.abs(dl) < Math.abs(k) * baseAfter * 2, 'landing is not ×' + big.rules.income); } }
 
   console.log('8b sections', ((Date.now() - t1) / 1000).toFixed(1) + 's');
 }

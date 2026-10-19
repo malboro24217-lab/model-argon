@@ -8,6 +8,7 @@
      seasonTheme(L)   → đặt body[data-season], body[data-weird] và biến --season, --season-ink-l/-d (chữ, ≥ 4,5), --season-mark-l/-d
                         (vạch, viền, thanh tiến độ, ≥ 3) cho giấy sáng / tối; L không có mùa thì gỡ hết
      seasonBanner(L)  → điền #season-banner ("Mùa N: tên" + khoảng tuổi + năm thứ mấy + nhịp); không có mùa thì ẩn
+     seasonNotes(L)   → thẻ chung kết (L.uiNotes, canon.js ghi lúc mùa đáp xuống): hiện một thẻ nhỏ không chặn, tự tắt; không phải quyết định
      weirdMenu(L)     → ô chọn Độ điên trong menu (#weirdBox); đổi thì gọi window.setWeird(G.life, v) (Task 8b, qua uiOp);
                         chưa có window.setWeird thì ẩn ô
 */
@@ -74,10 +75,12 @@ function seasonBanner(L) {
   const { s, def } = now, E = typeof esc === "function" ? esc : (x => String(x));
   const n = Number.isInteger(s.n) && s.n > 0 ? s.n : ((L.lw.canon && L.lw.canon.seasons) || []).length + 1;
   const from = Number.isFinite(s.from) ? s.from : L.age, end = Number.isFinite(s.end) && s.end > from ? s.end : null;
-  const len = end ? end - from : 0, yr = Math.max(0, Math.min(len || Infinity, L.age - from));
+  // Năm vào mùa là "năm 1" (không có "năm 0"); không vượt quá độ dài mùa.
+  const len = end ? end - from : 0, yr = Math.max(1, Math.min(len || Infinity, L.age - from + 1));
   const bi = L.lw.counters && L.lw.counters.season_beat;
   const beat = typeof Argon !== "undefined" && Argon.BEATS && Argon.BEAT_VN && Number.isInteger(bi) ? Argon.BEAT_VN[Argon.BEATS[Math.min(bi, Argon.BEATS.length - 1)]] || "" : "";
-  const kind = def.weird === "sf" ? "nhánh viễn tưởng" : def.weird === "abs" ? "nhánh phi lý" : "";
+  // Nhãn loại nhánh: điện thoại chỉ hiện phần ngắn ("viễn tưởng" / "phi lý") để mùa kỳ dị không chỉ khác nhau ở màu.
+  const kind = def.weird === "sf" ? "<span class=\"sb-kf\">nhánh </span>viễn tưởng" : def.weird === "abs" ? "<span class=\"sb-kf\">nhánh </span>phi lý" : "";
   const ages = end ? `${from}–${end} tuổi` : `từ ${from} tuổi`;
   const pct = len ? Math.round(yr / len * 100) : 0;
   el.setAttribute("aria-label", `Mùa ${n}: ${def.vn}, ${ages}`);
@@ -111,4 +114,22 @@ function weirdMenu(L) {
   const lv = WEIRD_LEVELS.find(x => x[0] === v);
   box.title = can ? lv[2] : "Độ điên chưa đổi được lúc này.";   // đời đã hết hoặc đang tua lại
   box.hidden = false;
+}
+
+/* Thẻ chung kết: mỗi ghi chú hiện đúng một lần (đánh dấu shown trên ghi chú, không đụng mô phỏng). Không chặn đồng hồ, không nhận phím. */
+function seasonNotes(L) {
+  if (typeof document === "undefined" || !document.body || !L || !Array.isArray(L.uiNotes)) return;
+  const note = L.uiNotes.find(x => x && !x.shown && x.kind === "landing"); if (!note) return;
+  note.shown = true;
+  const E = typeof esc === "function" ? esc : (x => String(x));
+  let el = document.getElementById("landing-card");
+  if (!el) { el = document.createElement("div"); el.id = "landing-card"; el.className = "landing-card"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); document.body.appendChild(el); el.onclick = () => el.classList.remove("show"); }
+  const kind = note.weird === "sf" ? " · nhánh viễn tưởng" : note.weird === "abs" ? " · nhánh phi lý" : "";
+  el.innerHTML = `<p class="lc-h">${note.n ? `Mùa ${note.n} khép lại` : "Một mùa khép lại"}: ${E(note.vn)}${kind}</p><p class="lc-t">${E(note.line)}</p>`;
+  if (/^#[0-9a-f]{6}$/i.test(note.color || "")) {
+    const th = document.documentElement.dataset.theme, dark = th === "dark" || (th !== "light" && typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches);
+    el.style.borderLeftColor = seasonMark(note.color, dark ? "d" : "l");
+  }
+  el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+  clearTimeout(seasonNotes.t); seasonNotes.t = setTimeout(() => el.classList.remove("show"), 7000);
 }

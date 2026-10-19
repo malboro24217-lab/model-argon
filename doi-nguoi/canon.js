@@ -60,7 +60,7 @@ function canonFacts(L) {
 function canonOwnOnly(L, e, dropMoves) {
   if (canonIndependent(L)) return e;
   const out = { ...e };
-  if (e.money) { const amt = Math.max(300, householdIncome(L)) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
+  if (e.money) { const amt = seasonYearlyBase(L) * e.money; L.savings += amt > 0 ? amt : -Math.min(-amt, Math.max(0, L.savings)); delete out.money; }
   if (e.custom) {
     const keep = e.custom.split("|").filter(p => !/^(repay|borrow|restructure|migrate_now|migrate)(:|$)/.test(p) && !(dropMoves && /^(move_city|job_[a-z_]*|become)(:|$)/.test(p)));
     if (keep.length) out.custom = keep.join("|"); else delete out.custom;
@@ -80,19 +80,19 @@ function canonOnEffect(L, e) {
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
     if (lw.season) exitSeason(L, "landing", land);
-    return canonOwnOnly(L, e, false);
+    return sureMigrate(canonOwnOnly(L, e, false));
   }
   return e;
 }
 function canonApplyQuiet(L, e) { const lw = L.lw; lw.canonQuiet = true; try { applyEffect(L, e); } finally { lw.canonQuiet = false; } }
 
 /* ---- vào / ra mùa ---- */
-const CANON_FEMALE = /^(bà|cô|chị|mẹ|dì|thím|mợ|em gái|người phụ nữ|nữ|góa phụ|bé gái)\b/i, CANON_MALE = /^(ông|anh|chú|cậu|bác trai|bố|cha|người đàn ông|nam|bé trai|lão)\b/i;
+// Hết từ: khoảng trắng / dấu câu / hết chuỗi (\b của JS không hiểu chữ có dấu: "cô\b" hỏng sau "ô").
+const CANON_FEMALE = /^(bà|cô|chị|mẹ|dì|thím|mợ|em gái|người phụ nữ|nữ|góa phụ|bé gái)(?=[\s,.;:]|$)/i, CANON_MALE = /^(ông|anh|chú|cậu|bác trai|bố|cha|người đàn ông|nam|bé trai|lão)(?=[\s,.;:]|$)/i;
 /** Người mới của mùa: NPC thật trong dàn nhân vật, tên theo nước đang sống. */
 function seasonCastMember(L, nc, r, ar) {
   const sex = CANON_FEMALE.test(nc.label) ? "F" : CANON_MALE.test(nc.label) || nc.role === "official" || nc.role === "bully" ? "M" : (r() < 0.5 ? "M" : "F");
-  const used = new Set([L.name, ...[...L.lw.cast.values()].filter(m => m.alive).map(m => m.name)]);
-  let name = makeName(r, L.c, sex); for (let k = 0; k < 40 && used.has(name); k++) name = makeName(r, L.c, sex);
+  const name = canonFreshName(L, r, sex);   // không trùng tên gọi của bạn hay của người đang sống trong đời bạn, không trùng tên người thật nổi tiếng
   const off = nc.role === "child" ? Math.min(-1, 8 - L.age) : ["mentor", "official", "first_boss", "creditor"].includes(nc.role) ? 10 + Math.floor(r() * 16) : -4 + Math.floor(r() * 10);
   const trust = nc.role === "rival" || nc.role === "bully" ? -0.1 : nc.role === "mentor" ? 0.3 : 0.1;
   const m = Argon.addCastMember(L.ar.state, L.lw.cast, ar, nc.role, name, off, trust);
@@ -112,7 +112,7 @@ function enterSeason(L, id) {
   const rs = canonRng(L, "season:" + id), r = () => rs.next(), ar = canonRng(L, "cast:" + id);
   // 3. đặt lại: tiền (chỉ người đã tự lập, tính trên tiền riêng), hiệu ứng đầu mùa, người mới
   if (d.reset.cash !== undefined && ctx.independent) L.savings += d.reset.cash * Math.max(300, householdIncome(L)) - ctx.own_cash;
-  if (d.reset.effects) canonApplyQuiet(L, canonOwnOnly(L, d.reset.effects, true));
+  if (d.reset.effects) canonApplyQuiet(L, sureMigrate(canonOwnOnly(L, d.reset.effects, true)));   // di cư của mùa chắc chắn thành (migrate_sure)
   const cast = {};
   for (const nc of d.reset.cast || []) cast[nc.key] = seasonCastMember(L, nc, r, ar).id;
   // 4. hệ số thu nhập: sống suốt mùa (chưa có thu nhập thì việc làm sau này cũng nhân hệ số, xem seasonIncomeMult); gỡ khi ra mùa
@@ -128,7 +128,7 @@ function enterSeason(L, id) {
   const n = lw.canon.seasons.length + 1;
   lw.season = { id, n, from: L.age, end: L.age + len, scars, mult, cast, lastAt: L.age, beatAt: null, yearAt: L.age };
   // 8.
-  log(L, `Mùa ${n}: ${d.vn}.`, "big");
+  seasonEnterLog(L, n, d);   // cùng năm với mùa vừa bị cắt: gộp thành một dòng, dòng cắt đọc trước
   return true;
 }
 
@@ -215,8 +215,8 @@ function canonScene(L, ev) {
   const sc = sceneFromStorylet(L, { id: ev.id, build: () => view }, null);
   sc.canon = { axis: ev.axis, seed: ev.seed, seasons: ev.doors.map(d => d.season) };
   const keys = [];
-  if (ev.slots.what && ev.slots.what.kind !== "asset") keys.push(Argon.prov.flag(Argon.plantFlag(ev.slots.what)));
-  if (ev.slots.who) { for (const p of lw.plants) if (p.npc === ev.slots.who) keys.push(Argon.prov.flag(Argon.plantFlag(p))); keys.push(Argon.prov.opinion(ev.slots.who)); }
+  if (ev.slots.what && ev.slots.what.kind !== "asset" && canonMentionsText(view, ev.slots.what.label)) keys.push(Argon.prov.flag(Argon.plantFlag(ev.slots.what)));
+  if (ev.slots.who && canonMentions(L, view, ev.slots.who)) { for (const p of lw.plants) if (p.npc === ev.slots.who) keys.push(Argon.prov.flag(Argon.plantFlag(p))); keys.push(Argon.prov.opinion(ev.slots.who)); }
   let marks = []; try { marks = Argon.resolveCauses(lw.cz, keys); } catch { marks = []; }
   if (marks.length) { Argon.attachConsequence(marks, L.age, ev.id, sc.title); sc.causes = marks; }
   lw.canon.fromPlayer = (lw.canon.fromPlayer || 0) + (ev.slots.fromPlayer > 0 ? 1 : 0);
@@ -249,6 +249,8 @@ function canonCustom(L, kind, arg) {
     case "season_end": if (lw.season) exitSeason(L, "landing", arg || null); return true;   // thường đã kết ở canonOnEffect
     case "swap_other": return true;                       // đã xử lý ở canonOnEffect (canonSwap); gọi lẻ thì không làm gì
     case "remark": canonRemark(L); return true;
+    case "migrate_sure": migrateSure(L); return true;
+    case "money_season": L.savings += seasonMoneyYearly(L) * (+arg || 0); return true;   // R24: phần thưởng nhân hệ số mùa, phải khai báo rõ
     case "age_skip": ageSkip(L, +arg || 0); return true;
     case "longevity": addLongevity(L, +arg || 0); return true;
   }
@@ -306,11 +308,16 @@ function otherSelfEnd(L, se) {
   if (!s) return "Ở dòng thời gian kia, những năm ấy trôi qua bình thường, không có mùa nào.";
   const d = seasonDef(s.id), land = s.reason === "landing" && d ? d.landings.find(x => x.id === s.landing) : null;
   if (land && land.line) return `Ở dòng thời gian kia, Mùa: ${name(s.id)} đã khép lại năm ${s.to} tuổi. ${land.line}`;
-  return `Ở dòng thời gian kia, Mùa: ${name(s.id)} dang dở, khép lại năm ${s.to} tuổi.`;
+  return `Ở dòng thời gian kia, Mùa: ${name(s.id)} dang dở, khép lại năm ${s.to} tuổi.${s.line ? " " + s.line : ""}`;
 }
 /** Gọi ở cuối exitSeason. Chết thì thôi (đời đã hết); đang đổi chỗ (swap_other) cũng thôi. */
 function otherSelfOnExit(L, se, rec) {
-  if (!rec || rec.reason === "death" || !se || !se.other || (L.lw && L.lw.swapping)) return;
+  if (!rec) return;
+  if (rec.reason === "cut") { const e = L.log[L.log.length - 1]; if (e && e.age === L.age) e.cut = true; }   // seasonEnterLog gộp dòng này với "Mùa N"
+  if (rec.reason === "landing" && !L.replay) seasonLandingNote(L, se, rec);
+  if (se && se.mult && se.mult !== 1) rec.mult = se.mult;   // money_season ở chung kết dùng hệ số của mùa vừa kết
+  if (rec.reason !== "landing" && se) rec.line = seasonEndLine(L, se, rec.reason);   // câu kết cho mùa cắt / dang dở / tự khép (tất định)
+  if (rec.reason === "death" || !se || !se.other || (L.lw && L.lw.swapping)) return;
   const line = otherSelfEnd(L, se);
   if (line) log(L, line, "other");
 }
@@ -443,7 +450,7 @@ function canonRemark(L) {
 
 /* ---- swap_other: đổi chỗ với bản kia (nhánh S22) ---- */
 /** Những trường của đời gốc giữ lại khi đổi chỗ: đầu vào để tua lại (lựa chọn, actLog, trọng tâm từng năm), trạng thái tua lại, nhật ký đã đọc. */
-const SWAP_KEEP = ["choices", "actLog", "actSeq", "focusLog", "log", "seen", "decades", "auto", "script", "override", "replay", "replayActs", "replayDone", "uiDone", "scriptFocus", "scriptStrict", "nextAi", "aiReady", "aiPending", "weird", "forkOf"];
+const SWAP_KEEP = ["choices", "actLog", "actSeq", "focusLog", "log", "seen", "decades", "auto", "script", "override", "replay", "replayActs", "replayDone", "uiDone", "scriptFocus", "scriptStrict", "nextAi", "aiReady", "aiPending", "weird", "forkOf", "uiNotes"];
 /**
  * custom "swap_other" (canonOnEffect gọi trước mọi phần khác của effect):
  *  1. đang ở mùa và effect là chung kết thì kết mùa trước (giữ 3 vết của mùa);
@@ -463,7 +470,7 @@ function canonSwap(L, e) {
   if (keep.length) rest.custom = keep.join("|"); else delete rest.custom;
   swapOther(L, scars, cur, rec);
   let out = canonOnEffect(L, rest);
-  if (land !== null) out = canonOwnOnly(L, out, false);
+  if (land !== null) out = sureMigrate(canonOwnOnly(L, out, false));
   return out;
 }
 function swapOther(L, scars, before, rec) {
@@ -507,4 +514,130 @@ function swapScars(L, P, scars) {
   }
   const who = scars.nguoi && scars.nguoi.npc, toks = who && L.lw.mem.tokens.get(who);
   if (toks && P.lw.cast.has(who)) P.lw.mem.tokens.set(who, (P.lw.mem.tokens.get(who) || []).concat(toks.map(t => ({ ...t }))));
+}
+
+/* ---- Task 8b, đợt sửa sau lượt chơi thử (21b) ---- */
+/** Tên gọi trong một họ tên đầy đủ theo kiểu tên của nước c (họ trước: tên gọi là chữ cuối). */
+function givenOf(name, c) { const t = String(name || "").trim().split(/\s+/), p = c && NAMES[c.nm]; return (p && p.first === false ? t[t.length - 1] : t[0]) || ""; }
+/** Các tên gọi đang có chủ: bạn, và mọi người còn sống trong dàn nhân vật. */
+function takenGivens(L) {
+  const s = new Set([givenOf(L.name, L.birthC || L.c)]);
+  for (const m of L.lw.cast.values()) if (m.alive) { s.add(m.name); s.add(givenOf(m.name, L.c)); if (L.birthC) s.add(givenOf(m.name, L.birthC)); }
+  return s;
+}
+/** Họ tên cho người mới của mùa: tên gọi chưa ai dùng, không là tên người thật nổi tiếng. Chỉ rút thêm khi trùng. */
+function canonFreshName(L, r, sex) {
+  const p = NAMES[L.c.nm], pool = p[sex], sur = (sex === "F" && p.SF) || p.S, fmt = (g, s) => p.first === false ? `${s} ${g}` : `${g} ${s}`;
+  let name = makeName(r, L.c, sex);
+  const tier = freeTier(L, pool);
+  if (tier.has(givenOf(name, L.c)) || nameBlocked(name)) {
+    const free = pool.filter(g => !tier.has(g));
+    for (let k = 0; k < 12; k++) { name = fmt(free.length ? free[Math.floor(r() * free.length)] : pick(r, pool), pick(r, sur)); if (!nameBlocked(name)) break; }
+  }
+  return name;
+}
+/** Tên gọi phải tránh, chặt nhất mà bể tên còn cho phép: (1) bạn và mọi người đang sống trong đời bạn; (2) bạn, người trong nhà và người của mùa;
+ *  (3) chỉ bạn. Bể tên mỗi nước chỉ 3–8 tên, dàn nhân vật lúc sinh đã dùng gần hết, nên khi hết tên thì nới dần chứ không trùng với chính bạn. */
+const FAMILY_ROLES_NAME = new Set(["mother", "father", "sibling", "spouse", "child", "season"]);
+function nameTiers(L) {
+  const me = givenOf(L.name, L.birthC || L.c), all = new Set([me]), close = new Set([me]);
+  for (const m of L.lw.cast.values()) { if (!m.alive) continue; const gs = [m.name, givenOf(m.name, L.c), L.birthC ? givenOf(m.name, L.birthC) : m.name];
+    for (const g of gs) { all.add(g); if (FAMILY_ROLES_NAME.has(m.role) || (m.roles || []).some(x => FAMILY_ROLES_NAME.has(x))) close.add(g); } }
+  return [all, close, new Set([me])];
+}
+function freeTier(L, pool) { const T = nameTiers(L); return T.find(t => pool.some(g => !t.has(g))) || new Set(); }
+/** Canon event chỉ nối nhân quả về người ở chỗ trống `who` khi chữ của cảnh (tiêu đề, đoạn mở, cửa) thật sự nhắc tới người đó. */
+function canonMentions(L, view, who) {
+  const name = castName(L, who); if (!name || name === "ai đó") return false;
+  return canonMentionsText(view, name);
+}
+/** Chữ của cảnh (tiêu đề, đoạn mở, nhãn và gợi ý của cửa) có nhắc tới `s` không (không phân biệt hoa thường). */
+function canonMentionsText(view, s) {
+  if (!s || typeof s !== "string") return false;
+  const k = s.toLowerCase();
+  return [view.title, view.text, ...(view.choices || []).map(c => (c.label || "") + " " + (c.hint || ""))].some(x => typeof x === "string" && x.toLowerCase().includes(k));
+}
+/** Dòng "Mùa N: …". Cùng năm có mùa vừa bị cắt (dòng cắt đánh dấu ở otherSelfOnExit) thì gộp: "X khép lại giữa chừng. Mùa N: Y." đặt sau cùng. */
+function seasonEnterLog(L, n, d) {
+  log(L, `Mùa ${n}: ${d.vn}.`, "big");
+  const lg = L.log, me = lg[lg.length - 1];
+  for (let i = lg.length - 2; i >= 0 && lg[i].age === L.age; i--) if (lg[i].cut) { const c = lg.splice(i, 1)[0]; me.text = c.text + " " + me.text; break; }
+}
+/** Chung kết của mùa: ghi một ghi chú giao diện (không phải quyết định, không đụng mô phỏng) để trang hiện thẻ chung kết. */
+function seasonLandingNote(L, se, rec) {
+  const d = seasonDef(rec.id), l = d && rec.landing ? d.landings.find(x => x.id === rec.landing) : null;
+  if (!l || !l.line) return;
+  (L.uiNotes = L.uiNotes || []).push({ kind: "landing", age: L.age, n: se && Number.isInteger(se.n) ? se.n : null, vn: d.vn, color: d.color, weird: d.weird || null, line: l.line });
+  if (L.uiNotes.length > 6) L.uiNotes.splice(0, L.uiNotes.length - 6);
+}
+
+/* ---- Câu kết cho mọi mùa (góp ý 19/10): "bạn đã để lại điều gì ở giai đoạn này?" ----
+   Chung kết đã có câu riêng (landing.line). Mùa bị cắt, dang dở lúc chết, hay tự khép lại thì dựng một câu từ trạng thái mùa:
+   nhịp đang dở (từ các thẻ mùa đã ra), người mới của mùa, 3 vết. Không rút rng: biến thể chọn theo băm (id mùa, tuổi vào mùa). */
+const SEASON_PHASE_VN = ["khi mọi chuyện vừa mở màn", "khi biến cố vừa nổ ra", "ngay giữa cú lật", "lúc đang chạm đáy", "khi chỉ còn một bước tới hồi kết"];
+/** Nhịp xa nhất mùa này đã tới, đọc từ lịch sử thẻ mùa (ss_<mùa>_<nhịp>_<thẻ>). */
+function seasonBeatReached(L, se) {
+  const pre = "ss_" + se.id + "_"; let b = 0;
+  for (const h of L.lw.history) if (h.age >= se.from && h.id.startsWith(pre)) { const k = parseInt(h.id.slice(pre.length), 10); if (k > b) b = k; }
+  return Math.max(0, Math.min(4, b));
+}
+function seasonEndLine(L, se, reason) {
+  if (!L || !L.lw || !se) return "";
+  const phase = SEASON_PHASE_VN[seasonBeatReached(L, se)];
+  // Người: người mới đầu tiên của mùa (tên + nhãn), không có thì người mang vết.
+  let name = "", label = "";
+  const cid = se.cast && Object.values(se.cast)[0], m = cid && L.lw.cast.get(cid);
+  if (m && m.name) { name = m.name; label = m.label || ""; }
+  else if (se.scars && se.scars.nguoi && se.scars.nguoi.npc) { const n = castName(L, se.scars.nguoi.npc); if (n && n !== "ai đó") name = n; }
+  const sc = se.scars || {}, no = sc.no && sc.no.label ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
+  const thing = sc.do && sc.do.label && sc.do.key !== "job" ? sc.do.label : "";
+  const v = strHash(se.id + "@" + se.from) % 2, pickWho = name && (v === 0 || (!no && !thing));
+  // Chỉ nói điều có thật trong đời này (người mới của mùa, vết, nhịp); thiếu dữ liệu thì câu trung tính, không bịa thêm.
+  const whoTxt = name ? `${name}${label ? ` (${label})` : ""}` : "";
+  if (reason === "cut") {
+    if (pickWho) return `Mùa này bị cắt ngang ${phase}; bạn chưa kịp gặp lại ${whoTxt} lần cuối.`;
+    if (no) return `Mùa này bị cắt ngang ${phase}; ${no} vẫn còn treo lại.`;
+    if (thing) return `Mùa này bị cắt ngang ${phase}; ${thing} ở lại với mùa ấy.`;
+    return `Mùa này bị cắt ngang ${phase}.`;
+  }
+  if (reason === "death") {
+    if (no) return `Bạn ra đi ${phase}, vẫn còn vướng ${no}.`;
+    if (pickWho) return `Bạn ra đi ${phase}, khi còn đang đi cùng ${whoTxt}.`;
+    if (thing) return `Bạn ra đi ${phase}, vẫn còn giữ ${thing}.`;
+    return `Bạn ra đi ${phase}, khi mùa này còn dang dở.`;
+  }
+  if (pickWho) return `Mùa này tự khép lại ${phase}, cùng với ${whoTxt}.`;
+  if (no) return `Mùa này tự khép lại ${phase}; ${no} vẫn còn đó.`;
+  if (thing) return `Mùa này tự khép lại ${phase}; ${thing} ở lại với mùa ấy.`;
+  return `Mùa này tự khép lại ${phase}.`;
+}
+
+/* ---- Di cư của mùa (reset, chung kết): chắc chắn thành, không tung 55% như lời mời di cư thường ---- */
+function sureMigrate(e) {
+  if (!e || !e.custom) return e;
+  const parts = customParts(e.custom); if (!parts.includes("migrate_now")) return e;
+  return { ...e, custom: parts.map(p => p === "migrate_now" ? "migrate_sure" : p).join("|") };
+}
+/** Như migrate_now (cùng bộ lọc nơi đến, cùng chi phí đi lại) nhưng không có nhánh "thủ tục không thành". */
+function migrateSure(L) {
+  L.flags.migAsked = true;
+  const dest = pickWeighted(L.r, COUNTRIES.filter(d => d.g > L.c.g * 1.5 && d.g > 15000), d => d.b + (d.g > 40000 ? 1 : 0));
+  if (!dest) { log(L, "Không tìm được nơi nào nhận bạn.", "bad"); return false; }
+  L.savings -= incomeAt(L.c, .5) * .8;
+  L.migrated = true; L.c = dest;
+  log(L, `Bạn chuyển sang sống ở ${dest.n}.`, "good big"); addSt(L, "rel", -12); addSt(L, "happy", -4); getJob(L);
+  return true;
+}
+
+/* ---- R24: hệ số thu nhập của mùa chỉ nhân vào lương trong mùa ---- */
+/** Một năm thu nhập GỐC (bỏ hệ số mùa): đơn vị cho money:<x>, borrow / repay, cược với NPC, tiền AI cho. Ngoài mùa = householdIncome. */
+function seasonYearlyBase(L) {
+  const h = householdIncome(L), m = seasonIncomeMult(L);
+  return Math.max(300, m !== 1 && earnsOwnLiving(L) ? h / m : h);
+}
+/** Một năm thu nhập CÓ hệ số mùa, cho custom money_season:<x>. Trong mùa: thu nhập hiện tại; ở chung kết (mùa vừa kết năm nay): gốc × hệ số mùa ấy. */
+function seasonMoneyYearly(L) {
+  if (L.lw && L.lw.season) return Math.max(300, householdIncome(L));
+  const last = L.lw && L.lw.canon && L.lw.canon.seasons[L.lw.canon.seasons.length - 1];
+  return seasonYearlyBase(L) * (last && last.to === L.age && last.mult ? last.mult : 1);
 }

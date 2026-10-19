@@ -40,6 +40,11 @@ for (const k of ['--season', '--season-ink-l', '--season-ink-d', '--season-mark-
 assert.strictEqual(banner.hidden, false, 'banner shown');
 assert(banner.innerHTML.includes('Mùa 2:') && banner.innerHTML.includes(seasonDef('w_S19').vn), 'banner: Mùa 2 + name');
 assert(clean(banner.innerHTML), 'banner: no undefined/NaN/null');
+// Năm vào mùa là "năm 1/N" (21b: không còn "năm 0/N"); nhãn loại nhánh kỳ dị có phần ngắn cho điện thoại.
+assert.strictEqual(L.age, L.lw.season.from, 'entry year');
+{ const len = L.lw.season.end - L.lw.season.from; assert(banner.innerHTML.includes('năm 1/' + len) && !/năm 0\\//.test(banner.innerHTML), 'entry year shows năm 1/N');
+  assert(/<span class="sb-kind"><span class="sb-kf">nhánh <\\/span>viễn tưởng<\\/span>/.test(banner.innerHTML), 'weird kind marker with a short phone form');
+  const a0 = L.age; L.age = L.lw.season.end + 3; seasonBanner(L); assert(banner.innerHTML.includes('năm ' + len + '/' + len), 'capped at len'); L.age = a0; seasonBanner(L); }
 assert.strictEqual(L.lw.season.n, 2, 'host n'); L.lw.season.n = 7; seasonBanner(L);
 assert(banner.innerHTML.includes('Mùa 7:'), 'banner prefers lw.season.n'); L.lw.season.n = 2;
 assert.strictEqual(weirdBox.hidden, false, 'weird box shown when setWeird exists'); assert.strictEqual(weirdBox._sel.value, '1', 'select reflects L.weird'); assert.strictEqual(weirdBox._sel.disabled, false);
