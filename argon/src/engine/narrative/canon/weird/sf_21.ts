@@ -89,7 +89,7 @@ const S22 = weird("S22", "sf", ["ky", "mau"],
   }),
   season({
     id: "w_S22", vn: "Đổi chỗ", color: "#7a52d1", years: [5, 6], weird: "sf",
-    rules: { flags: ["w_other_self"] },
+    rules: { flags: ["w_other_self"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "ong_gac_dem", role: "neighbor", label: "ông gác đêm của tòa nhà" }] },
     gag: { key: "ban_kia_muon_do", lines: [
       "Bản kia mượn đôi dép của bạn, sáng hôm sau trả lại một đôi giày da bóng loáng.",
@@ -101,7 +101,7 @@ const S22 = weird("S22", "sf", ["ky", "mau"],
     beats: [
       /* mo_man */
       [
-        card("s22_mo_guong", "Người trong gương bước ra", (c, k) => `Bản kia ngồi xuống ghế nhà bạn, tự rót nước, chê ấm trà hơi nhạt. Nó kể đời bên đó: cùng ngày sinh, cùng cha mẹ, chỉ khác một lần chọn cửa, rồi mọi thứ trượt đi. ${cap(k.npc("ong_gac_dem"))} gõ cửa hỏi sao trong nhà có hai giọng giống hệt nhau. ${k.gag()}`,
+        card("s22_mo_guong", "Người trong gương bước ra", (c, k) => `Bản kia ngồi xuống ghế nhà bạn, tự rót nước, chê ấm trà hơi nhạt. Nó kể đời bên đó: cùng ngày sinh, cùng cha mẹ, chỉ khác một lần chọn cửa, rồi mọi thứ trượt đi. ${cap(k.npc("ong_gac_dem"))} gõ cửa hỏi sao trong nhà có hai giọng giống hệt nhau. Từ hôm đó, dù ở hay đi, bản kia vẫn tiêu tiền bằng thẻ của bạn, vì hai người cùng một chữ ký. ${k.gag()}`,
           [C("Mời bản kia ở lại vài hôm", { flags: ["s22_o_chung"], happy: 2 }, "Có người hiểu mình nhất, cũng soi mình nhất"),
            C("Nhờ ông gác đêm canh cái gương", { flags: ["s22_canh_guong"], counters: { s22_de_phong: 1 } }, "An toàn hơn, bản kia phật ý")]),
         card("s22_mo_so", "Hai cuốn sổ đời", (c) => `Bản kia đặt lên bàn sổ tiết kiệm, sổ khám bệnh và danh bạ của nó. ${c.married ? "Bên đó nó chưa từng cưới ai." : "Bên đó nó đã có gia đình."} ${c.rich ? "Bên đó nó nghèo hơn bạn một chút." : "Bên đó nó khá giả hơn bạn một chút."} Nó hỏi bạn có muốn xem kỹ không.`,
@@ -533,7 +533,7 @@ const S28 = weird("S28", "sf", ["ky"],
   }),
   season({
     id: "w_S28", vn: "Ngày thứ 300", color: "#3f7fd9", years: [5, 8], weird: "sf",
-    rules: { flags: ["w_time_loop"] },
+    rules: { income: 0.7, flags: ["w_time_loop"] },
     reset: { cast: [{ key: "co_ca_phe", role: "neighbor", label: "cô bán cà phê đầu đường" }] },
     gag: { key: "bo_cau", lines: [
       "Đúng 7 giờ 02, con bồ câu lại đâm vào cửa kính. Bạn đã thử đóng, mở, dán giấy báo, nó vẫn đâm.",
@@ -549,7 +549,7 @@ const S28 = weird("S28", "sf", ["ky"],
           [C("Học nấu một món cho hoàn hảo", { flags: ["s28_hoc_bep"], counters: { s28_luyen: 1 } }, "Ba trăm lần nêm nếm"),
            C("Học đàn bài hát trên radio", { flags: ["s28_hoc_dan"], counters: { s28_luyen: 1 } }, "Ba trăm lần cùng một bài"),
            C("Tháo tung cái radio ra xem", { flags: ["s28_hoc_may"], counters: { s28_luyen: 1 }, know: 2 }, "Ba trăm lần tháo ra lắp vào")]),
-        card("s28_mo_bon_muoi", "Ngày thứ bốn mươi", (c, k) => `Tới ngày thứ bốn mươi, bạn hiểu ra một điều: hôm nay làm gì, mai cũng xóa sạch. ${cap(k.npc("co_ca_phe"))} đưa ly cà phê như mọi lần, nói cùng một câu như mọi lần: "Trời này mà uống nóng là gan đấy."`,
+        card("s28_mo_bon_muoi", "Ngày thứ bốn mươi", (c, k) => `Tới ngày thứ bốn mươi, bạn hiểu ra một điều: hôm nay làm gì, mai cũng xóa sạch. ${c.has_job ? "Lương chỉ về vào thứ Sáu, nên mỗi lần kẹt trong thứ Tư, bạn chỉ lĩnh được phần còn sót lại." : "Mọi khoản tiền người ta hứa trả vào thứ Sáu đều không bao giờ tới."} ${cap(k.npc("co_ca_phe"))} đưa ly cà phê như mọi lần, nói cùng một câu như mọi lần: "Trời này mà uống nóng là gan đấy."`,
           [C("Nói thật mọi điều với mọi người", { flags: ["s28_noi_that"], happy: 4, rel: -2 }, "Nhẹ người, hôm sau họ quên, bạn thì không"),
            C("Ngồi thư viện từ sáng tới tối", { flags: ["s28_doc_sach"], know: 5 }, "Thông thái dần, cô đơn dần")]),
       ],

@@ -1,6 +1,8 @@
 /**
  * Mùa "Ngôi sao bất đắc dĩ": ba mươi giây cầm chổi chỉ đường ở ngã tư làm bạn nổi tiếng cả nước.
  * Thu nhập ×3 suốt mùa, đổi lại không còn đời tư. Gag: cây chổi đi theo bạn tới mọi nơi.
+ * Thay đổi tình thế (R25): hệ số ×3 chỉ nhân lương, nên đầu mùa ai cũng nhận tiền bản quyền đoạn clip (reset money 0.3),
+ * kể cả người chưa có lương (mùa mở từ 8 tuổi).
  */
 import type { SeasonDef } from "../Season.ts";
 import { C, cap, card, ending, finale, land, noOr } from "../kit.ts";
@@ -26,6 +28,7 @@ export const NGOI_SAO: SeasonDef = {
   id: "ngoi_sao", vn: "Ngôi sao bất đắc dĩ", color: "#d39b1f", years: [8, 14],
   rules: { income: 3, flags: ["w_ngoi_sao", "no_privacy"] },
   reset: {
+    effects: { money: 0.3 },
     cast: [
       { key: "quan_ly", role: "partner", label: "cô quản lý nói nhanh" },
       { key: "fan", role: "neighbor", label: "người hâm mộ số một" },
@@ -43,7 +46,7 @@ export const NGOI_SAO: SeasonDef = {
   beats: [
     /* mo_man */
     [
-      card("ns_mo_clip", "Ba mươi giây giữa ngã tư", () => "Đèn giao thông ở ngã tư hỏng, xe kẹt cứng, và bạn đang cầm sẵn cây chổi vừa mua. Ba mươi giây bạn đứng giữa đường hô “Bên này đi, bên kia chờ” được ai đó quay lại. Sáng hôm sau, đoạn clip có mười một triệu lượt xem.",
+      card("ns_mo_clip", "Ba mươi giây giữa ngã tư", () => "Đèn giao thông ở ngã tư hỏng, xe kẹt cứng, và bạn đang cầm sẵn cây chổi vừa mua. Ba mươi giây bạn đứng giữa đường hô “Bên này đi, bên kia chờ” được ai đó quay lại. Sáng hôm sau, đoạn clip có mười một triệu lượt xem, và một kênh truyền hình chuyển cho bạn tiền bản quyền đủ tiêu cả mấy tháng.",
         (c) => [C("Lên mạng nói vài câu cảm ơn", { flags: ["ns_cam_on"], counters: { ns_danh: 1 } }, "Dễ thương, thêm một triệu lượt xem"),
          C(c.has_job ? "Tắt điện thoại, đi làm như thường" : c.in_school ? "Tắt điện thoại, đi học như thường" : "Tắt điện thoại, sống như thường", { happy: 1, flags: ["ns_tat_may"] }, "Yên được ba ngày, rồi người ta tự tìm tới")]),
       card("ns_mo_quan_ly", "Hợp đồng dày như sách giáo khoa", (c, k) => `${cap(k.npc("quan_ly"))} gõ cửa lúc sáu giờ sáng, nói liền một mạch bốn phút không ngắt câu, rồi để lại một bản hợp đồng dày như sách giáo khoa. ${k.gag()}`,

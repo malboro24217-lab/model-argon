@@ -35,8 +35,9 @@ const L01_DAI_BIEU = land("x01_dai_bieu", "Bạn tự nộp đơn ra ứng cử 
 const L01_THUA = land("x01_thua_trau", "Bạn thua Đốm, nộp lại con dấu, tiền vận động mất trắng. Mỗi sáng Đốm đi ngang nhà bạn và dừng một chút, như chào đồng nghiệp cũ.", { money: -1, happy: 4, flags: ["x01_thua_trau"] });
 const L01_LEN_PHO = land("x01_len_pho", "Bạn giao con dấu, khăn gói lên phố sống những năm còn lại. Trong va li có một túm lông trâu gói giấy báo.", { custom: "move_city", happy: 2 });
 
+// Quy tắc 6: trưởng thôn, con dấu thôn, trâu đi bầu là chi tiết của làng Việt, nên nhánh chỉ mở ở Việt Nam.
 const X01 = weird("X01", "abs", ["danh", "dat"],
-  (c) => c.age >= 22 && c.age <= 68 && rural(c) && c.pressure.danh >= 2,
+  (c) => c.country === "VN" && c.age >= 22 && c.age <= 68 && rural(c) && c.pressure.danh >= 2,
   () => "Nhận con dấu thôn, đấu với con trâu",
   (s) => ({ title: "Trưởng thôn bất đắc dĩ",
     text: `Thôn bạn ở ${s.noi || "quê"} vừa bầu trưởng thôn, và bạn trúng cử dù chưa từng nộp đơn. Người về nhì là con trâu Đốm, kém bạn đúng ba phiếu, mà ba phiếu ấy đều của nhà bạn. Ông tổ trưởng bầu cử cầm loa nói: "Trên giấy thì bạn thắng. Ngoài đồng thì trâu thắng." Ngoài sân, Đốm nhai rơm, nhìn bạn như người chờ đếm lại phiếu.` }),
@@ -106,7 +107,7 @@ const X02 = weird("X02", "abs", ["mau"],
   (s, c) => ({ title: "Gia tộc theo lịch mèo",
     text: `Cuộc họp họ ở ${s.noi || "nhà họ"} kéo dài sáu tiếng và chỉ tan khi con mèo nhà bạn ngáp một cái thật dài. Ông trưởng họ đập bàn: "Từ nay mèo ngáp thì tan họp, mèo ngủ thì cấm cãi." Cả họ giơ tay biểu quyết. Con mèo không giơ, vì nó đang nằm trên cuốn sổ biểu quyết.` }),
   season({ id: "w_X02", vn: "Gia tộc mèo", color: "#e0a030", years: [5, 9], weird: "abs",
-    rules: { flags: ["w_x02_gia_toc_meo"] },
+    rules: { flags: ["w_x02_gia_toc_meo"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "truong_ho", role: "mentor", label: "ông chú trưởng họ" }, { key: "em_ho", role: "sibling", label: "cô em họ giữ sổ lịch mèo" }] },
     gag: { key: "meo_chu_toa", lines: [
       "Con mèo nằm lên tờ chương trình họp. Cả họ ngồi chờ nó dậy mới đọc tiếp.",
@@ -120,7 +121,7 @@ const X02 = weird("X02", "abs", ["mau"],
         card("x02_mo_lich", "Tờ lịch hai cột", (c, k) => `Tờ lịch mới dán ở nhà họ chỉ có hai cột: "mèo thức" và "mèo ngủ". Đám cưới, chia đất, sửa nhà, việc gì cũng phải xếp vào cột thức. ${cap(k.npc("truong_ho"))} đưa bút cho bạn ký tên đầu tiên. ${k.gag()}`,
           [C("Ký tên vào lịch mèo", { flags: ["x02_ky_lich"], rel: 2, counters: { x02_tach: -1 } }, "Yên với họ hàng, mất quyền tự xếp lịch"),
            C("Xin cho nhà mình được miễn", { flags: ["x02_xin_mien"], counters: { x02_tach: 1 } }, "Giữ được giờ giấc, bị nhìn như người ngoài")]),
-        card("x02_mo_so", "Cuốn sổ tâm trạng", (c, k) => `${cap(k.npc("em_ho"))} được giao giữ sổ tâm trạng của con mèo, ghi từng giờ nó ngáp, nó liếm chân, nó nhìn ra cửa. Muốn đặt lịch họp phải nộp phí "giữ sổ" cho cô. Cuốn sổ đã dày hơn cả gia phả.`,
+        card("x02_mo_so", "Cuốn sổ tâm trạng", (c, k) => `${cap(k.npc("em_ho"))} được giao giữ sổ tâm trạng của con mèo, ghi từng giờ nó ngáp, nó liếm chân, nó nhìn ra cửa. Mỗi nhà trong họ phải nộp phí "giữ sổ" cho cô hằng năm, nhà bạn cũng không ngoại lệ. Cuốn sổ đã dày hơn cả gia phả.`,
           [C("Giúp cô ấy ghi sổ", { flags: ["x02_giu_so"], know: 2, counters: { x02_quyen: 1 } }, "Biết lịch mèo trước mọi người, dính vào tiền phí"),
            C("Hỏi công khai về tiền phí giữ sổ", { flags: ["x02_hoi_phi"], counters: { x02_tach: 1 } }, "Đúng lẽ, mất một đồng minh")]),
       ],
@@ -452,7 +453,7 @@ const X07 = weird("X07", "abs", ["danh", "tinh"],
           [C("Để tóc bạc, chịu phạt", { money: -0.4, flags: ["x07_toc_bac"], counters: { x07_tu_do: 1 }, happy: 3 }, "Mất tiền phạt, được làm người đúng tuổi"),
            C("Nhuộm theo hợp đồng", { flags: ["x07_nhuom"], counters: { x07_xa: 1 }, happy: -3 }, "Giữ được tiền, gương mặt thành đồ dùng")]),
         card("x07_day_bua_com", "Bữa cơm thiếu một người", (c) => `${n(c, "x07_xa") >= 3 ? "Bữa cơm cuối tuần giờ chỉ còn bạn với một gói mì in mặt mình." : "Bữa cơm cuối tuần vắng dần, nhưng vẫn còn người chờ."} Người nhà nói không trách gì bạn, chỉ là họ đã quen ăn trước.`,
-          [C("Xin hãng nghỉ một năm không lương", { money: -0.3, flags: ["x07_nghi_nam"], rel: 5 }, "Mất tiền, kéo lại được một bữa cơm"),
+          [C("Xin hãng tạm ngưng hợp đồng một năm", { money: -0.3, flags: ["x07_nghi_nam"], rel: 5 }, "Mất tiền, kéo lại được một bữa cơm"),
            C("Gửi thêm tiền về thay cho mình", { money: -0.1, flags: ["x07_gui_tien"], counters: { x07_xa: 1 } }, "Người nhà đủ ăn, bàn ăn vẫn trống")]),
       ],
       [
@@ -473,8 +474,9 @@ const L08_CAN_BO = land("x08_can_bo", "Xã mời bạn làm cán bộ hòa giả
 const L08_TRUONG_LANG = land("x08_truong_lang", "Bạn ở lại làm người phân xử của làng. Làng giao cho bạn mảnh ruộng công và chiếc ghế gỗ, lần này đã cưa bớt chân.", { income_mult: 1.2, happy: 3, flags: ["x08_cu_to"] });
 const L08_BO_LANG = land("x08_bo_lang", "Bạn xếp đồ đi trong đêm, lên thành phố, nơi không ai biết bạn là cụ của ai.", { custom: "move_city", happy: 2, rel: -4 });
 
+// Quy tắc 6: cụ tổ đầu thai, lễ vật hầu cụ, chi họ là chi tiết của làng Việt, nên nhánh chỉ mở ở Việt Nam.
 const X08 = weird("X08", "abs", ["mau", "dat"],
-  (c) => c.age >= 22 && c.age <= 40 && rural(c) && c.pressure.mau >= 2,
+  (c) => c.country === "VN" && c.age >= 22 && c.age <= 40 && rural(c) && c.pressure.mau >= 2,
   () => "Nhận làm cụ tổ của cả làng",
   (s) => ({ title: "Cụ tổ về làng",
     text: `Sau một trận sốt, bạn nói mê một câu bằng giọng rất cổ, và bà cụ cao tuổi nhất ${s.noi || "làng"} quỳ ngay xuống đầu giường: "Cụ về rồi." Đến trưa đã có ba mươi người xếp hàng ngoài sân, mỗi người cầm theo một vụ tranh chấp chờ cụ phân xử. Có người còn ôm theo một con gà làm lễ ra mắt.` }),

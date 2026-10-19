@@ -1,6 +1,6 @@
 # Quy tắc viết mùa và nhánh kỳ dị
 
-Mười quy tắc này rút ra từ các lần review khi viết 100 nhánh kỳ dị (Task 10–19 của canon event). Bản gốc là phần bổ sung cho hướng dẫn viết từng đợt, nằm trong thư mục làm việc `.superpowers/` (không theo repo). Bản này dịch lại để quy tắc nằm cùng mã nguồn.
+Các quy tắc 1–10 rút ra từ các lần review khi viết 100 nhánh kỳ dị (Task 10–19 của canon event). Bản gốc là phần bổ sung cho hướng dẫn viết từng đợt, nằm trong thư mục làm việc `.superpowers/` (không theo repo). Bản này dịch lại để quy tắc nằm cùng mã nguồn. Quy tắc 11–12 rút ra từ kiểm toán thay đổi tình thế của Task 20d (ruling R25).
 
 Áp dụng cho:
 - mọi mùa thường trong `argon/src/engine/narrative/canon/seasons/`;
@@ -67,3 +67,24 @@ cd argon && node --experimental-strip-types src/canon-content-test.ts && node --
 - Mỗi thẻ phải có ít nhất 2 lựa chọn **không** có `tier`.
 - Lựa chọn có `tier` không bao giờ đứng đầu, vì lựa chọn đầu là mặc định. Đặt chúng ở cuối (content-guide §4).
 - **Bộ kiểm chưa bắt quy tắc này** (ruling R19 hẹn đưa vào bộ kiểm ở Task 20). Hiện người viết và reviewer phải tự đọc.
+
+## 11. Mỗi Mùa có một thay đổi tình thế thật (ruling R25)
+- Rút ra từ kiểm toán Task 20d. Thay cho câu "đổi 100% hoàn cảnh" của spec.
+- Mỗi Mùa có ít nhất một thay đổi tình thế có tác dụng thật, phù hợp với tiền đề và được sử dụng trong diễn biến.
+- Thay đổi hợp lệ: việc làm, nơi ở, tiền hay nợ, một mối quan hệ, một nghĩa vụ, quyền tiếp cận (được hay mất một thứ), hoặc một luật riêng của mùa.
+- Khai báo ở một trong ba chỗ:
+  - `reset.cash` hay `reset.effects` (vd. `borrow:0.5` cho mùa trốn nợ, `repay:50` cho mùa xóa sổ nợ, `move_city`);
+  - luật mùa: `rules.income` (≤ 0.8 hay ≥ 1.2 mới thấy được; host chỉ nhân lương) hay `rules.yearly` có tiền hoặc nợ (vd. tiền giữ nhà, án phí, phí hằng năm);
+  - thẻ mở màn không có `when` mà mọi lựa chọn đều đổi tình thế (vd. cả hai ca trực ở S07 đều `job_switch:…`).
+- Chữ phải nhắc tới thay đổi đó, để người chơi biết vì sao tiền hay nghề đổi.
+- Không tính: dàn nhân vật mới (mùa nào cũng có), cờ thế giới `rules.flags` (không ai đọc), luật chỉ đổi chỉ số, lựa chọn tùy người chơi.
+- Cờ hay bộ đếm chỉ tính khi có thẻ hay luật về sau đọc nó. Đặt cờ ở `reset.effects` thì phải có thẻ đọc.
+- Đừng để chữ khẳng định một thay đổi mà trạng thái nói khác: "lương gấp ba" khi nhánh chỉ mở cho người vừa mất việc, "xóa mọi khoản nợ" mà nợ vẫn còn, "bị trừ tiền" mà không lựa chọn nào trừ tiền.
+- Host không tự đổi nghề hay tiền khi mùa không khai báo (`doi-nguoi/tests/season-entry-test.js`).
+- Bộ kiểm bắt: mùa không khai báo gì lúc vào mùa; cờ của `reset.effects` không ai đọc; tổng số cờ / bộ đếm do lựa chọn đặt mà không thẻ nào đọc lại vượt trần `DEAD_KEYS_MAX`. "Phù hợp tiền đề" và "dùng có ý nghĩa" phải đọc và chơi thử. Bảng phân lớp: `argon/docs/canon/season-change-audit.md`, sinh bằng `node --experimental-strip-types argon/tools/season-change-audit.js --md <file>`.
+
+## 12. Chung kết không đưa người chưa tự lập đi xa
+- Landing có `migrate_now` chỉ mở khi `migrateOk(c)` trong `kit.ts` (đã tự lập và còn nước để đi). Host bỏ `migrate_now` với người chưa tự lập, nên dòng landing "bạn chuyển sang nước khác" sẽ sai.
+- Khi không đi được, thẻ chung kết vẫn phải còn ≥ 2 lựa chọn: thêm một landing ở lại (tiền, nghề tại chỗ…).
+- Landing có `move_city` không mở cho người dưới 18 tuổi (một đứa trẻ không chuyển đi một mình). Mùa trẻ con chơi tới chung kết được (vd. `vu_an_gia_toc`) thì thay bằng landing khác.
+- Bộ kiểm bắt cả hai.

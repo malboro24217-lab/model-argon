@@ -37,6 +37,10 @@
  *  - Gag: thẻ gọi k.gag() thứ k (theo thứ tự khai báo trong mùa) hiện lines[k % n], nên dòng 0 là lần đầu.
  *  - Câu (sau ". ") không được bắt đầu bằng chữ thường: vết/người mới đứng đầu câu thì bọc cap(...).
  *  - Mỗi thẻ 2–3 lựa chọn, ≥ 1 lựa chọn để lại dấu. Tiêu đề và nhãn ≤ 60 ký tự, hint ≤ 70.
+ *  - Thay đổi tình thế (R25): mùa khai báo ít nhất một thay đổi lúc vào mùa, trong reset (cash, effects), luật mùa
+ *    (rules.income, rules.yearly) hay lựa chọn ở thẻ mở màn; cờ / bộ đếm đặt ở reset.effects phải được thẻ sau đọc.
+ *    Host không tự đổi nghề hay tiền khi mùa không khai báo. Bảng kiểm toán: argon/docs/canon/season-change-audit.md.
+ *  - Chung kết: landing migrate_now chỉ mở khi migrateOk(c); landing move_city không mở cho người dưới 18 tuổi.
  *
  * ---- Nhánh kỳ dị (Task 10–19) ----
  * Mỗi đợt một file trong canon/weird/, export đúng một mảng tên theo file:
@@ -138,6 +142,12 @@ export const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1)
  */
 export const noOr = (c: FactContext, k: SeasonKit, debt = "món nợ cũ", other = "món ân tình cũ"): string =>
   k.scar("no") || (c.debt > 0 ? debt : other);
+
+/**
+ * Landing di cư (custom migrate_now) chỉ được mở khi người chơi đã tự lập và còn nước để đi (R14). Host bỏ migrate_now
+ * với người chưa tự lập, nên nếu mở cho họ thì dòng landing "bạn chuyển sang nước khác" sẽ sai. Bộ kiểm bắt.
+ */
+export const migrateOk = (c: FactContext): boolean => c.independent && c.can_migrate;
 
 /** Một chung kết. Tự thêm custom "season_end:<id>" (nối bằng "|"); host đọc id bằng landingOf. */
 export const land = (id: string, line: string, effects: Effect): Landing => ({ id, line, effects: addCustom(effects, `season_end:${id}`) });

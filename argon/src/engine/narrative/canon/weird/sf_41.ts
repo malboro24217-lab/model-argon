@@ -7,7 +7,7 @@
  */
 import type { Choice, FactContext, Plant } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, noOr, pathOpen, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, migrateOk, noOr, pathOpen, season, weird } from "../kit.ts";
 
 const has = (c: FactContext, f: string): boolean => c.flags.has(f);
 const n = (c: FactContext, k: string): number => c.counters[k] ?? 0;
@@ -178,7 +178,7 @@ const s43: WeirdBranch = weird("S43", "sf", ["danh", "ky"],
   }),
   season({
     id: "w_S43", vn: "Mèo đòi quyền lợi", color: "#5a5fd0", years: [5, 9], weird: "sf",
-    rules: { flags: ["w_meo_noi"] },
+    rules: { flags: ["w_meo_noi"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "meo_dau_dan", role: "rival", label: "con mèo mướp cụt đuôi đầu đàn" }, { key: "phong_vien", role: "partner", label: "chị phóng viên đeo ba cái thẻ" }] },
     gag: { key: "ca_tuoi", lines: [
       "Máy dịch rè lên câu đầu tiên trong ngày, như mọi ngày: \"Cá hôm nay không tươi.\"",
@@ -189,7 +189,7 @@ const s43: WeirdBranch = weird("S43", "sf", ["danh", "ky"],
     landings: [S43_DAI, S43_NHA, S43_BAN],
     beats: [
       [
-        card("s43_mo_vong", "Cái vòng cổ biết nói", (c, k) => `Bạn cài cái vòng cổ phiên dịch cho ${meo(c)}, bấm nút, rồi chờ. Con mèo nhìn bạn ba giây, ngáp, rồi mới mở miệng. ${k.gag()}`,
+        card("s43_mo_vong", "Cái vòng cổ biết nói", (c, k) => `Bạn cài cái vòng cổ phiên dịch cho ${meo(c)}, bấm nút, rồi chờ. Con mèo nhìn bạn ba giây, ngáp, rồi mới mở miệng, và yêu cầu đầu tiên của nó là từ nay mỗi tuần hai bữa cá tươi, ghi vào sổ chi tiêu của nhà. ${k.gag()}`,
           [C("Đăng đoạn ghi âm lên mạng", { flags: ["s43_dang"], counters: { s43_danh: 1 } }, "Cả thành phố nghe, mèo nhà bạn thành người nổi tiếng"),
            C("Giữ bí mật, chỉ nghe một mình", { flags: ["s43_bi_mat"], happy: 3 }, "Yên ổn, nhưng bí mật trong xóm không giữ được lâu")]),
         card("s43_mo_mai", "Hội nghị trên mái tôn", (c, k) => `Đêm thứ ba, ba mươi con mèo của cả xóm ngồi kín mái tôn nhà bạn, xếp hàng ngay ngắn như đi họp. ${cap(k.npc("meo_dau_dan"))} nhảy xuống bậu cửa, gõ móng vào cái vòng cổ: nó muốn mượn máy một đêm.`,
@@ -306,6 +306,8 @@ const s44: WeirdBranch = weird("S44", "sf", ["luat", "ky"],
 
 const S45_DI = land("s45_ve_mot_chieu", "Con tàu chưa cất cánh, nhưng vé một chiều vẫn là vé một chiều: bạn được đưa tới căn cứ phóng ở nước ngoài và ở lại làm người đi tiên phong.", { custom: "migrate_now|become:explorer", happy: 3 });
 const S45_BAY = land("s45_can_cu", "Bạn theo đoàn sang căn cứ phóng ở nước ngoài, ở lại trông vườn rau của trạm, chờ một chuyến tàu không biết bao giờ.", { custom: "migrate_now", happy: 2 });
+/** Không ra nước ngoài được (chưa tự lập, hay không còn nước để đi): ở lại mặt đất với đoàn phóng. */
+const S45_O_DAT = land("s45_o_mat_dat", "Bạn không được lên tàu, nên ở lại làm người đếm ngược cho mọi chuyến phóng. Cả nước nhớ giọng bạn hơn nhớ mặt những người đã đi.", { money: 1, happy: 2 });
 const S45_RUT = land("s45_rut_lui", "Bạn rút tên trước giờ phóng, đền hợp đồng, và ra đường lúc nào cũng có người hô theo câu khẩu hiệu cũ.", { money: -1.5, happy: -4 });
 const S45_HAI = land("s45_dien_hai", "Bạn biến cái nhục thành tiết mục: người suýt bay lên sao kể chuyện mình ở lại.", { custom: "become:comedian", happy: 2 });
 
@@ -326,7 +328,7 @@ const s45: WeirdBranch = weird("S45", "sf", ["danh", "ky"],
       "Câu \"Một chiều, không quay đầu!\" giờ được in lên áo, lên cốc, và lên tấm biển cấm quay xe trước trường quay.",
       "Bạn nằm mơ thấy mình hô \"Một chiều, không quay đầu!\", tỉnh dậy thì cả nhà đang hô theo ngoài phòng khách.",
     ] },
-    landings: [S45_DI, S45_BAY, S45_RUT, S45_HAI],
+    landings: [S45_DI, S45_BAY, S45_RUT, S45_HAI, S45_O_DAT],
     beats: [
       [
         card("s45_mo_ghi_hinh", "Buổi ghi hình đầu tiên", (c, k) => `Bạn tới buổi ghi hình đầu tiên với đôi dép lê, giữa ba trăm ứng viên ăn mặc như sắp đi dự tiệc. ${k.gag()}`,
@@ -360,7 +362,8 @@ const s45: WeirdBranch = weird("S45", "sf", ["danh", "ky"],
       [
         card("s45_ket", "Đêm trước giờ phóng", (c, k) => `Đêm trước giờ phóng, điện thoại bạn có ba trăm tin nhắn. ${cap(noOr(c, k))} vẫn ở đó, không bay theo ai cả. ${has(c, "s45_hua_o") ? "Lời hứa ở lại trên sóng được chiếu lại suốt buổi tối." : "Ngoài cửa, người ta đã dựng sẵn sân khấu tiễn đưa."}`,
           (c) => {
-            const out: Choice[] = [pathOpen("explorer", c.age)
+            const out: Choice[] = [!migrateOk(c) ? ending(S45_O_DAT, "Ở lại mặt đất, làm người đếm ngược", "Không đi được, vẫn là một phần của chuyến bay")
+              : pathOpen("explorer", c.age)
               ? ending(S45_DI, "Lên tàu, đi thật", "Không quay đầu, đời mới ở một nơi rất xa")
               : ending(S45_BAY, "Theo đoàn sang căn cứ phóng", "Đi xa thật, dù tàu chưa chắc bay")];
             out.push(ending(S45_RUT, "Rút tên, chịu phạt hợp đồng", "Ở lại với người thân, mang nhục nhiều năm"));
@@ -387,7 +390,7 @@ const s46: WeirdBranch = weird("S46", "sf", ["tinh", "mau", "ky"],
   }),
   season({
     id: "w_S46", vn: "Nuôi đứa trẻ từ sao khác", color: "#7a6ad8", years: [7, 12], weird: "sf",
-    rules: { flags: ["w_tre_sao_khac"] },
+    rules: { flags: ["w_tre_sao_khac"], yearly: { money: -0.05 } },
     reset: { cast: [{ key: "dua_tre", role: "child", label: "đứa trẻ tóc bạc từ dưới hồ" }, { key: "kinh_ram", role: "official", label: "người điều tra đeo kính râm" }] },
     gag: { key: "may_giat", lines: [
       "Đứa trẻ cúi chào cái máy giặt có cửa tròn rất lễ phép, gọi nó là \"thưa thuyền trưởng\".",
@@ -398,7 +401,7 @@ const s46: WeirdBranch = weird("S46", "sf", ["tinh", "mau", "ky"],
     landings: [S46_CON, S46_VE, S46_DIEU_TRA],
     beats: [
       [
-        card("s46_mo_bep", "Sáng đầu tiên trong bếp", (c, k) => `Bạn quấn ${k.npc("dua_tre")} trong chăn mang về. Sáng ra nó đã dậy trước bạn, đứng nghiêm trong bếp. ${k.gag()}`,
+        card("s46_mo_bep", "Sáng đầu tiên trong bếp", (c, k) => `Bạn quấn ${k.npc("dua_tre")} trong chăn mang về. Sáng ra nó đã dậy trước bạn, đứng nghiêm trong bếp. Từ hôm đó nhà bạn thêm một miệng ăn, thêm quần áo, sách vở và tiền khám cho một đứa trẻ không có giấy tờ. ${k.gag()}`,
           [C("Giấu nó trong nhà một thời gian", { flags: ["s46_giau"], counters: { s46_tinh: 1 } }, "Yên được ít ngày, càng giấu càng khó nói"),
            C("Báo ngay cho chính quyền", { flags: ["s46_bao"], counters: { s46_nghi: -1 } }, "Đúng luật, không biết họ sẽ đưa nó đi đâu")]),
         card("s46_mo_vo_trung", "Bữa ăn bằng vỏ trứng", () => "Đứa trẻ không ăn cơm, không ăn rau, chỉ ăn đúng một thứ: vỏ trứng nghiền nhỏ rắc lên nước lã. Nó ăn rất lịch sự và cảm ơn từng cái vỏ.",
@@ -454,7 +457,7 @@ const s47: WeirdBranch = weird("S47", "sf", ["tinh", "tien", "ky"],
   }),
   season({
     id: "w_S47", vn: "Chuộc ký ức nhà mình", color: "#4b58b8", years: [5, 9], weird: "sf",
-    rules: { flags: ["w_chuoc_ky_uc"] },
+    rules: { flags: ["w_chuoc_ky_uc"], yearly: { money: -0.05 } },
     reset: { cast: [{ key: "nguoi_mua", role: "rival", label: "người mua giấu mặt" }, { key: "tho_may", role: "partner", label: "cậu thợ sửa máy dưới tầng trệt" }] },
     gag: { key: "lo_dau_gia", lines: [
       "Lô đầu tiên lên sàn: đoạn phim bạn bốn tuổi hát sai lời trong đám cưới nhà hàng xóm. Giá khởi điểm đã cao hơn bạn tưởng.",
@@ -465,7 +468,7 @@ const s47: WeirdBranch = weird("S47", "sf", ["tinh", "tien", "ky"],
     landings: [S47_CHUOC, S47_BAN, S47_PT],
     beats: [
       [
-        card("s47_mo_thu", "Bức thư lúc nửa đêm", (c, k) => `Bạn đọc lại bức thư lần thứ ba, gọi vào tổng đài, nghe nhạc chờ bốn mươi phút rồi máy tự cúp. Trang đấu giá đã mở. ${k.gag()}`,
+        card("s47_mo_thu", "Bức thư lúc nửa đêm", (c, k) => `Bạn đọc lại bức thư lần thứ ba, gọi vào tổng đài, nghe nhạc chờ bốn mươi phút rồi máy tự cúp. Trang đấu giá đã mở. Muốn giữ chỗ trong phiên đấu, bạn phải mở lại tài khoản lưu trữ, phí đóng hằng năm, trễ một năm là mất hết. ${k.gag()}`,
           [C("Đặt cọc giữ chỗ trong phiên đấu", { money: -0.2, flags: ["s47_dat_coc"] }, "Có chỗ trong phòng đấu giá, tiền bắt đầu chảy"),
            C("Gọi cả nhà về họp khẩn", { rel: 2, flags: ["s47_hop_nha"] }, "Đông người góp sức, cũng đông ý kiến")]),
         card("s47_mo_tho_may", "Cậu thợ dưới tầng trệt", (c, k) => `${cap(k.npc("tho_may"))} nghe chuyện, gật gù, rồi bê lên một thùng điện thoại và máy ảnh cũ: "Ký ức hay trốn trong máy cũ lắm." Cậu tính tiền theo giờ, giờ đầu miễn phí.`,
@@ -514,6 +517,8 @@ const s47: WeirdBranch = weird("S47", "sf", ["tinh", "tien", "ky"],
 
 const S48_PT = land("s48_phong_trao", "Bạn dẫn đầu phong trào đòi quyền được buồn. Thành phố mở những căn phòng không camera, và bạn có một nghề không ai dạy.", { custom: "become:activist", happy: 4 });
 const S48_DI = land("s48_di_cu", "Bạn sang một nước không chấm điểm hạnh phúc, nơi người ta được phép mặt nặng mày nhẹ.", { custom: "migrate_now", money: -1 });
+/** Không ra nước ngoài được (chưa tự lập, hay không còn nước để đi): mở tầng hầm không camera của ông bán bóng bay. */
+const S48_HAM = land("s48_tang_ham", "Bạn thuê lại tầng hầm sau tiệm sửa xe, mở một chỗ cho người ta xuống buồn cho đã, và thu mỗi người một khoản nhỏ. Quán đông đến mức phải xếp hàng.", { money: 1, happy: 2 });
 const S48_QUE = land("s48_ve_noi_it_camera", "Bạn dọn tới một thị trấn nhỏ ít camera, nơi người ta còn được ngồi buồn trước hiên nhà.", { custom: "move_city", happy: 3 });
 const S48_CUOI = land("s48_cuoi_chuan", "Bạn luyện được nụ cười đạt chín mươi điểm. Lương tăng, điểm tăng, và không ai biết bạn thật ra đang nghĩ gì.", { income_mult: 1.3, happy: -4 });
 
@@ -526,7 +531,7 @@ const s48: WeirdBranch = weird("S48", "sf", ["luat", "tinh", "ky"],
   }),
   season({
     id: "w_S48", vn: "Kẻ buồn hợp pháp", color: "#5c6bc0", years: [6, 10], weird: "sf",
-    rules: { income: 0.85, flags: ["w_cham_diem_vui"] },
+    rules: { income: 0.85, yearly: { money: -0.05 }, flags: ["w_cham_diem_vui"] },
     reset: { cast: [{ key: "kiem_dinh", role: "official", label: "nhân viên kiểm định nụ cười" }, { key: "ong_bong_bay", role: "mentor", label: "ông già bán bóng bay không bao giờ cười" }] },
     gag: { key: "camera_cham", lines: [
       "Camera ở cửa chấm bạn 41 điểm hạnh phúc. Con chó nhà bên đi ngang, được 88.",
@@ -534,7 +539,7 @@ const s48: WeirdBranch = weird("S48", "sf", ["luat", "tinh", "ky"],
       "Camera chấm bạn 52 điểm, cao nhất từ trước tới nay. Hóa ra lúc đó bạn đang hắt hơi.",
       "Camera chấm 100 điểm cho tấm ảnh cười bạn dán trước ống kính. Không ai sửa lỗi này.",
     ] },
-    landings: [S48_PT, S48_DI, S48_CUOI, S48_QUE],
+    landings: [S48_PT, S48_DI, S48_CUOI, S48_QUE, S48_HAM],
     beats: [
       [
         card("s48_mo_phat", "Tin nhắn trừ tiền đầu tiên", (c, k) => `Tin nhắn trừ tiền đầu tiên tới lúc bạn đang xếp hàng mua bánh mì, mặt chưa kịp tỉnh ngủ. ${k.gag()}`,
@@ -568,7 +573,8 @@ const s48: WeirdBranch = weird("S48", "sf", ["luat", "tinh", "ky"],
       [
         card("s48_ket", "Phiên họp về luật nụ cười", (c, k) => `Hội đồng thành phố mở phiên họp về luật chấm điểm, và tên bạn có trong danh sách phát biểu. ${k.gag()} ${cap(k.scar("no") || "một lời hứa cũ")} vẫn nằm đó, như mọi nỗi buồn chưa xong.`,
           (c) => {
-            const di = ending(S48_DI, "Đi nước ngoài, nơi được phép buồn", "Thoát luật, bỏ lại mọi người");
+            const di = migrateOk(c) ? ending(S48_DI, "Đi nước ngoài, nơi được phép buồn", "Thoát luật, bỏ lại mọi người")
+              : ending(S48_HAM, "Mở tầng hầm cho người ta xuống buồn", "Kiếm được một khoản, sống nửa trên nửa dưới");
             const yen = c.has_job && !c.retired && c.age <= 65
               ? ending(S48_CUOI, "Luyện nụ cười đạt chuẩn, sống yên", "Lương tăng, mặt mình không còn là của mình")
               : ending(S48_QUE, "Dọn về thị trấn nhỏ ít camera", "Yên thân, nhưng phải xa mọi thứ quen thuộc");
@@ -655,7 +661,8 @@ const s49: WeirdBranch = weird("S49", "sf", ["than", "tien", "ky"],
 /* ================================================================== S50 — Người không tồn tại */
 
 const S50_TEN_MOI = land("s50_ten_moi", "Bạn bắt đầu lại dưới một cái tên mới ở thành phố khác: không nợ, không nghề, không ai nhớ mặt.", { custom: "repay:5|job_lose|move_city", happy: 3 });
-const S50_TEN_CU = land("s50_ten_cu", "Hệ thống khôi phục bạn kèm đầy đủ nợ nần và một khoản phạt vì đã không tồn tại quá hạn.", { money: -1.5, happy: -2 });
+/** Sổ nợ bị xóa lúc vào mùa (reset repay:50); sống lại bằng tên cũ thì sổ nợ được ghi lại thành một món nợ mới, kèm tiền phạt. */
+const S50_TEN_CU = land("s50_ten_cu", "Hệ thống khôi phục bạn, ghi lại sổ nợ cũ từ đầu, kèm một khoản phạt vì đã không tồn tại quá hạn.", { money: -1.5, custom: "borrow:1", happy: -2 });
 const S50_GIUP = land("s50_giup_nguoi", "Bạn làm cho một văn phòng nhỏ chuyên đưa những người bị xóa trở lại sổ sách.", { custom: "become:social_worker", happy: 3 });
 
 const s50: WeirdBranch = weird("S50", "sf", ["luat", "tien", "ky"],
@@ -668,7 +675,7 @@ const s50: WeirdBranch = weird("S50", "sf", ["luat", "tien", "ky"],
   season({
     id: "w_S50", vn: "Người không tồn tại", color: "#55489e", years: [5, 9], weird: "sf",
     rules: { income: 0.6, flags: ["w_khong_ton_tai"] },
-    reset: { cast: [{ key: "o_quay", role: "official", label: "cô nhân viên quầy số bảy" }, { key: "ong_khong_ten", role: "mentor", label: "ông già không tồn tại từ mười năm nay" }] },
+    reset: { effects: { custom: "repay:50" }, cast: [{ key: "o_quay", role: "official", label: "cô nhân viên quầy số bảy" }, { key: "ong_khong_ten", role: "mentor", label: "ông già không tồn tại từ mười năm nay" }] },
     gag: { key: "may_lay_so", lines: [
       "Máy lấy số in ra một tờ giấy trắng tinh. Người ở quầy nhìn tờ giấy, rồi nhìn xuyên qua bạn.",
       "Máy lấy số lại in giấy trắng. Bạn xếp hàng bằng tờ giấy trắng, người phía sau cũng xếp hàng sau tờ giấy trắng.",

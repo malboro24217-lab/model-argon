@@ -8,7 +8,7 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { Landing, SeasonKit } from "../Season.ts";
 import type { WeirdBranch } from "../Canon.ts";
-import { C, cap, card, ending, land, noOr, openInOrder, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, migrateOk, noOr, openInOrder, season, weird } from "../kit.ts";
 
 /** Bộ đếm của mùa (0 nếu chưa có). */
 const n = (c: FactContext, key: string): number => c.counters[key] ?? 0;
@@ -118,7 +118,7 @@ const S32: WeirdBranch = weird("S32", "sf", ["dat", "tinh"],
   () => "Ngủ một đêm, mơ cùng giấc mơ với cả xóm",
   (s) => ({ title: "Giấc mơ dùng chung", text: `Sáng nay cả xóm ở ${s.noi || "nơi này"} ra đầu ngõ nhìn nhau ngượng nghịu, vì đêm qua mọi người mơ cùng một giấc mơ. Cái trạm thu tín hiệu mới dựng trên nóc nhà sinh hoạt chung đã nối não cả xóm vào một mạng. Bà bán bánh đầu ngõ ghé sát tai bạn: "Tôi thấy hết rồi, cái chuyện giấu dưới gầm giường ấy."` }),
   season({ id: "w_S32", vn: "Cả xóm chung giấc mơ", color: "#6a4fb3", years: [6, 10], weird: "sf",
-    rules: { flags: ["w_shared_dream", "no_privacy"] },
+    rules: { flags: ["w_shared_dream", "no_privacy"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "to_truong", role: "neighbor", label: "bà trưởng khu phố mất ngủ" }] },
     gag: { key: "ca_tre_hat", lines: [
       "Đêm nào cũng vậy, cả xóm mơ thấy cùng một con cá trê biết hát, và sáng ra ai cũng ngân nga đúng một câu.",
@@ -130,7 +130,7 @@ const S32: WeirdBranch = weird("S32", "sf", ["dat", "tinh"],
     beats: [
       /* mo_man */
       [
-        card("s32_mo_sang", "Bữa sáng không ai nhìn ai", (c, k) => `Buổi sáng đầu tiên sau khi mạng chạy, cả xóm ăn sáng mà không ai dám nhìn ai. ${cap(k.npc("to_truong"))} đi từng nhà phát giấy, đề nghị mỗi nhà ghi lại giấc mơ đêm qua “để ban quản lý khu phố còn theo dõi”. ${k.gag()}`,
+        card("s32_mo_sang", "Bữa sáng không ai nhìn ai", (c, k) => `Buổi sáng đầu tiên sau khi mạng chạy, cả xóm ăn sáng mà không ai dám nhìn ai. ${cap(k.npc("to_truong"))} đi từng nhà phát giấy, đề nghị mỗi nhà ghi lại giấc mơ đêm qua “để ban quản lý khu phố còn theo dõi”, kèm phiếu thu phí duy trì trạm tín hiệu, nhà nào cũng đóng hằng năm. ${k.gag()}`,
           [C("Ghi thật, nộp đúng hạn", { flags: ["s32_ghi_that"], counters: { s32_tin: 1 } }, "Được tin, mất đời tư"),
            C("Ghi bừa một giấc mơ về bắp cải", { flags: ["s32_ghi_bua"], happy: 2 }, "Vui, nhưng cả xóm đã thấy giấc mơ thật của bạn"),
            C("Đề nghị cả xóm đừng ghi gì hết", { flags: ["s32_khong_ghi"], counters: { s32_dan: 1 } }, "Có người theo, bà trưởng khu phố để ý", { tier: "sovereign" })]),
@@ -202,8 +202,8 @@ const S33: WeirdBranch = weird("S33", "sf", ["danh", "tien"],
       /* mo_man */
       [
         card("s33_mo_phong", "Căn phòng có một cái ghế", (c, k) => `Chỗ làm của bạn có một cái ghế, một camera và tấm biển “Xin cứ tự nhiên”. ${cap(k.npc("giam_sat"))} giải thích: mỗi ngày đọc tám trăm câu, gật đầu nếu người thật có thể nói câu đó, lắc đầu nếu không. ${k.gag()}`,
-          [C("Gật lắc theo cảm giác, đúng quy trình", { flags: ["s33_dung_quy_trinh"], counters: { s33_nguoi: 1 } }, "Ổn định, chán đến tê người"),
-           C("Ghi lý do cho từng câu", { know: 3, bw: -3, flags: ["s33_ghi_chu"], counters: { s33_danh: 1 } }, "Được cấp trên để ý, làm chậm gấp đôi")]),
+          [C("Gật lắc theo cảm giác, đúng quy trình", { custom: "job_switch:office", flags: ["s33_dung_quy_trinh"], counters: { s33_nguoi: 1 } }, "Ổn định, chán đến tê người"),
+           C("Ghi lý do cho từng câu", { custom: "job_switch:office", know: 3, bw: -3, flags: ["s33_ghi_chu"], counters: { s33_danh: 1 } }, "Được cấp trên để ý, làm chậm gấp đôi")]),
         card("s33_mo_dong_nghiep", "Người ngồi bàn bên", (c, k) => `${cap(k.npc("dong_nghiep"))} ngồi bàn bên, ăn trưa đúng mười hai giờ không lệch một phút, mỗi lần cười đúng ba giây. Cả phòng thì thầm rằng người đó là máy cài vào để kiểm tra người thật.`,
           [C("Rủ người đó đi ăn trưa, hỏi thẳng", { flags: ["s33_ban_dong_nghiep"], rel: 2 }, "Có thể có một người bạn, có thể bị máy chấm điểm"),
            C("Theo dõi, ghi lại mọi thứ người đó làm", { flags: ["s33_theo_doi"], counters: { s33_nghi: 1 } }, "Biết nhiều hơn, thành người đáng ngờ nhất phòng")]),
@@ -308,7 +308,7 @@ const S34: WeirdBranch = weird("S34", "sf", ["mau", "danh"],
       [
         card("s34_ket", "Ba con đường trên tờ giấy", (c, k) => `Hạn chót của viện là sáng thứ Hai. ${cap(k.npc("co_giao"))} mang sang một nồi cháo và một lời khuyên: ${n(c, "s34_di") >= 2 ? "giấy tờ đã sẵn, đi thì đi cho sớm." : n(c, "s34_vien") >= 2 ? "hợp đồng đã ký thì con đi, nhưng đừng để con đi một mình trong lòng." : "đứa nhỏ cần một nơi không ai đếm bậc thang thay nó."} Còn ${noOr(c, k)} thì vẫn chưa trả, đi đâu cũng phải mang theo. ${k.gag()}`,
           (c) => finale(c, [
-            { l: S34_DI, label: "Cả nhà đổi nước mà đi", hint: "Con được tự do, cả nhà làm lại từ đầu ở đất lạ" },
+            { l: S34_DI, label: "Cả nhà đổi nước mà đi", hint: "Con được tự do, cả nhà làm lại từ đầu ở đất lạ", ok: migrateOk },
             { l: S34_XA, label: "Để con đi học ở viện xa", hint: "Con bay cao, nhà vắng tiếng cười" },
             { l: S34_AN, label: "Chuyển thành phố, sống kín tiếng", hint: "Con được làm trẻ con, tài năng ngủ yên" },
           ])),
@@ -541,6 +541,8 @@ const S37: WeirdBranch = weird("S37", "sf", ["tinh", "than"],
 const S38_DI = land("nhap_quoc_tich_moi", "Thành phố nổi cập bến một nước giàu ven biển, và bạn ở lại đó, giấy tờ đóng dấu nước mới, chân vẫn quen đứng cho vững.", { custom: "migrate_now", happy: 3 });
 const S38_THUY = land("thuyen_vien_noi", "Bạn theo thành phố ra khơi tiếp, ký hợp đồng thuyền viên, và từ đó nhà bạn là nơi nào con tàu đang đậu.", { custom: "become:sailor", happy: 4 });
 const S38_NGU = land("ngu_dan_noi", "Bạn ở lại với biển, kéo lưới cho thành phố nổi, sống bằng những mẻ cá đi ngang mà không phải nộp thuế.", { custom: "become:deep_fisher", happy: 3 });
+/** Không nhận được giấy tờ nước mới (chưa tự lập, hay không còn nước để đi): ở lại thành phố nổi. */
+const S38_O_NOI = land("o_lai_thanh_pho_noi", "Bạn ở lại khi thành phố ra khơi tiếp, nhận việc giữ xích cho cả dãy nhà vỏ ốc, và được trả trước một khoản lớn cho mười năm canh sóng.", { money: 1, happy: 3 });
 const S38_VE = land("ve_dat_lien", "Bạn về lại đất liền, mất trắng tiền cọc căn nhà vỏ ốc, chỉ mang theo một cái la bàn và thói quen đứng dạng chân.", { money: -1, happy: 2 });
 
 const S38: WeirdBranch = weird("S38", "sf", ["dat", "tien"],
@@ -557,7 +559,7 @@ const S38: WeirdBranch = weird("S38", "sf", ["dat", "tien"],
       "Thuế mới: thuế cá đi ngang. Có người đề nghị giăng lưới để cá đi đường khác cho đỡ tốn.",
       "Thuế mới nhất: thuế im lặng, đánh vào ai không phàn nàn về thuế. Cả thành phố phàn nàn ầm ĩ suốt một tuần.",
     ] },
-    landings: [S38_DI, S38_THUY, S38_NGU, S38_VE],
+    landings: [S38_DI, S38_THUY, S38_NGU, S38_VE, S38_O_NOI],
     beats: [
       /* mo_man */
       [
@@ -597,8 +599,9 @@ const S38: WeirdBranch = weird("S38", "sf", ["dat", "tien"],
       [
         card("s38_ket", "Thành phố xin cập bến", (c, k) => `Sau mấy năm trôi nổi, thành phố xin cập bến một nước giàu ven biển. Mỗi cư dân được chọn: nhận giấy tờ ở lại nước đó, theo thành phố ra khơi tiếp, hay về lại đất liền cũ. ${n(c, "s38_tieng") >= 4 ? "Hội đồng muốn bạn ở lại dẫn đoàn." : n(c, "s38_bien") >= 2 ? "Thuyền trưởng đã giữ cho bạn một chỗ trên boong." : "Không ai giữ chỗ cho bạn, nên bạn được chọn thật tự do."} Trên bờ, ${noOr(c, k)} vẫn đang chờ bạn. ${k.gag()}`,
           (c) => finale(c, [
-            { l: S38_DI, label: "Nhận giấy tờ, ở lại nước mới", hint: "Đổi nước, làm lại từ đầu trên đất liền khác" },
+            { l: S38_DI, label: "Nhận giấy tờ, ở lại nước mới", hint: "Đổi nước, làm lại từ đầu trên đất liền khác", ok: migrateOk },
             { l: S38_VE, label: "Về lại đất liền cũ", hint: "Mất tiền cọc, về gần người quen" },
+            { l: S38_O_NOI, label: "Ở lại, theo thành phố nổi ra khơi tiếp", hint: "Có một khoản, nhà là nơi sóng đưa tới", ok: (x) => !migrateOk(x) },
             { l: S38_THUY, label: "Theo thành phố ra khơi làm thuyền viên", hint: "Lương khá, nhà là nơi con tàu đậu", path: "sailor" },
             { l: S38_NGU, label: "Ở lại với biển, kéo lưới cho thành phố", hint: "Sống bằng biển, nắng gió cả đời", path: "deep_fisher" },
           ])),
@@ -741,7 +744,7 @@ const S40: WeirdBranch = weird("S40", "sf", ["ky", "mau"],
         card("s40_ket", "Hai cánh cửa", (c, k) => `Gia đình thật của bạn mở cửa, nhìn bạn và nhận ra ngay, như đã chờ ba mươi năm. ${c.parents_alive > 0 ? "Phía sau bạn, người đã nuôi bạn đứng đợi ở đầu ngõ, tay cầm hộp cơm." : "Trong túi áo bạn vẫn còn tấm ảnh của người đã nuôi mình."} ${n(c, "s40_sua") >= 2 ? "Bạn không còn chắc ký ức nào là của ai, chỉ chắc một điều:" : "Bạn biết rõ ký ức nào là thật, và biết thêm một điều:"} ${noOr(c, k)} thì vẫn là của bạn, dù tuổi thơ có là của ai. ${k.gag()}`,
           (c) => finale(c, [
             { l: S40_VE, label: "Dọn về sống gần gia đình thật", hint: "Bắt đầu lại từ những bữa cơm đầu tiên" },
-            { l: S40_XA, label: "Sang nước khác với gia đình thật", hint: "Đổi nước, đổi tiếng, đổi cả tuổi thơ" },
+            { l: S40_XA, label: "Sang nước khác với gia đình thật", hint: "Đổi nước, đổi tiếng, đổi cả tuổi thơ", ok: migrateOk },
             { l: S40_HAI, label: "Nhận cả hai gia đình", hint: "Có thêm người thân, có tiền bồi thường, thêm việc phải lo" },
           ])),
       ],

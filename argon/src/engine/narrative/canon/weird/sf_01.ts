@@ -5,7 +5,7 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { C, cap, card, ending, finaleInOrder, land, noOr, season, weird } from "../kit.ts";
+import { C, cap, card, ending, finaleInOrder, land, migrateOk, noOr, season, weird } from "../kit.ts";
 import { slice } from "../../paths/kit.ts";
 
 /* ---- Chung kết theo tuổi ----
@@ -190,7 +190,7 @@ const S03 = weird("S03", "sf", ["ky", "mau"],
   }),
   season({
     id: "w_S03", vn: "Sửa tương lai cho con", color: "#5a4ac0", years: [6, 11], weird: "sf",
-    rules: { flags: ["w_thu_2081"] },
+    rules: { flags: ["w_thu_2081"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "buu_ta", role: "neighbor", label: "bác bưu tá già" }] },
     gag: { key: "loi_dan", lines: [
       "Lời dặn trong thư: \"Đừng cho con nuôi con cá vàng tên Sấm.\" Chiều đó con bạn mang về một con cá vàng, đã đặt tên Sấm.",
@@ -202,7 +202,7 @@ const S03 = weird("S03", "sf", ["ky", "mau"],
     beats: [
       /* mo_man */
       [
-        card("s03_mo_doc_trom", "Đọc trước thư của con", (c, k) => `Bạn ngồi trong bếp, đèn vàng, con đang ngủ. Lá thư dài chín trang, mỗi trang một lời dặn đánh số. ${k.gag()}`,
+        card("s03_mo_doc_trom", "Đọc trước thư của con", (c, k) => `Bạn ngồi trong bếp, đèn vàng, con đang ngủ. Lá thư dài chín trang, mỗi trang một lời dặn đánh số. Lời dặn số một là cho con đi học bơi ngay năm nay, học phí đóng theo năm, và năm sau lại có thêm một lớp phải học. ${k.gag()}`,
           [C("Đọc hết cả chín trang", { flags: ["s03_doc_het"], know: 2, happy: -2 }, "Biết trước nhiều chuyện, ngủ không yên"),
            C("Đọc trang đầu rồi dán lại", { flags: ["s03_dan_lai"], happy: 1 }, "Nhẹ đầu, nhưng tò mò cắn rứt")]),
         card("s03_mo_buu_ta", "Bác bưu tá không nhớ đã giao", (c, k) => `${cap(k.npc("buu_ta"))} thề chưa từng giao lá thư nào như thế, bưu cục cũng không có con tem ấy. Tháng sau, một phong bì xám bạc khác lại nằm trong hộp thư, khô ráo giữa trời mưa.`,
@@ -261,7 +261,7 @@ const S04 = weird("S04", "sf", ["ky", "mau"],
   }),
   season({
     id: "w_S04", vn: "Năm được chọn lại", color: "#6a4fc4", years: [5, 9], weird: "sf",
-    rules: { flags: ["w_tua_lai"] },
+    rules: { flags: ["w_tua_lai"], yearly: { money: -0.03 } },
     reset: { cast: [{ key: "tho_dong_ho", role: "mentor", label: "ông thợ đồng hồ ở chợ cũ" }] },
     gag: { key: "lech_sau_tua", lines: [
       "Sau lần tua, mọi thứ y như cũ. Chỉ có con mèo nhà bên giờ màu cam, và nó nhìn bạn như biết hết.",
@@ -273,7 +273,7 @@ const S04 = weird("S04", "sf", ["ky", "mau"],
     beats: [
       /* mo_man */
       [
-        card("s04_mo_thu", "Lần tua đầu tiên", (c, k) => `Bạn thử trên một chuyện nhỏ: câu nói hớ trong bữa cơm tối qua. Vặn ngược một vòng, bữa cơm dọn ra lại, cả nhà ngồi đúng chỗ cũ. ${k.gag()}`,
+        card("s04_mo_thu", "Lần tua đầu tiên", (c, k) => `Bạn thử trên một chuyện nhỏ: câu nói hớ trong bữa cơm tối qua. Vặn ngược một vòng, bữa cơm dọn ra lại, cả nhà ngồi đúng chỗ cũ. Sáng ra, ví bạn mỏng đi đúng bằng tiền một bữa cơm: chiếc đồng hồ đã thu phí, và năm nào nó cũng sẽ thu. ${k.gag()}`,
           [C("Nói lại câu khác, khéo hơn", { flags: ["s04_tua_1"], counters: { s04_tua: 1 }, rel: 2 }, "Bữa cơm vui, bạn biết mình vừa gian lận"),
            C("Để nguyên câu nói hớ", { flags: ["s04_khong_tua"], happy: 1 }, "Thật thà, chịu ánh mắt của cả nhà")]),
         card("s04_mo_tho", "Ông thợ ở chợ cũ", (c, k) => `${cap(k.npc("tho_dong_ho"))} cầm chiếc đồng hồ lên, tay run nhẹ. Ông bảo cái này đã dừng từ đời trước, ông từng sửa cho nó một lần và thề không sửa lần nữa.`,
@@ -334,7 +334,7 @@ const S05 = weird("S05", "sf", ["ky", "mau"],
   }),
   season({
     id: "w_S05", vn: "Thú nói được", color: "#5b6ee0", years: [5, 8], weird: "sf",
-    rules: { flags: ["w_thu_noi"] },
+    rules: { flags: ["w_thu_noi"], yearly: { money: -0.05 } },
     reset: { cast: [
       { key: "ky_thuat", role: "official", label: "anh kỹ thuật viên hãng chip" },
       { key: "hang_xom", role: "neighbor", label: "bà hàng xóm thính tai" },
@@ -349,7 +349,7 @@ const S05 = weird("S05", "sf", ["ky", "mau"],
     beats: [
       /* mo_man */
       [
-        card("s05_mo_cau_dau", "Câu nói đầu tiên trong bữa cơm", (c, k) => `Cả nhà đang ăn thì ${petOf(c)} nhảy lên ghế trống. ${k.gag()}`,
+        card("s05_mo_cau_dau", "Câu nói đầu tiên trong bữa cơm", (c, k) => `Cả nhà đang ăn thì ${petOf(c)} nhảy lên ghế trống, và từ bữa đó nó đòi một suất ăn riêng như người. ${k.gag()}`,
           [C("Cười trừ, gắp thức ăn cho nó", { flags: ["s05_cuoi_tru"], happy: 2 }, "Êm bữa nay, nó học được là nói thì có ăn"),
            C("Họp gia đình khẩn cấp", { flags: ["s05_hop_khan"], rel: -1, know: 2 }, "Cả nhà thống nhất lời khai, không ai vui")]),
         card("s05_mo_hang_chip", "Tính năng, không phải lỗi", (c, k) => `${cap(k.npc("ky_thuat"))} tới tận nhà, đo đạc rồi lắc đầu: con chip bám vào thần kinh, năm năm nữa mới tháo được. Anh đưa tờ giấy miễn trừ trách nhiệm dày như cuốn lịch.`,
@@ -472,6 +472,8 @@ const S06 = weird("S06", "sf", ["ky", "dat"],
 /* ================================================================ S07: định cư thương mại lên sao Hỏa */
 
 const L07_O_LAI = land("s07_o_lai", "Bạn ký tiếp hợp đồng định cư trọn đời. Thuộc địa đăng ký dưới cờ một nước khác, hồ sơ của bạn chuyển theo, và bạn thôi đếm ngày về.", { custom: "migrate_now", flags: ["s07_dan_sao_hoa"] });
+/** Không còn nước nào để đăng ký định cư (đã di cư, hay đang sống nhờ gia đình): ký thêm một kỳ ở trạm thay cho định cư. */
+const L07_THEM_KY = land("s07_them_ky", "Bạn ký thêm một kỳ trực ở trạm, để dành được một khoản lớn, và hẹn chuyến tàu sau sẽ về hẳn.", { money: 1.5, flags: ["s07_them_ky"] });
 const L07_VE = land("s07_tro_ve", "Bạn về trên chuyến tàu cuối mùa, mang theo một khoản tiết kiệm lớn và một làn da không quen nắng. Đất dưới chân nặng hơn bạn nhớ.", { money: 3, flags: ["s07_tro_ve"] });
 
 const S07 = weird("S07", "sf", ["ky", "dat"],
@@ -494,7 +496,7 @@ const S07 = weird("S07", "sf", ["ky", "dat"],
       "Cả nhà hát mừng sinh nhật bạn. Bài hát tới nơi lúc bạn đã ngủ, máy tự phát trong buồng tối.",
       "Bạn nói \"Con nhớ nhà.\" Hai mươi phút đủ để hối hận, không đủ để rút lại.",
     ] },
-    landings: [L07_O_LAI, L07_VE],
+    landings: [L07_O_LAI, L07_THEM_KY, L07_VE],
     beats: [
       /* mo_man */
       [
@@ -502,8 +504,8 @@ const S07 = weird("S07", "sf", ["ky", "dat"],
           [C("Mang ảnh cả nhà", { flags: ["s07_mang_anh"], rel: 2 }, "Nhớ nhà dễ chịu hơn, nhưng nhớ nhiều hơn"),
            C("Mang một gói hạt giống", { flags: ["s07_hat_giong"], know: 2 }, "Có thể trồng được thứ gì đó, chưa ai thử")]),
         card("s07_mo_buong", "Buồng ngủ hai mét vuông", (c, k) => `${cap(k.npc("chi_huy"))} phát cho bạn một buồng ngủ hai mét vuông và một lịch ca trực in kín cả hai mặt. Ca đêm ngoài trời trả gấp đôi, nhưng gió bụi ở đây cắt cả kính.`,
-          [C("Nhận ca ngoài trời", { money: 0.2, health: -3, flags: ["s07_ca_ngoai"] }, "Tiền về nhanh, phổi chịu thiệt"),
-           C("Nhận ca trong nhà kính", { flags: ["s07_nha_kinh"], happy: 2 }, "An toàn, chậm giàu")]),
+          [C("Nhận ca ngoài trời", { money: 0.2, health: -3, custom: "job_switch:build", flags: ["s07_ca_ngoai"] }, "Tiền về nhanh, phổi chịu thiệt"),
+           C("Nhận ca trong nhà kính", { custom: "job_switch:farm", flags: ["s07_nha_kinh"], happy: 2 }, "An toàn, chậm giàu")]),
       ],
       /* khoi_dong */
       [
@@ -532,7 +534,8 @@ const S07 = weird("S07", "sf", ["ky", "dat"],
       /* chung_ket */
       [
         card("s07_ket_chuyen_cuoi", "Chuyến tàu về cuối mùa", (c, k) => `Lịch phóng tàu về chỉ còn một chuyến trong mùa này. Bạn nghĩ tới ${k.scar("no") || "lời hứa sẽ về nhà dịp năm mới"}, rồi nhìn ra cửa sổ. ${c.flags.has("s07_hat_giong") ? "Luống rau từ gói hạt giống bạn mang theo vừa ra lứa lá thứ ba." : "Ngoài kia chỉ có đá đỏ và gió."} ${c.flags.has("s07_gui_tien") ? "Dưới đất, người nhà vừa gửi lên tấm ảnh căn bếp sửa bằng tiền của bạn." : "Dưới đất, người nhà đã quen với chỗ trống của bạn."}`,
-          [ending(L07_O_LAI, "Ở lại định cư, không về nữa", "Thành người của trạm, mất hẳn chỗ dưới đất"),
+          (c) => [migrateOk(c) ? ending(L07_O_LAI, "Ở lại định cư, không về nữa", "Thành người của trạm, mất hẳn chỗ dưới đất")
+              : ending(L07_THEM_KY, "Ký thêm một kỳ ở trạm", "Thêm một khoản lớn, thêm vài năm xa nhà"),
            ending(L07_VE, "Lên chuyến tàu về", "Mang tiền về, làm người lạ ở nhà mình")]),
       ],
     ],

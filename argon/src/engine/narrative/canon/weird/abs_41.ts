@@ -227,7 +227,7 @@ const X43 = weird("X43", "abs", ["ky", "luat", "danh"],
   }),
   season({
     id: "w_X43", vn: "Cuộc chiến giấy khai sinh", color: "#e6a532", years: [6, 11], weird: "abs",
-    rules: { flags: ["w_emoji_name"] },
+    rules: { flags: ["w_emoji_name"], yearly: { money: -0.03 } },
     reset: { cast: [
       { key: "can_bo", role: "official", label: "anh cán bộ hộ tịch" },
       { key: "luat_su", role: "mentor", label: "bà luật sư về hưu" },
@@ -242,7 +242,7 @@ const X43 = weird("X43", "abs", ["ky", "luat", "danh"],
     beats: [
       /* mo_man */
       [
-        card("x43_mo_dung_hinh", "Ngày cả nước đứng hình", (c, k) => `Ba ngày liền, mọi ô họ tên trên cả nước chỉ hiện một hình mặt trời cười. ${k.gag()} ${cap(k.npc("can_bo"))} đến tận nhà, mồ hôi ướt áo, xin bạn đổi tên con trước khi hệ thống sập hẳn.`,
+        card("x43_mo_dung_hinh", "Ngày cả nước đứng hình", (c, k) => `Ba ngày liền, mọi ô họ tên trên cả nước chỉ hiện một hình mặt trời cười. ${k.gag()} ${cap(k.npc("can_bo"))} đến tận nhà, mồ hôi ướt áo, xin bạn đổi tên con trước khi hệ thống sập hẳn. Chưa đổi thì năm nào giấy tờ của con cũng phải làm lại bằng tay, lệ phí bạn chịu.`,
           [C("Đổi tên con cho xong chuyện", { flags: ["x43_doi_ten"], happy: -3, counters: { x43_kien: -1 } }, "Yên chuyện, con mất cái tên cả nhà đã chọn"),
            C("Giữ tên, đó là quyền của con", { flags: ["x43_giu_ten"], counters: { x43_kien: 1 }, pressure: { danh: 1 } }, "Thành chuyện cả nước, khó lùi được nữa")]),
         card("x43_mo_con", "Bức tường của con", (c) => `Con bạn nghe chuyện, lấy phấn vẽ cái tên của mình lên tường nhà, to bằng cánh cửa. Cả xóm đi ngang đều dừng lại chụp ảnh. ${f(c, "x43_doi_ten") ? "Nét vẽ vẫn là mặt trời, dù trên giấy đã là tên khác." : "Bên dưới, con viết thêm: \"Tên con đây.\""}`,
@@ -554,7 +554,7 @@ const X47 = weird("X47", "abs", ["ky", "tinh", "danh"],
   }),
   season({
     id: "w_X47", vn: "Tượng đài ngượng", color: "#e0a43c", years: [5, 10], weird: "abs",
-    rules: { flags: ["w_love_monument"] },
+    rules: { flags: ["w_love_monument"], yearly: { money: 0.05 } },
     reset: { cast: [
       { key: "nguoi_nhan", role: "partner", label: "người nhận bức thư năm ấy" },
       { key: "dieu_khac", role: "neighbor", label: "bà nhà điêu khắc" },
@@ -569,7 +569,7 @@ const X47 = weird("X47", "abs", ["ky", "tinh", "danh"],
     beats: [
       /* mo_man */
       [
-        card("x47_mo_khanh_thanh", "Ngày khánh thành", (c, k) => `Lễ khánh thành có kèn, có bóng bay, có một em bé được giao nhiệm vụ đọc to toàn văn bức thư. ${k.gag()} Bạn đứng hàng thứ ba, mặt đỏ bừng.`,
+        card("x47_mo_khanh_thanh", "Ngày khánh thành", (c, k) => `Lễ khánh thành có kèn, có bóng bay, có một em bé được giao nhiệm vụ đọc to toàn văn bức thư. ${k.gag()} Bạn đứng hàng thứ ba, mặt đỏ bừng. Tối đó, thành phố lần theo chữ ký trên thư, gửi tới nhà bạn phong bì nhuận bút đầu tiên, ngoài bìa ghi “Tác giả câu thứ ba”, hẹn năm nào cũng gửi.`,
           [C("Bước lên nhận mình là người viết", { flags: ["x47_nhan"], counters: { x47_lo: 1 }, pressure: { danh: 1 } }, "Nổi tiếng nhất buổi lễ, theo cách tệ nhất"),
            C("Kéo mũ thấp, lẫn vào đám đông", { flags: ["x47_giau"], happy: -1 }, "Thoát hôm nay, tên bạn vẫn khắc trên đá")]),
         card("x47_mo_bua_com", "Bữa cơm tối hôm ấy", (c) => `${c.married ? "Bữa tối, người bạn đời đặt tờ báo có ảnh tượng đài lên bàn ăn, không nói gì, chỉ gạch chân câu thứ ba." : "Bữa tối, một người trong nhà gọi điện, đọc lại câu thứ ba bằng giọng của người đọc bản tin thời sự."} Cả nhà chờ bạn giải thích.`,
@@ -801,7 +801,7 @@ const X50 = weird("X50", "abs", ["ky", "mau", "tinh"],
   }),
   season({
     id: "w_X50", vn: "Lễ tưởng niệm người còn sống", color: "#d4a03a", years: [5, 9], weird: "abs",
-    rules: { flags: ["w_own_memorial"] },
+    rules: { flags: ["w_own_memorial"], yearly: { money: -0.03 } },
     reset: { cast: [
       { key: "chu_le", role: "sibling", label: "người em họ giữ sổ lễ" },
       { key: "chu_in", role: "neighbor", label: "ông chủ xưởng in lịch" },
@@ -816,7 +816,7 @@ const X50 = weird("X50", "abs", ["ky", "mau", "tinh"],
     beats: [
       /* mo_man */
       [
-        card("x50_mo_khe_cua", "Nấp sau khe cửa", (c, k) => `Bạn đứng sau khe cửa nghe trọn ${gio(c)} của chính mình. Người ta kể chuyện bạn cõng ai qua đoạn đường ngập, cho ai vay tiền rồi không đòi, toàn những chuyện bạn đã quên. ${k.gag()}`,
+        card("x50_mo_khe_cua", "Nấp sau khe cửa", (c, k) => `Bạn đứng sau khe cửa nghe trọn ${gio(c)} của chính mình. Người ta kể chuyện bạn cõng ai qua đoạn đường ngập, cho ai vay tiền rồi không đòi, toàn những chuyện bạn đã quên. Cuối buổi, người em họ giữ sổ lễ ghi tên bạn vào danh sách đóng góp hằng năm, cho chính ${gio(c)} của bạn. ${k.gag()}`,
           [C("Bước vào, cảm ơn từng người", { flags: ["x50_buoc_vao"], rel: 3, happy: 2 }, "Ấm lòng, cả phòng ngượng chín người"),
            C("Đứng nghe tiếp đến hết", { flags: ["x50_nghe_lom"], know: 2, counters: { x50_nghe: 1 } }, "Biết thêm nhiều điều, mang thêm một bí mật")]),
         card("x50_mo_cau_noi", "Câu nói ở bến xe", () => "Cuối buổi, một người bạn không nhớ mặt kể rằng mười năm trước, một câu bạn nói ở bến xe đã khiến người ấy quay về học tiếp. Bạn hoàn toàn không nhớ mình đã nói gì.",
