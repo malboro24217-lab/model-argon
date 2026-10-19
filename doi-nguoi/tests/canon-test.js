@@ -379,8 +379,8 @@ async function t8b() {
       if (ca.length >= 1 && ca[0] >= 20 && (ca.length === 1 || ca[1] > ca[0] + 10) && P.age >= ca[0] + 15) { base = P; first = ca[0]; T = ca[0] + 9; } }
     assert(base, 'a life whose first canon event leaves room for S22');
     const X = (base.lw.canon.seasons.find(s => s.from === first) || base.lw.season).id;
-    let swapped = 0, captured = null, yearlyAt = 0, post = null;
-    const origSwap = swapOther; swapOther = function (L, ...a) { const r = origSwap(L, ...a); if (r && !L.replay) { captured = L.savings; yearlyAt = seasonYearlyBase(L); swapped++; } return r; };
+    let swapped = 0, captured = null, yearlyAt = 0, post = null, marksAtSwap = 0;
+    const origSwap = swapOther; swapOther = function (L, ...a) { const r = origSwap(L, ...a); if (r && !L.replay) { captured = L.savings; yearlyAt = seasonYearlyBase(L); marksAtSwap = L.lw.cz.marks.length; swapped++; } return r; };
     // Canon event thứ hai (nhánh S22, một cửa) lúc T; chung kết "Đổi chỗ" lúc T + 1. Bản kia không có cờ của mùa X nên không gặp lại cảnh này.
     const s22ev = L => ({ id: 'canon_S22_' + L.age, seed: 'S22', axis: 'ky', age: L.age, slots: { fromPlayer: 0 }, title: 'Bản kia gõ cửa gương', text: 'Hình phản chiếu của bạn bước ra khỏi gương.', doors: [{ kind: 'ky', label: 'Bắt tay bản kia', hint: '', season: 'w_S22', weird: 'S22' }] });
     const fired = new WeakSet();
@@ -400,7 +400,7 @@ async function t8b() {
       const mk = P.lw.cz.marks.find(m => m.key === P.lw.swap.key); assert(mk && mk.choice_index === P.lw.swap.index && mk.choice_index !== firstIdx, 'new life took the other door at the first canon event');
       assert(P.lw.canon.seasons.some(s => s.id === 'w_S22' && s.swapped && s.reason === 'landing'), 'S22 season kept in the season list');
       assert(P.log.some(e => e.text === 'Bạn đổi chỗ với bản kia.'), 'log line');
-      { const ms = P.lw.cz.marks, fi = ms.findIndex(m => m.key === P.lw.swap.key), auto = ms.slice(fi + 1).filter(m => m.age <= P.lw.swap.age);
+      { const ms = P.lw.cz.marks, fi = ms.findIndex(m => m.key === P.lw.swap.key), auto = ms.slice(fi + 1, marksAtSwap);   // chỉ dấu ấn có lúc đổi chỗ; lựa chọn thật sau đó trong cùng năm (bản ghép: ivn_apprentice@35) vẫn rẽ được
         assert(auto.length > 0 && auto.every(m => !m.alt_indices.length), 'marks of the auto-played years are not offered for forks (review I-4)'); }
       assert(Math.abs(post - (captured - yearlyAt)) < 1, 'money −1 applied to the new life after the swap: ' + post + ' vs ' + (captured - yearlyAt));
       runToDeath(P); assert(!P.alive && P.age > T, 'swapped life plays on to death (' + P.age + ')');
@@ -615,6 +615,7 @@ async function t8b() {
   // 8b.19 (review I2) Di cư của mùa (reset xu_nguoi, chung kết có migrate_now) luôn thành; lời mời di cư thường vẫn tung 55%.
   { let n = 0, ok = 0;
     for (let k = 0; k < 400 && n < 40; k++) { const P = createLife(9001 + k * 61, { auto: true }); let g = 0; while (P.alive && P.age < 30 && g++ < 60) stepYear(P);
+      if (P.alive && !P.pending && P.lw.season) exitSeason(P, 'cut');   // từ Task 20 phần lớn đời 30 tuổi đang ở trong mùa (bản ghép: 21/400 đời trống): cắt mùa đó trước khi thử
       if (!P.alive || P.pending || P.lw.season || !canMigrate(P) || !canonIndependent(P)) continue;
       n++; G.life = P; enterSeason(P, 'xu_nguoi'); if (P.migrated && P.c !== P.birthC) ok++;
       assert(!P.log.some(e => e.age === P.age && /Thủ tục không thành/.test(e.text)), 'no failed paperwork line'); }
@@ -622,6 +623,7 @@ async function t8b() {
     const L0 = Argon.WEIRD.map(b => b.season).flatMap(d => d.landings.map(l => ({ d, l }))).find(x => /(^|\\|)migrate_now(\\||$)/.test(x.l.effects.custom || ''));
     assert(L0, 'a landing with migrate_now'); let m = 0, t = 0;
     for (let k = 0; k < 400 && t < 12; k++) { const P = createLife(9301 + k * 67, { auto: true }); let g = 0; while (P.alive && P.age < 30 && g++ < 60) stepYear(P);
+      if (P.alive && !P.pending && P.lw.season) exitSeason(P, 'cut');   // từ Task 20 phần lớn đời 30 tuổi đang ở trong mùa (bản ghép: 21/400 đời trống): cắt mùa đó trước khi thử
       if (!P.alive || P.pending || P.lw.season || !canMigrate(P) || !canonIndependent(P)) continue;
       t++; enterSeason(P, L0.d.id); if (P.migrated) continue; applyEffect(P, L0.l.effects); if (P.migrated) m++; else t--; }
     assert(t >= 8 && m === t, 'landing migrate_now always succeeds (' + m + '/' + t + ')');
