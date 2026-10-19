@@ -23635,7 +23635,7 @@ var Argon = (() => {
     if (seed.who) {
       let w = seed.who, p = w.plants ? strongestPlant(plants.filter((x) => !!x.npc && alive.has(x.npc)), w.plants) : void 0;
       if (p && p.npc)
-        s.who = p.npc, p.used === void 0 && s.fromPlayer++, usedPlant = p;
+        s.who = p.npc, s.fromPlayer++, usedPlant = p;
       else if (c.nemesis && alive.has(c.nemesis)) s.who = c.nemesis;
       else if (w.roles?.length) {
         let ids = /* @__PURE__ */ new Set();
@@ -23653,6 +23653,7 @@ var Argon = (() => {
         best && (s.who = best);
       }
       if (w.required && !s.who) return null;
+      usedPlant && usedPlant.used !== void 0 && s.fromPlayer--;
     }
     if (seed.what) {
       let w = seed.what, p = w.plants ? strongestPlant(plants.filter((x) => x !== usedPlant), w.plants) : void 0;

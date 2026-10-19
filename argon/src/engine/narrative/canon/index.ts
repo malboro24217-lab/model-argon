@@ -1,6 +1,9 @@
 export { AXES, AXIS_VN, CANON_THRESHOLD, CANON_GAP, CANON_MAX, CANON_AGES, FORCE_FIRST_AT, FORCE_SECOND_AT, DISCHARGE, WEIRD_DOOR_AT, basePressure, pressureOf, dueAxis } from "./Pressure.ts";
-export { strongestPlant, rankPlants, plantFlag, freshPlant, usePlants, eventPlants, settledPlant, dropPlants, type PlantRef } from "./Plants.ts";
-export { pickScars, scarText, scarPlants, type Scars } from "./Scars.ts";
+export { strongestPlant, plantFlag } from "./Plants.ts";
+export { pickScars, scarText, type Scars } from "./Scars.ts";
+/* ---- Task 20c: vật gài được dùng dần ---- */
+export { rankPlants, freshPlant, usePlants, eventPlants, settledPlant, dropPlants, type PlantRef } from "./Plants.ts";
+export { scarPlants } from "./Scars.ts";
 /* ---- Task 4: khung Mùa ---- */
 export { BEATS, BEAT_VN, SEASON_END_MAX, SEASON_MIN, seasonLength, beatGap, isDurable, addCustom, landingOf, gagStart, seasonKitFromNames, compileSeason } from "./Season.ts";
 export type { BeatName, SeasonKit, BeatCard, NewCast, Landing, SeasonDef } from "./Season.ts";

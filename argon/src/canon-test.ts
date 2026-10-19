@@ -1,6 +1,5 @@
 /** Kiểm thử lớp canon event / Mùa (narrative/canon). Chạy: node --experimental-strip-types src/canon-test.ts */
 import { createRng, AXES, basePressure, pressureOf, dueAxis, strongestPlant, plantFlag, pickScars, scarText, type FactContext, type Axis, type Plant } from "./engine/index.ts";
-import { freshPlant, rankPlants, usePlants, eventPlants, settledPlant, dropPlants, scarPlants } from "./engine/index.ts";
 import { randomCtx } from "./fuzz-ctx.ts";
 import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, isDurable, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
 import { SEASONS_NORMAL } from "./engine/narrative/canon/seasons/index.ts";
@@ -8,6 +7,7 @@ import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, TURNING_CATALOG, TU
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
 import { actorRole, ELEVATED_SEEDS } from "./engine/narrative/turning/kit.ts";
 import { GRANDPA_KEYS } from "./engine/narrative/canon/weird/abs_01.ts";
+import { freshPlant, rankPlants, usePlants, eventPlants, settledPlant, dropPlants, scarPlants } from "./engine/index.ts";
 import { HEIRLOOMS } from "./engine/narrative/canon/weird/abs_11.ts";
 
 let fails = 0;

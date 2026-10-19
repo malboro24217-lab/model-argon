@@ -104,12 +104,13 @@ const aliveSet = (c: FactContext): Set<string> => new Set(Object.values(c.cast).
 
 /**
  * Điền chỗ trống của một mầm, hoặc null nếu thiếu chỗ bắt buộc. Thứ tự (spec §4):
- *  1. vật gài của người chơi đúng loại, chưa dùng trước rồi dùng lâu nhất (strongestPlant); với `who` vật gài phải có npc còn sống.
- *     fromPlayer++ chỉ khi mầm còn tươi (chưa từng điền chỗ trống hay thành vết): mầm dùng lại không tính là "từ người chơi";
+ *  1. vật gài của người chơi đúng loại (fromPlayer++); với `who` vật gài phải có npc còn sống;
  *  2. kẻ thù (c.nemesis còn sống), chỉ cho `who`;
  *  3. NPC còn sống mang một vai trong who.roles có |opinion| lớn nhất (hòa thì id nhỏ hơn);
  *  4. tài sản đang có, theo thứ tự what.owns (c.asset_names);
  *  5. thiếu chỗ bắt buộc → null.
+ * Vật gài: chưa dùng trước rồi dùng lâu nhất (strongestPlant). fromPlayer chỉ tính mầm còn tươi (chưa từng điền chỗ trống
+ * hay thành vết, Task 20c): mầm dùng lại vẫn điền được nhưng không tính là "từ người chơi".
  * `noi` = N("place") nếu có N (generateCanon luôn đưa), không thì "".
  */
 export function fillSlots(seed: CanonSeed, c: FactContext, plants: Plant[], N?: Names): Slots | null {
@@ -120,7 +121,7 @@ export function fillSlots(seed: CanonSeed, c: FactContext, plants: Plant[], N?: 
   if (seed.who) {
     const w = seed.who;
     const p = w.plants ? strongestPlant(plants.filter((x) => !!x.npc && alive.has(x.npc)), w.plants) : undefined;
-    if (p && p.npc) { s.who = p.npc; if (p.used === undefined) s.fromPlayer++; usedPlant = p; }
+    if (p && p.npc) { s.who = p.npc; s.fromPlayer++; usedPlant = p; }
     else if (c.nemesis && alive.has(c.nemesis)) s.who = c.nemesis;
     else if (w.roles?.length) {
       const ids = new Set<string>();
@@ -135,6 +136,7 @@ export function fillSlots(seed: CanonSeed, c: FactContext, plants: Plant[], N?: 
       if (best) s.who = best;
     }
     if (w.required && !s.who) return null;
+    if (usedPlant && usedPlant.used !== undefined) s.fromPlayer--;   // Task 20c: mầm người đã dùng không tính "từ người chơi"
   }
 
   if (seed.what) {
