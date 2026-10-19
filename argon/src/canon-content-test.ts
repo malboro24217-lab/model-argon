@@ -774,7 +774,7 @@ function probeFacts(): { hits: Map<string, string>; repay: Map<string, string>; 
  */
 const DEAD_KEYS_MAX = 1352;
 {
-  const STATE_CUSTOM = /^(borrow|repay|restructure|job_new|job_lose|job_lose_maybe|job_switch|retire|become|study|move_city|migrate_now|return_home|marry|spouse_leave|have_child|age_skip|longevity|confess_hook|explode_hook|apologize|swap_other|remark)(:|$)/;
+  const STATE_CUSTOM = /^(borrow|repay|restructure|job_new|job_lose|job_lose_maybe|job_switch|retire|become|study|move_city|migrate_now|return_home|marry|spouse_leave|have_child|age_skip|longevity|confess_hook|explode_hook|apologize|swap_other|remark|money_season|migrate_sure)(:|$)/;
   const declares = (e: Effect | undefined): boolean => !!e && ((e.money ?? 0) !== 0 || customParts(e).some((p) => STATE_CUSTOM.test(p))
     || !!e.buy || !!e.sell || e.income_mult !== undefined || !!e.trust || !!e.promise || (!!e.gamble && (declares(e.gamble.win) || declares(e.gamble.lose))));
   /** FactContext bọc Proxy: ghi "ctx:<trường>", "flag:<cờ>", "counter:<khóa>" mỗi lần `when` hay chữ của thẻ đọc. */
