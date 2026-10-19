@@ -181,7 +181,7 @@ function takeCareer(P) { if (P.pending && P.pending.id === 'career') { const p =
   assert(years > 0, 'season ran'); assert.strictEqual(calls, years, 'once per season year: ' + calls + ' vs ' + years); }
 
 // 13. R9: cùng nhịp thì thẻ khai báo trước ra trước.
-{ const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null); enterSeason(P, 'lam_lai');
+{ const P = grow(3301, 32, P => P.income > 0 && P.lw.season === null && !P.lw.history.some(h => h.id.startsWith('ss_lam_lai_'))); enterSeason(P, 'lam_lai');   // chưa từng chơi lam_lai (thẻ đã ra thì không ra lại)
   const ctx = factContext(P), all = seasonCards('lam_lai');
   const want = all.filter(s => s.id.startsWith('ss_lam_lai_0_') && s.prerequisites(ctx)).map(s => s.id);
   const got = []; for (let k = 0; k < 10; k++) { const st = nextSeasonCard(P); if (!st || !st.id.startsWith('ss_lam_lai_0_')) break; got.push(st.id); P.lw.history.push({ id: st.id, age: P.age }); }

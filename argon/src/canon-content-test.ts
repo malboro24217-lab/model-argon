@@ -42,7 +42,7 @@ const ALL_SEASONS: SeasonDef[] = [...SEASONS, ...WEIRD.map((b) => b.season)];
 /* ------------------------------------------------------------------ kiểm đơn vị */
 
 ok(beatGap(12) === 3, "beatGap(12) === 3");
-ok(beatGap(3) === 1 && beatGap(1) === 1 && beatGap(20) === 5 && beatGap(8) === 2, "beatGap = max(1, round(len/4))");
+ok(beatGap(3) === 1 && beatGap(1) === 1 && beatGap(20) === 5 && beatGap(8) === 2 && beatGap(6) === 1 && beatGap(7) === 1, "beatGap = max(1, floor(len/4))");
 ok(BEATS.join(",") === "mo_man,khoi_dong,cu_lat,day,chung_ket", "5 nhịp đúng thứ tự");
 
 ok(isDurable({ custom: "become:singer" }), "durable: become:");

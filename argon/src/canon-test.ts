@@ -3,7 +3,7 @@ import { createRng, AXES, NEMESIS_AT, nemesisOf, basePressure, pressureOf, dueAx
 import { randomCtx } from "./fuzz-ctx.ts";
 import { generateCanon, fillSlots, canonView, GENERIC_DOORS, playedFlag, isDurable, seasonKitFromNames, type CanonSeed, type WeirdBranch, type Slots } from "./engine/index.ts";
 import { SEASONS_NORMAL } from "./engine/narrative/canon/seasons/index.ts";
-import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, ABS_SEASON_IDS, WEIRD, ABSURD_KY, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, CANON_SEEDS } from "./engine/index.ts";
+import { CODEX_PLANTS, CODEX_SEASON_TAGS, NORMAL_SEASON_IDS, ABS_SEASON_IDS, ABSURD_TAG_EXCLUDE, WEIRD, ABSURD_KY, TURNING_CATALOG, TURNING_STORYLETS, turningLegacy, CANON_SEEDS } from "./engine/index.ts";
 import { linkedEffect } from "./engine/narrative/turning/links.ts";
 import { actorRole, ELEVATED_SEEDS } from "./engine/narrative/turning/kit.ts";
 
@@ -325,7 +325,11 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
   ok(Object.values(CODEX_SEASON_TAGS).every((t) => t.length >= 1 && t.every((id) => NORMAL_SEASON_IDS.includes(id) || ABS_SEASON_IDS.includes(id))), "tag chỉ dùng mùa thường hoặc mùa phi lý");
   ok(ABS_SEASON_IDS.length === 50 && ABS_SEASON_IDS.every((id) => WEIRD.some((b) => b.kind === "abs" && b.season.id === id)), "50 id mùa phi lý là mùa thật của nhánh abs");
   ok(Object.entries(CODEX_SEASON_TAGS).every(([f, t]) => !t.some((id) => ABS_SEASON_IDS.includes(id)) || f.startsWith("tp_a")), "chỉ thẻ phi lý tp_a* gắn mùa phi lý");
-  ok(Array.from({ length: 50 }, (_, i) => "tp_a" + String(i + 1).padStart(2, "0")).every((f) => ABS_SEASON_IDS.every((id) => CODEX_SEASON_TAGS[f]?.includes(id))), "mọi tp_a* là cảnh phụ của mọi mùa phi lý");
+  ok(Array.from({ length: 50 }, (_, i) => "tp_a" + String(i + 1).padStart(2, "0")).every((f) => ABS_SEASON_IDS.every((id) => (ABSURD_TAG_EXCLUDE[f] ?? []).includes(id) || CODEX_SEASON_TAGS[f]?.includes(id))), "mọi tp_a* là cảnh phụ của mọi mùa phi lý, trừ cặp loại");
+  /* review B2: thẻ không làm cảnh phụ cho mùa nâng từ chính nó, hay mùa trùng mô-típ */
+  for (const [f, s] of [["tp_a03", "w_X22"], ["tp_a23", "w_X23"], ["tp_a42", "w_X50"], ["tp_a46", "w_X34"], ["tp_a28", "w_X12"], ["tp_a04", "w_X42"], ["tp_a26", "w_X36"], ["tp_a16", "w_X02"], ["tp_a25", "w_X16"], ["tp_a36", "w_X47"]] as const)
+    ok(!CODEX_SEASON_TAGS[f]?.includes(s), `${f} không gắn ${s}`);
+  ok(Object.entries(ABSURD_TAG_EXCLUDE).every(([f, ss]) => ss.every((s) => ABS_SEASON_IDS.includes(s) && !CODEX_SEASON_TAGS[f]?.includes(s))), "ABSURD_TAG_EXCLUDE: id mùa thật, đã loại khỏi tag");
   ok(eq(NORMAL_SEASON_IDS, ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"]), "5 id mùa thường");
   ok(tagged.every((k) => TURNING_CATALOG.some((d) => d.id === k)), "mọi khóa tag là fork thật");
 
@@ -564,7 +568,7 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
   {
     const NORMAL = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"], INDEP = new Set(["tron_chay", "xu_nguoi", "lam_lai"]);
     const rr = createRng(4242);
-    let calls = 0, built = 0, dup = 0, example = "", hintBad = 0, hintEx = "";
+    let calls = 0, built = 0, dup = 0, example = "", hintBad = 0, hintEx = "", kindDup = 0, kindEx = "";
     for (let i = 0; i < 42000; i++) {
       const c = randomCtx(rr); c.weird = (i % 3) as 0 | 1 | 2; calls++;
       const played = new Set<string>(); for (let k = rr.int(3); k > 0; k--) played.add(rr.pick(NORMAL));
@@ -573,6 +577,8 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
       const ev = generateCanon(c, ax, c.plants, createRng(9000 + i), names("Phố Mới"), CANON_SEEDS, WEIRD);
       if (!ev) continue;
       built++;
+      const plain = ev.doors.filter((d) => !d.weird);   // cửa kỳ dị đều có kind "ky"; chỉ cửa thường phải khác kiểu
+      if (new Set(plain.map((d) => d.kind)).size !== plain.length) { kindDup++; if (!kindEx) kindEx = `${ev.id}: ${ev.doors.map((d) => d.kind).join(", ")}`; }
       for (const d of ev.doors) if (d.weird && !(/^(Viễn tưởng|Phi lý): /.test(d.hint) && !d.hint.endsWith("…"))) { hintBad++; if (!hintEx) hintEx = `${d.weird}: ${d.hint}`; }
       const open = NORMAL.filter((s) => !played.has(s) && (c.independent || !INDEP.has(s)) && (s !== "xu_nguoi" || c.can_migrate));
       const distinct = new Set(ev.doors.map((d) => d.season)).size;
@@ -580,6 +586,7 @@ ok(nemesisOf({ cast: {}, opinion: {} }) === undefined, "nemesisOf: không ai");
     }
     ok(calls === 42000 && built > 20000, `cửa khác mùa: dựng được ${built}/42000 biến cố`);
     ok(hintBad === 0, `hint cửa kỳ dị có tiền tố Viễn tưởng/Phi lý và không bị cắt (lệch ${hintBad}, vd. ${hintEx})`);
+    ok(kindDup === 0, `cửa khác kiểu: ${kindDup} biến cố có hai cửa cùng kiểu (vd. ${kindEx})`);
     ok(dup === 0, `cửa khác mùa: ${dup} biến cố có hai cửa cùng mùa dù còn đủ mùa mở (vd. ${example})`);
   }
 }
