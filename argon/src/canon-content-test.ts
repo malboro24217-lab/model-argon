@@ -33,6 +33,7 @@ import {
 import { randomCtx } from "./fuzz-ctx.ts";
 import { land, ending } from "./engine/narrative/canon/kit.ts";
 import { readdirSync, readFileSync } from "node:fs";
+import { CONTRADICTIONS, DEMO_SEASONS, entryChanges, probeOf } from "./canon-r25.ts";
 
 let fails = 0;
 const seen = new Set<string>();
@@ -766,9 +767,12 @@ function probeFacts(): { hits: Map<string, string>; repay: Map<string, string>; 
  *     thời gian, mua / bán, hệ số thu nhập, lòng tin, lời hứa). Cờ thế giới rules.flags không tính: không ai đọc chúng.
  *  2. Cờ / bộ đếm đặt ở reset.effects phải được một thẻ của mùa đọc (FactContext bọc Proxy ghi lại lượt đọc).
  *  3. Cờ / bộ đếm do lựa chọn ở nhịp 0–3 đặt mà không thẻ nào cùng hay sau nhịp đó đọc, cũng không file nào khác nhắc
- *     tới: tổng không được tăng quá DEAD_KEYS_MAX (lúc Task 20d có 1352; chỉ được giảm). Viết thẻ mới thì đọc lại cờ mình đặt.
+ *     tới: tổng phải bằng đúng DEAD_KEYS_MAX (lúc Task 20d có 1352). Tăng thì FAIL; giảm thì cũng FAIL, để hạ hằng số xuống
+ *     theo (trần chỉ đi xuống). Viết thẻ mới thì đọc lại cờ mình đặt.
  *  4. Chung kết: landing migrate_now chỉ được mở khi migrateOk(c) (tự lập và còn nước để đi; host bỏ migrate_now với người
  *     chưa tự lập); landing move_city không mở cho người dưới 18 tuổi ở những mùa người dưới 18 tuổi chơi tới chung kết được.
+ *  5. Mâu thuẫn đã sửa ở Task 20d (CONTRADICTIONS trong canon-r25.ts) không được quay lại; 13 mùa của bản demo
+ *     (DEMO_SEASONS) phải ở lớp "đạt": có thay đổi tình thế chắc chắn lúc vào mùa (entryChanges, cùng định nghĩa với bảng).
  * Host (doi-nguoi/canon.js enterSeason) không tự đổi nghề hay tiền khi mùa không khai báo: chỉ reset.cash (người tự lập),
  * reset.effects và hệ số rules.income. doi-nguoi/tests/season-entry-test.js kiểm điều đó trên cả 105 mùa.
  */
@@ -809,8 +813,15 @@ const DEAD_KEYS_MAX = 1352;
   const elsewhere = (key: string, own: string | undefined) => [...files].some(([f, s]) => f !== own && s.includes(`"${key}"`));
 
   let dead = 0;
+  const probeBase: FactContext = { ...randomCtx(createRng(77)), age: 35 };
+  const demo = new Set(DEMO_SEASONS);
   for (const def of ALL_SEASONS) {
     const S = `R25 mùa ${def.id}`;
+    // 5. mâu thuẫn đã sửa không quay lại; mùa demo ở lớp "đạt"
+    const { changes } = entryChanges(def, ctxs, (d, card, c) => view(d, card, c));
+    const k = CONTRADICTIONS[def.id];
+    if (k && k.open(probeOf(def, changes, probeBase, (d, card, c) => view(d, card, c)))) bad(`${S}: mâu thuẫn đã sửa ở Task 20d quay lại — ${k.claim} (cách sửa: ${k.fix})`);
+    if (demo.has(def.id) && !changes.length) bad(`${S}: mùa của bản demo phải có thay đổi tình thế chắc chắn lúc vào mùa (lớp "đạt", R25)`);
     // 1. khai báo ít nhất một thay đổi lúc vào mùa
     const first = def.beats[0].some((card) => ctxs.some((c) => view(def, card, { ...c, season: def.id, season_beat: 0 })?.choices.some((ch) => declares(ch.effects))));
     const declared = def.reset.cash !== undefined || declares(def.reset.effects) || !!def.reset.effects?.flags?.length
@@ -863,6 +874,7 @@ const DEAD_KEYS_MAX = 1352;
     }
   }
   if (dead > DEAD_KEYS_MAX) bad(`R25: ${dead} cờ / bộ đếm do lựa chọn đặt mà không thẻ nào đọc lại, trần là ${DEAD_KEYS_MAX} (đọc lại cờ mình đặt, hoặc bỏ cờ thừa)`);
+  if (dead < DEAD_KEYS_MAX) bad(`R25: hạ DEAD_KEYS_MAX xuống ${dead} (trần chỉ đi xuống)`);
   if (process.env.PROBE_STATS) console.log(`R25: ${dead} cờ / bộ đếm không ai đọc (trần ${DEAD_KEYS_MAX})`);
 }
 

@@ -48,13 +48,15 @@ Task 20d, 19/10/2026. Chuẩn là ruling R25 của Tùng. Bảng ở cuối file
 
 | | Trước (43c6677) | Sau (Task 20d) |
 |---|---|---|
-| (a) đạt | 31 | 64 |
-| (b) chỉ bằng lời kể | 61 | 41 |
-| (c) mâu thuẫn với trạng thái | 13 | 0 |
+| (a) đạt | 29 | 64 |
+| (b) chỉ bằng lời kể | 59 | 41 |
+| (c) mâu thuẫn với trạng thái | 17 | 0 |
+
+Số "trước" có 17 mâu thuẫn: 13 tìm thấy lúc kiểm toán, 4 do review 20d chỉ ra (S18, S34, S38, X15: chữ chung kết vẫn nói chuyện ra nước ngoài khi người chơi không đi được; ở bản cũ lựa chọn đi luôn hiện, nhưng host bỏ `migrate_now` với người chưa tự lập, nên dòng landing cũng sai).
 
 13 mùa của bản demo đều ở lớp (a).
 
-## 4. Mâu thuẫn đã sửa (13)
+## 4. Mâu thuẫn đã sửa (17)
 | Mùa | Chữ khẳng định | Trạng thái trước | Sửa |
 |---|---|---|---|
 | `tron_chay` Kẻ trốn chạy | Cả mùa trốn nợ: gã đòi nợ áo hoa, món nợ bị bán lại | Người không nợ vào mùa vẫn không nợ | `reset.effects` thêm `borrow:0.5`; `tc_mo_xe` kể tờ giấy vay nóng. `L_VE` đã có `repay:1` |
@@ -64,9 +66,13 @@ Task 20d, 19/10/2026. Chuẩn là ruling R25 của Tùng. Bảng ở cuối file
 | `w_S07` Thuộc địa đỏ | Ký hợp đồng lên trạm, "lương gấp ba", nhận ca trực | Nghề trong host vẫn là nghề cũ; người chưa có việc không có lương để nhân ba | `s07_mo_buong`: ca ngoài trời `job_switch:build`, ca nhà kính `job_switch:farm` |
 | `w_S33` Người cuối cùng còn là người | Nhánh chỉ mở cho người vừa mất việc, rồi kể "nhận việc, lương gấp ba" | Không có việc nào, ×3 của 0 vẫn là 0 | `s33_mo_phong`: cả hai lựa chọn `job_switch:office` |
 | `w_S48` Kẻ buồn hợp pháp | "Mỗi lần buồn bị trừ tiền thẳng vào tài khoản", "tin nhắn trừ tiền đầu tiên tới" | Một lựa chọn không mất đồng nào | `rules.yearly` tiền −0.05: tiền phạt buồn mỗi năm |
-| `w_S50` Người không tồn tại | "Hệ thống xóa luôn mọi khoản nợ mang tên bạn" (nhánh chỉ mở khi đang nợ) | Nợ vẫn còn nguyên | `reset.effects` `repay:50`; chung kết sống lại bằng tên cũ ghi lại nợ (`borrow:1`) kèm tiền phạt |
+| `w_S50` Người không tồn tại | "Hệ thống xóa luôn mọi khoản nợ mang tên bạn" (nhánh chỉ mở khi đang nợ) | Nợ vẫn còn nguyên | `reset.effects` `repay:50`; chung kết lấy lại tên cũ "mở một sổ nợ mới đứng tên bạn" (`borrow:1`, nợ và tiền mặt cùng tăng) kèm tiền phạt −1.5 |
+| `w_S18` Chủ trọ liên sao | `s18_ket`: người thuê "hỏi bạn có muốn đi cùng không" | Lựa chọn lên tàu (`migrate_now`) không mở cho người không đi được | Câu rẽ theo `migrateOk(c)`: "chuyến này không chở thêm được ai" |
+| `w_S34` Nhà có thần đồng | `s34_ket`: "giấy tờ đã sẵn, đi thì đi cho sớm" | Như trên, với lựa chọn đổi nước | Câu rẽ theo `migrateOk(c)`: "giấy tờ ra nước ngoài không xin được" |
+| `w_S38` Công dân biển | `s38_ket`: "Mỗi cư dân được chọn: nhận giấy tờ ở lại nước đó…" | Như trên | Câu rẽ theo `migrateOk(c)`: tên bạn không có trong danh sách |
+| `w_X15` Kiện hàng biết đi | `x15_ket`: "giấy tờ ở lại đã có cửa, chỉ chờ bạn gật đầu" | Như trên, với lựa chọn ở lại hợp pháp | Câu rẽ theo `migrateOk(c)`: giấy tờ chưa có cửa, bến cảng còn cần người làm |
 | `w_X07` Gương mặt trên bao bì | "Xin hãng nghỉ một năm không lương" | Hợp đồng khuôn mặt không phải chỗ làm có lương | Nhãn thành "Xin hãng tạm ngưng hợp đồng một năm" |
-| `w_X12` Người đã chết hợp pháp | "Để ông ấy khép sổ: Nhẹ nợ hôm nay"; "quyết định thôi việc" | Không trả đồng nợ nào; host vẫn giữ việc (chỉ ×0.3) | Lựa chọn khép sổ thêm `repay:0.5`; chữ thành "lương chỉ trả qua người nhà và bớt gần hết" |
+| `w_X12` Người đã chết hợp pháp | "Để ông ấy khép sổ: Nhẹ nợ hôm nay"; "quyết định thôi việc" | Không trả đồng nợ nào; host vẫn giữ việc (chỉ ×0.3) | Lựa chọn khép sổ thêm `repay:0.5`; chữ thành "lương chỉ trả qua người nhà và bị cắt gần hết" |
 | `w_X25` Vương quốc dưa | "Từ nay lương hưu sẽ trả bằng dưa" | Host vẫn trả đủ bằng tiền | `rules.yearly` tiền −0.05: phần trả bằng dưa bán không kịp thì hỏng; `x25_mo_dem` nói rõ |
 | `w_X33` Người nói Không | "Một khoản tiền bằng ba năm thu nhập" | Lựa chọn chỉ cho 0.6 năm | Chữ thành "hơn nửa năm thu nhập" |
 | `w_X40` Người của một ngày | "Mình mượn tạm ít tiền", "thiếu đúng số tiền một đôi giày" | Một lựa chọn không mất đồng nào | `rules.yearly` tiền −0.05: mỗi năm người kia tiêu một ít tiền của bạn |
@@ -118,11 +124,12 @@ Những mùa này giờ ở lớp (a) theo máy. Chúng là thay đổi nhỏ (k
 3. Cờ hay bộ đếm do lựa chọn ở nhịp 0–3 đặt mà không thẻ nào cùng hay sau nhịp đó đọc, và không file nào khác nhắc tới:
    - lúc này có **1352** khóa như vậy trên 105 mùa;
    - viết lại toàn bộ để mọi cờ đều được đọc là việc của một đợt viết lại, không thuộc 20d;
-   - bộ kiểm chặn trần `DEAD_KEYS_MAX = 1352`, chỉ được giảm.
+   - bộ kiểm đòi tổng bằng đúng `DEAD_KEYS_MAX = 1352`: tăng thì FAIL, giảm cũng FAIL để hạ hằng số theo, nên trần chỉ đi xuống.
 4. Chung kết:
    - landing `migrate_now` chỉ mở khi `migrateOk(c)` (tự lập và còn nước để đi). Đã sửa 11 mùa: S07, S15, S18, S34, S38, S40, S45, S48, X15, X24, X34; mùa nào thiếu lựa chọn thì có thêm một landing ở lại;
    - landing `move_city` không mở cho người dưới 18 tuổi. Chỉ `vu_an_gia_toc` chơi tới chung kết được trước 18 tuổi (vào từ 8 tuổi, mùa ngắn nhất 8 năm), và ở đó `ra_rieng` được thay bằng `gui_so_tiet_kiem`.
-- Đã thử phá từng luật (bỏ luật năm của S03, bỏ cổng di cư của S07, cho trẻ 16 tuổi ra riêng): bộ kiểm báo đủ 9 lỗi, rồi khôi phục.
+5. Mâu thuẫn đã sửa không được quay lại, và 13 mùa của bản demo phải ở lớp (a). Hàm dò nằm ở `argon/src/canon-r25.ts`, dùng chung với công cụ kiểm toán. Công cụ cũng thoát 1 khi còn lớp (c) hay mùa demo chưa đạt (chạy với `--root` trên bản cũ thì thoát 1 là đúng).
+- Đã thử phá từng luật (bỏ luật năm của S03, bỏ cổng di cư của S07, cho trẻ 16 tuổi ra riêng): bộ kiểm báo đủ 9 lỗi, rồi khôi phục. Sau review: bỏ `borrow` của tron_chay, trả lại "ba năm thu nhập" ở X33, bỏ luật năm của S05 thì bộ kiểm báo đủ 3 lỗi và công cụ thoát 1.
 
 ## 8. Host
 - `doi-nguoi/canon.js` `enterSeason` **không** tự đổi nghề hay tiền:
@@ -181,9 +188,9 @@ Mùa in đậm là mùa của bản demo. Cột "Thay đổi khai báo" chỉ gh
 | w_S15 Sống trong vòm<br>`weird/sf_11.ts:451` | b (chỉ bằng lời kể) | — | — | Không tính: thu nhập ×0.85 (nhỏ hơn ngưỡng 0.8/1.2); cờ thế giới w_dome (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 12 |
 | w_S16 Người bạn bằng thép<br>`weird/sf_11.ts:547` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_robot_friend (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 13 |
 | w_S17 Địa chủ mặt trăng<br>`weird/sf_11.ts:644` | b (chỉ bằng lời kể) | — | — | Chỉ tùy lựa chọn: s17_mo_khung: tiền +0.6 năm thu nhập; s17_mo_moi_gioi: tiền +0.4 năm thu nhập<br>Không tính: cờ thế giới w_moon_land (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 10 |
-| w_S18 Chủ trọ liên sao<br>`weird/sf_11.ts:731` | a (đạt) | luật mùa: mỗi năm: tiền +0.03 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: s18_ket | Thêm ở 20d: luật năm +0.03: tiền phòng bằng đá biết hát (s18_mo_hop_dong)<br>Cờ/bộ đếm không thẻ nào đọc lại: 14 |
-| w_S19 Sống trong máy<br>`weird/sf_11.ts:825` | a (đạt) | luật mùa: thu nhập từ lương ×0.5 (rules.income) | host áp mỗi năm trong mùa | Cờ/bộ đếm không thẻ nào đọc lại: 12 |
-| w_S20 Người phát sáng<br>`weird/sf_11.ts:917` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_glowing (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 12 |
+| w_S18 Chủ trọ liên sao<br>`weird/sf_11.ts:731` | a (đạt) | luật mùa: mỗi năm: tiền +0.03 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: s18_ket | Đã sửa (20d): Câu rẽ theo migrateOk(c): chuyến này không chở thêm được ai.<br>Thêm ở 20d: luật năm +0.03: tiền phòng bằng đá biết hát (s18_mo_hop_dong)<br>Cờ/bộ đếm không thẻ nào đọc lại: 14 |
+| w_S19 Sống trong máy<br>`weird/sf_11.ts:827` | a (đạt) | luật mùa: thu nhập từ lương ×0.5 (rules.income) | host áp mỗi năm trong mùa | Cờ/bộ đếm không thẻ nào đọc lại: 12 |
+| w_S20 Người phát sáng<br>`weird/sf_11.ts:919` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_glowing (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 12 |
 | w_S21 Nghe lời mình tương lai<br>`weird/sf_21.ts:24` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_future_call (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 12 |
 | w_S22 Đổi chỗ<br>`weird/sf_21.ts:91` | a (đạt) | luật mùa: mỗi năm: tiền −0.03 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: s22_mo_so, s22_day_met, s22_ket | Thêm ở 20d: luật năm −0.03: bản kia tiêu bằng thẻ của bạn (s22_mo_guong)<br>Cờ/bộ đếm không thẻ nào đọc lại: 11 |
 | w_S23 Người phiên dịch thực vật<br>`weird/sf_21.ts:163` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_talking_plants (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 12 |
@@ -197,11 +204,11 @@ Mùa in đậm là mùa của bản demo. Cột "Thay đổi khai báo" chỉ gh
 | w_S31 Người không sao<br>`weird/sf_31.ts:37` | a (đạt) | luật mùa: thu nhập từ lương ×0.4 (rules.income) | host áp mỗi năm trong mùa; thẻ đọc lại: s31_mo_khoa | Cờ/bộ đếm không thẻ nào đọc lại: 16 |
 | w_S32 Cả xóm chung giấc mơ<br>`weird/sf_31.ts:120` | a (đạt) | luật mùa: mỗi năm: tiền −0.03 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: s32_ket | Thêm ở 20d: luật năm −0.03: phí duy trì trạm tín hiệu (s32_mo_sang)<br>Cờ/bộ đếm không thẻ nào đọc lại: 15 |
 | w_S33 Người cuối cùng còn là người<br>`weird/sf_31.ts:191` | a (đạt) | luật mùa: thu nhập từ lương ×3 (rules.income)<br>việc: job_switch:office (mở màn s33_mo_phong (mọi lựa chọn)) | host áp mỗi năm trong mùa<br>host trả lương theo nghề mỗi năm | Đã sửa (20d): s33_mo_phong: cả hai lựa chọn job_switch:office.<br>Cờ/bộ đếm không thẻ nào đọc lại: 15 |
-| w_S34 Nhà có thần đồng<br>`weird/sf_31.ts:261` | b (chỉ bằng lời kể) | — | — | Không tính: thu nhập ×0.9 (nhỏ hơn ngưỡng 0.8/1.2); cờ thế giới w_prodigy (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 17 |
+| w_S34 Nhà có thần đồng<br>`weird/sf_31.ts:261` | b (chỉ bằng lời kể) | — | — | Đã sửa (20d): Câu rẽ theo migrateOk(c): giấy tờ ra nước ngoài không xin được.<br>Không tính: thu nhập ×0.9 (nhỏ hơn ngưỡng 0.8/1.2); cờ thế giới w_prodigy (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 17 |
 | **w_S35** Người giữ hố đen<br>`weird/sf_31.ts:330` | a (đạt) | luật mùa: mỗi năm: tiền −0.03 năm thu nhập, repay:0.2 (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: s35_kd_no, s35_kd_lon, s35_day_kiem_tra… | Cờ/bộ đếm không thẻ nào đọc lại: 15 |
 | w_S36 Nuôi quái thú<br>`weird/sf_31.ts:407` | a (đạt) | luật mùa: thu nhập từ lương ×0.8 (rules.income)<br>luật mùa: mỗi năm: tiền −0.05 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa<br>host áp mỗi năm trong mùa; thẻ đọc lại: s36_ket | Cờ/bộ đếm không thẻ nào đọc lại: 14 |
 | w_S37 Sống trong thân người kia<br>`weird/sf_31.ts:478` | b (chỉ bằng lời kể) | — | — | Không tính: thu nhập ×0.9 (nhỏ hơn ngưỡng 0.8/1.2); cờ thế giới w_body_swap (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 14 |
-| w_S38 Công dân biển<br>`weird/sf_31.ts:553` | a (đạt) | luật mùa: thu nhập từ lương ×1.3 (rules.income)<br>luật mùa: mỗi năm: tiền −0.05 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa<br>host áp mỗi năm trong mùa; thẻ đọc lại: s38_ket | Cờ/bộ đếm không thẻ nào đọc lại: 14 |
+| w_S38 Công dân biển<br>`weird/sf_31.ts:553` | a (đạt) | luật mùa: thu nhập từ lương ×1.3 (rules.income)<br>luật mùa: mỗi năm: tiền −0.05 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa<br>host áp mỗi năm trong mùa; thẻ đọc lại: s38_ket | Đã sửa (20d): Câu rẽ theo migrateOk(c): tên bạn không có trong danh sách.<br>Cờ/bộ đếm không thẻ nào đọc lại: 14 |
 | w_S39 Ông chủ của chính mình<br>`weird/sf_31.ts:623` | a (đạt) | luật mùa: thu nhập từ lương ×50 (rules.income) | host áp mỗi năm trong mùa | Cờ/bộ đếm không thẻ nào đọc lại: 13 |
 | w_S40 Ai đã sống tuổi thơ của tôi<br>`weird/sf_31.ts:690` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_implanted_childhood (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 15 |
 | w_S41 Nhà ở hai nơi<br>`weird/sf_41.ts:29` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_nha_hai_noi (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 12 |
@@ -213,7 +220,7 @@ Mùa in đậm là mùa của bản demo. Cột "Thay đổi khai báo" chỉ gh
 | **w_S47** Chuộc ký ức nhà mình<br>`weird/sf_41.ts:459` | a (đạt) | luật mùa: mỗi năm: tiền −0.05 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: s47_ket | Thêm ở 20d: luật năm −0.05: phí tài khoản lưu trữ ký ức (s47_mo_thu)<br>Cờ/bộ đếm không thẻ nào đọc lại: 11 |
 | w_S48 Kẻ buồn hợp pháp<br>`weird/sf_41.ts:533` | a (đạt) | luật mùa: mỗi năm: tiền −0.05 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: s48_ket | Đã sửa (20d): rules.yearly money −0.05: tiền phạt buồn mỗi năm.<br>Cờ/bộ đếm không thẻ nào đọc lại: 10 |
 | w_S49 Người thấy giá<br>`weird/sf_41.ts:605` | a (đạt) | luật mùa: thu nhập từ lương ×1.6 (rules.income) | host áp mỗi năm trong mùa | Cờ/bộ đếm không thẻ nào đọc lại: 8 |
-| w_S50 Người không tồn tại<br>`weird/sf_41.ts:676` | a (đạt) | nợ: repay:50 (reset.effects)<br>luật mùa: thu nhập từ lương ×0.6 (rules.income) | kinh tế host tính nợ mỗi năm (repay/vỡ nợ); thẻ đọc lại: s50_ket<br>host áp mỗi năm trong mùa; thẻ đọc lại: s50_mo_cong_ty, s50_ket | Đã sửa (20d): reset.effects repay:50 (sổ nợ trắng tinh).<br>Cờ/bộ đếm không thẻ nào đọc lại: 10 |
+| w_S50 Người không tồn tại<br>`weird/sf_41.ts:676` | a (đạt) | nợ: repay:50 (reset.effects)<br>luật mùa: thu nhập từ lương ×0.6 (rules.income) | kinh tế host tính nợ mỗi năm (repay/vỡ nợ); thẻ đọc lại: s50_ket<br>host áp mỗi năm trong mùa; thẻ đọc lại: s50_mo_cong_ty, s50_ket | Đã sửa (20d): reset.effects repay:50 (sổ nợ trắng tinh); chung kết lấy lại tên cũ mở một sổ nợ mới (borrow:1) kèm tiền phạt.<br>Cờ/bộ đếm không thẻ nào đọc lại: 10 |
 | w_X01 Nhiệm kỳ của trâu<br>`weird/abs_01.ts:44` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_x01_nhiem_ky_trau (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 13 |
 | w_X02 Gia tộc mèo<br>`weird/abs_01.ts:109` | a (đạt) | luật mùa: mỗi năm: tiền −0.03 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: x02_ket | Thêm ở 20d: luật năm −0.03: phí giữ sổ (x02_mo_so)<br>Cờ/bộ đếm không thẻ nào đọc lại: 15 |
 | w_X03 Lễ hội mang tên mình<br>`weird/abs_01.ts:170` | a (đạt) | luật mùa: mỗi năm: tiền −0.05 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: x03_ket | Cờ/bộ đếm không thẻ nào đọc lại: 11 |
@@ -225,10 +232,10 @@ Mùa in đậm là mùa của bản demo. Cột "Thay đổi khai báo" chỉ gh
 | w_X09 Gà tiên tri<br>`weird/abs_01.ts:548` | b (chỉ bằng lời kể) | — | — | Chỉ tùy lựa chọn: x09_mo_qua_trung: tiền +0.5 năm thu nhập<br>Không tính: cờ thế giới w_x09_ga_tien_tri (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 16 |
 | w_X10 Vua món cháy<br>`weird/abs_01.ts:614` | a (đạt) | luật mùa: thu nhập từ lương ×1.2 (rules.income) | host áp mỗi năm trong mùa | Cờ/bộ đếm không thẻ nào đọc lại: 15 |
 | w_X11 Vận động viên môn bí ẩn<br>`weird/abs_11.ts:122` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_mon_bi_an (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 13 |
-| w_X12 Người đã chết hợp pháp<br>`weird/abs_11.ts:181` | a (đạt) | luật mùa: thu nhập từ lương ×0.3 (rules.income) | host áp mỗi năm trong mùa; thẻ đọc lại: x12_kd_tai_khoan | Đã sửa (20d): Lựa chọn khép sổ thêm repay:0.5; chữ về chỗ làm đổi thành "lương chỉ còn trả qua người nhà, bớt gần hết".<br>Cờ/bộ đếm không thẻ nào đọc lại: 11 |
+| w_X12 Người đã chết hợp pháp<br>`weird/abs_11.ts:181` | a (đạt) | luật mùa: thu nhập từ lương ×0.3 (rules.income) | host áp mỗi năm trong mùa; thẻ đọc lại: x12_kd_tai_khoan | Đã sửa (20d): Lựa chọn khép sổ thêm repay:0.5; chữ về chỗ làm đổi thành "lương chỉ còn trả qua người nhà, bị cắt gần hết".<br>Cờ/bộ đếm không thẻ nào đọc lại: 11 |
 | w_X13 Bảo tàng sống<br>`weird/abs_11.ts:237` | a (đạt) | luật mùa: thu nhập từ lương ×1.2 (rules.income) | host áp mỗi năm trong mùa | Cờ/bộ đếm không thẻ nào đọc lại: 10 |
 | **w_X14** Người thừa kế bốc thăm<br>`weird/abs_11.ts:291` | a (đạt) | luật mùa: mỗi năm: tiền −0.05 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: x14_ket | Thêm ở 20d: luật năm −0.05: tiền giữ biệt thự và án phí (x14_mo_biet_thu)<br>Cờ/bộ đếm không thẻ nào đọc lại: 11 |
-| w_X15 Kiện hàng biết đi<br>`weird/abs_11.ts:345` | a (đạt) | luật mùa: thu nhập từ lương ×0.4 (rules.income) | host áp mỗi năm trong mùa | Cờ/bộ đếm không thẻ nào đọc lại: 10 |
+| w_X15 Kiện hàng biết đi<br>`weird/abs_11.ts:345` | a (đạt) | luật mùa: thu nhập từ lương ×0.4 (rules.income) | host áp mỗi năm trong mùa | Đã sửa (20d): Câu rẽ theo migrateOk(c): giấy tờ chưa có cửa, bến cảng còn cần người làm.<br>Cờ/bộ đếm không thẻ nào đọc lại: 10 |
 | w_X16 Phát ngôn viên của chó<br>`weird/abs_11.ts:404` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_phat_ngon_cho (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 13 |
 | w_X17 Con phố mang tên tôi<br>`weird/abs_11.ts:463` | a (đạt) | luật mùa: mỗi năm: tiền −0.03 năm thu nhập (rules.yearly) | host áp mỗi năm trong mùa; thẻ đọc lại: x17_ket | Thêm ở 20d: luật năm −0.03: quỹ khu phố gấp đôi (x17_mo_quy_tac)<br>Cờ/bộ đếm không thẻ nào đọc lại: 11 |
 | w_X18 Nhà côn trùng học bất đắc dĩ<br>`weird/abs_11.ts:520` | b (chỉ bằng lời kể) | — | — | Không tính: cờ thế giới w_con_trung_hoc (không ai đọc)<br>Cờ/bộ đếm không thẻ nào đọc lại: 13 |

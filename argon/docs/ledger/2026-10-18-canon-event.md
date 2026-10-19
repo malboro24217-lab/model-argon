@@ -46,7 +46,7 @@ Mỗi cửa mở một Mùa dài 8–20 năm (nhánh kỳ dị 5–12 năm). M�
   - mỗi Mùa có **ít nhất một thay đổi tình thế có tác dụng thật, phù hợp với tiền đề và được sử dụng trong diễn biến**: việc làm, nơi ở, tiền hay nợ, một mối quan hệ, một nghĩa vụ, quyền tiếp cận (được hay mất một thứ), hoặc một luật riêng của mùa;
   - không có luật "đổi 2 trong 4 thứ"; host không tự đổi nghề hay tiền khi nội dung không khai báo (`enterSeason` chỉ áp `reset.cash` cho người đã tự lập, `reset.effects` và hệ số `rules.income`; `doi-nguoi/tests/season-entry-test.js` kiểm trên cả 105 mùa);
   - cờ chỉ tính khi có tình huống hay luật về sau đọc nó; cờ thế giới `rules.flags` không ai đọc nên không tính;
-  - Task 20d kiểm toán cả 105 mùa: trước khi sửa 31 đạt, 61 chỉ thay đổi bằng lời kể, 13 mâu thuẫn với trạng thái; sau khi sửa 64 đạt, 41 chỉ bằng lời kể, 0 mâu thuẫn. Bảng và bằng chứng: `argon/docs/canon/season-change-audit.md`. Mùa nào còn ở lớp "chỉ bằng lời kể" được nâng dần khi viết lại, không viết lại hàng loạt cho đủ chỉ tiêu;
+  - Task 20d kiểm toán cả 105 mùa: trước khi sửa 29 đạt, 59 chỉ thay đổi bằng lời kể, 17 mâu thuẫn với trạng thái; sau khi sửa 64 đạt, 41 chỉ bằng lời kể, 0 mâu thuẫn. Bảng và bằng chứng: `argon/docs/canon/season-change-audit.md`. Mùa nào còn ở lớp "chỉ bằng lời kể" được nâng dần khi viết lại, không viết lại hàng loạt cho đủ chỉ tiêu;
   - chung kết đáp xuống một thay đổi bền: con đường đời (`become:<path>`), nước khác, hôn nhân, tiền, con.
 - **Một vũ trụ song song:**
   - luật riêng (hệ số thu nhập, cờ thế giới như `no_privacy`);

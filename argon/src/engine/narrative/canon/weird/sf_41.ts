@@ -661,8 +661,8 @@ const s49: WeirdBranch = weird("S49", "sf", ["than", "tien", "ky"],
 /* ================================================================== S50 — Người không tồn tại */
 
 const S50_TEN_MOI = land("s50_ten_moi", "Bạn bắt đầu lại dưới một cái tên mới ở thành phố khác: không nợ, không nghề, không ai nhớ mặt.", { custom: "repay:5|job_lose|move_city", happy: 3 });
-/** Sổ nợ bị xóa lúc vào mùa (reset repay:50); sống lại bằng tên cũ thì sổ nợ được ghi lại thành một món nợ mới, kèm tiền phạt. */
-const S50_TEN_CU = land("s50_ten_cu", "Hệ thống khôi phục bạn, ghi lại sổ nợ cũ từ đầu, kèm một khoản phạt vì đã không tồn tại quá hạn.", { money: -1.5, custom: "borrow:1", happy: -2 });
+/** Sổ nợ bị xóa lúc vào mùa (reset repay:50); sống lại bằng tên cũ thì mở một sổ nợ mới (borrow:1: nợ và tiền mặt cùng tăng), kèm tiền phạt. */
+const S50_TEN_CU = land("s50_ten_cu", "Hệ thống khôi phục bạn, mở một sổ nợ mới đứng tên bạn, kèm một khoản phạt vì đã không tồn tại quá hạn.", { money: -1.5, custom: "borrow:1", happy: -2 });
 const S50_GIUP = land("s50_giup_nguoi", "Bạn làm cho một văn phòng nhỏ chuyên đưa những người bị xóa trở lại sổ sách.", { custom: "become:social_worker", happy: 3 });
 
 const s50: WeirdBranch = weird("S50", "sf", ["luat", "tien", "ky"],

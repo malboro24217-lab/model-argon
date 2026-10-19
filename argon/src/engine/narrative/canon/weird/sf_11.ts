@@ -794,7 +794,9 @@ const S18 = weird("S18", "sf", ["tien", "luat"],
       [
         card("s18_ket", "Đêm tàu đáp", (c, k) => J(
           `Đêm tàu đáp, cả ngõ đứng xem, ${k.npc("thanh_tra")} đứng đầu với một tập biên bản.`,
-          `Người thuê đưa bạn tiền thuê tháng cuối và hỏi bạn có muốn đi cùng không, vì ${noOf(c, k)} ở đây sẽ không ai đòi được trên kia.`,
+          migrateOk(c)
+            ? `Người thuê đưa bạn tiền thuê tháng cuối và hỏi bạn có muốn đi cùng không, vì ${noOf(c, k)} ở đây sẽ không ai đòi được trên kia.`
+            : `Người thuê đưa bạn tiền thuê tháng cuối, nói chuyến này không chở thêm được ai, nên ${noOf(c, k)} vẫn phải để bạn tự lo ở dưới này.`,
           f(c, "s18_gia_co") ? "Mái nhà gia cố rung lên nhưng không sập." : "Mái nhà kêu răng rắc dưới chân tàu.", k.gag()),
           (c) => [
             ending(L18_DO, "Ở lại, bán két đồ lạ", "Có của, sống cạnh những thứ không ai hiểu"),
