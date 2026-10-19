@@ -243,7 +243,7 @@ h1,h2,h3,h4,p{margin:0}
 #want.incard .want-row{flex-wrap:wrap;border:0;padding:0;gap:8px 10px}
 #want.incard label{flex:1 0 100%;font-family:var(--f-ui);font-size:16px;font-weight:600;white-space:normal;display:flex;align-items:center;gap:10px}
 #want.incard label::before{content:"✎";flex:none;width:28px;height:28px;border:1.5px dashed var(--pen);border-radius:3px;display:grid;place-items:center;color:var(--pen);font-size:14px}
-#want.incard #wantIn{flex:1 1 200px;font-family:var(--f-ui);font-style:normal;font-size:15.5px;color:var(--print);background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:9px 12px;min-height:44px}
+#want.incard #wantIn{flex:1 1 200px;font-family:var(--f-ui);font-style:normal;font-size:16px;color:var(--print);background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:9px 12px;min-height:44px}
 #want.incard #wantIn:focus{border-color:var(--pen);box-shadow:0 0 0 1px var(--pen)}
 #want.incard #wantGo{min-height:44px}
 #want.incard .want-hint,#want.incard .want-msg{padding-left:38px}
@@ -38046,7 +38046,12 @@ async function agencyAct(L, text, sample) {
   let act = null, raw = null;
   for (let attempt = 0; attempt < 2 && !act; attempt++) {
     try { raw = await withTimeout(sample.json(prompt, { modelTier: "default", cache: false }), AGENCY_TIMEOUT); act = Argon.sanitizeAct(raw, castIds, L.age); }
-    catch (e) { act = null; /* thử lại */ }
+    catch (e) {
+      act = null;
+      // Bị từ chối quyền dùng Claude (hoặc tài khoản tắt / trang không khai báo): không thử lại, báo cho giao diện là AI chưa có.
+      if (e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "not_declared")) { NAR.status = "off"; return { ok: false, off: true, error: "Trang chưa được phép dùng Claude." }; }
+      /* thử lại */
+    }
   }
   if (!act) return { ok: false, error: "Người kể chuyện chưa trả lời — thử lại" };
   if (!L.alive) return { ok: false, error: "Đời đã khép lại." };
@@ -39866,21 +39871,22 @@ function stop(){if(G.timer)cancelAnimationFrame(G.timer);G.timer=null}
    "init" đang hỏi quyền lúc mở trang, "" sẵn sàng. Đang chờ AI trả lời là G.acting; lỗi là kết quả {ok:false,error} của agencyAct. */
 function aiState(){return NAR.status==="off"?"off":!NAR.sample?"init":""}
 function wantBlock(L){const a=aiState();if(a)return a;if(G.acting||G.card||G.storyLoading||L.storyDue)return"busy";return""}
-const AI_WHY=`<p>Khi bạn tự nhập một hành động, người kể chuyện AI (Claude) đọc lại đời bạn rồi kể chuyện gì xảy ra. Trang này chưa kết nối được Claude: thường là vì game đang được mở ngoài claude.ai (tệp tải về, bản xem thử), vì bạn chưa bấm cho phép khi trang hỏi dùng Claude, hoặc vì tài khoản đang tắt tính năng này.</p><p>Cách bật: mở Almost Anyone ngay trên claude.ai, đăng nhập, rồi bấm cho phép khi trang hỏi. Trong lúc chưa có AI, bạn vẫn sống trọn đời được bằng các lựa chọn có sẵn.</p>`;
+const AI_WHY=`<p>Khi bạn tự nhập một hành động, người kể chuyện AI (Claude) đọc lại đời bạn rồi kể chuyện gì xảy ra. Trang này chưa kết nối được Claude: thường là vì game đang được mở ngoài claude.ai (tệp tải về, bản xem thử), vì bạn chưa bấm cho phép khi trang hỏi dùng Claude, hoặc vì tài khoản đang tắt tính năng này.</p><p>Cách bật: mở Almost Anyone ngay trên claude.ai, đăng nhập, rồi bấm cho phép khi trang hỏi. Nếu lỡ bấm từ chối, tải lại trang để được hỏi lại. Trong lúc chưa có AI, bạn vẫn sống trọn đời được bằng các lựa chọn có sẵn.</p>`;
 function setWantMsg(k,html){const m=document.getElementById("wantMsg");if(!m)return;m.dataset.k=k;m.innerHTML=html;m.classList.toggle("err",k==="err")}
 function renderWant(L){const w=document.getElementById("want");if(!w)return;const wasHidden=w.hidden,wasIn=w.classList.contains("incard");
   const pend=!!(L.pending&&!G.card),ai=aiState();
   w.hidden=!!G.autoDecide||!L.alive||(ai==="off"&&!pend&&isPhone());
   w.classList.toggle("incard",pend);w.classList.toggle("busy",!!G.acting);
   const inp=document.getElementById("wantIn"),go=document.getElementById("wantGo");
-  const pp=L.pending,forced=pend&&(!!pp.canon||pp.choices.some(c=>c._fx&&Argon.landingOf(c._fx)!==null));   // canon event và chung kết mùa: câu gõ vẫn đi qua đúng một cửa (8b, I1)
-  document.getElementById("wantLead").textContent=pend?(forced?"Bạn muốn đối mặt theo cách khác?":"Bạn muốn làm theo cách khác?"):"Tôi muốn";
+  document.getElementById("wantLead").textContent=pend?"Bạn muốn làm theo cách khác?":"Tôi muốn";
   inp.placeholder=pend?"Nhập hành động hoặc lời bạn muốn nói…":L.age<18?"đi học thêm, làm lành với bạn, tập một môn…":"mở quán phở, làm lành với bố, đi học lại…";
   document.getElementById("wantRow").hidden=ai==="off"&&!pend;inp.hidden=go.hidden=ai==="off";  // trong thẻ vẫn giữ câu hỏi, chỉ thay ô nhập bằng lời giải thích
   const off=document.getElementById("wantOff");off.hidden=ai!=="off";
   if(ai==="off"&&!off.dataset.on){off.dataset.on="1";off.innerHTML=`<b>Tự nhập hành động cần người kể chuyện AI.</b> Trang này chưa kết nối được Claude, nên lúc này chỉ chọn được các cách có sẵn.<details><summary>Vì sao, và cách bật</summary>${AI_WHY}</details>`}
   inp.disabled=!!wantBlock(L);go.disabled=inp.disabled;go.textContent=G.acting?"Đang gửi…":"Làm";go.setAttribute("aria-busy",G.acting?"true":"false");
-  const msg=document.getElementById("wantMsg"),k=msg.dataset.k||"";
+  const msg=document.getElementById("wantMsg");
+  const wk=pend?(L.pending.key||L.pending.id+"@"+L.age):"free";if(G.wantKey!==wk){G.wantKey=wk;if(msg.dataset.k==="err"||msg.dataset.k==="note")setWantMsg("","")}  // lỗi của cảnh cũ không theo sang cảnh khác
+  const k=msg.dataset.k||"";
   if(G.acting)setWantMsg("busy",`<span class="dots">Người kể chuyện đang viết chuyện gì xảy ra</span>`);
   else if(ai==="init"&&k!=="err")setWantMsg("init","Đang kết nối người kể chuyện…");
   else if(k==="busy"||k==="init")setWantMsg("","");
@@ -39888,20 +39894,30 @@ function renderWant(L){const w=document.getElementById("want");if(!w)return;cons
   retry.hidden=!(k2==="err"&&!G.acting&&!inp.disabled&&inp.value.trim());
   document.getElementById("wantErr").hidden=!msg.textContent&&retry.hidden;
   const hint=document.getElementById("wantHint");hint.hidden=!!msg.textContent||ai==="off";
-  hint.textContent=pend?(forced?"Biến cố này không tránh được: người kể chuyện sẽ kể cách của bạn và đưa nó vào cửa gần nhất ở trên.":"Gõ một hành động hay một câu nói, như một lựa chọn thứ tư. Người kể chuyện AI sẽ kể chuyện gì xảy ra."):"Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.";
+  const toDoor=pend&&!!(L.pending.canon||L.pending.choices.some(c=>c._fx&&Argon.landingOf&&Argon.landingOf(c._fx)!==null));  // biến cố, chung kết mùa: cách tự nhập dẫn về một trong các cửa
+  hint.textContent=toDoor?"Gõ một hành động hay một câu nói. Người kể chuyện AI sẽ đưa cách của bạn về một trong các ngả rẽ ở trên.":pend?"Gõ một hành động hay một câu nói, như một lựa chọn thứ tư. Người kể chuyện AI sẽ kể chuyện gì xảy ra.":"Viết bất cứ điều gì bạn muốn làm. Người kể chuyện sẽ cho biết chuyện gì xảy ra.";
   if((wasHidden!==w.hidden||wasIn!==pend)&&G.measureDock)G.measureDock()}
 /* Ô tự nhập nằm trong thẻ quyết định khi có cảnh đang chờ, ngoài thẻ thì về chỗ cũ (#wantHome).
    Chuyển chính nút form chứ không dựng lại: giữ chữ đã gõ, vị trí con trỏ và tiêu điểm qua mỗi lần render(). */
-function parkWant(){const w=document.getElementById("want"),h=document.getElementById("wantHome");if(!w||!h)return null;
+function parkWant(){const w=document.getElementById("want"),h=document.getElementById("wantHome");if(!w||!h||w.previousElementSibling===h)return null;
   const inp=document.getElementById("wantIn"),f=document.activeElement===inp?[inp.selectionStart,inp.selectionEnd]:null;
-  if(w.previousElementSibling!==h)h.after(w);return f}
+  h.after(w);return f}
+/* Dựng lại thẻ quyết định mà không dời ô tự nhập: nếu ô đang nằm trong thẻ cũ, giữ chính thẻ đó, thay mọi thứ khác bằng nội dung mới.
+   Ô không rời DOM nên không mất tiêu điểm (iOS không mở lại bàn phím khi render() chạy bất đồng bộ lúc đang gõ). */
+function setDecHTML(dec,html){const w=document.getElementById("want"),old=w&&w.parentNode&&w.parentNode.parentNode===dec?w.parentNode:null;
+  const t=document.createElement("div");t.innerHTML=html;const neu=t.firstElementChild;
+  if(!old||t.childElementCount!==1||!neu.matches(".decision:not(.actcard)")){if(old)parkWant();dec.innerHTML=html;return}
+  for(const a of [...old.attributes])if(!neu.hasAttribute(a.name))old.removeAttribute(a.name);
+  for(const a of [...neu.attributes])if(old.getAttribute(a.name)!==a.value)old.setAttribute(a.name,a.value);
+  for(const n of [...old.childNodes])if(n!==w)n.remove();
+  while(neu.firstChild)old.insertBefore(neu.firstChild,w)}
 function placeWant(L,f){const w=document.getElementById("want");if(!w)return;
   const a=L.pending&&!G.card?document.querySelector("#dec .decision:not(.actcard)"):null;if(a&&w.parentNode!==a)a.appendChild(w);
   const inp=document.getElementById("wantIn");if(f&&document.activeElement!==inp&&!inp.disabled){inp.focus({preventScroll:true});try{inp.setSelectionRange(f[0],f[1])}catch(e){}}}
 async function wantSubmit(){const L=G.life;const inp=document.getElementById("wantIn");
   if(!L||!L.alive||G.acting||G.card||G.autoDecide||wantBlock(L))return;const text=inp.value.trim();if(!text){inp.focus();return}
   G.acting=true;render();
-  try{const r=await agencyAct(L,text);if(G.life!==L)return;if(r.ok){inp.value="";setWantMsg("","");G.card=r.card;G.card.typed=text;G.card.age=L.age}else setWantMsg("err",esc(r.error))}
+  try{const r=await agencyAct(L,text);if(G.life!==L)return;if(r.ok){inp.value="";setWantMsg("","");G.card=r.card;G.card.typed=text;G.card.age=L.age}else if(r.off)setWantMsg("","");else setWantMsg("err",esc(r.error))}  // r.off: bị từ chối quyền, NAR.status đã "off": renderWant hiện lời giải thích, không mời gửi lại
   finally{G.acting=false;clearInterval(G.timerIv);G.timerKey=null;render();if(!L.alive)setTimeout(ending,1400)}}
 /* Gợi ý tiền: điền sẵn vào ô Tôi muốn, đưa con trỏ vào, không tự gửi. */
 function prefillWant(text){const L=G.life,inp=document.getElementById("wantIn"),msg=document.getElementById("wantMsg");if(!L||!inp)return;
@@ -39926,7 +39942,7 @@ function renderActCard(L,dec){const c=G.card;
 
 /* ---- Lựa chọn ---- */
 function lockWhy(L,g){const rr=g.s?Argon.ratRace(g.s):null;
-  if(g.bw<Argon.BANDWIDTH_LOCK_LEVEL)return`Đầu óc đang quá tải (băng thông ${Math.round(g.bw)}/100). Nghỉ ngơi hoặc bớt lo tiền để mở lại.`;
+  if(g.bw<Argon.BANDWIDTH_LOCK_LEVEL)return`Băng thông quá thấp (${Math.round(g.bw)}/100). Nghỉ ngơi hoặc bớt lo tiền để mở lại.`;
   if(rr&&rr.reason==="debt_service")return`${Math.round(rr.debt_service_ratio*100)}% thu nhập mỗi quý đi trả nợ tiêu dùng. Trả bớt nợ để mở lại.`;
   return"Bạn đã thiếu tiền nhiều quý liền. Có dư vài quý thì mở lại."}
 function choiceHTML(L,p,c,i,st,g,yearly){
@@ -39974,7 +39990,8 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
   // quyết định
   const dec=document.getElementById("dec");
   const fa=document.activeElement,fb=fa&&fa.closest?fa.closest("#dec [data-i]"):null,fi=fb?fb.dataset.i:null;
-  const wf=parkWant();
+  let wf=null;const park=()=>{const f=parkWant();if(f)wf=f};
+  if(G.card||(G.storyLoading&&L.storyDue)||!L.pending)park();  // chỉ nhánh "quyết định đang chờ" giữ ô trong thẻ
   if(G.card)renderActCard(L,dec);
   else if(G.storyLoading&&L.storyDue)dec.innerHTML=`<div class="decision"><div class="dhead"><b>Chuyện đang dở</b><span>${L.age} tuổi</span></div><h3>${esc(L.storyDue.title)}</h3><p class="note">Chuyện đang tiếp diễn…</p></div>`;
   else if(L.pending){const p=L.pending;const key=p.key||p.id+L.age;
@@ -39985,13 +40002,13 @@ function render(){const L=G.life;if(!L||!document.getElementById("age"))return;
     const timed=g.bw<50&&L.ar;
     const long=String(p.text||"").length>420;
     if(G.freshKey!==key){G.freshKey=key;dec.classList.add("fresh");dec.onpointermove=()=>dec.classList.remove("fresh")}
-    dec.innerHTML=`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT" tabindex="-1"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":p.canon?"Một ngã rẽ lớn":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":p.canon&&p.canon.ai==="done"?" · AI viết lại":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
+    setDecHTML(dec,`<article class="decision${p.micro?" micro":""}" aria-labelledby="decT" tabindex="-1"><div class="dhead"><b>${p.micro?"Chuyện nhỏ":p.canon?"Một ngã rẽ lớn":"Một quyết định đang chờ"}</b><span>${L.age} tuổi${p.ai?" · do AI viết":p.canon&&p.canon.ai==="done"?" · AI viết lại":""}${nOk>=2?`<span class="keys"> · phím 1–${p.choices.length}</span>`:""}</span></div>
      <h3 id="decT">${esc(p.title)}</h3>${becauseHTML(L,p)}<p class="txt${long?" long":""}" id="decTxt">${esc(p.text)}</p>${long?`<button class="readmore" id="readmore" aria-controls="decTxt" aria-expanded="false">Đọc hết</button>`:""}${m?matrixHtml(m):""}
      ${p.npc&&L.ar&&L.ar.dd[key]?`<div class="signal">${esc(npcSignalVN(L,p.npc,key))}</div>`:""}
      ${canDD?`<div><button class="btn" id="dd" ${g.bw<ddCost?"disabled":""}>Thẩm định (−${ddCost} băng thông)</button> <span class="note">${g.bw<ddCost?"Không đủ băng thông để thẩm định.":"Làm rõ các con số và đọc tín hiệu của đối phương."}</span></div>`:""}
      ${p.tempt&&p.npc&&L.ar&&g.tier!=="autopilot"?temptationVN(L,p.npc,p.tempt.stake,p.tempt.roundsLeft):""}
-     ${timed?`<div class="timer"><div class="row"><span><span class="full">Đầu óc đang căng: bạn </span>còn <span id="timerLeft">${Math.round(6+24*(g.bw/100))}</span> giây để nghĩ</span><span>hết giờ sẽ chọn ${timerPick(L,p,g)+1}</span></div><div class="track" title="Băng thông thấp: bạn không có nhiều thời gian để nghĩ"><i id="timerbar" style="width:100%"></i></div></div>`:""}
-     <div class="choices">${p.choices.map((c,i)=>choiceHTML(L,p,c,i,states[i],g,yearly)).join("")}</div></article>`;
+     ${timed?`<div class="timer"><div class="row"><span><span class="full">Băng thông thấp: bạn </span>còn <span id="timerLeft">${Math.round(6+24*(g.bw/100))}</span> giây để nghĩ</span><span>hết giờ sẽ chọn ${timerPick(L,p,g)+1}</span></div><div class="track" title="Băng thông thấp: bạn không có nhiều thời gian để nghĩ"><i id="timerbar" style="width:100%"></i></div></div>`:""}
+     <div class="choices">${p.choices.map((c,i)=>choiceHTML(L,p,c,i,states[i],g,yearly)).join("")}</div></article>`);
     if(G.acting)dec.querySelectorAll("[data-i]").forEach(b=>b.disabled=true);
     dec.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(G.acting)return;clearInterval(G.timerIv);G.timerKey=null;const mb=memSnapshot(L);resolve(L,+b.dataset.i);const t=rememberToast(L,mb);render();if(t)showToast(t)});
     const rm=document.getElementById("readmore");if(rm){const t=document.getElementById("decTxt");
@@ -40071,16 +40088,16 @@ function renderMoney(L,g){
     ${h?`<p>Mức sống quyết định phần lớn tiền chi mỗi năm. Tằn tiện để dành nhanh nhưng lâu ngày thì mệt mỏi.</p>`:""}</div>`)}
 
 function argonPanel(L,g,bwRow){if(!L.ar||!L.ar.started)return"";
-  const TIP={autopilot:"Sống theo quán tính, chỉ thấy các cách quen thuộc",awakened:"Thấy thêm cách làm có rủi ro, được thẩm định trước khi quyết",sovereign:"Thấy cả “lựa chọn thứ ba”"};
+  const TIP={autopilot:"Sống theo quán tính, chỉ thấy các cách quen thuộc",awakened:"Thấy thêm cách làm có rủi ro, và có thể thẩm định trước khi quyết",sovereign:"Thấy cả “lựa chọn thứ ba”"};
   const tiers=["autopilot","awakened","sovereign"].map(t=>`<span title="${TIP[t]}"${g.tier===t?' class="on"':""}>${AR.TIER_VN[t]}</span>`).join("");
   const warn=g.locked?`<p class="note seal">Đang khóa: ${esc(lockWhy(L,g))}</p>`:g.scarcity?`<p class="note seal">Lo toan ${g.scarcity.reason==="stress"?"căng thẳng":"tiền bạc"} đang lấy mất ${Math.round(g.scarcity.bandwidth_tax)} điểm băng thông mỗi quý.</p>`:"";
   const badges=[g.scarcity?`<span class="badge bad">Bẫy khan hiếm</span>`:"",g.ratRace?`<span class="badge bad">Vòng xoáy chuột chạy</span>`:""].join("");
   const lv=Argon.BANDWIDTH_LOCK_LEVEL,bw=Math.round(g.bw);
-  const quick=g.locked?"":bw<lv+10?`Sắp chạm vạch đỏ ${lv}: dưới vạch, lựa chọn <b>đường dài</b> bị khóa.`:bw<50?`Đầu óc đang căng: mỗi quyết định có đồng hồ đếm ngược. Dưới ${lv} thì khóa lựa chọn <b>đường dài</b>.`:`Còn đủ sức tính đường dài. Dưới vạch đỏ ${lv} thì các lựa chọn <b>đường dài</b> bị khóa.`;
+  const quick=g.locked?"":bw<lv+10?`Sắp chạm vạch đỏ ${lv}: dưới vạch, lựa chọn <b>đường dài</b> bị khóa.`:bw<50?`Băng thông thấp: mỗi quyết định có đồng hồ đếm ngược. Dưới ${lv} thì khóa lựa chọn <b>đường dài</b>.`:`Còn đủ sức tính đường dài. Dưới vạch đỏ ${lv} thì các lựa chọn <b>đường dài</b> bị khóa.`;
   const help=`<div class="note"><p><b>Băng thông</b> là sức để nghĩ và xoay xở trong năm, tối đa 100. Lo tiền, nợ nần, căng thẳng làm nó tụt; nghỉ ngơi và bớt lo làm nó hồi lại.</p>
-    <p>Dưới 50: số liệu trong thẻ mờ đi và bạn chỉ có ít giây để chọn. Dưới ${lv}: các lựa chọn có nhãn “đường dài” và lựa chọn của tầng cao bị khóa (gạch ngang, có ổ khóa và lý do). Khi tiền trả nợ tiêu dùng ngốn quá nhiều thu nhập, hay bạn thiếu tiền nhiều quý liền, chúng cũng bị khóa.</p>
-    <p><b>Tầng tự chủ</b> cho biết bạn thấy được bao nhiêu lựa chọn. <b>Tự lái</b>: sống theo quán tính, chỉ thấy các cách quen thuộc. <b>Thức tỉnh</b>: thấy thêm cách làm có rủi ro, được thẩm định trước khi quyết. <b>Tự chủ</b>: thấy cả “lựa chọn thứ ba”. Vượt qua khủng hoảng khi đầu óc còn thảnh thơi thì lên tầng; buông xuôi quá lâu thì tụt lại Tự lái. Ô có dấu ? là lựa chọn chưa mở ở tầng của bạn.</p></div>`;
-  return`<section class="sec bw-sec" data-tab="nam"><h2>Băng thông <span class="k">còn ${bw}/100</span></h2>${bwRow("Sức nghĩ")}
+    <p>Băng thông càng thấp, các con số trong bảng đánh đổi của thẻ càng mờ (thẩm định thì rõ lại). Dưới 50: mỗi quyết định có đồng hồ đếm ngược. Dưới ${lv}: bảng chỉ còn đọc được các ô trên đường chéo, ô khác thành “?”; các lựa chọn có nhãn “đường dài” và lựa chọn của tầng cao bị khóa (gạch ngang, có ổ khóa và lý do). Khi tiền trả nợ tiêu dùng ngốn quá nhiều thu nhập, hay bạn thiếu tiền nhiều quý liền, chúng cũng bị khóa.</p>
+    <p><b>Tầng tự chủ</b> cho biết bạn thấy được bao nhiêu lựa chọn. <b>Tự lái</b>: sống theo quán tính, chỉ thấy các cách quen thuộc. <b>Thức tỉnh</b>: thấy thêm cách làm có rủi ro, và có thể thẩm định trước khi quyết. <b>Tự chủ</b>: thấy cả “lựa chọn thứ ba”. Vượt qua khủng hoảng khi đầu óc còn thảnh thơi thì lên tầng; buông xuôi quá lâu thì tụt lại Tự lái. Một lựa chọn chỉ có ô phím “?” và dòng để trống là lựa chọn chưa mở ở tầng của bạn.</p></div>`;
+  return`<section class="sec bw-sec" data-tab="nam"><h2>Băng thông <span class="k">còn ${bw}/100</span></h2>${bwRow("Còn lại")}
    ${quick?`<p class="quick">${quick}</p>`:""}${warn}${badges?`<div style="display:flex;gap:6px;flex-wrap:wrap">${badges}</div>`:""}
    <span class="tierlab"><b>Tầng tự chủ</b> · tầng càng cao, càng thấy nhiều lựa chọn</span>
    <div class="tier" aria-label="Tầng tự chủ: ${AR.TIER_VN[g.tier]}">${tiers}</div>
