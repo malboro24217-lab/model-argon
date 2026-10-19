@@ -36984,7 +36984,7 @@ function argonYear(L) {
   // Bảo hiểm sức khỏe trả lại một phần viện phí của các cú ốm trong năm
   for (const r of reports) if (r.shock && r.shock.kind === "health" && r.shock.liquid < 0 && s.holdings && Argon.hasPolicy(s.holdings, "health")) { const p = Argon.healthPayout(s.holdings, marketCtx(L), -r.shock.liquid); s.capitals = Argon.applyDelta(s.capitals, { liquid: p }); if (!A.indep) { L.savings += p; A.syncedSavings = L.savings; } }
   // 2b. Vỡ nợ: nợ không thể lớn vô hạn. Quá 5 năm thu nhập thì chủ nợ siết, xóa bớt, và đời bạn mang dấu.
-  // Đề xuất R30 (ledger 2026-10-19-canon-tuning.md, chờ Tùng): "năm thu nhập" ở đây là lương gốc (seasonYearlyBase, cùng đơn vị R24 dùng cho borrow / repay),
+  // R30 (Tùng duyệt 19/10, ledger 2026-10-19-canon-tuning.md): "năm thu nhập" ở đây là lương gốc (seasonYearlyBase, cùng đơn vị R24 dùng cho borrow / repay),
   // không phải lương đã nhân hệ số mùa; ngoài mùa hai số bằng nhau.
   { const a = s.capitals.capitalAssets, yi = typeof seasonYearlyBase === "function" ? seasonYearlyBase(L) : Math.max(300, householdIncome(L));
     if (a.debt > 5 * yi) { a.liquid = 0; const seized = seizeOnDefault(L, 1.5 * yi); a.debt = Math.min(a.debt, 1.5 * yi); L.bankrupt = (L.bankrupt || 0) + 1; log(L, `Vỡ nợ. Chủ nợ siết ${seized.length ? seized.join(", ") : "hết những gì còn lại"}, phần nợ còn lại bị khoanh. Từ nay ai cũng biết.`, "bad big"); addSt(L, "happy", -15); addSt(L, "rel", -8); if (L.lw) { L.lw.sflags.add("bankrupt"); closeDoorNow(L, "partner_circle"); } } }
@@ -38746,6 +38746,8 @@ function resumeFrom(L, fork) {
   if (!L || !L.lw || !fork || !fork.key) return null;
   const ageOf = {}; for (const m of L.lw.cz.marks) if (m.key) ageOf[m.key] = m.age;
   const forkAge = fork.age != null ? fork.age : ageOf[fork.key]; if (forkAge == null) return null;
+  // Tạm khóa (19/10): sau swap_other, bản tua lại để rẽ chưa chắc đi lại đúng đời đã đổi chỗ (probe p3, seed 1337: lệch ngay năm sau khi đổi). Chưa rõ gốc → không cho rẽ từ năm đổi chỗ trở đi.
+  if (L.lw.swap && forkAge >= L.lw.swap.age) return null;
   const acts0 = L.actLog || [];
   let choices, acts;
   if (fork.removeAct != null) {
@@ -39175,6 +39177,7 @@ function canonOnEffect(L, e) {
   if (e.custom && customParts(e.custom).includes("swap_other") && !lw.swapping) return canonSwap(L, e);   // Task 8b: đổi đời trước, phần còn lại áp lên đời mới
   if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
   if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
+  if (lw.season && Argon.settledPlant(e, lw.season.scars && lw.season.scars.no)) lw.season.noSettled = true;   // vết "no" đã trả / giữ lời giữa mùa: câu kết không nói "còn treo"
   const land = Argon.landingOf(e);
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
@@ -39694,7 +39697,7 @@ function seasonEndLine(L, se, reason) {
   else if (se.scars && se.scars.nguoi && se.scars.nguoi.npc) { const pm = L.lw.cast.get(se.scars.nguoi.npc); if (pm && pm.name) { name = pm.name; alive = !!pm.alive; } }
   // Vết chọn lúc VÀO mùa; chỉ nhắc nếu lúc RA mùa nó vẫn còn thật: nợ / lời hứa chưa xong, đồ vẫn còn giữ.
   const sc = se.scars || {};
-  const no = sc.no && sc.no.label && scarStillOpen(L, sc.no) ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
+  const no = sc.no && sc.no.label && scarStillOpen(L, sc.no, se) ? (String(sc.no.key || "").startsWith("promise:") ? `lời hứa “${sc.no.label}”` : sc.no.label) : "";
   const thing = sc.do && sc.do.label && sc.do.key !== "job" && scarStillHeld(L, sc.do) ? sc.do.label : "";
   const v = strHash(se.id + "@" + se.from) % 2, whoOk = reason === "cut" ? !!name : !!name && alive, pickWho = whoOk && (v === 0 || (!no && !thing));
   // Chỉ nói điều có thật trong đời này (người mới của mùa, vết, nhịp); thiếu dữ liệu thì câu trung tính, không bịa thêm.
@@ -39741,7 +39744,7 @@ function seasonYearlyBase(L) {
   return Math.max(300, m !== 1 && earnsOwnLiving(L) ? h / m : h);
 }
 /**
- * Đơn vị cho khoản money:<x> ÂM (thẻ, luật năm của mùa). Đề xuất R29 (ledger 2026-10-19-canon-tuning.md, chờ Tùng): "lỗ cố định" của R24
+ * Đơn vị cho khoản money:<x> ÂM (thẻ, luật năm của mùa). R29 (Tùng duyệt 19/10, ledger 2026-10-19-canon-tuning.md): "lỗ cố định" của R24
  * là khoản tuyệt đối (repay, mua bán, chi phí sống); khoản lỗ tính theo năm thu nhập đi theo thu nhập thật của đời đó. Trong mùa hệ số < 1
  * là min(gốc, thực) = lương thực của mùa; ngoài mùa và mùa hệ số ≥ 1 vẫn là lương gốc như R24. Khoản dương, chung kết (mùa đã đóng) không đổi.
  */
@@ -39756,17 +39759,19 @@ function seasonMoneyYearly(L) {
   return seasonYearlyBase(L) * (last && last.to === L.age && last.mult ? last.mult : 1);
 }
 
-/** Vết "nợ / lời hứa" còn mở lúc này: lời hứa chưa giữ hay bội (kept === null), còn nợ ngân hàng, hay vật gài nợ / hứa còn trong sổ (chưa dùng, chưa trả). */
-function scarStillOpen(L, x) {
+/** Vết "nợ / lời hứa" còn mở lúc này: lời hứa chưa giữ hay bội (kept === null), còn nợ ngân hàng, hay vật gài nợ / hứa còn trong sổ
+ *  và chưa được trả / giữ lời trong mùa (se.noSettled). `used` của 20c chỉ là "đã dùng một lần", không phải "đã trả". */
+function scarStillOpen(L, x, se) {
   const key = String((x && x.key) || ""); if (!key) return false;
   if (key.startsWith("promise:")) { const to = key.slice(8); return L.lw.promises.some(p => p.to === to && p.kept === null); }
   if (key === "bank") { const d = (L.ar && L.ar.state.capitals.capitalAssets.debt) || 0; return d > 0 || (L.debt || 0) > 0; }
-  return L.lw.plants.some(p => p.key === key && !p.used && !p.spent && !p.paid);
+  if (se && se.noSettled && se.scars && se.scars.no && se.scars.no.key === key) return false;
+  return L.lw.plants.some(p => p.key === key);
 }
 /** Vết "đồ" còn giữ lúc này: vật gài còn trong sổ, hoặc tài sản loại đó vẫn còn sở hữu. */
 function scarStillHeld(L, x) {
   const key = String((x && x.key) || ""); if (!key) return false;
-  if (L.lw.plants.some(p => p.key === key && !p.used && !p.spent)) return true;
+  if (L.lw.plants.some(p => p.key === key)) return true;
   const h = typeof holdingsOf === "function" ? holdingsOf(L) : null;
   return !!(h && h.assets.some(a => a.kind === key));
 }
@@ -40036,7 +40041,7 @@ function lockWhy(L,g){const rr=g.s?Argon.ratRace(g.s):null;
 function choiceHTML(L,p,c,i,st,g,yearly){
   if(st==="hidden")return`<button class="ch hiddenc" disabled><span class="key">?</span><span><span class="blank" aria-hidden="true"></span><span class="h">Còn một lựa chọn bạn chưa thấy. Nó hiện ra khi bạn lên tầng ${esc(AR.TIER_VN[c.tier]||"Thức tỉnh")}.</span></span></button>`;
   const tags=[];if(c.longterm)tags.push(`<span class="tag lt">đường dài</span>`);
-  const mon=c._fx&&c._fx.money;if(mon)tags.push(`<span class="tag money">${mon>0?"+":"−"}${fmtPPP(Math.abs(mon)*yearly)}</span>`);
+  const mon=c._fx&&c._fx.money;if(mon)tags.push(`<span class="tag money">${mon>0?"+":"−"}${fmtPPP(Math.abs(mon)*(mon<0&&typeof seasonLossYearly==="function"?seasonLossYearly(L):yearly))}</span>`);
   for(const d of choiceDoors(c))tags.push(`<span class="tag door">đóng cửa: ${esc(CH.DOOR_VN(d).vi)}</span>`);
   const locked=st==="locked";
   return`<button class="ch${locked?" locked":""}" data-i="${i}" ${locked?`disabled aria-describedby="why${i}"`:""}><span class="key">${locked?ICON_LOCK:i+1}</span>

@@ -643,7 +643,7 @@ function seasonYearlyBase(L) {
   return Math.max(300, m !== 1 && earnsOwnLiving(L) ? h / m : h);
 }
 /**
- * Đơn vị cho khoản money:<x> ÂM (thẻ, luật năm của mùa). Đề xuất R29 (ledger 2026-10-19-canon-tuning.md, chờ Tùng): "lỗ cố định" của R24
+ * Đơn vị cho khoản money:<x> ÂM (thẻ, luật năm của mùa). R29 (Tùng duyệt 19/10, ledger 2026-10-19-canon-tuning.md): "lỗ cố định" của R24
  * là khoản tuyệt đối (repay, mua bán, chi phí sống); khoản lỗ tính theo năm thu nhập đi theo thu nhập thật của đời đó. Trong mùa hệ số < 1
  * là min(gốc, thực) = lương thực của mùa; ngoài mùa và mùa hệ số ≥ 1 vẫn là lương gốc như R24. Khoản dương, chung kết (mùa đã đóng) không đổi.
  */

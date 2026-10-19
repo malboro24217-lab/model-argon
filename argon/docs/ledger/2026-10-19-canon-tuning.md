@@ -161,12 +161,12 @@ Ngoài ra **8b (migrate_sure)** khiến xu_nguoi luôn di cư. Đời có nghề
 | **B = v1 + R30 + hệ số (bản commit)** | 0.575 (+0.04) | 0.54 (+0.09) | 0.555 (+0.05) | **+0.060** |
 
 ### Thay đổi (bản commit)
-1. **R29 (đề xuất, chờ Tùng):** khoản money:<x> **âm** trong mùa hệ số < 1 tính trên lương thực của mùa, tức min(lương gốc, lương thực). Áp cho thẻ, luật năm và phần tiền riêng của người chưa tự lập.
+1. **R29 (Tùng duyệt 19/10):** khoản money:<x> **âm** trong mùa hệ số < 1 tính trên lương thực của mùa, tức min(lương gốc, lương thực). Áp cho thẻ, luật năm và phần tiền riêng của người chưa tự lập.
    - Ngoài mùa và trong mùa hệ số ≥ 1: vẫn lương gốc, như R24.
    - Khoản dương, chung kết (mùa đã đóng trước khi tiền được áp), money_season, repay, borrow, mua bán: không đổi.
    - Mã: `doi-nguoi/canon.js seasonLossYearly` (mới) và `canonOwnOnly`; `doi-nguoi/living.js applyEffect` (một dòng).
 2. **`RESET_CASH_KEEP` 0.5 → 0.75** (`Season.ts`). Vào mùa có reset.cash, phần tiền riêng vượt mức đặt lại chỉ mất 1/4. Test `canon-content-test` (resetCashDelta) và `canon-test.js` (đoạn Task 20) đã cập nhật.
-3. **R30 (đề xuất, chờ Tùng):** ngưỡng vỡ nợ "nợ > 5 năm thu nhập", cùng mức khoanh 1,5 năm, đo bằng lương gốc `seasonYearlyBase`. Đây là cùng đơn vị R24 dùng cho borrow/repay. Ngoài mùa hai số bằng nhau. Mã: `doi-nguoi/bridge.js argonYear` (một dòng).
+3. **R30 (Tùng duyệt 19/10):** ngưỡng vỡ nợ "nợ > 5 năm thu nhập", cùng mức khoanh 1,5 năm, đo bằng lương gốc `seasonYearlyBase`. Đây là cùng đơn vị R24 dùng cho borrow/repay. Ngoài mùa hai số bằng nhau. Mã: `doi-nguoi/bridge.js argonYear` (một dòng).
 4. **Hệ số thu nhập của ba mùa thường.** R24 cho phép chỉnh hệ số hay độ dài riêng khi lương tích lũy lệch.
    - lam_lai ×0.6 → ×0.8 và tron_chay ×0.6 → ×0.8. Cả hai vẫn ≤ 0.8, nên vẫn tính là thay đổi tình thế theo R25.
    - xu_nguoi ×0.8 → ×1. Cú hạ lương của mùa là di cư (p × 0.6 ở nước mới) và reset.cash; thay đổi tình thế R25 là migrate_now.
