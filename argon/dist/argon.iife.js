@@ -21568,7 +21568,7 @@ var Argon = (() => {
   }
   var repays = (e) => typeof e.custom == "string" && e.custom.split("|").some((x) => /^repay(:|$)/.test(x));
   function settledPlant(e, no) {
-    return !no || no.kind !== "debt" && no.kind !== "promise" ? null : repays(e) || no.kind === "promise" && e.memory?.tag === "KEPT_PROMISE" ? { kind: no.kind, key: no.key } : null;
+    return no && (no.kind === "debt" && repays(e) || no.kind === "promise" && e.memory?.tag === "KEPT_PROMISE") ? { kind: no.kind, key: no.key } : null;
   }
   function dropPlants(plants, ref) {
     if (!ref) return 0;

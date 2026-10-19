@@ -33,6 +33,7 @@
     - Generator chọn **mầm** có điểm cao nhất. Điểm = 3 × số chỗ trống điền bằng vật gài của người chơi + áp lực các trục của mầm, trừ 100 nếu mầm đã dùng trong đời này.
     - Chỗ trống người và vật điền theo thứ tự: vật gài của người chơi, kẻ thù truyền kiếp (chưa nối, mục 6), NPC có ký ức mạnh nhất, tài sản đang có. Thiếu chỗ trống bắt buộc thì mầm bị loại. Chỗ trống nơi chốn là nơi đang sống.
     - Vật gài được dùng dần (Task 20c): mầm đã điền chỗ trống hay thành vết mang `used` = tuổi lúc dùng. Lần sau ưu tiên mầm chưa dùng, rồi mầm gài gần nhất; hết mầm mới thì lấy mầm dùng lâu nhất rồi. "Số chỗ trống điền bằng vật gài của người chơi" (fromPlayer) chỉ đếm mầm còn tươi.
+    - Điểm mầm có 3 × fromPlayer, nên đếm mầm tươi làm mầm canon nào điền được bằng vật gài tươi hơi được ưu tiên hơn mầm chỉ điền được bằng vật gài đã dùng.
 - **Tất định:** chọn mầm và chỗ trống dùng luồng rng riêng `RNG_SUB.canon = 9`, rekey theo (seed, tuổi). Cùng lựa chọn thì ra cùng biến cố; khác lựa chọn thì khác biến cố.
 
 ### 2.2 Mùa
@@ -62,7 +63,8 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
   - **một món nợ hoặc lời hứa** chưa trả.
 - Vết chọn lúc vào mùa (`Scars.ts`), mỗi loại lấy cái có điểm cao nhất (vật gài chưa dùng trước). Không có thì để trống. Thẻ luôn có chữ dự phòng.
 - Vết đồ và vết nợ không lặp lại vết của mùa liền trước khi đời còn ứng viên khác (Task 20c). Vật gài đã thành vết được đánh dấu đã dùng.
-- Món nợ hay lời hứa ở vết nợ hết "chưa trả" khi trong mùa có lựa chọn trả nợ (`repay`), hoặc giữ lời (ký ức `KEPT_PROMISE`, chỉ với lời hứa): mầm đó bị bỏ khỏi sổ. Luật năm của mùa không tính.
+- Món nợ hay lời hứa ở vết nợ hết "chưa trả" chỉ ở chung kết của mùa: chung kết trả nợ (`repay`) khép mầm nợ, chung kết giữ lời (ký ức `KEPT_PROMISE`) khép mầm lời hứa; mầm đó bị bỏ khỏi sổ. Thẻ giữa mùa (thẻ chủ nợ chung `repay:0.3`, ký ức giữ lời của một lựa chọn khác) và luật năm không khép gì. Dòng "↩ Vì năm N…" của vết đọc loại và khóa trên chính vết, nên vẫn in khi mầm đã bị bỏ.
+- Khoảng 7 mầm kiểu nợ là tiền người khác nợ người chơi (ví dụ `boi_thuong_nhan_theo_ky`, `khoan_ung_truoc_cho_ban_cu`). Chung kết "trả sạch" khép chúng như khép một chuyện cũ; cờ chiều nợ (mình nợ / người nợ mình) để đợt B.
 - Nhịp cú lật phải dùng ít nhất một vết. Nhịp chung kết phải dùng vết nợ hay lời hứa.
 - Mỗi lần dùng vết, Causality gắn dòng "↩ Có liên quan đến lựa chọn năm N tuổi · Xem lại" dưới tiêu đề thẻ, trỏ về lựa chọn đã gieo vết đó (Task 8b; chỉ khi chữ của thẻ thật sự nhắc tới người hay vật ấy).
 
@@ -89,6 +91,7 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
 - Kết quả trong `canon/codexPlants.ts` (sau Task 20c):
   - 491/600 route có vật gài: 225 người, 138 đồ vật, 65 nợ, 23 nơi chốn, 18 con vật, 17 lời hứa, 3 kỹ năng, 2 bí mật;
   - 109 route không gài, giữ cảnh hậu quả;
+  - Khóa vật gài mà nhánh kỳ dị đọc đích danh: `dong_ho_cua_ong` (abs_01, abs_11) không route nào gài, Task 20c bỏ. Còn lại: `sf_01.ts:21` tìm radio / máy thu thanh, không route Codex nào gài (thẻ Codex không có radio); nhánh S01 vẫn mọc qua đường dự phòng (có bố, cờ `tinker` hoặc bố già), giữ nguyên. `sf_31.ts:116` `tp_a34_neighbor` có gài (`tp_a34_0`, `tp_a34_1`), không chết.
   - Task 20c sửa 53 route từng gài một người không phải nhân vật của thẻ (không có NPC, nên không bao giờ trả được): 10 route đổi sang đồ, nợ hay lời hứa thấy rõ trong chữ thẻ, 43 route bỏ vật gài và lấy lại cảnh hậu quả. `routePlant` (turning/kit.ts) và `canon-test.ts` giữ quy tắc: vật gài người luôn có khóa `<thẻ>_<vai>` và gắn NPC; route nào cũng còn vật gài hoặc cảnh hậu quả;
   - 138/200 thẻ gắn tag mùa (cảnh phụ trong 5 mùa thường).
 - Áp lực theo tông (`TONE_PRESSURE`): risk → Tiền 2, bond/care → Tình 1, show → Danh 2, defy → Luật 2, truth → Máu mủ 1, deal/build → Tiền 1, probe → Kỳ 1, exit → Đất 1. Mọi thẻ phi lý `tp_a*` cộng thêm Kỳ 2.

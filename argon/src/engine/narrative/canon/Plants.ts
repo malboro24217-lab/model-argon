@@ -3,8 +3,8 @@
  *
  * Mầm được dùng dần (Task 20c, final review I3): khi một mầm điền chỗ trống của canon event hay thành vết của mùa,
  * host ghi `used = tuổi` lên chính mầm đó (usePlants). Lần chọn sau ưu tiên mầm chưa dùng, rồi mầm dùng lâu nhất rồi.
- * Mầm nợ / lời hứa đang là vết "no" của mùa thì bị bỏ khỏi sổ khi trong mùa có lựa chọn trả nợ (custom repay)
- * hay giữ lời (memory KEPT_PROMISE): settlePlant. Mọi trạng thái nằm trong mảng mầm của đời (L.lw.plants),
+ * Mầm nợ / lời hứa đang là vết "no" của mùa thì bị bỏ khỏi sổ khi chung kết của mùa trả nợ (custom repay, chỉ mầm nợ)
+ * hay giữ lời (memory KEPT_PROMISE, chỉ mầm lời hứa): settledPlant. Mọi trạng thái nằm trong mảng mầm của đời (L.lw.plants),
  * nên tua lại và rẽ nhánh dựng lại y hệt.
  */
 import type { Effect, Plant, PlantKind } from "../types.ts";
@@ -68,14 +68,15 @@ export function eventPlants(slots: { who?: string; what?: { kind: string; key: s
 const repays = (e: Effect): boolean => typeof e.custom === "string" && e.custom.split("|").some((x) => /^repay(:|$)/.test(x));
 
 /**
- * Mầm nợ / lời hứa được trả bởi effect `e` trong mùa có vết `no` (spec §5 "nợ hay lời hứa: chưa trả"):
- *  - vết `no` là mầm nợ hay lời hứa, và `e` có custom repay (chung kết "trả sạch", "khép xong chuyện cũ"); hoặc
- *  - vết `no` là mầm lời hứa, và `e` ghi ký ức KEPT_PROMISE.
+ * Mầm ở vết `no` được trả bởi effect `e` (spec §5 "nợ hay lời hứa: chưa trả"). Host chỉ gọi ở chung kết của mùa
+ * (effect có season_end, chuyện cũ được khép lại), không gọi cho thẻ giữa mùa:
+ *  - mầm nợ: `e` có custom repay (chung kết "trả sạch", "khép xong chuyện cũ");
+ *  - mầm lời hứa: `e` ghi ký ức KEPT_PROMISE.
  * Trả về mầm đó (để host bỏ khỏi sổ) hoặc null. Không sửa gì.
  */
 export function settledPlant(e: Effect, no: { key: string; kind?: PlantKind } | undefined): PlantRef | null {
-  if (!no || (no.kind !== "debt" && no.kind !== "promise")) return null;
-  if (repays(e) || (no.kind === "promise" && e.memory?.tag === "KEPT_PROMISE")) return { kind: no.kind, key: no.key };
+  if (!no) return null;
+  if ((no.kind === "debt" && repays(e)) || (no.kind === "promise" && e.memory?.tag === "KEPT_PROMISE")) return { kind: no.kind, key: no.key };
   return null;
 }
 
