@@ -37,7 +37,7 @@ assert(landed > 0, 'some seasons reach a finale landing');
 assert(p50 >= 120 && p50 <= 130, 'decisions p50 ' + p50 + ' in 120–130');
 
 // 2. Cắt mùa (trọng tâm 2): thu nhập sau = thu nhập gốc × hệ số của mùa mới.
-{ const P = grow(3301, 32, P => P.income > 0 && canonFacts(P).season === null && !P.retired);
+{ const P = grow(3301, 32, P => P.income > 0 && canonFacts(P).season === null && !P.retired && !['ngoi_sao', 'lam_lai'].some(id => P.lw.sflags.has(Argon.playedFlag(id))));   // chưa chơi hai mùa này (bản ghép: đời đầu tiên khớp đã đáp ngoi_sao, find() trúng mùa cũ)
   const inc0 = P.income;
   enterSeason(P, 'ngoi_sao');
   assert.strictEqual(P.lw.season.id, 'ngoi_sao', 'in ngoi_sao');
