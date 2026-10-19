@@ -19,7 +19,7 @@ const animal = (c: FactContext, label: RegExp, key: RegExp) =>
 const catOf = (c: FactContext) => animal(c, /(^|\s)con mèo(\s|$)/i, /(^|_)meo(_|$)/);
 const henOf = (c: FactContext) => { const p = animal(c, /(^|\s)con gà(\s|$)/i, /(^|_)ga(_|$)/); return p && !/trống|chọi/.test(p.label) && !/(^|_)(trong|choi)(_|$)/.test(p.key) ? p : undefined; };
 /** Đồ ông để lại: khóa trong danh sách, hoặc nhãn kết thúc bằng "ông để lại". */
-const GRANDPA_KEYS = new Set(["dong_ho_cua_ong", "ban_do_cua_ong"]);
+export const GRANDPA_KEYS = new Set(["ban_do_cua_ong"]);   // chỉ khóa có route Codex gài (Task 20c bỏ khóa chết dong_ho_cua_ong)
 const grandpaOf = (c: FactContext) => c.plants.find((p) => p.kind === "object" && (GRANDPA_KEYS.has(p.key) || /ông (nội |ngoại )?để lại$/.test(p.label)));
 /** Người bác/chú (vật gài người), dùng chung cho cửa, biến cố và thẻ của X04. */
 const uncleOf = (c: FactContext) => c.plants.find((p) => p.kind === "person" && /^(người|ông) (bác|chú)(\s|$)/.test(p.label)

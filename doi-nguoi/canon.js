@@ -75,6 +75,7 @@ function canonOnEffect(L, e) {
   if (e.gamble) return e;   // phần chung và nhánh thắng/thua đi qua applyEffect riêng, mỗi phần cộng một lần
   if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
   if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
+  if (lw.season && !lw.canonQuiet) Argon.dropPlants(lw.plants, Argon.settledPlant(e, lw.season.scars && lw.season.scars.no));   // Task 20c: trả nợ / giữ lời trong mùa thì mầm ở vết "no" hết "chưa trả"
   const land = Argon.landingOf(e);
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
@@ -107,7 +108,8 @@ function enterSeason(L, id) {
   if (!lw.canon) canonInit(L);
   if (lw.season) exitSeason(L, "cut");                                                           // 1
   const ctx = factContext(L);
-  const scars = Argon.pickScars(ctx, lw.plants, lw.promises.filter(p => p.kept === null).map(p => ({ to: p.to, what: p.what })), x => castName(L, x)); // 2
+  const scars = Argon.pickScars(ctx, lw.plants, lw.promises.filter(p => p.kept === null).map(p => ({ to: p.to, what: p.what })), x => castName(L, x), lw.canon.lastScars); // 2
+  Argon.usePlants(lw.plants, Argon.scarPlants(scars), L.age); lw.canon.lastScars = scars;        // Task 20c: mầm đã thành vết; mùa sau tránh vết của mùa này
   const rs = canonRng(L, "season:" + id), r = () => rs.next(), ar = canonRng(L, "cast:" + id);
   // 3. đặt lại: tiền (chỉ người đã tự lập, tính trên tiền riêng), hiệu ứng đầu mùa, người mới
   if (d.reset.cash !== undefined && ctx.independent) L.savings += d.reset.cash * Math.max(300, householdIncome(L)) - ctx.own_cash;
@@ -230,7 +232,7 @@ function canonYear(L) {
   const axis = Argon.dueAxis(ctx);
   if (axis) {
     const ev = Argon.generateCanon(ctx, axis, lw.plants, canonRng(L), id => castName(L, id), Argon.CANON_SEEDS, Argon.WEIRD);
-    if (ev) { scene(L, canonScene(L, ev)); return true; }
+    if (ev) { Argon.usePlants(lw.plants, Argon.eventPlants(ev.slots, lw.plants), L.age); scene(L, canonScene(L, ev)); return true; }   // Task 20c: mầm đã điền chỗ trống
   }
   const st = nextSeasonCard(L);
   if (st) { fireSeasonCard(L, st); return true; }

@@ -2,8 +2,7 @@ import { CINEMA } from './cinema.ts';
 import { ABSURD } from './absurd.ts';
 import { MONEY_FORKS } from './money.ts';
 import { LOVE } from './love.ts';
-import { compileFork } from './kit.ts';
-import { CODEX_PLANTS } from '../canon/codexPlants.ts';
+import { compileFork, routePlant } from './kit.ts';
 import type { FactContext } from '../types.ts';
 export { fits } from './kit.ts';
 export const TURNING_CATALOG = [...CINEMA,...ABSURD,...MONEY_FORKS,...LOVE];
@@ -20,7 +19,7 @@ export function turningLegacy(c: FactContext): string[] {
       const i=d.routes.findIndex((_,j)=>c.flags.has(d.id+'_route_'+j));
       const b=d.routes[i]!;
       // Route có vật gài không có cảnh hậu quả: chỉ còn lựa chọn đã làm, nên tổng kết kể lựa chọn ấy.
-      if(CODEX_PLANTS[d.id+'_'+i]?.plant) return d.title+': '+b.label.charAt(0).toLowerCase()+b.label.slice(1)+'.';
+      if(routePlant(d,i)) return d.title+': '+b.label.charAt(0).toLowerCase()+b.label.slice(1)+'.';
       const end=c.flags.has(d.id+'_continued_'+i) ? b.keep : c.flags.has(d.id+'_changed_'+i) ? b.pivot : 'câu chuyện còn dang dở khi đời bạn khép lại';
       return d.title+': '+end.charAt(0).toLowerCase()+end.slice(1)+'.';
     });

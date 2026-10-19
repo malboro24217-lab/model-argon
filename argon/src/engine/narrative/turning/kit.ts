@@ -1,5 +1,5 @@
 /** Authored forks, backed by the existing Effect/causality/queue contract. */
-import type { CastRole, Effect, FactContext, Storylet } from '../types.ts';
+import type { CastRole, Effect, FactContext, PlantKind, Storylet } from '../types.ts';
 import { C, T, slice } from '../paths/kit.ts';
 import { prov } from '../Causality.ts';
 import { linkedEffect } from './links.ts';
@@ -16,6 +16,15 @@ export function actorRole(d: Fork): string | undefined { return d.gates.split(',
 function actor(d: Fork, c: FactContext): string | undefined {
   for (const g of d.gates.split(',')) if (ROLES[g]) return c.cast[ROLES[g]!];
   return undefined;
+}
+/**
+ * Vật gài của route i theo quy tắc gài (chủ game, Task 9; Task 20c sửa I8): vật gài người chỉ hợp lệ khi chính là {person}
+ * của thẻ (khóa `<fork>_<vai>`), vì chỉ người đó có npc gắn lúc build. Vật gài người không gắn được npc không bao giờ trả được,
+ * nên route ấy coi như không gài và giữ cảnh hậu quả (echo). canon-test kiểm bảng CODEX_PLANTS không còn mục như vậy.
+ */
+export function routePlant(d: Fork, i: number): { kind: PlantKind; key: string; label: string } | undefined {
+  const p = CODEX_PLANTS[d.id + '_' + i]?.plant;
+  return p && (p.kind !== 'person' || p.key === d.id + '_' + actorRole(d)) ? p : undefined;
 }
 export function fits(d: Fork, c: FactContext): boolean {
   const gs = d.gates.split(',');
@@ -89,15 +98,15 @@ export function compileFork(d: Fork): Storylet[] {
         // Canon event: áp lực theo tông (hoặc khai báo riêng) và vật gài. Route có vật gài không hẹn cảnh 1 bước nữa
         // (không `later`, không mở `tp_open`/`due`; ghi tuổi đã chọn vào `<id>_at` cho lời tổng kết): vật gài sẽ được trả bằng canon event hoặc mùa.
         // Vật gài là chính {person} của thẻ (khóa `<fork>_<vai>`) thì gắn npc của người đó lúc build.
-        const cx = CODEX_PLANTS[d.id + '_' + i];
-        const open: Effect = { flags, counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...(cx?.plant ? { [d.id + '_at']: c.age } : { tp_open: 1, [due]: c.age + delay }) },
-          pressure: cx?.pressure ?? pressureFor(d.id, b.tone), ...(cx?.plant ? { plant: npc && cx.plant.kind === 'person' && cx.plant.key === d.id + '_' + actorRole(d) ? { ...cx.plant, npc } : cx.plant } : { later: { years: delay, storylet: d.id + '_echo_' + i } }), log: b.label + '. ' + b.hook + '.' };
+        const cx = CODEX_PLANTS[d.id + '_' + i], pl = routePlant(d, i);
+        const open: Effect = { flags, counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...(pl ? { [d.id + '_at']: c.age } : { tp_open: 1, [due]: c.age + delay }) },
+          pressure: cx?.pressure ?? pressureFor(d.id, b.tone), ...(pl ? { plant: npc && pl.kind === 'person' ? { ...pl, npc } : pl } : { later: { years: delay, storylet: d.id + '_echo_' + i } }), log: b.label + '. ' + b.hook + '.' };
         return C(b.label, merge(e, open), b.hook);
       });
       return T(d.title, d.text.replaceAll('{person}',person), choices, 1, npc ? { npc } : {});
     },
   };
-  const echoes = d.routes.flatMap((b,i): Storylet[] => CODEX_PLANTS[d.id + '_' + i]?.plant ? [] : [{
+  const echoes = d.routes.flatMap((b,i): Storylet[] => routePlant(d, i) ? [] : [{
     id: d.id + '_echo_' + i, category: 'arc', urgency: 82, cooldownYears: 99, once: true, maxPerLife: 1, tension: 5,
     meta: { kind: 'turning_echo' },
     prerequisites: c => c.flags.has(branchFlag(i)) && !c.flags.has(done) && c.age >= (c.counters[due] ?? Infinity),

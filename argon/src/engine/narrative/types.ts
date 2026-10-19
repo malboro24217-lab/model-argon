@@ -18,8 +18,8 @@ import type { AssetKind, Lifestyle, PolicyKind, SupportLevel } from "../economy/
 export type Axis = "tien" | "tinh" | "mau" | "danh" | "luat" | "than" | "dat" | "ky";
 /** Loại mầm: thứ đời gieo ra để một mùa sau này mọc lên. */
 export type PlantKind = "debt" | "secret" | "person" | "object" | "promise" | "animal" | "place" | "skill";
-/** Một mầm đã gieo: `age` là tuổi lúc gieo, `weight` là độ nặng khi được chọn. */
-export interface Plant { kind: PlantKind; key: string; label: string; npc?: string; age: number; weight: number }
+/** Một mầm đã gieo: `age` là tuổi lúc gieo, `weight` là độ nặng khi được chọn, `used` là tuổi lần gần nhất mầm điền chỗ trống canon event hay thành vết của mùa (chưa dùng thì không có). */
+export interface Plant { kind: PlantKind; key: string; label: string; npc?: string; age: number; weight: number; used?: number }
 
 /* ------------------------------------------------------------------ Cast */
 
@@ -244,7 +244,7 @@ export interface FactContext {
   /* ---- Canon event / Mùa ---- */
   /** Áp lực tích lũy trên 8 trục. */
   pressure: Record<Axis, number>;
-  /** Mầm đã gieo và chưa dùng. */
+  /** Mầm đã gieo, trừ mầm nợ / lời hứa đã trả. Mầm đã dùng vẫn ở đây, mang `used` (canon/Plants.ts). */
   plants: Plant[];
   /** Id mùa đang chạy, hoặc null. */
   season: string | null;

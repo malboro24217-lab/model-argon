@@ -1134,15 +1134,18 @@ var Argon = (() => {
     depositRate: () => depositRate,
     detectCrisis: () => detectCrisis,
     doorOpen: () => doorOpen,
+    dropPlants: () => dropPlants,
     dueAxis: () => dueAxis,
     dueStories: () => dueStories,
     edgeKey: () => edgeKey,
     effectiveAccuracy: () => effectiveAccuracy,
     eligible: () => eligible,
+    eventPlants: () => eventPlants,
     expectedCapital: () => expectedCapital,
     fillSlots: () => fillSlots,
     financialEntropyDelta: () => financialEntropyDelta,
     findAsset: () => findAsset,
+    freshPlant: () => freshPlant,
     fuseCheck: () => fuseCheck,
     gagStart: () => gagStart,
     generateCanon: () => generateCanon,
@@ -1197,6 +1200,7 @@ var Argon = (() => {
     prov: () => prov,
     purchaseDelta: () => purchaseDelta,
     quoteBuy: () => quoteBuy,
+    rankPlants: () => rankPlants,
     ratRace: () => ratRace,
     rawAccuracy: () => rawAccuracy,
     repayChance: () => repayChance,
@@ -1206,6 +1210,7 @@ var Argon = (() => {
     resolveInteraction: () => resolveInteraction,
     sanitizeAct: () => sanitizeAct,
     sanitizeStoryScene: () => sanitizeStoryScene,
+    scarPlants: () => scarPlants,
     scarText: () => scarText,
     scarcityTax: () => scarcityTax,
     seasonKitFromNames: () => seasonKitFromNames,
@@ -1215,6 +1220,7 @@ var Argon = (() => {
     selectVignette: () => selectVignette,
     sellAsset: () => sellAsset,
     setEdge: () => setEdge,
+    settledPlant: () => settledPlant,
     severEdge: () => severEdge,
     snapshot: () => snapshot,
     socialSummary: () => socialSummary,
@@ -1229,6 +1235,7 @@ var Argon = (() => {
     tierOf: () => tierOf,
     trustToward: () => trustToward,
     turningLegacy: () => turningLegacy,
+    usePlants: () => usePlants,
     withdraw: () => withdraw
   });
 
@@ -2672,34 +2679,31 @@ var Argon = (() => {
     tp_c17_0: place("mat_bang_thue_cung_ban_than", "m\u1EB7t b\u1EB1ng b\u1EA1n th\xE2n thu\xEA, thi\u1EBFu n\u1EEDa v\u1ED1n"),
     tp_c18_0: place("bai_dat_canh_duong_sat", "b\xE3i \u0111\u1EA5t c\u1EA1nh \u0111\u01B0\u1EDDng s\u1EAFt"),
     tp_c18_1: place("phan_dat_chua_ban_canh_duong", "ph\u1EA7n \u0111\u1EA5t ch\u01B0a b\xE1n c\u1EA1nh \u0111\u01B0\u1EDDng"),
-    tp_c19_0: person("dua_tre_gui_nuoi_ho", "\u0111\u1EE9a tr\u1EBB \u0111\u01B0\u1EE3c g\u1EEDi nu\xF4i h\u1ED9"),
     tp_c20_0: object("phong_bi_khong_ghi_nguoi_gui", "phong b\xEC kh\xF4ng ghi ng\u01B0\u1EDDi g\u1EEDi"),
     tp_c20_1: object("ban_ghi_ve_phong_bi", "b\u1EA3n ghi v\u1EC1 phong b\xEC trong ng\u0103n k\xE9o"),
     tp_c21_1: secret("tin_nhan_luc_hai_gio_sang", "tin nh\u1EAFn th\xE2n m\u1EADt l\xFAc hai gi\u1EDD s\xE1ng"),
     tp_c21_2: promise("chuyen_di_hai_nguoi_da_dat", "chuy\u1EBFn \u0111i hai ng\u01B0\u1EDDi \u0111\xE3 \u0111\u1EB7t"),
     tp_c22_1: object("ho_so_bao_hiem_trong_ket", "h\u1ED3 s\u01A1 b\u1EA3o hi\u1EC3m trong k\xE9t"),
     tp_c22_2: place("xuong_thue_chung_cua_doi_thu", "x\u01B0\u1EDFng thu\xEA chung c\u1EE7a \u0111\u1ED1i th\u1EE7"),
-    tp_c23_0: person("ho_cuoi_ngo_bi_thieu_ten", "h\u1ED9 cu\u1ED1i ng\xF5 b\u1ECB thi\u1EBFu t\xEAn"),
     tp_c23_1: object("danh_sach_den_bu_thieu_mot_ho", "danh s\xE1ch \u0111\u1EC1n b\xF9 thi\u1EBFu m\u1ED9t h\u1ED9"),
     tp_c23_2: place("cho_o_mua_chung_voi_xom", "ch\u1ED7 \u1EDF mua chung v\u1EDBi x\xF3m"),
-    tp_c24_0: person("nguoi_di_xa_ve", "ng\u01B0\u1EDDi \u0111i xa v\u1EC1 \u0111\xFAng h\xF4m \u0111\xF3"),
     tp_c25_0: person("tp_c25_sibling", "em tr\u1EDF v\u1EC1 v\u1EDBi chi\u1EBFc vali"),
     tp_c25_2: secret("chuyen_em_chua_muon_ke", "chuy\u1EC7n em ch\u01B0a mu\u1ED1n k\u1EC3"),
     tp_c27_0: object("ve_chuyen_di_da_hoan", "v\xE9 chuy\u1EBFn \u0111i b\u1EA1n t\u1EEBng ho\xE3n"),
-    tp_c28_0: person("tre_trong_buc_anh", "\u0111\u1EE9a tr\u1EBB trong t\u1EA5m \u1EA3nh thi\u1EBFu ng\xE0y ch\u1EE5p"),
+    tp_c28_0: object("la_thu_khong_ghi_nguoi_gui", "l\xE1 th\u01B0 kh\xF4ng ghi ng\u01B0\u1EDDi g\u1EEDi"),
     tp_c28_2: object("la_thu_khong_ghi_nguoi_gui", "l\xE1 th\u01B0 kh\xF4ng ghi ng\u01B0\u1EDDi g\u1EEDi"),
     tp_c29_1: skill("nghe_cong_ty_can", "ngh\u1EC1 c\xF4ng ty c\u1EA7n b\u1EA1n h\u1ECDc l\u1EA1i"),
     tp_c30_1: person("tp_c30_creditor", "ch\u1EE7 n\u1EE3 c\u0169 \u0111\u1EE9ng ngo\xE0i c\u1EEDa xin vi\u1EC7c"),
     tp_c30_2: debt("no_cu_voi_chu_no_cu", "chuy\u1EC7n n\u1EE3 c\u0169 v\u1EDBi ch\u1EE7 n\u1EE3 c\u0169"),
     tp_c32_0: object("ho_so_to_vu_sai_pham", "h\u1ED3 s\u01A1 t\u1ED1 v\u1EE5 sai ph\u1EA1m c\xF3 t\xEAn b\u1EA1n"),
     tp_c32_1: object("ho_so_to_vu_sai_pham", "h\u1ED3 s\u01A1 t\u1ED1 v\u1EE5 sai ph\u1EA1m c\xF3 t\xEAn b\u1EA1n"),
-    tp_c33_0: person("nguoi_noi_cung_cha", "ng\u01B0\u1EDDi n\xF3i c\xF9ng cha v\u1EDBi b\u1EA1n"),
-    tp_c33_1: person("nguoi_noi_cung_cha", "ng\u01B0\u1EDDi n\xF3i c\xF9ng cha v\u1EDBi b\u1EA1n"),
+    tp_c33_0: object("chiec_ghe_trong_anh_cua_cha", "chi\u1EBFc gh\u1EBF trong t\u1EA5m \u1EA3nh b\u1EA1n v\u1EABn gi\u1EEF"),
+    tp_c33_1: object("chiec_ghe_trong_anh_cua_cha", "chi\u1EBFc gh\u1EBF trong t\u1EA5m \u1EA3nh b\u1EA1n v\u1EABn gi\u1EEF"),
     tp_c33_2: object("chiec_ghe_trong_anh_cua_cha", "chi\u1EBFc gh\u1EBF trong t\u1EA5m \u1EA3nh b\u1EA1n v\u1EABn gi\u1EEF"),
     tp_c34_0: debt("khoan_tien_dieu_tri_cua_ban", "kho\u1EA3n ti\u1EC1n \u0111i\u1EC1u tr\u1ECB c\u1EE7a b\u1EA1n th\xE2n"),
     tp_c34_1: debt("khoan_tien_dieu_tri_cua_ban", "kho\u1EA3n ti\u1EC1n \u0111i\u1EC1u tr\u1ECB c\u1EE7a b\u1EA1n th\xE2n"),
     tp_c35_0: object("ban_ghi_ve_ke_tung_hai_ban", "b\u1EA3n ghi v\u1EC1 k\u1EBB t\u1EEBng h\u1EA1i b\u1EA1n"),
-    tp_c35_1: person("doi_thu_trong_ban_ghi", "\u0111\u1ED1i th\u1EE7 trong b\u1EA3n ghi"),
+    tp_c35_1: object("ban_ghi_ve_ke_tung_hai_ban", "b\u1EA3n ghi v\u1EC1 k\u1EBB t\u1EEBng h\u1EA1i b\u1EA1n"),
     tp_c38_1: object("dung_cu_da_sua_rieng_cho_ban", "d\u1EE5ng c\u1EE5 \u0111\xE3 \u0111\u01B0\u1EE3c s\u1EEDa ri\xEAng cho b\u1EA1n"),
     tp_c38_2: object("dung_cu_da_sua_rieng_cho_ban", "d\u1EE5ng c\u1EE5 \u0111\xE3 \u0111\u01B0\u1EE3c s\u1EEDa ri\xEAng cho b\u1EA1n"),
     tp_c39_0: object("ba_ban_di_chuc_viet_tay", "ba b\u1EA3n di ch\xFAc vi\u1EBFt tay"),
@@ -2709,14 +2713,12 @@ var Argon = (() => {
     tp_c41_0: place("phong_tro_cu", "c\u0103n ph\xF2ng tr\u1ECD c\u0169"),
     tp_c42_0: person("tp_c42_mentor", "ng\u01B0\u1EDDi h\u1ECDc vi\u1EC7c gi\u1ECFi h\u01A1n th\u1EA7y"),
     tp_c42_2: skill("ky_thuat_bo_do_ba_lan", "k\u1EF9 thu\u1EADt b\u1EA1n \u0111\xE3 b\u1ECF d\u1EDF ba l\u1EA7n"),
-    tp_c43_0: person("nguoi_o_nho_muoi_dem", "ng\u01B0\u1EDDi \u1EDF nh\u1EDD m\u01B0\u1EDDi \u0111\xEAm"),
     tp_c45_0: place("hang_rao_lech_mot_gang", "h\xE0ng r\xE0o l\u1EC7ch m\u1ED9t gang"),
     tp_c45_1: place("loi_di_chung_giua_hai_nha", "l\u1ED1i \u0111i chung gi\u1EEFa hai nh\xE0"),
     tp_c45_2: place("vuon_chung_tren_ranh_gioi", "v\u01B0\u1EDDn chung tr\xEAn ranh gi\u1EDBi"),
     tp_c47_1: object("cong_thuc_tren_khan_an", "c\xF4ng th\u1EE9c vi\u1EBFt tr\xEAn kh\u0103n \u0103n"),
     tp_c48_0: person("tp_c48_neighbor", "ng\u01B0\u1EDDi \u0111\u1EC1 c\u1EED b\u1EA1n l\xE0m t\u1ED5 tr\u01B0\u1EDFng"),
-    tp_c49_0: person("nguoi_lam_that_su", "ng\u01B0\u1EDDi th\u1EADt s\u1EF1 l\xE0m vi\u1EC7c \u0111\u01B0\u1EE3c b\xE1o khen"),
-    tp_c50_0: person("nguoi_bi_cat_khoi_anh", "ng\u01B0\u1EDDi b\u1ECB c\u1EAFt kh\u1ECFi \u1EA3nh gia \u0111\xECnh"),
+    tp_c50_0: object("chiec_ghe_trong_trong_anh", "chi\u1EBFc gh\u1EBF tr\u1ED1ng trong \u1EA3nh gia \u0111\xECnh"),
     tp_c50_2: object("chiec_ghe_trong_trong_anh", "chi\u1EBFc gh\u1EBF tr\u1ED1ng trong \u1EA3nh gia \u0111\xECnh"),
     /* ---- absurd */
     tp_a01_0: object("so_do_bi_de_an_mat_goc", "s\u1ED5 \u0111\u1ECF b\u1ECB d\xEA \u0103n m\u1EA5t m\u1ED9t g\xF3c"),
@@ -2742,15 +2744,12 @@ var Argon = (() => {
     tp_a17_0: object("ban_do_cua_ong", "b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i"),
     tp_a17_1: object("ban_do_cua_ong", "b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i"),
     tp_a17_2: object("ban_do_cua_ong", "b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i"),
-    tp_a18_0: person("nguoi_cung_ten_hang_dau", "ng\u01B0\u1EDDi c\xF9ng t\xEAn ng\u1ED3i h\xE0ng \u0111\u1EA7u"),
     tp_a19_2: object("kien_hang_nhan_ho", "ki\u1EC7n h\xE0ng nh\u1EADn h\u1ED9"),
     tp_a20_1: object("chiec_cup_nguoi_an_cay", "chi\u1EBFc c\xFAp ng\u01B0\u1EDDi \u0103n cay"),
     tp_a21_0: debt("tien_thue_nha_con_thieu", "kho\u1EA3n ti\u1EC1n thu\xEA nh\xE0 c\xF2n thi\u1EBFu c\u1EA3 x\xF3m \u0111\xE3 nghe"),
-    tp_a22_0: person("doi_thu_toi_an_banh", "\u0111\u1ED1i th\u1EE7 t\u1EDBi \u0103n chi\u1EBFc b\xE1nh mang t\xEAn m\xECnh"),
     tp_a24_1: object("chiec_ngai_san_khau", "chi\u1EBFc ngai s\xE2n kh\u1EA5u chi\u1EBFm ph\xF2ng kh\xE1ch"),
     tp_a25_0: animal("con_cho_lam_nhan_chung", "con ch\xF3 b\u1ECB g\u1ECDi l\xE0 nh\xE2n ch\u1EE9ng"),
     tp_a27_0: object("nap_am_cu_lam_mau_do", "chi\u1EBFc n\u1EAFp \u1EA5m c\u0169 l\xE0m m\u1EABu \u0111o"),
-    tp_a28_0: person("nguoi_mat_tich_trung_ten", "ng\u01B0\u1EDDi m\u1EA5t t\xEDch tr\xF9ng t\xEAn v\xE0 \xE1o"),
     tp_a29_0: object("bo_do_dien_bi_nham_dong_phuc", "b\u1ED9 \u0111\u1ED3 di\u1EC5n b\u1ECB nh\u1EA7m l\xE0 \u0111\u1ED3ng ph\u1EE5c"),
     tp_a31_0: object("tam_bien_di_tich_gia", "t\u1EA5m bi\u1EC3n di t\xEDch gi\u1EA3 tr\u01B0\u1EDBc nh\xE0"),
     tp_a32_0: animal("con_rua_thang_cuoc_thi", "con r\xF9a th\u1EAFng cu\u1ED9c thi t\u1ED1c \u0111\u1ED9"),
@@ -2769,10 +2768,9 @@ var Argon = (() => {
     tp_a42_0: object("to_lich_in_hai_thang_bay", "t\u1EDD l\u1ECBch in hai th\xE1ng b\u1EA3y"),
     tp_a43_0: object("mu_bao_hiem_biet_hat", "chi\u1EBFc m\u0169 b\u1EA3o hi\u1EC3m bi\u1EBFt h\xE1t"),
     tp_a45_0: object("la_thu_cu_co_tem_dat", "l\xE1 th\u01B0 c\u0169 d\xE1n con tem \u0111\u1EAFt gi\xE1"),
-    tp_a45_1: person("nguoi_viet_la_thu_cu", "ng\u01B0\u1EDDi \u0111\xE3 vi\u1EBFt l\xE1 th\u01B0 c\u0169"),
+    tp_a45_1: object("la_thu_cu_co_tem_dat", "l\xE1 th\u01B0 c\u0169 d\xE1n con tem \u0111\u1EAFt gi\xE1"),
     tp_a46_0: object("tram_ao_mua_in_anh_ban", "m\u1ED9t tr\u0103m chi\u1EBFc \xE1o m\u01B0a in \u1EA3nh th\u1EBB c\u1EE7a b\u1EA1n"),
     tp_a46_1: object("tram_ao_mua_in_anh_ban", "m\u1ED9t tr\u0103m chi\u1EBFc \xE1o m\u01B0a in \u1EA3nh th\u1EBB c\u1EE7a b\u1EA1n"),
-    tp_a47_0: person("nguoi_giao_hang_cho_tho", "ng\u01B0\u1EDDi giao h\xE0ng \u0111\u1EE9ng \u0111\u1EE3i b\u1EA1n gieo v\u1EA7n"),
     tp_a48_1: object("buc_chan_dung_them_ria", "b\u1EE9c ch\xE2n dung b\u1ECB th\xEAm ria"),
     tp_a50_0: object("bo_chia_khoa_khong_mo_cua", "b\xF3 ch\xECa kh\xF3a kh\xF4ng m\u1EDF c\u1EEDa n\xE0o"),
     /* ---- money */
@@ -2786,8 +2784,7 @@ var Argon = (() => {
     tp_m04_0: place("dat_co_vat_lieu_quy", "m\u1EA3nh \u0111\u1EA5t c\xF3 v\u1EADt li\u1EC7u qu\xFD"),
     tp_m04_1: place("dat_co_vat_lieu_quy", "m\u1EA3nh \u0111\u1EA5t c\xF3 v\u1EADt li\u1EC7u qu\xFD"),
     tp_m04_2: place("dat_co_vat_lieu_quy", "m\u1EA3nh \u0111\u1EA5t c\xF3 v\u1EADt li\u1EC7u qu\xFD"),
-    tp_m05_0: person("hang_xom_thua_kien", "ng\u01B0\u1EDDi h\xE0ng x\xF3m \u0111\xE3 thua ki\u1EC7n"),
-    tp_m05_1: person("hang_xom_thua_kien", "ng\u01B0\u1EDDi h\xE0ng x\xF3m \u0111\xE3 thua ki\u1EC7n"),
+    tp_m05_1: debt("boi_thuong_nhan_theo_ky", "kho\u1EA3n b\u1ED3i th\u01B0\u1EDDng ng\u01B0\u1EDDi thua ki\u1EC7n tr\u1EA3 theo k\u1EF3"),
     tp_m06_0: debt("coc_hai_lan_dan_vat_nuoi", "hai ng\u01B0\u1EDDi c\xF9ng \u0111\xE3 c\u1ECDc \u0111\xE0n v\u1EADt nu\xF4i"),
     tp_m06_1: debt("coc_hai_lan_dan_vat_nuoi", "hai ng\u01B0\u1EDDi c\xF9ng \u0111\xE3 c\u1ECDc \u0111\xE0n v\u1EADt nu\xF4i"),
     tp_m07_0: object("buc_tranh_che_vet_nut", "b\u1EE9c tranh che v\u1EBFt n\u1EE9t \u1EDF g\xE1c x\xE9p"),
@@ -2798,8 +2795,7 @@ var Argon = (() => {
     tp_m09_0: debt("vong_hui_da_ngung_tra", "v\xF2ng h\u1EE5i \u0111\xE3 ng\u1EEBng tr\u1EA3 do ng\u01B0\u1EDDi trong h\u1ECD gi\u1EEF"),
     tp_m09_1: debt("vong_hui_da_ngung_tra", "v\xF2ng h\u1EE5i \u0111\xE3 ng\u1EEBng tr\u1EA3 do ng\u01B0\u1EDDi trong h\u1ECD gi\u1EEF"),
     tp_m09_2: debt("vong_hui_da_ngung_tra", "v\xF2ng h\u1EE5i \u0111\xE3 ng\u1EEBng tr\u1EA3 do ng\u01B0\u1EDDi trong h\u1ECD gi\u1EEF"),
-    tp_m10_0: person("nguoi_giu_quy_chung_bien_mat", "ng\u01B0\u1EDDi gi\u1EEF qu\u1EF9 chung bi\u1EBFn m\u1EA5t"),
-    tp_m10_2: person("nguoi_giu_quy_chung_bien_mat", "ng\u01B0\u1EDDi gi\u1EEF qu\u1EF9 chung bi\u1EBFn m\u1EA5t"),
+    tp_m10_0: debt("tien_thue_dia_diem_toi_han", "ti\u1EC1n thu\xEA \u0111\u1ECBa \u0111i\u1EC3m c\u1EE7a c\u1EA3 nh\xF3m t\u1EDBi h\u1EA1n"),
     tp_m11_0: object("ho_so_tien_gui_o_ngan_hang", "h\u1ED3 s\u01A1 kho\u1EA3n ti\u1EC1n g\u1EEDi \u1EDF ng\xE2n h\xE0ng \u0111\xF3ng c\u1EEDa"),
     tp_m12_0: object("anh_binh_chua_chay", "b\u1EE9c \u1EA3nh chi\u1EBFc b\xECnh ch\u1EEFa ch\xE1y"),
     tp_m12_1: object("anh_binh_chua_chay", "b\u1EE9c \u1EA3nh chi\u1EBFc b\xECnh ch\u1EEFa ch\xE1y"),
@@ -2866,9 +2862,8 @@ var Argon = (() => {
     tp_m46_0: object("mon_du_phong_len_gia_roi_giam", "m\xF3n d\u1EF1 ph\xF2ng l\xEAn gi\xE1 r\u1ED3i gi\u1EA3m"),
     tp_m47_1: person("tp_m47_neighbor", "ng\u01B0\u1EDDi mu\u1ED1n mua c\u1EA3 d\xE3y"),
     tp_m47_2: person("tp_m47_neighbor", "ng\u01B0\u1EDDi mu\u1ED1n mua c\u1EA3 d\xE3y"),
-    tp_m48_0: person("nguoi_tung_giup_duoc_de_phan", "ng\u01B0\u1EDDi t\u1EEBng gi\xFAp b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u1EC3 l\u1EA1i m\u1ED9t ph\u1EA7n"),
-    tp_m48_1: person("nguoi_tung_giup_duoc_de_phan", "ng\u01B0\u1EDDi t\u1EEBng gi\xFAp b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u1EC3 l\u1EA1i m\u1ED9t ph\u1EA7n"),
-    tp_m48_2: person("nguoi_tung_giup_duoc_de_phan", "ng\u01B0\u1EDDi t\u1EEBng gi\xFAp b\u1EA1n \u0111\u01B0\u1EE3c \u0111\u1EC3 l\u1EA1i m\u1ED9t ph\u1EA7n"),
+    tp_m48_0: promise("phan_ghi_cho_nguoi_tung_giup", "ph\u1EA7n ghi \u0111\u1EC3 l\u1EA1i cho ng\u01B0\u1EDDi t\u1EEBng gi\xFAp b\u1EA1n"),
+    tp_m48_2: promise("quy_mo_cho_viec_giup_nguoi", "ph\u1EA7n qu\u1EF9 gi\u1EEF m\u1EDF cho vi\u1EC7c gi\xFAp ng\u01B0\u1EDDi"),
     tp_m49_0: debt("khoan_con_giu_lai", "kho\u1EA3n ti\u1EC1n con gi\u1EEF l\u1EA1i l\u1EBD ra chuy\u1EC3n cho b\u1EA1n"),
     tp_m49_1: debt("khoan_con_giu_lai", "kho\u1EA3n ti\u1EC1n con gi\u1EEF l\u1EA1i l\u1EBD ra chuy\u1EC3n cho b\u1EA1n"),
     tp_m49_2: debt("khoan_con_giu_lai", "kho\u1EA3n ti\u1EC1n con gi\u1EEF l\u1EA1i l\u1EBD ra chuy\u1EC3n cho b\u1EA1n"),
@@ -2876,18 +2871,6 @@ var Argon = (() => {
     tp_m50_1: debt("khoan_no_cu_chi_con_loi_ke", "kho\u1EA3n n\u1EE3 c\u0169 ch\u1EC9 c\xF2n l\u1EDDi k\u1EC3"),
     tp_m50_2: debt("khoan_no_cu_chi_con_loi_ke", "kho\u1EA3n n\u1EE3 c\u0169 ch\u1EC9 c\xF2n l\u1EDDi k\u1EC3"),
     /* ---- love */
-    tp_l01_0: person("nguoi_nhan_loi_chuc_ngu_ngon", "ng\u01B0\u1EDDi nh\u1EADn l\u1EDDi ch\xFAc ng\u1EE7 ngon nh\u1EA7m s\u1ED1"),
-    tp_l01_1: person("nguoi_nhan_loi_chuc_ngu_ngon", "ng\u01B0\u1EDDi nh\u1EADn l\u1EDDi ch\xFAc ng\u1EE7 ngon nh\u1EA7m s\u1ED1"),
-    tp_l01_2: person("nguoi_nhan_loi_chuc_ngu_ngon", "ng\u01B0\u1EDDi nh\u1EADn l\u1EDDi ch\xFAc ng\u1EE7 ngon nh\u1EA7m s\u1ED1"),
-    tp_l02_0: person("nguoi_cung_bi_goi_nham", "ng\u01B0\u1EDDi c\xF9ng b\u1ECB g\u1ECDi nh\u1EA7m tr\xEAn s\xE2n kh\u1EA5u"),
-    tp_l03_0: person("nguoi_xem_mat_nham_nha", "ng\u01B0\u1EDDi b\u1EA1n g\u1EB7p nh\u1EA7m nh\xE0 xem m\u1EAFt"),
-    tp_l04_0: person("nguoi_qua_mang_o_sat_vach", "ng\u01B0\u1EDDi tr\xF2 chuy\u1EC7n qua m\u1EA1ng \u1EDF s\xE1t v\xE1ch"),
-    tp_l04_1: person("nguoi_qua_mang_o_sat_vach", "ng\u01B0\u1EDDi tr\xF2 chuy\u1EC7n qua m\u1EA1ng \u1EDF s\xE1t v\xE1ch"),
-    tp_l04_2: person("nguoi_qua_mang_o_sat_vach", "ng\u01B0\u1EDDi tr\xF2 chuy\u1EC7n qua m\u1EA1ng \u1EDF s\xE1t v\xE1ch"),
-    tp_l05_0: person("nguoi_ban_tham_thich_giu_dep", "ng\u01B0\u1EDDi b\u1EA1n th\u1EA7m th\xEDch \u0111ang gi\u1EEF \u0111\xF4i d\xE9p"),
-    tp_l08_0: person("bo_cua_nguoi_ban_dinh_quen", "ng\u01B0\u1EDDi b\u1ED1 \u0111\xE3 tr\xF2 chuy\u1EC7n v\u1EDBi b\u1EA1n su\u1ED1t ba th\xE1ng"),
-    tp_l08_1: person("bo_cua_nguoi_ban_dinh_quen", "ng\u01B0\u1EDDi b\u1ED1 \u0111\xE3 tr\xF2 chuy\u1EC7n v\u1EDBi b\u1EA1n su\u1ED1t ba th\xE1ng"),
-    tp_l08_2: person("bo_cua_nguoi_ban_dinh_quen", "ng\u01B0\u1EDDi b\u1ED1 \u0111\xE3 tr\xF2 chuy\u1EC7n v\u1EDBi b\u1EA1n su\u1ED1t ba th\xE1ng"),
     tp_l09_0: animal("hai_con_cho_hai_nha", "hai con ch\xF3 c\u1EE7a hai nh\xE0"),
     tp_l09_1: animal("hai_con_cho_hai_nha", "hai con ch\xF3 c\u1EE7a hai nh\xE0"),
     tp_l09_2: animal("hai_con_cho_hai_nha", "hai con ch\xF3 c\u1EE7a hai nh\xE0"),
@@ -2897,14 +2880,10 @@ var Argon = (() => {
     tp_l12_0: object("bai_hat_chia_tay_nham_loi", "b\xE0i h\xE1t chia tay t\u1EADp nh\u1EA7m l\u1EDDi"),
     tp_l12_1: object("bai_hat_chia_tay_nham_loi", "b\xE0i h\xE1t chia tay t\u1EADp nh\u1EA7m l\u1EDDi"),
     tp_l12_2: object("bai_hat_chia_tay_nham_loi", "b\xE0i h\xE1t chia tay t\u1EADp nh\u1EA7m l\u1EDDi"),
-    tp_l13_0: person("nguoi_dong_vai_nguoi_yeu", "ng\u01B0\u1EDDi \u0111\u01B0\u1EE3c thu\xEA \u0111\xF3ng vai ng\u01B0\u1EDDi y\xEAu"),
-    tp_l13_1: person("nguoi_dong_vai_nguoi_yeu", "ng\u01B0\u1EDDi \u0111\u01B0\u1EE3c thu\xEA \u0111\xF3ng vai ng\u01B0\u1EDDi y\xEAu"),
-    tp_l13_2: person("nguoi_dong_vai_nguoi_yeu", "ng\u01B0\u1EDDi \u0111\u01B0\u1EE3c thu\xEA \u0111\xF3ng vai ng\u01B0\u1EDDi y\xEAu"),
     tp_l14_0: object("thiep_hoa_giu_ba_mua", "nh\u1EEFng t\u1EA5m thi\u1EC7p hoa \u0111\xE3 gi\u1EEF ba m\xF9a"),
     tp_l16_0: promise("loi_khoe_chay_tram_cay", "l\u1EDDi khoe ch\u1EA1y m\u1ED9t tr\u0103m c\xE2y s\u1ED1"),
     tp_l16_1: promise("loi_khoe_chay_tram_cay", "l\u1EDDi khoe ch\u1EA1y m\u1ED9t tr\u0103m c\xE2y s\u1ED1"),
     tp_l16_2: promise("loi_khoe_chay_tram_cay", "l\u1EDDi khoe ch\u1EA1y m\u1ED9t tr\u0103m c\xE2y s\u1ED1"),
-    tp_l17_0: person("anh_ho_cua_nguoi_ay", "ng\u01B0\u1EDDi anh h\u1ECD b\u1EA1n l\u1EE1 ch\u1EA5t v\u1EA5n"),
     tp_l18_0: object("ban_tap_to_tinh_qua_loa", "b\u1EA3n t\u1EADp t\u1ECF t\xECnh ph\xE1t qua loa khu"),
     tp_l18_1: object("ban_tap_to_tinh_qua_loa", "b\u1EA3n t\u1EADp t\u1ECF t\xECnh ph\xE1t qua loa khu"),
     tp_l18_2: object("ban_tap_to_tinh_qua_loa", "b\u1EA3n t\u1EADp t\u1ECF t\xECnh ph\xE1t qua loa khu"),
@@ -2914,9 +2893,6 @@ var Argon = (() => {
     tp_l22_0: debt("no_cu_cua_gia_dinh_ban", "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh b\u1EA1n v\u1EDBi nh\xE0 ng\u01B0\u1EDDi \u1EA5y"),
     tp_l22_1: debt("no_cu_cua_gia_dinh_ban", "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh b\u1EA1n v\u1EDBi nh\xE0 ng\u01B0\u1EDDi \u1EA5y"),
     tp_l22_2: debt("no_cu_cua_gia_dinh_ban", "m\xF3n n\u1EE3 c\u0169 c\u1EE7a gia \u0111\xECnh b\u1EA1n v\u1EDBi nh\xE0 ng\u01B0\u1EDDi \u1EA5y"),
-    tp_l23_0: person("nguoi_cu_nay_la_ho_hang", "ng\u01B0\u1EDDi t\u1EEBng h\u1EB9n h\xF2 nay l\xE0 h\u1ECD h\xE0ng"),
-    tp_l23_1: person("nguoi_cu_nay_la_ho_hang", "ng\u01B0\u1EDDi t\u1EEBng h\u1EB9n h\xF2 nay l\xE0 h\u1ECD h\xE0ng"),
-    tp_l23_2: person("nguoi_cu_nay_la_ho_hang", "ng\u01B0\u1EDDi t\u1EEBng h\u1EB9n h\xF2 nay l\xE0 h\u1ECD h\xE0ng"),
     tp_l24_0: object("cay_xoai_giong_den_bu", "c\xE2y xo\xE0i gi\u1ED1ng \u0111\u1EC1n b\xF9"),
     tp_l25_0: promise("chuyen_di_chung_da_dat", "chuy\u1EBFn \u0111i chung \u0111\xE3 \u0111\u1EB7t tr\u01B0\u1EDBc"),
     tp_l25_1: promise("chuyen_di_chung_da_dat", "chuy\u1EBFn \u0111i chung \u0111\xE3 \u0111\u1EB7t tr\u01B0\u1EDBc"),
@@ -2928,9 +2904,6 @@ var Argon = (() => {
     tp_l29_0: object("anh_cu_tinh_dau_hai_nha", "\u1EA3nh c\u0169 t\xECnh \u0111\u1EA7u c\u1EE7a hai ng\u01B0\u1EDDi l\u1EDBn"),
     tp_l29_1: object("anh_cu_tinh_dau_hai_nha", "\u1EA3nh c\u0169 t\xECnh \u0111\u1EA7u c\u1EE7a hai ng\u01B0\u1EDDi l\u1EDBn"),
     tp_l29_2: object("anh_cu_tinh_dau_hai_nha", "\u1EA3nh c\u0169 t\xECnh \u0111\u1EA7u c\u1EE7a hai ng\u01B0\u1EDDi l\u1EDBn"),
-    tp_l30_0: person("me_cua_nguoi_ay", "m\u1EB9 c\u1EE7a ng\u01B0\u1EDDi \u1EA5y, ng\u01B0\u1EDDi g\xF3p l\u1EDDi nh\u1EAFn"),
-    tp_l30_1: person("me_cua_nguoi_ay", "m\u1EB9 c\u1EE7a ng\u01B0\u1EDDi \u1EA5y, ng\u01B0\u1EDDi g\xF3p l\u1EDDi nh\u1EAFn"),
-    tp_l30_2: person("me_cua_nguoi_ay", "m\u1EB9 c\u1EE7a ng\u01B0\u1EDDi \u1EA5y, ng\u01B0\u1EDDi g\xF3p l\u1EDDi nh\u1EAFn"),
     tp_l31_0: object("anh_cuoi_in_lan_ca_nhom", "\u1EA3nh c\u01B0\u1EDBi in l\u1EABn c\u1EA3 nh\xF3m"),
     tp_l32_0: object("chiec_nhan_trong_noi_lau", "chi\u1EBFc nh\u1EABn r\u01A1i trong n\u1ED3i l\u1EA9u"),
     tp_l32_1: object("chiec_nhan_trong_noi_lau", "chi\u1EBFc nh\u1EABn r\u01A1i trong n\u1ED3i l\u1EA9u"),
@@ -2947,20 +2920,11 @@ var Argon = (() => {
     tp_l40_0: animal("con_meo_ghe_moi_chieu", "con m\xE8o c\u1EA3 hai l\xE9n cho \u0103n m\u1ED7i chi\u1EC1u"),
     tp_l40_1: animal("con_meo_ghe_moi_chieu", "con m\xE8o c\u1EA3 hai l\xE9n cho \u0103n m\u1ED7i chi\u1EC1u"),
     tp_l40_2: animal("con_meo_ghe_moi_chieu", "con m\xE8o c\u1EA3 hai l\xE9n cho \u0103n m\u1ED7i chi\u1EC1u"),
-    tp_l41_0: person("nguoi_yeu_tre_cua_me", "ng\u01B0\u1EDDi y\xEAu tr\u1EBB h\u01A1n c\u1EE7a m\u1EB9"),
     tp_l42_0: debt("mon_muon_thoi_di_hoc", "m\xF3n m\u01B0\u1EE3n th\u1EDDi \u0111i h\u1ECDc ghi trong s\u1ED5"),
     tp_l42_1: object("cuon_so_cua_nguoi_xua", "cu\u1ED1n s\u1ED5 ghi m\xF3n b\u1EA1n m\u01B0\u1EE3n th\u1EDDi \u0111i h\u1ECDc"),
-    tp_l43_0: person("co_giao_cu_cua_ban", "c\xF4 gi\xE1o c\u0169 nay l\xE0 ng\u01B0\u1EDDi b\u1EA1n m\u1EDBi c\u1EE7a b\u1ED1"),
-    tp_l43_1: person("co_giao_cu_cua_ban", "c\xF4 gi\xE1o c\u0169 nay l\xE0 ng\u01B0\u1EDDi b\u1EA1n m\u1EDBi c\u1EE7a b\u1ED1"),
-    tp_l43_2: person("co_giao_cu_cua_ban", "c\xF4 gi\xE1o c\u0169 nay l\xE0 ng\u01B0\u1EDDi b\u1EA1n m\u1EDBi c\u1EE7a b\u1ED1"),
     tp_l45_0: object("thu_tinh_trong_tu", "th\u01B0 t\xECnh trong t\u1EE7 mang n\xE9t ch\u1EEF c\u1EE7a b\u1EA1n"),
     tp_l45_1: object("thu_tinh_trong_tu", "th\u01B0 t\xECnh trong t\u1EE7 mang n\xE9t ch\u1EEF c\u1EE7a b\u1EA1n"),
-    tp_l46_0: person("nguoi_ban_xoi", "ng\u01B0\u1EDDi b\xE1n x\xF4i hay g\u1EB7p m\u1ED7i s\xE1ng"),
-    tp_l46_1: person("nguoi_ban_xoi", "ng\u01B0\u1EDDi b\xE1n x\xF4i hay g\u1EB7p m\u1ED7i s\xE1ng"),
-    tp_l46_2: person("nguoi_ban_xoi", "ng\u01B0\u1EDDi b\xE1n x\xF4i hay g\u1EB7p m\u1ED7i s\xE1ng"),
     tp_l47_0: object("ho_so_hen_ho_anh_tre_hon", "h\u1ED3 s\u01A1 h\u1EB9n h\xF2 v\u1EDBi \u1EA3nh tr\u1EBB h\u01A1n hai m\u01B0\u01A1i tu\u1ED5i"),
-    tp_l49_0: person("nguoi_moi_trong_nhom_sinh_hoat", "ng\u01B0\u1EDDi m\u1EDBi trong nh\xF3m sinh ho\u1EA1t"),
-    tp_l49_1: person("nguoi_moi_trong_nhom_sinh_hoat", "ng\u01B0\u1EDDi m\u1EDBi trong nh\xF3m sinh ho\u1EA1t"),
     tp_l50_0: promise("hai_la_thu_hen_cung_ngay", "hai l\xE1 th\u01B0 h\u1EB9n g\u1EB7p c\xF9ng m\u1ED9t ng\xE0y"),
     tp_l50_1: promise("hai_la_thu_hen_cung_ngay", "hai l\xE1 th\u01B0 h\u1EB9n g\u1EB7p c\xF9ng m\u1ED9t ng\xE0y"),
     tp_l50_2: promise("hai_la_thu_hen_cung_ngay", "hai l\xE1 th\u01B0 h\u1EB9n g\u1EB7p c\xF9ng m\u1ED9t ng\xE0y"),
@@ -3202,6 +3166,10 @@ var Argon = (() => {
   function actor(d, c) {
     for (let g of d.gates.split(",")) if (ROLES[g]) return c.cast[ROLES[g]];
   }
+  function routePlant(d, i) {
+    let p = CODEX_PLANTS[d.id + "_" + i]?.plant;
+    return p && (p.kind !== "person" || p.key === d.id + "_" + actorRole(d)) ? p : void 0;
+  }
   function fits(d, c) {
     let gs = d.gates.split(","), [lo, hi] = gs.includes("kid") ? [8, 15] : gs.includes("teen") ? [16, 22] : gs.includes("young") ? [18, 25] : gs.includes("old") ? [60, 85] : gs.includes("late") ? [40, 72] : [18, 65];
     if (c.age < lo || c.age > hi || gs.includes("friend") && gs.includes("spouse") && c.cast.childhood_friend === c.cast.spouse) return !1;
@@ -3248,18 +3216,18 @@ var Argon = (() => {
         let npc = actor(d, c), person2 = npc ? N(npc) : "ng\u01B0\u1EDDi quen", choices = d.routes.map((b, i) => {
           let e = merge(merge(flavour(b.tone, c, npc), b.extra), linkedEffect(d.id, i, "open", c));
           e.memory && (e.memory = { ...e.memory, note: d.title.toLowerCase() + ": " + b.label.toLowerCase() });
-          let flags = [seen, branchFlag(i), ...npc ? [d.id + "_who:" + npc] : []], cx = CODEX_PLANTS[d.id + "_" + i], open = {
+          let flags = [seen, branchFlag(i), ...npc ? [d.id + "_who:" + npc] : []], cx = CODEX_PLANTS[d.id + "_" + i], pl = routePlant(d, i), open = {
             flags,
-            counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...cx?.plant ? { [d.id + "_at"]: c.age } : { tp_open: 1, [due]: c.age + delay } },
+            counters: { tp_seen: 1, tp_last_at: c.age - (c.counters.tp_last_at ?? 0), ...pl ? { [d.id + "_at"]: c.age } : { tp_open: 1, [due]: c.age + delay } },
             pressure: cx?.pressure ?? pressureFor(d.id, b.tone),
-            ...cx?.plant ? { plant: npc && cx.plant.kind === "person" && cx.plant.key === d.id + "_" + actorRole(d) ? { ...cx.plant, npc } : cx.plant } : { later: { years: delay, storylet: d.id + "_echo_" + i } },
+            ...pl ? { plant: npc && pl.kind === "person" ? { ...pl, npc } : pl } : { later: { years: delay, storylet: d.id + "_echo_" + i } },
             log: b.label + ". " + b.hook + "."
           };
           return C(b.label, merge(e, open), b.hook);
         });
         return T(d.title, d.text.replaceAll("{person}", person2), choices, 1, npc ? { npc } : {});
       }
-    }, echoes = d.routes.flatMap((b, i) => CODEX_PLANTS[d.id + "_" + i]?.plant ? [] : [{
+    }, echoes = d.routes.flatMap((b, i) => routePlant(d, i) ? [] : [{
       id: d.id + "_echo_" + i,
       category: "arc",
       urgency: 82,
@@ -4310,7 +4278,7 @@ var Argon = (() => {
     let when = (d) => c.counters[d.id + "_due"] ?? c.counters[d.id + "_at"] ?? 0;
     return TURNING_CATALOG.filter((d) => c.flags.has(d.id + "_seen")).sort((a, b) => when(b) - when(a)).slice(0, 3).map((d) => {
       let i = d.routes.findIndex((_, j) => c.flags.has(d.id + "_route_" + j)), b = d.routes[i];
-      if (CODEX_PLANTS[d.id + "_" + i]?.plant) return d.title + ": " + b.label.charAt(0).toLowerCase() + b.label.slice(1) + ".";
+      if (routePlant(d, i)) return d.title + ": " + b.label.charAt(0).toLowerCase() + b.label.slice(1) + ".";
       let end = c.flags.has(d.id + "_continued_" + i) ? b.keep : c.flags.has(d.id + "_changed_" + i) ? b.pivot : "c\xE2u chuy\u1EC7n c\xF2n dang d\u1EDF khi \u0111\u1EDDi b\u1EA1n kh\xE9p l\u1EA1i";
       return d.title + ": " + end.charAt(0).toLowerCase() + end.slice(1) + ".";
     });
@@ -22527,18 +22495,48 @@ var Argon = (() => {
   }
 
   // src/engine/narrative/canon/Plants.ts
+  function better(p, q) {
+    let pu = p.used === void 0, qu = q.used === void 0;
+    return pu !== qu ? pu : p.weight !== q.weight ? p.weight > q.weight : !pu && p.used !== q.used ? p.used < q.used : p.age > q.age;
+  }
   function strongestPlant(plants, kinds) {
     let best;
     for (let p of plants)
-      kinds.includes(p.kind) && (!best || p.weight > best.weight || p.weight === best.weight && p.age < best.age) && (best = p);
+      kinds.includes(p.kind) && (!best || better(p, best)) && (best = p);
     return best;
+  }
+  function rankPlants(plants, kinds) {
+    return plants.filter((p) => kinds.includes(p.kind)).map((p, i) => ({ p, i })).sort((a, b) => better(a.p, b.p) ? -1 : better(b.p, a.p) ? 1 : a.i - b.i).map((x) => x.p);
+  }
+  var freshPlant = (p) => p.used === void 0;
+  function usePlants(plants, refs, age) {
+    if (refs.length)
+      for (let p of plants) refs.some((r) => r.kind === p.kind && r.key === p.key) && (p.used = age);
+  }
+  function eventPlants(slots, plants) {
+    let out = [], w = slots.what;
+    if (w && w.kind !== "asset" && out.push({ kind: w.kind, key: w.key }), slots.who) for (let p of plants) p.npc === slots.who && out.push({ kind: p.kind, key: p.key });
+    return out;
+  }
+  var repays = (e) => typeof e.custom == "string" && e.custom.split("|").some((x) => /^repay(:|$)/.test(x));
+  function settledPlant(e, no) {
+    return !no || no.kind !== "debt" && no.kind !== "promise" ? null : repays(e) || no.kind === "promise" && e.memory?.tag === "KEPT_PROMISE" ? { kind: no.kind, key: no.key } : null;
+  }
+  function dropPlants(plants, ref) {
+    if (!ref) return 0;
+    let n18 = 0;
+    for (let i = plants.length - 1; i >= 0; i--) plants[i].kind === ref.kind && plants[i].key === ref.key && (plants.splice(i, 1), n18++);
+    return n18;
   }
   function plantFlag(p) {
     return `plant:${p.kind}:${p.key}`;
   }
 
   // src/engine/narrative/canon/Scars.ts
-  function pickScars(c, plants, promises, names) {
+  function pickNot(cands, avoid) {
+    return cands.find((x) => x.key !== avoid) ?? cands[0];
+  }
+  function pickScars(c, plants, promises, names, prev) {
     let out = {}, alive = new Set(Object.values(c.cast).filter((v) => !!v));
     if (c.nemesis && alive.has(c.nemesis)) out.nguoi = { npc: c.nemesis, label: names(c.nemesis) };
     else {
@@ -22550,14 +22548,21 @@ var Argon = (() => {
       }
       best && (out.nguoi = { npc: best, label: names(best) });
     }
-    let obj2 = strongestPlant(plants, ["object", "skill", "animal"]);
-    if (obj2) out.do = { key: obj2.key, label: obj2.label };
-    else {
-      let asset = Object.entries(c.asset_names).find(([, v]) => !!v);
-      asset ? out.do = { key: asset[0], label: asset[1] } : c.job && (out.do = { key: "job", label: c.job });
-    }
-    let owe = strongestPlant(plants, ["debt", "promise"]);
-    return owe ? out.no = { key: owe.key, label: owe.label } : promises[0] ? out.no = { key: `promise:${promises[0].to}`, label: promises[0].what } : c.debt > 0 && (out.no = { key: "bank", label: "m\xF3n n\u1EE3 ng\xE2n h\xE0ng" }), out;
+    let fromPlant = (p) => ({ key: p.key, label: p.label, kind: p.kind }), doC = rankPlants(plants, ["object", "skill", "animal"]).map(fromPlant);
+    for (let [k, v] of Object.entries(c.asset_names)) v && doC.push({ key: k, label: v });
+    c.job && doC.push({ key: "job", label: c.job });
+    let d = pickNot(doC, prev?.do?.key);
+    d && (out.do = d);
+    let noC = rankPlants(plants, ["debt", "promise"]).map(fromPlant);
+    for (let p of promises) noC.push({ key: `promise:${p.to}`, label: p.what });
+    c.debt > 0 && noC.push({ key: "bank", label: "m\xF3n n\u1EE3 ng\xE2n h\xE0ng" });
+    let n18 = pickNot(noC, prev?.no?.key);
+    return n18 && (out.no = n18), out;
+  }
+  function scarPlants(s) {
+    let out = [];
+    for (let x of [s.do, s.no]) x && x.kind && out.push({ kind: x.kind, key: x.key });
+    return out;
   }
   function scarText(s, k, names, alive) {
     return k === "nguoi" ? s.nguoi ? alive(s.nguoi.npc) ? names(s.nguoi.npc) : "m\u1ED9t ng\u01B0\u1EDDi c\u0169" : "" : s[k]?.label ?? "";
@@ -23630,7 +23635,7 @@ var Argon = (() => {
     if (seed.who) {
       let w = seed.who, p = w.plants ? strongestPlant(plants.filter((x) => !!x.npc && alive.has(x.npc)), w.plants) : void 0;
       if (p && p.npc)
-        s.who = p.npc, s.fromPlayer++, usedPlant = p;
+        s.who = p.npc, p.used === void 0 && s.fromPlayer++, usedPlant = p;
       else if (c.nemesis && alive.has(c.nemesis)) s.who = c.nemesis;
       else if (w.roles?.length) {
         let ids = /* @__PURE__ */ new Set();
@@ -23652,7 +23657,7 @@ var Argon = (() => {
     if (seed.what) {
       let w = seed.what, p = w.plants ? strongestPlant(plants.filter((x) => x !== usedPlant), w.plants) : void 0;
       if (p)
-        s.what = p, s.fromPlayer++;
+        s.what = p, p.used === void 0 && s.fromPlayer++;
       else for (let k of w.owns ?? []) {
         let label = c.asset_names[k];
         if (label) {
@@ -30438,7 +30443,7 @@ var Argon = (() => {
   var has8 = (c, ...fs) => fs.some((f9) => c.flags.has(f9)), n14 = (c, k) => c.counters[k] ?? 0, rural = (c) => c.farmer || has8(c, "origin_poor_rural", "job_farm", "orchard"), animal2 = (c, label, key) => c.plants.find((p) => p.kind === "animal" && (label.test(p.label) || key.test(p.key))), catOf = (c) => animal2(c, /(^|\s)con mèo(\s|$)/i, /(^|_)meo(_|$)/), henOf = (c) => {
     let p = animal2(c, /(^|\s)con gà(\s|$)/i, /(^|_)ga(_|$)/);
     return p && !/trống|chọi/.test(p.label) && !/(^|_)(trong|choi)(_|$)/.test(p.key) ? p : void 0;
-  }, GRANDPA_KEYS = /* @__PURE__ */ new Set(["dong_ho_cua_ong", "ban_do_cua_ong"]), grandpaOf = (c) => c.plants.find((p) => p.kind === "object" && (GRANDPA_KEYS.has(p.key) || /ông (nội |ngoại )?để lại$/.test(p.label))), uncleOf = (c) => c.plants.find((p) => p.kind === "person" && /^(người|ông) (bác|chú)(\s|$)/.test(p.label) && (!p.npc || !Object.values(c.cast).includes(p.npc))), doTxt = (x, pre, post, alt) => x ? `${pre}th\u1EE9 b\u1EA1n mang theo t\u1EEB \u0111\u1EDDi c\u0169, ${x}, ${post}` : alt, bac = (c) => uncleOf(c)?.label ?? "\xF4ng b\xE1c ru\u1ED9t", L01_CAN_BO = land("x01_can_bo", "Huy\u1EC7n g\u1ECDi b\u1EA1n l\xEAn l\xE0m c\xE1n b\u1ED9, v\xEC b\u1EA1n l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t trong t\u1EC9nh t\u1EEBng th\u1EAFng m\u1ED9t con tr\xE2u trong b\u1EA7u c\u1EED.", { custom: "become:official", happy: 3 }), L01_DAI_BIEU = land("x01_dai_bieu", "B\u1EA1n t\u1EF1 n\u1ED9p \u0111\u01A1n ra \u1EE9ng c\u1EED \u0111\u1EA1i bi\u1EC3u, l\u1EA7n \u0111\u1EA7u ti\xEAn trong \u0111\u1EDDi, v\xE0 tr\xFAng. \u0110\u1ED1m kh\xF4ng ra tranh.", { custom: "become:politician", happy: 3 }), L01_THUA = land("x01_thua_trau", "B\u1EA1n thua \u0110\u1ED1m, n\u1ED9p l\u1EA1i con d\u1EA5u, ti\u1EC1n v\u1EADn \u0111\u1ED9ng m\u1EA5t tr\u1EAFng. M\u1ED7i s\xE1ng \u0110\u1ED1m \u0111i ngang nh\xE0 b\u1EA1n v\xE0 d\u1EEBng m\u1ED9t ch\xFAt, nh\u01B0 ch\xE0o \u0111\u1ED3ng nghi\u1EC7p c\u0169.", { money: -1, happy: 4, flags: ["x01_thua_trau"] }), L01_LEN_PHO = land("x01_len_pho", "B\u1EA1n giao con d\u1EA5u, kh\u0103n g\xF3i l\xEAn ph\u1ED1 s\u1ED1ng nh\u1EEFng n\u0103m c\xF2n l\u1EA1i. Trong va li c\xF3 m\u1ED9t t\xFAm l\xF4ng tr\xE2u g\xF3i gi\u1EA5y b\xE1o.", { custom: "move_city", happy: 2 }), X01 = weird(
+  }, GRANDPA_KEYS = /* @__PURE__ */ new Set(["ban_do_cua_ong"]), grandpaOf = (c) => c.plants.find((p) => p.kind === "object" && (GRANDPA_KEYS.has(p.key) || /ông (nội |ngoại )?để lại$/.test(p.label))), uncleOf = (c) => c.plants.find((p) => p.kind === "person" && /^(người|ông) (bác|chú)(\s|$)/.test(p.label) && (!p.npc || !Object.values(c.cast).includes(p.npc))), doTxt = (x, pre, post, alt) => x ? `${pre}th\u1EE9 b\u1EA1n mang theo t\u1EEB \u0111\u1EDDi c\u0169, ${x}, ${post}` : alt, bac = (c) => uncleOf(c)?.label ?? "\xF4ng b\xE1c ru\u1ED9t", L01_CAN_BO = land("x01_can_bo", "Huy\u1EC7n g\u1ECDi b\u1EA1n l\xEAn l\xE0m c\xE1n b\u1ED9, v\xEC b\u1EA1n l\xE0 ng\u01B0\u1EDDi duy nh\u1EA5t trong t\u1EC9nh t\u1EEBng th\u1EAFng m\u1ED9t con tr\xE2u trong b\u1EA7u c\u1EED.", { custom: "become:official", happy: 3 }), L01_DAI_BIEU = land("x01_dai_bieu", "B\u1EA1n t\u1EF1 n\u1ED9p \u0111\u01A1n ra \u1EE9ng c\u1EED \u0111\u1EA1i bi\u1EC3u, l\u1EA7n \u0111\u1EA7u ti\xEAn trong \u0111\u1EDDi, v\xE0 tr\xFAng. \u0110\u1ED1m kh\xF4ng ra tranh.", { custom: "become:politician", happy: 3 }), L01_THUA = land("x01_thua_trau", "B\u1EA1n thua \u0110\u1ED1m, n\u1ED9p l\u1EA1i con d\u1EA5u, ti\u1EC1n v\u1EADn \u0111\u1ED9ng m\u1EA5t tr\u1EAFng. M\u1ED7i s\xE1ng \u0110\u1ED1m \u0111i ngang nh\xE0 b\u1EA1n v\xE0 d\u1EEBng m\u1ED9t ch\xFAt, nh\u01B0 ch\xE0o \u0111\u1ED3ng nghi\u1EC7p c\u0169.", { money: -1, happy: 4, flags: ["x01_thua_trau"] }), L01_LEN_PHO = land("x01_len_pho", "B\u1EA1n giao con d\u1EA5u, kh\u0103n g\xF3i l\xEAn ph\u1ED1 s\u1ED1ng nh\u1EEFng n\u0103m c\xF2n l\u1EA1i. Trong va li c\xF3 m\u1ED9t t\xFAm l\xF4ng tr\xE2u g\xF3i gi\u1EA5y b\xE1o.", { custom: "move_city", happy: 2 }), X01 = weird(
     "X01",
     "abs",
     ["danh", "dat"],
@@ -31580,8 +31585,7 @@ var Argon = (() => {
   var X11_VDV = land("x11_van_dong_vien", "Li\xEAn \u0111o\xE0n \u0111i\u1EC1n kinh g\u1ECDi b\u1EA1n l\xEAn tuy\u1EC3n, v\xEC m\xF4n kia c\xF3 ra sao th\xEC b\u1EA1n v\u1EABn ch\u1EA1y nhanh nh\u1EA5t.", { custom: "become:runner", happy: 4, pressure: { danh: 2 } }), X11_TT = land("x11_trong_tai", "B\u1EA1n th\xE0nh tr\u1ECDng t\xE0i c\u1EE7a m\xF4n n\xE0y. Kh\xF4ng ai c\xE3i \u0111\u01B0\u1EE3c b\u1EA1n, v\xEC kh\xF4ng ai bi\u1EBFt lu\u1EADt.", { custom: "become:referee", happy: 3 }), X11_HLV = land("x11_hlv", "B\u1EA1n th\xE0nh hu\u1EA5n luy\u1EC7n vi\xEAn \u0111\u1EA7u ti\xEAn c\u1EE7a m\xF4n n\xE0y, ng\u01B0\u1EDDi duy nh\u1EA5t d\xE1m n\xF3i m\xECnh hi\u1EC3u lu\u1EADt.", { custom: "become:coach", happy: 4 }), X11_SACH = land("x11_sach_luat", "B\u1EA1n b\xE1n quy\u1EC1n in cu\u1ED1n lu\u1EADt cho m\u1ED9t nh\xE0 xu\u1EA5t b\u1EA3n, t\xEAn b\u1EA1n in ngay b\xECa, \u0111\u1EE7 s\u1ED1ng thong th\u1EA3 v\xE0i n\u0103m.", { money: 2, happy: 3, pressure: { danh: 2 } }), X11_SAN = land("x11_san_tap", "B\u1EA1n b\u1ECF ti\u1EC1n d\u1EF1ng m\u1ED9t s\xE2n t\u1EADp cho tr\u1EBB con trong ph\u1ED1, v\u1EA1ch k\u1EBB b\u1EB1ng s\u01A1n h\u1EB3n hoi.", { money: -1, happy: 6 }), X12_TEN_CU = land("x12_ten_cu", "B\u1EA1n s\u1ED1ng l\u1EA1i b\u1EB1ng t\xEAn c\u0169, tr\u1EA3 n\u1EE3 c\u0169 c\xF9ng ph\xED gi\u1EA5y t\u1EDD, gi\u1EEF t\u1EDD gi\u1EA5y ch\u1EE9ng t\u1EED l\xE0m k\u1EF7 ni\u1EC7m.", { custom: "repay:1.5", money: -2, happy: 4 }), X12_TEN_MOI = land("x12_ten_moi", "B\u1EA1n nh\u1EADn t\xEAn m\u1EDBi, d\u1ECDn sang th\xE0nh ph\u1ED1 kh\xE1c, b\u1EAFt \u0111\u1EA7u l\u1EA1i \u1EDF n\u01A1i kh\xF4ng ai g\u1ECDi nh\u1EA7m t\xEAn m\xECnh.", { custom: "move_city", money: -1, happy: 2 }), X12_TANG_LE = land("x12_nghe_tang_le", "Sau ng\u1EA7n \u1EA5y chuy\u1EC7n, b\u1EA1n hi\u1EC3u ngh\u1EC1 tang l\u1EC5 h\u01A1n ai h\u1EBFt, v\xE0 m\u1EDF d\u1ECBch v\u1EE5 t\u1ED5 ch\u1EE9c tang l\u1EC5 chu \u0111\xE1o nh\u1EA5t v\xF9ng.", { custom: "become:funeral_worker", happy: 3 }), X13_VE = land("x13_ban_ve", "B\u1EA1n k\xFD ti\u1EBFp, s\u1ED1ng b\u1EB1ng ti\u1EC1n v\xE9, v\xE0 quen d\u1EA7n v\u1EDBi vi\u1EC7c ng\xE0y n\xE0o c\u0169ng c\xF3 ng\u01B0\u1EDDi l\u1EA1 nh\xECn m\xECnh \u0103n c\u01A1m.", { income_mult: 1.3, happy: -4 }), X13_BAN_DUT = land("x13_ban_dut", "B\u1EA1n b\xE1n \u0111\u1EE9t b\u1ED9 s\u01B0u t\u1EADp v\xE0 quy\u1EC1n tr\u01B0ng b\xE0y cho b\u1EA3o t\xE0ng, nh\u1EADn ti\u1EC1n r\u1ED3i d\u1ECDn l\xEAn th\xE0nh ph\u1ED1.", { money: 3, custom: "move_city", happy: 2 }), X13_DONG_CUA = land("x13_dong_cua", "B\u1EA1n b\u1ED3i th\u01B0\u1EDDng h\u1EE3p \u0111\u1ED3ng, g\u1EE1 h\u1EBFt s\u1ED1 ki\u1EC3m k\xEA, ng\u1ED3i l\xEAn c\xE1i gh\u1EBF c\u1EE7a m\xECnh l\u1EA7n \u0111\u1EA7u sau nhi\u1EC1u n\u0103m.", { money: -1, happy: 8 }), X14_GIAU = land("x14_giau", "T\xF2a gi\u1EEF nguy\xEAn l\xE1 th\u0103m. B\u1EA1n th\xE0nh ng\u01B0\u1EDDi gi\xE0u nh\u1EA5t ph\u1ED1, k\xE8m hai m\u01B0\u01A1i ph\xF2ng v\xE0 m\u1ED9t d\xF2ng h\u1ECD gh\xE9t b\u1EA1n.", { money: 5, happy: 3 }), X14_CHIA = land("x14_chia_doi", "B\u1EA1n k\xFD chia \u0111\xF4i v\u1EDBi ng\u01B0\u1EDDi nh\xE0 c\u1EE5, c\u1EA7m ph\u1EA7n c\u1EE7a m\xECnh v\xE0 \u0111\u01B0\u1EE3c m\u1EDDi d\u1EF1 ng\xE0y t\u01B0\u1EDFng nh\u1EDB c\u1EE5 h\u1EB1ng n\u0103m.", { money: 2, happy: 5, rel: 4 }), X14_TRANG = land("x14_trang_tay", "T\xF2a tuy\xEAn l\xE1 th\u0103m v\xF4 hi\u1EC7u. B\u1EA1n m\u1EA5t c\u1EA3 \xE1n ph\xED l\u1EABn ti\u1EC1n \u0111\xE3 \u1EE9ng tr\u01B0\u1EDBc, ch\u1EC9 gi\u1EEF \u0111\u01B0\u1EE3c t\xFAi cam cu\u1ED1i c\xF9ng.", { money: -2, happy: -4 }), X15_O_LAI = land("x15_o_lai", "B\u1EA1n \u1EDF l\u1EA1i, gi\u1EA5y t\u1EDD h\u1EE3p ph\xE1p sau nhi\u1EC1u n\u0103m ch\u1EDD, v\xE0 b\u1EAFt \u0111\u1EA7u \u0111\u1EDDi ng\u01B0\u1EDDi di c\u01B0 th\u1EADt s\u1EF1.", { custom: "migrate_now", money: -1 }), X15_VE = land("x15_ve_nha", "B\u1EA1n v\u1EC1 n\u01B0\u1EDBc, n\u1ED9p ph\u1EA1t, mang theo ba t\u1EEB ngo\u1EA1i ng\u1EEF v\xE0 m\u1ED9t c\xE1i tem \u0111\xE3 b\u1EA1c m\xE0u.", { money: -1.5, happy: 4 }), X15_THUYEN = land("x15_thuyen_vien", "B\u1EA1n k\xFD h\u1EE3p \u0111\u1ED3ng thuy\u1EC1n vi\xEAn tr\xEAn ch\xEDnh con t\xE0u t\u1EEBng ch\u1EDF m\xECnh, l\u1EA7n n\xE0y c\xF3 h\u1ED9 chi\u1EBFu v\xE0 gi\u01B0\u1EDDng ri\xEAng.", { custom: "become:sailor", money: -0.5 }), X16_MC = land("x16_mc", "B\u1EA1n th\xE0nh MC truy\u1EC1n h\xECnh, ng\u01B0\u1EDDi duy nh\u1EA5t m\u1EDF ch\u01B0\u01A1ng tr\xECnh b\u1EB1ng c\xE2u: ch\xE0o qu\xFD v\u1ECB v\xE0 c\xE1c b\u1EA1n b\u1ED1n ch\xE2n.", { custom: "become:tv_host", happy: 3 }), X16_PT = land("x16_phat_thanh", "B\u1EA1n th\xE0nh ph\xE1t thanh vi\xEAn, gi\u1ECDng \u0111\u1ECDc quen c\u1EE7a c\u1EA3 v\xF9ng, con ch\xF3 n\u1EB1m d\u01B0\u1EDBi ch\xE2n b\xE0n m\u1ED7i s\xE1ng.", { custom: "become:radio_voice", happy: 4 }), X16_HOI_KY = land("x16_hoi_ky", "B\u1EA1n vi\u1EBFt h\u1ED3i k\xFD nh\xE2n danh con ch\xF3. S\xE1ch b\xE1n ch\u1EA1y, n\xF3 \u0111\u01B0\u1EE3c chia ph\u1EA7n b\u1EB1ng x\u01B0\u01A1ng.", { money: 2, happy: 3 }), X16_CUU_HO = land("x16_cuu_ho", "B\u1EA1n d\u1ED3n ti\u1EC1n danh ti\u1EBFng l\u1EADp m\u1ED9t tr\u1EA1m c\u1EE9u h\u1ED9 ch\xF3 m\xE8o b\u1ECB b\u1ECF r\u01A1i.", { money: -1.5, happy: 7 }), X17_CONG_TAC = land("x17_cong_tac_xa_hoi", "B\u1EA1n m\u1EDF m\u1ED9t v\u0103n ph\xF2ng nh\u1ECF \u1EDF \u0111\u1EA7u ph\u1ED1, gi\xFAp ai c\u1EA7n th\xEC gi\xFAp, kh\xF4ng c\u1EA7n bi\u1EC3n t\xEAn.", { custom: "become:social_worker", happy: 4 }), X17_DAI_BIEU = land("x17_dai_bieu", "B\u1EA1n ra \u1EE9ng c\u1EED v\xE0 tr\xFAng, nh\u1EDD c\u1EA3 m\u1ED9t con ph\u1ED1 mang t\xEAn m\xECnh. T\u1EEB nay danh ti\u1EBFng l\xE0 vi\u1EC7c l\xE0m.", { custom: "become:politician", happy: 2, pressure: { danh: 3 } }), X17_DI = land("x17_don_di", "B\u1EA1n d\u1ECDn sang th\xE0nh ph\u1ED1 kh\xE1c, n\u01A1i kh\xF4ng con ph\u1ED1 n\xE0o bi\u1EBFt t\xEAn b\u1EA1n.", { custom: "move_city", happy: 5 }), X17_BAN_TEN = land("x17_ban_ten", "B\u1EA1n b\xE1n quy\u1EC1n d\xF9ng t\xEAn cho ti\u1EC7m b\xE1nh \u0111\u1EA7u ph\u1ED1, s\u1ED1ng b\u1EB1ng ti\u1EC1n b\u1EA3n quy\u1EC1n v\xE0 ch\u1ECBu ti\u1EBFng.", { money: 1.5, happy: -2, pressure: { danh: 2 } }), X18_KH = land("x18_nha_khoa_hoc", "B\u1EA1n th\xE0nh nghi\xEAn c\u1EE9u vi\xEAn th\u1EADt, \u0111\u1EE9ng t\xEAn ba b\xE0i b\xE1o, v\xE0 v\u1EABn b\u1ECB g\u1ECDi l\xE0 ng\u01B0\u1EDDi \u0111\u1EB7t t\xEAn con b\u1ECD.", { custom: "become:scientist", happy: 4 }), X18_BT = land("x18_giu_rung", "B\u1EA1n th\xE0nh ng\u01B0\u1EDDi gi\u1EEF r\u1EEBng, s\u1ED1ng trong c\u0103n ch\xF2i c\u1EA1nh t\u1ED5 c\u1EE7a lo\xE0i b\u1ECD mang c\xE2u ch\u1EEDi c\u1EE7a m\xECnh.", { custom: "become:environmentalist", happy: 5 }), X18_MAU = land("x18_ban_mau", "B\u1EA1n b\xE1n b\u1ED9 s\u01B0u t\u1EADp m\u1EABu cho m\u1ED9t vi\u1EC7n b\u1EA3o t\xE0ng, \u0111\u1EE7 kh\xE9p m\u1ECDi chuy\u1EC7n c\u0169 v\xE0 c\xF2n d\u01B0.", { money: 2, custom: "repay:1", happy: 2 }), X18_HIEN = land("x18_hien_dat", "B\u1EA1n d\u1ED3n ti\u1EC1n mua l\u1EA1i m\u1EA3nh r\u1EEBng nh\u1ECF v\xE0 hi\u1EBFn cho khu b\u1EA3o t\u1ED3n.", { money: -2, happy: 7 }), X19_DB = land("x19_dau_bep", "B\u1EA1n m\u1EDF b\u1EBFp ri\xEAng b\u1EB1ng t\xEAn th\u1EADt. Kh\xE1ch c\u0169 t\xECm \u0111\u1EBFn, g\u1ECDi \u0111\xFAng m\xF3n t\u1EE7 c\xF3 t\xEAn th\u1EADt c\u1EE7a b\u1EA1n.", { custom: "become:restaurateur", happy: 5 }), X19_LO = land("x19_lo", "B\u1EA1n c\xF4ng khai m\u1ECDi chuy\u1EC7n, b\u1ED3i th\u01B0\u1EDDng \u0111\u1EE7 c\u1EA3, v\xE0 c\u1EA3 v\xF9ng bi\u1EBFt b\u1EA1n t\u1EEBng l\xE0 \u0111\u1EA7u b\u1EBFp gi\u1EA3.", { money: -2, happy: 2 }), X19_QUAN = land("x19_quan_com", "B\u1EA1n mua m\u1ED9t gian qu\xE1n c\u01A1m nh\u1ECF, n\u1EA5u \u0111\xFAng m\u1EA5y m\xF3n m\xECnh bi\u1EBFt, kh\xF4ng th\xEAm t\xEAn k\xEAu.", { buy: { kind: "shop", name: "gian qu\xE1n c\u01A1m nh\u1ECF", price: 1, borrow: !0 }, happy: 4 }), X20_YEU = land("x20_yeu_that", "Hai ng\u01B0\u1EDDi k\xFD l\u1EA1i gi\u1EA5y k\u1EBFt h\xF4n, l\u1EA7n n\xE0y c\u1ED1 \xFD, v\xE0 gi\u1EEF v\u1EA1ch ph\u1EA5n l\xE0m k\u1EF7 ni\u1EC7m.", { custom: "marry", happy: 8 }), X20_CU = land("x20_cuoi_dung_nguoi", "T\u1EDD gi\u1EA5y c\u0169 \u0111\u01B0\u1EE3c h\u1EE7y. B\u1EA1n c\u01B0\u1EDBi \u0111\xFAng ng\u01B0\u1EDDi h\u1EE9a h\xF4n ban \u0111\u1EA7u, trong m\u1ED9t \u0111\xE1m c\u01B0\u1EDBi ch\u1EC9 c\xF3 m\u01B0\u1EDDi kh\xE1ch.", { custom: "marry", happy: 6 }), X20_MOT_MINH = land("x20_mot_minh", "H\u1EE7y xong m\u1ECDi gi\u1EA5y t\u1EDD, b\u1EA1n \u1EDF m\u1ED9t m\xECnh, tr\u1EA3 \xE1n ph\xED b\u1EB1ng c\u1EA3 n\u0103m thu nh\u1EADp v\xE0 th\u1EA5y nh\u1EB9 nh\xF5m l\u1EA1 l\xF9ng.", { money: -1, happy: 3 }), HEIRLOOMS = {
     ban_do_cua_ong: "t\u1EA5m b\u1EA3n \u0111\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i",
     ban_do_kho_bau_cua_ong: "t\u1EDD b\u1EA3n \u0111\u1ED3 kho ch\xF4n c\u1EE7a \xF4ng",
-    vat_vang_trong_heo_dat: "v\u1EADt b\u1EB1ng v\xE0ng \xF4ng g\u1EEDi trong con heo \u0111\u1EA5t",
-    dong_ho_cua_ong: "chi\u1EBFc \u0111\u1ED3ng h\u1ED3 \xF4ng \u0111\u1EC3 l\u1EA1i"
+    vat_vang_trong_heo_dat: "v\u1EADt b\u1EB1ng v\xE0ng \xF4ng g\u1EEDi trong con heo \u0111\u1EA5t"
   }, heirloomKey = (c) => plantKey(c, "object", Object.keys(HEIRLOOMS)), museumItem = (c) => HEIRLOOMS[heirloomKey(c) ?? ""] ?? "chi\u1EBFc t\u1EE7 g\u1ED7 c\u0169 trong nh\xE0", DOGS = { con_cho_lam_nhan_chung: "con ch\xF3 t\u1EEBng b\u1ECB g\u1ECDi l\xE0 nh\xE2n ch\u1EE9ng", hai_con_cho_hai_nha: "con ch\xF3 nh\xE0 b\u1EA1n trong c\u1EB7p ch\xF3 hai nh\xE0" }, dogKey = (c) => plantKey(c, "animal", Object.keys(DOGS)), dogName = (c) => DOGS[dogKey(c) ?? ""] ?? "con ch\xF3 nh\xE0 b\u1EA1n", handlesCargo = (c) => f6(c, "job_driver") || f6(c, "job_factory") || f6(c, "life_shipper") || f6(c, "life_long_hauler") || f6(c, "life_sailor") || /(^|\s)(kho|cảng)(\s|$)|bốc xếp|giao hàng/.test(c.job), x15Legal = (c) => f6(c, "x15_bao_lanh") || n15(c, "x15_hop_phap") >= 3, cooks = (c) => f6(c, "life_restaurateur") || f6(c, "life_baker") || f6(c, "life_homemaker") || f6(c, "job_domestic") || /bếp|nấu/.test(c.job), ABS_11 = [
     /* ---------------------------------------------------------------- X11 */
     weird(
@@ -38784,6 +38788,7 @@ function canonOnEffect(L, e) {
   if (e.gamble) return e;   // phần chung và nhánh thắng/thua đi qua applyEffect riêng, mỗi phần cộng một lần
   if (!lw.canonQuiet) { const p = Argon.pressureOf(e); for (const k in p) lw.pressure[k] = (lw.pressure[k] || 0) + p[k]; }
   if (e.plant) { lw.plants.push({ ...e.plant, age: L.age, weight: 1 }); const f = Argon.plantFlag(e.plant); lw.sflags.add(f); stampP(L, Argon.prov.flag(f)); }
+  if (lw.season && !lw.canonQuiet) Argon.dropPlants(lw.plants, Argon.settledPlant(e, lw.season.scars && lw.season.scars.no));   // Task 20c: trả nợ / giữ lời trong mùa thì mầm ở vết "no" hết "chưa trả"
   const land = Argon.landingOf(e);
   if (land !== null) {
     // Gỡ hệ số thu nhập và cờ của mùa TRƯỚC khi áp tiền / thu nhập của chung kết (S39 ×50 không nhân vào tiền chung kết).
@@ -38816,7 +38821,8 @@ function enterSeason(L, id) {
   if (!lw.canon) canonInit(L);
   if (lw.season) exitSeason(L, "cut");                                                           // 1
   const ctx = factContext(L);
-  const scars = Argon.pickScars(ctx, lw.plants, lw.promises.filter(p => p.kept === null).map(p => ({ to: p.to, what: p.what })), x => castName(L, x)); // 2
+  const scars = Argon.pickScars(ctx, lw.plants, lw.promises.filter(p => p.kept === null).map(p => ({ to: p.to, what: p.what })), x => castName(L, x), lw.canon.lastScars); // 2
+  Argon.usePlants(lw.plants, Argon.scarPlants(scars), L.age); lw.canon.lastScars = scars;        // Task 20c: mầm đã thành vết; mùa sau tránh vết của mùa này
   const rs = canonRng(L, "season:" + id), r = () => rs.next(), ar = canonRng(L, "cast:" + id);
   // 3. đặt lại: tiền (chỉ người đã tự lập, tính trên tiền riêng), hiệu ứng đầu mùa, người mới
   if (d.reset.cash !== undefined && ctx.independent) L.savings += d.reset.cash * Math.max(300, householdIncome(L)) - ctx.own_cash;
@@ -38939,7 +38945,7 @@ function canonYear(L) {
   const axis = Argon.dueAxis(ctx);
   if (axis) {
     const ev = Argon.generateCanon(ctx, axis, lw.plants, canonRng(L), id => castName(L, id), Argon.CANON_SEEDS, Argon.WEIRD);
-    if (ev) { scene(L, canonScene(L, ev)); return true; }
+    if (ev) { Argon.usePlants(lw.plants, Argon.eventPlants(ev.slots, lw.plants), L.age); scene(L, canonScene(L, ev)); return true; }   // Task 20c: mầm đã điền chỗ trống
   }
   const st = nextSeasonCard(L);
   if (st) { fireSeasonCard(L, st); return true; }

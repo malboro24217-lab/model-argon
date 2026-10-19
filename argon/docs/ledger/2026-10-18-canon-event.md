@@ -32,6 +32,7 @@
   - **Vật gài:** người, đồ vật, món nợ, bí mật, lời hứa, con vật, nơi chốn, kỹ năng mà lựa chọn của người chơi đã gieo.
     - Generator chọn **mầm** có điểm cao nhất. Điểm = 3 × số chỗ trống điền bằng vật gài của người chơi + áp lực các trục của mầm, trừ 100 nếu mầm đã dùng trong đời này.
     - Chỗ trống người và vật điền theo thứ tự: vật gài của người chơi, kẻ thù truyền kiếp (chưa nối, mục 6), NPC có ký ức mạnh nhất, tài sản đang có. Thiếu chỗ trống bắt buộc thì mầm bị loại. Chỗ trống nơi chốn là nơi đang sống.
+    - Vật gài được dùng dần (Task 20c): mầm đã điền chỗ trống hay thành vết mang `used` = tuổi lúc dùng. Lần sau ưu tiên mầm chưa dùng, rồi mầm gài gần nhất; hết mầm mới thì lấy mầm dùng lâu nhất rồi. "Số chỗ trống điền bằng vật gài của người chơi" (fromPlayer) chỉ đếm mầm còn tươi.
 - **Tất định:** chọn mầm và chỗ trống dùng luồng rng riêng `RNG_SUB.canon = 9`, rekey theo (seed, tuổi). Cùng lựa chọn thì ra cùng biến cố; khác lựa chọn thì khác biến cố.
 
 ### 2.2 Mùa
@@ -55,7 +56,9 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
   - **một người:** kẻ thù truyền kiếp còn sống, hoặc người có ký ức mạnh nhất;
   - **một đồ vật hoặc kỹ năng:** vật gài, tài sản, hoặc nghề cũ;
   - **một món nợ hoặc lời hứa** chưa trả.
-- Vết chọn lúc vào mùa (`Scars.ts`), mỗi loại lấy cái có điểm cao nhất. Không có thì để trống. Thẻ luôn có chữ dự phòng.
+- Vết chọn lúc vào mùa (`Scars.ts`), mỗi loại lấy cái có điểm cao nhất (vật gài chưa dùng trước). Không có thì để trống. Thẻ luôn có chữ dự phòng.
+- Vết đồ và vết nợ không lặp lại vết của mùa liền trước khi đời còn ứng viên khác (Task 20c). Vật gài đã thành vết được đánh dấu đã dùng.
+- Món nợ hay lời hứa ở vết nợ hết "chưa trả" khi trong mùa có lựa chọn trả nợ (`repay`), hoặc giữ lời (ký ức `KEPT_PROMISE`, chỉ với lời hứa): mầm đó bị bỏ khỏi sổ. Luật năm của mùa không tính.
 - Nhịp cú lật phải dùng ít nhất một vết. Nhịp chung kết phải dùng vết nợ hay lời hứa.
 - Mỗi lần dùng vết, Causality in dòng "↩ Vì năm N…" về lựa chọn đã gieo vết đó.
 
@@ -79,9 +82,10 @@ Trong mùa, thẻ có tag của mùa đang chạy được ưu tiên. Thẻ đ�
   3. Không có cả hai → không gài, giữ nguyên cảnh hậu quả một bước của Codex.
 - Không sửa chữ của Codex để bịa ra vật gài.
 - Route đã gài thì mất cảnh hậu quả một bước (`later` và storylet `_echo_`). Vật gài sẽ được trả bằng canon event hoặc mùa.
-- Kết quả trong `canon/codexPlants.ts`:
-  - 534/600 route có vật gài: 278 người, 132 đồ vật, 63 nợ, 23 nơi chốn, 18 con vật, 15 lời hứa, 3 kỹ năng, 2 bí mật;
-  - 66 route không gài, giữ cảnh hậu quả;
+- Kết quả trong `canon/codexPlants.ts` (sau Task 20c):
+  - 491/600 route có vật gài: 225 người, 138 đồ vật, 65 nợ, 23 nơi chốn, 18 con vật, 17 lời hứa, 3 kỹ năng, 2 bí mật;
+  - 109 route không gài, giữ cảnh hậu quả;
+  - Task 20c sửa 53 route từng gài một người không phải nhân vật của thẻ (không có NPC, nên không bao giờ trả được): 10 route đổi sang đồ, nợ hay lời hứa thấy rõ trong chữ thẻ, 43 route bỏ vật gài và lấy lại cảnh hậu quả. `routePlant` (turning/kit.ts) và `canon-test.ts` giữ quy tắc: vật gài người luôn có khóa `<thẻ>_<vai>` và gắn NPC; route nào cũng còn vật gài hoặc cảnh hậu quả;
   - 138/200 thẻ gắn tag mùa (cảnh phụ trong 5 mùa thường).
 - Áp lực theo tông (`TONE_PRESSURE`): risk → Tiền 2, bond/care → Tình 1, show → Danh 2, defy → Luật 2, truth → Máu mủ 1, deal/build → Tiền 1, probe → Kỳ 1, exit → Đất 1. Mọi thẻ phi lý `tp_a*` cộng thêm Kỳ 2.
 - 4 thẻ Codex được nâng thành mầm: c39 → `di_chuc`, c27 → `nam_cuoi`, c14 → `ve_xa`, c05 → `nuoc_len`. Thẻ gốc vẫn ở lại làm thẻ gài (R16, R17).
@@ -212,7 +216,8 @@ Thẻ gài (codexPlants.ts) ──► Vật gài (Plants.ts) ──────�
   - `canon-content-test.ts`: cấu trúc và chữ của mọi mùa, mầm và nhánh, kèm probe quy tắc 9.
 - Host (`doi-nguoi/tests/`):
   - `canon-test.js`: 120 đời tự chơi, cắt mùa, người phụ thuộc, hệ số thu nhập, `marry:<tên>`, tua lại;
-  - `canon-ui-test.js`: màn kết, banner, màu, độ tương phản của 105 mùa.
+  - `canon-ui-test.js`: màn kết, banner, màu, độ tương phản của 105 mùa;
+  - `canon-plants-test.js`: vật gài được dùng dần (vết lặp giữa hai mùa liền nhau < 30%, `what` dùng lại trong một đời < 25%), trả nợ / giữ lời, tua lại.
 - Công cụ đo (Task 20b, nằm trên nhánh `canon-t20b`, đã ghép vào `canon-t20`, chưa có ở nền này):
   - `node argon/tools/canon-stats.js doi-nguoi/tests/.head.js 200 [weird]`;
   - `node argon/tools/divergence-canon.js doi-nguoi/tests/.head.js 60 3`.
