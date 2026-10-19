@@ -300,7 +300,14 @@ async function t8b() {
       const Q = replayLife(P.seed, P.choices, null, P.actLog.filter(a => !(a.kind === 'ui' && a.op.k === 'weird')));
       if (hist(Q) !== hist(P)) differs++;
     }
-    assert(differs > 0, 'the recorded level matters for at least one life'); }
+    assert(differs > 0, 'the recorded level matters for at least one life');
+    // Độ điên chọn ngay lúc chào đời (tuổi 0, trước năm đầu): bản tua lại cũng phải áp (review B1).
+    let d0 = 0;
+    for (let i = 0; i < 8; i++) { const P = createLife(7301 + i * 31, { auto: true }); G.life = P; assert(setWeird(P, i % 2 ? 0 : 2), 'setWeird at 0'); runToDeath(P);
+      const R = replayLife(P.seed, P.choices, null, P.actLog);
+      assert.strictEqual(hist(R), hist(P), 'age-0 Độ điên replays (seed ' + P.seed + ')'); assert.strictEqual(R.weird, P.weird, 'replayed level');
+      if (hist(replayLife(P.seed, P.choices, null, P.actLog.filter(a => a.kind !== 'ui'))) !== hist(P)) d0++; }
+    assert(d0 > 0, 'age-0 level matters'); }
 
   // 8b.3 Bản kia của bạn: dòng lúc vào mùa (log tone "other"), dòng lúc hết mùa (replayLife, G.life giữ nguyên).
   { const P = lifeWith(P => P.log.some(e => e.tone === 'other'), 11);
@@ -350,6 +357,8 @@ async function t8b() {
     // Không có sample / bản tua lại → không chạy.
     assert.strictEqual(await canonAiRewrite(P, { ...sc, canon: { ...sc.canon, ai: undefined } }, null), false, 'no NAR.sample → false');
     const key = sc.key; resolve(P, 1);
+    { const F = resumeFrom(P, { key, index: 2 }); assert(F, 'fork at the rewritten canon scene');
+      const fm = F.lw.cz.marks.find(m => m.key === key); assert(fm && fm.title === fake.title && fm.choice === fake.doors[2], 'fork keeps the AI text (canon_text at the fork age)'); G.life = P; }
     P.auto = true; autoChain(P); runToDeath(P);
     const R = replayLife(P.seed, P.choices, null, P.actLog);
     assert.strictEqual(hist(R), hist(P), 'replay with canon_text matches history');
@@ -391,6 +400,8 @@ async function t8b() {
       const mk = P.lw.cz.marks.find(m => m.key === P.lw.swap.key); assert(mk && mk.choice_index === P.lw.swap.index && mk.choice_index !== firstIdx, 'new life took the other door at the first canon event');
       assert(P.lw.canon.seasons.some(s => s.id === 'w_S22' && s.swapped && s.reason === 'landing'), 'S22 season kept in the season list');
       assert(P.log.some(e => e.text === 'Bạn đổi chỗ với bản kia.'), 'log line');
+      { const ms = P.lw.cz.marks, fi = ms.findIndex(m => m.key === P.lw.swap.key), auto = ms.slice(fi + 1).filter(m => m.age <= P.lw.swap.age);
+        assert(auto.length > 0 && auto.every(m => !m.alt_indices.length), 'marks of the auto-played years are not offered for forks (review I-4)'); }
       assert(Math.abs(post - (captured - yearlyAt)) < 1, 'money −1 applied to the new life after the swap: ' + post + ' vs ' + (captured - yearlyAt));
       runToDeath(P); assert(!P.alive && P.age > T, 'swapped life plays on to death (' + P.age + ')');
       const R = replayLife(P.seed, P.choices, null, P.actLog || []);
@@ -532,7 +543,7 @@ async function t8b() {
       const h = seasonsEndHTML(P), n = (h.match(/<li class="sm"/g) || []).length;
       if (n && (h.match(/class="sm-l"/g) || []).length !== n) bad.push('row without ending line, seed ' + P.seed);
       if (/undefined|NaN/.test(h)) bad.push('undefined in end list, seed ' + P.seed); }
-    assert(rows > 40, 'many cut / dang dở / lapsed seasons checked (' + rows + ')');   // từ Task 20 mùa gần như không bị cắt (cut 0/120 đời): còn dang dở và tự khép lại, khoảng 70 dòng
+    assert(rows > 40, 'many cut / dang dở / lapsed seasons checked (' + rows + ')');   // Task 20: mùa hiếm khi bị cắt, nên ngưỡng tính trên cả ba loại
     assert.deepStrictEqual(bad.slice(0, 5), [], 'ending lines'); }
   // Thiếu dữ liệu → câu trung tính, không bịa người hay vật.
   { const P = lives[3], se = { id: 'lam_lai', from: P.age + 1, cast: {}, scars: {} };
@@ -543,7 +554,16 @@ async function t8b() {
     const l2 = seasonEndLine(P, { ...se, scars: { nguoi: { npc: m.id, label: m.name } } }, 'cut');
     assert(l2.includes(m.name), 'scar person named: ' + l2);
     const l3 = seasonEndLine(P, { ...se, scars: { no: { key: 'bank', label: 'món nợ ngân hàng' } } }, 'death');
-    assert.strictEqual(l3, 'Bạn ra đi khi mọi chuyện vừa mở màn, vẫn còn vướng món nợ ngân hàng.'); }
+    const debt = P.ar.state.capitals.capitalAssets.debt;
+    if (debt > 0) assert.strictEqual(l3, 'Bạn ra đi khi mọi chuyện vừa mở màn, vẫn còn vướng món nợ ngân hàng.');
+    // Vết chỉ được nhắc nếu lúc ra mùa nó vẫn còn thật (review I-3): hết nợ, lời hứa đã giữ, vật gài đã dùng, tài sản đã bán → câu trung tính.
+    P.ar.state.capitals.capitalAssets.debt = 0; const dl = P.debt; P.debt = 0;
+    assert.strictEqual(seasonEndLine(P, { ...se, scars: { no: { key: 'bank', label: 'món nợ ngân hàng' } } }, 'death'), 'Bạn ra đi khi mọi chuyện vừa mở màn, khi mùa này còn dang dở.', 'paid bank debt is not mentioned');
+    P.ar.state.capitals.capitalAssets.debt = debt; P.debt = dl;
+    assert.strictEqual(seasonEndLine(P, { ...se, scars: { no: { key: 'promise:nobody', label: 'trả lại chiếc xe' } } }, 'cut'), 'Mùa này bị cắt ngang khi mọi chuyện vừa mở màn.', 'closed promise is not mentioned');
+    assert.strictEqual(seasonEndLine(P, { ...se, scars: { no: { key: 'giay_no_da_tra', label: 'tờ giấy nợ' }, do: { key: 'house_gone', label: 'căn nhà cũ' } } }, 'lapsed'), 'Mùa này tự khép lại khi mọi chuyện vừa mở màn.', 'dropped plant / sold asset are not mentioned');
+    const dead = [...P.lw.cast.values()].find(x => !x.alive);
+    if (dead) assert(!seasonEndLine(P, { ...se, scars: { nguoi: { npc: dead.id, label: dead.name } } }, 'death').includes(dead.name), 'a dead person is not a companion'); }
 
   // 8b.17 (góp ý 19/10) Dòng "↩ Có liên quan…": dưới tiêu đề, thu gọn; mọi lựa chọn được trích là lựa chọn có thật của đời đó.
   { const seen = [], oScene = scene;
@@ -573,6 +593,8 @@ async function t8b() {
       const n0 = P.lw.canon.n, h0 = P.lw.history.filter(h => h.id === sc.id).length, chon = done === 0 ? null : 2, want = sc.canon.seasons[chon === null ? sc.def : chon];
       applyAct(P, { ...act, chon }, 'scene', 'Tôi chọn cách khác: không làm gì cả', chon);
       assert.strictEqual(P.lw.canon.n, n0 + 1, 'canon.n advances');
+      { const mk = P.lw.cz.marks.find(m => m.key === sc.key), k = chon === null ? sc.def : chon;
+        assert(mk && mk.door === k && !mk.alt_indices.includes(k), 'typed mark records the door it went through and does not offer it again (review I-2)'); }
       assert.strictEqual(P.lw.history.filter(h => h.id === sc.id).length, h0, 'one history entry');
       assert(P.lw.season && P.lw.season.id === want && P.lw.season.from === P.age, 'entered the season of the mapped door: ' + (P.lw.season && P.lw.season.id) + ' vs ' + want);
       P.auto = true; autoChain(P); runToDeath(P);

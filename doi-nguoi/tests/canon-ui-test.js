@@ -42,7 +42,7 @@ assert(banner.innerHTML.includes('Mùa 2:') && banner.innerHTML.includes(seasonD
 assert(clean(banner.innerHTML), 'banner: no undefined/NaN/null');
 // Năm vào mùa là "năm 1/N" (21b: không còn "năm 0/N"); nhãn loại nhánh kỳ dị có phần ngắn cho điện thoại.
 assert.strictEqual(L.age, L.lw.season.from, 'entry year');
-{ const len = L.lw.season.end - L.lw.season.from; assert(banner.innerHTML.includes('năm 1/' + len) && !/năm 0\\//.test(banner.innerHTML), 'entry year shows năm 1/N');
+{ const len = L.lw.season.end - L.lw.season.from + 1; assert(banner.innerHTML.includes('năm 1/' + len) && !/năm 0\\//.test(banner.innerHTML), 'entry year shows năm 1/N');
   assert(/<span class="sb-kind"><span class="sb-kf">nhánh <\\/span>viễn tưởng<\\/span>/.test(banner.innerHTML), 'weird kind marker with a short phone form');
   const a0 = L.age; L.age = L.lw.season.end + 3; seasonBanner(L); assert(banner.innerHTML.includes('năm ' + len + '/' + len), 'capped at len'); L.age = a0; seasonBanner(L); }
 assert.strictEqual(L.lw.season.n, 2, 'host n'); L.lw.season.n = 7; seasonBanner(L);

@@ -59,7 +59,7 @@ function promiseDueScene(L) {
   const pr = L.lw.promises.find(p => p.kept === null && p.due <= L.age);
   if (!pr) return false;
   const npc = L.ar.state.npcs.get(pr.to); if (!npc) { pr.kept = true; return false; }
-  const yearly = Math.max(300, householdIncome(L)); const can = fundsFor(L) >= pr.cost * yearly;
+  const yearly = typeof seasonYearlyBase === "function" ? seasonYearlyBase(L) : Math.max(300, householdIncome(L)); const can = fundsFor(L) >= pr.cost * yearly;   // R24
   const mark = Argon.markById(L.lw.cz, pr.mark);
   scene(L, { id: "promise", key: "promise@" + L.age, title: `Lời hứa với ${npc.name}: ${pr.what.length > 34 ? pr.what.slice(0, 33).replace(/\s+\S*$/, "") + "…" : pr.what}`, npc,
     text: `Năm ${pr.made} tuổi bạn đã hứa với ${npc.name}: ${pr.what}. ${can ? "Bạn có thể giữ lời." : "Giữ lời lúc này sẽ rất đau."} ${npc.name} không nhắc, nhưng nhớ.`,
@@ -97,10 +97,12 @@ function replayLife(seed, choices, override, actLog, onYear) {
   const script = replayScript(choices, actLog || []);
   const focus = {}; for (const k in (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS) || {}) focus[k] = (G.life && G.life.seed === seed ? G.life.focusLog : CF_FOCUS)[k];
   const was = NAR.enabled; NAR.enabled = false;
-  const P = createLife(seed, { auto: true, script, override, focus, replayActs: actLog || [] });
-  P.replayActs = actLog || [];
-  let g = 0; while (P.alive && g++ < 130) { stepYear(P); if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; } if (onYear) onYear(P); }
-  NAR.enabled = was;
+  let P;
+  try {
+    P = createLife(seed, { auto: true, script, override, focus, replayActs: actLog || [] });
+    P.replayActs = actLog || [];
+    let g = 0; while (P.alive && g++ < 130) { stepYear(P); if (P.storyDue && !P.pending) { const st = P.storyDue; storyReplay(P); autoChain(P); if (P.storyDue === st) P.storyDue = null; } if (onYear) onYear(P); }
+  } finally { NAR.enabled = was; }   // lỗi giữa chừng không được để AI tắt cả phiên
   return P;
 }
 function counterfactuals(L) {

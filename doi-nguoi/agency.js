@@ -159,7 +159,10 @@ function applyAct(L, act, kind, text, chon, forcedSeq) {
     }
     L.actLog = L.actLog || [];
     L.actLog.push({ age: L.age, seq, kind, key: mark ? mark.key : p.key, text, result: act, chon: engineScene ? chon : null });
-    if (engineScene) { const k = chon !== null && chon !== undefined && p.choices[chon] ? chon : p.def; L.curMark = mark; L.pending = null; const ch = p.choices[k]; if (ch && ch.fx) ch.fx(L); else resolveCore(L, p, k, L.r, L.c); }
+    if (engineScene) { const g = argonGate(L), vis = i => !!p.choices[i] && choiceState(L, p.choices[i], g) === "show";
+      const k = chon !== null && chon !== undefined && vis(chon) ? chon : p.def;   // chỉ cửa người chơi thấy được
+      if (mark) { mark.door = k; mark.alt_indices = (mark.alt_indices || []).filter(x => x !== k); }   // cửa thật đã đi: không đưa vào "suýt có" / bản kia
+      L.curMark = mark; L.pending = null; const ch = p.choices[k]; if (ch && ch.fx) ch.fx(L); else resolveCore(L, p, k, L.r, L.c); }
     return { text: act.ke, outcome: act.ket_qua, outcomeVN: OUTCOME_VN[act.ket_qua], deltas: statDeltas(before, statSnap(L)), reactions: reactions.slice(0, 3), story };
   } finally { L.curMark = null; if (kind === "scene") { if (p.story) nextStory(L); livingFollowUp(L); } }
 }

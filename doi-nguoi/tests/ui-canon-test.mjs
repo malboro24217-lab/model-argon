@@ -51,11 +51,32 @@ async function open(width) {
   await page.evaluate(() => { const L = G.life; L.auto = true; let g = 0; while (L.alive && L.age < 30 && g++ < 60) stepYear(L); L.auto = false; while (L.pending) resolve(L, autoChoice(L)); enterSeason(L, "w_S19"); render(); });
   await page.waitForTimeout(300);
   const b = await page.evaluate(() => { const k = document.querySelector("#season-banner .sb-kind"); const y = document.querySelector("#season-banner .sb-yr"); const se = G.life.lw.season;
-    return { kind: k && getComputedStyle(k).display !== "none" ? k.innerText.trim() : null, yr: y && y.textContent, want: "năm 1/" + (se.end - se.from), over: document.documentElement.scrollWidth > innerWidth }; });
+    return { kind: k && getComputedStyle(k).display !== "none" ? k.innerText.trim() : null, yr: y && y.textContent, want: "năm 1/" + (se.end - se.from + 1), over: document.documentElement.scrollWidth > innerWidth }; });
   console.log("phone banner", b);
   if (b.kind !== "viễn tưởng") fail("phone banner kind marker: " + b.kind);
   if (b.yr !== b.want) fail("banner year " + b.yr + " vs " + b.want);
   if (b.over) fail("horizontal scroll at 390px");
+  await ctx.close(); }
+
+// 4. "Xem lại" mở thì vẫn mở sau render() (review I-5); thẻ chung kết cũ không hiện, màn kết ẩn thẻ (review I-6).
+{ const { ctx, page } = await open(390);
+  const got = await page.evaluate(() => { const L = G.life; let g = 0;
+    while (L.alive && g++ < 3000) { if (L.pending) { if (L.pending.causes && L.pending.causes.length && L.age > 15) break; resolve(L, autoChoice(L)); continue; } if (L.storyDue) { L.storyDue = null; continue; } stepYear(L); }
+    G.paused = true; render(); return !!(L.pending && L.pending.causes); });
+  if (!got) fail("no scene with a cause line");
+  else { await page.click("details.because summary"); await page.waitForTimeout(100);
+    await page.evaluate(() => { render(); render(); }); await page.waitForTimeout(100);
+    const open = await page.evaluate(() => { const d = document.querySelector("details.because"); return !!(d && d.open); });
+    if (!open) fail("Xem lại collapsed after render()"); else console.log("because stays open after render: true"); }
+  const st = await page.evaluate(() => { const L = G.life; document.getElementById("landing-card")?.classList.remove("show");
+    L.uiNotes = [{ kind: "landing", age: L.age - 5, n: 1, vn: "Mùa cũ", line: "Một chung kết đã cũ.", color: "#4a6ad8" }]; render();
+    const el = document.getElementById("landing-card"); const stale = !!(el && el.classList.contains("show"));
+    L.uiNotes.push({ kind: "landing", age: L.age, n: 2, vn: "Mùa mới", line: "Một chung kết vừa xong.", color: "#4a6ad8" }); render();
+    const fresh = document.getElementById("landing-card").classList.contains("show");
+    L.alive = false; G.paused = true; ending(); const afterEnd = document.getElementById("landing-card").classList.contains("show");
+    return { stale, fresh, afterEnd }; });
+  console.log("landing notes", st);
+  if (st.stale) fail("stale landing note shown"); if (!st.fresh) fail("fresh landing note not shown"); if (st.afterEnd) fail("landing card visible on the end screen");
   await ctx.close(); }
 
 console.log("errors:", errors.length ? errors.join("\n") : "none");

@@ -97,6 +97,8 @@ cd argon && node --experimental-strip-types src/canon-content-test.ts && node --
   - `borrow:<x>`, `repay:<x>`;
   - cược với NPC (`game`), tiền do AI cho (`fx.money`).
 - Mua, bán tài sản và các khoản lỗ cố định giữ đúng giá trị của chúng, không bao giờ nhân hệ số.
+- Cũng tính trên lương gốc: tiền giữ lời hứa (`promise.cost_money`), đơn vị cược của chuyện kịch bản (`story.js` `unit`), tiết kiệm theo thói quen (`habitYear`), nhãn tiền trên nút lựa chọn.
+- Riêng các giao dịch tiền của người chơi trong `money.js` (gửi tiết kiệm, cho vay, cho tiền, chu cấp) tính theo **thu nhập hiện tại**: đó là tiền mặt thật đang có trong tay, không phải phần thưởng của thẻ.
 - Muốn một phần thưởng ăn theo hệ số mùa thì phải **khai báo rõ** bằng `custom: "money_season:<x>"`:
   - trong mùa: `<x>` năm thu nhập hiện tại (đã nhân hệ số);
   - ở chung kết (mùa vừa kết cùng năm): `<x>` năm lương gốc × hệ số của mùa vừa kết.
