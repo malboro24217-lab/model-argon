@@ -404,11 +404,12 @@ details.panel[open]>summary .label::after{content:" −"}
 
 /* Dòng "↩ Vì năm…" trên tiêu đề thẻ */
 .because{margin:-6px 0 0;font-size:13.5px;color:var(--muted);max-width:62ch}
-.because summary{display:flex;flex-wrap:wrap;gap:0 6px;align-items:baseline;cursor:pointer;list-style:none;width:fit-content}
+/* Một dòng chữ chảy liền: "↩ Có liên quan… · Xem lại", xuống dòng tự nhiên; "· Xem lại" không bị tách khỏi nhau */
+.because summary{display:block;cursor:pointer;list-style:none;width:fit-content;max-width:100%}
 .because summary::-webkit-details-marker{display:none}
-.because-mark{font-weight:700;color:var(--pen);flex:none}
-.because-more{color:var(--pen);text-decoration:underline;text-underline-offset:2px}
-.because-more::before{content:"·";color:var(--muted);margin-right:6px;display:inline-block;text-decoration:none}
+.because-mark{font-weight:700;color:var(--pen);margin-right:.4em}
+.because-more{color:var(--pen);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.because-more::before{content:"·";color:var(--muted);margin:0 .45em 0 .4em;display:inline-block;text-decoration:none}
 .because[open] .because-more{font-weight:600}
 .because-body{margin:6px 0 2px;padding:0 0 0 18px;font-family:var(--f-story);font-size:14.5px;line-height:1.5;color:var(--print)}
 .because-body li{margin:3px 0}
@@ -421,12 +422,13 @@ details.panel[open]>summary .label::after{content:" −"}
   padding:9px 14px;font-family:var(--f-story);font-style:italic;font-size:15.5px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
 .toast.bad{color:var(--seal);border-left-color:var(--seal)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-/* Thẻ chung kết của mùa: không chặn, tự tắt, bấm để tắt sớm; nổi trên cả chế độ đường hầm; nằm trên chỗ của toast, không che thanh điều khiển */
-.landing-card{position:fixed;left:50%;bottom:calc(var(--dock-h,0px) + 76px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:51;width:min(92vw,520px);background:var(--sheet);color:var(--print);border:1px solid var(--rule);border-left:5px solid var(--season-mark,var(--pen));border-radius:3px;box-shadow:var(--shadow);padding:10px 14px 11px;opacity:0;transition:opacity .3s,transform .3s;cursor:pointer}
-.landing-card.show{opacity:1;transform:translate(-50%,0)}
+/* Thẻ chung kết của mùa (R28): một thẻ ngắn ngay trong cột quyết định, trên thẻ đang chờ hoặc trên nhật ký; không nổi nên không che ô tự nhập.
+   Không chặn, không phải quyết định; còn tới quyết định kế tiếp hoặc tới năm sau (seasonNotes trong canon-ui.js). Không nằm trong vùng bị làm mờ của chế độ đường hầm. */
+.landing-card{background:var(--sheet);color:var(--print);border:1px solid var(--rule);border-left:4px solid var(--season-mark,var(--pen));border-radius:3px;padding:9px 14px 10px;margin-bottom:-12px;animation:lcIn .35s ease-out}
+.landing-card[hidden]{display:none!important}
 .landing-card .lc-h{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted);margin:0 0 3px}
 .landing-card .lc-t{font-family:var(--f-story);font-style:italic;font-size:15.5px;line-height:1.45;margin:0}
-@media (prefers-reduced-motion:reduce){.landing-card{transition:none}}
+@keyframes lcIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 html.playing .toast{bottom:calc(var(--dock-h,0px) + 12px + env(safe-area-inset-bottom,0px))}
 
 /* Thẻ thập kỷ trong nhật ký */
@@ -490,6 +492,8 @@ body[data-season]:not(.tunnel) .decision:not(.micro):not(.actcard){border-top-co
 .cells i.ss::before{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--sc-mark,var(--sc));border-radius:0 0 1px 1px}
 .cells i.ss.ahead::before{opacity:.38}
 @media (min-width:821px){.topbar{grid-template-columns:auto minmax(150px,1fr) auto auto}.menu{flex-wrap:wrap;justify-content:flex-end}}
+/* 821–980px: khe cột hẹp hơn. Có thanh cuộn dọc thì menu (thêm ô Độ điên) làm trang tràn ngang 6px */
+@media (min-width:821px) and (max-width:980px){.topbar{column-gap:12px}}
 .menu .weird{display:flex;align-items:center;gap:6px;cursor:default;padding-block:0}
 .menu .weird label{cursor:pointer}
 .menu .weird select{border:1px solid var(--rule);background:var(--sheet);color:var(--print);border-radius:4px;padding:3px 4px;font-size:13px;min-height:32px;cursor:pointer}
@@ -609,7 +613,9 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
   .board .left-stats{display:none!important}
   body:not([data-tab="nam"]) .board #dec{display:none!important}
   #codex,#aiInfo{order:-5;margin-bottom:18px}
-  #dec{order:-4}
+  #dec,.landing-card{order:-4}
+  .landing-card{margin:0 0 10px}
+  body:not([data-tab="nam"]) .board .landing-card{display:none!important}
   .focus-sec{order:-3}
   .decision{padding:16px 16px 18px}
   .decision h3{font-size:23px}
@@ -652,7 +658,8 @@ body[data-weird] .menu .weird select{border-color:var(--season-mark)}
      seasonTheme(L)   → đặt body[data-season], body[data-weird] và biến --season, --season-ink-l/-d (chữ, ≥ 4,5), --season-mark-l/-d
                         (vạch, viền, thanh tiến độ, ≥ 3) cho giấy sáng / tối; L không có mùa thì gỡ hết
      seasonBanner(L)  → điền #season-banner ("Mùa N: tên" + khoảng tuổi + năm thứ mấy + nhịp); không có mùa thì ẩn
-     seasonNotes(L)   → thẻ chung kết (L.uiNotes, canon.js ghi lúc mùa đáp xuống): hiện một thẻ nhỏ không chặn, tự tắt; không phải quyết định
+     seasonNotes(L)   → thẻ chung kết (L.uiNotes, canon.js ghi lúc mùa đáp xuống): một thẻ ngắn trong cột quyết định (#landing-card, trên #dec),
+                        không chặn, không phải quyết định; còn tới quyết định kế tiếp hoặc tới năm sau, cái nào tới trước
      weirdMenu(L)     → ô chọn Độ điên trong menu (#weirdBox); đổi thì gọi window.setWeird(G.life, v) (Task 8b, qua uiOp);
                         chưa có window.setWeird thì ẩn ô
 */
@@ -760,26 +767,39 @@ function weirdMenu(L) {
   box.hidden = false;
 }
 
-/* Thẻ chung kết: mỗi ghi chú hiện đúng một lần (đánh dấu shown trên ghi chú, không đụng mô phỏng). Không chặn đồng hồ, không nhận phím. */
+/* Thẻ chung kết (R28): một thẻ ngắn nằm ngay trong cột quyết định, trên thẻ đang chờ (hoặc trên nhật ký). Không nổi, không che ô tự nhập,
+   không chặn, không phải quyết định. Tuổi thọ tính theo thời gian trong game, không theo giây thật: thẻ còn tới quyết định kế tiếp của người chơi
+   hoặc tới khi sang năm mới, cái nào tới trước (đồng hồ dừng khi có quyết định chờ, nên thẻ không biến mất dưới tay người đang chọn).
+   Chỉ ghi lên ghi chú các trường giao diện (shown, at, tok); không đụng mô phỏng, nên tua lại vẫn khớp. */
+function landingTok(L) { return (Array.isArray(L.choices) ? L.choices.length : 0) + (L.actSeq || 0); }   // tăng ở mỗi lựa chọn và mỗi hành động tự nhập
 function seasonNotes(L) {
   if (typeof document === "undefined" || !document.body || !L || !Array.isArray(L.uiNotes)) return;
-  // Ghi chú cũ (quá 1 năm) hay đời đã hết: đánh dấu đã xem, không hiện (không để thẻ chung kết cũ đè lên màn kết).
+  const tok = landingTok(L);
+  // Ghi chú cũ (quá 1 năm) hay đời đã hết: đánh dấu đã xem, không bao giờ hiện (không để thẻ của mùa cũ lẫn vào mùa sau hay màn kết).
   for (const x of L.uiNotes) if (x && !x.shown && (L.alive === false || x.age < L.age - 1)) x.shown = true;
-  if (L.alive === false) { const el0 = document.getElementById("landing-card"); if (el0) el0.classList.remove("show"); return; }
-  const fresh = L.uiNotes.filter(x => x && !x.shown && x.kind === "landing"); if (!fresh.length) return;
-  for (const x of fresh) x.shown = true;
-  const note = fresh[fresh.length - 1];   // nhiều chung kết trong một lần vẽ: hiện cái mới nhất, không nháy qua từng cái
-  const E = typeof esc === "function" ? esc : (x => String(x));
+  // Ghi chú mới: neo vào năm và số quyết định lúc trang thấy nó lần đầu; mỗi ghi chú chỉ hiện trong khoảng neo đó.
+  for (const x of L.uiNotes) if (x && !x.shown && x.kind === "landing") { x.shown = true; x.at = L.age; x.tok = tok; }
+  const live = L.alive === false ? [] : L.uiNotes.filter(x => x && x.kind === "landing" && x.at === L.age && x.tok === tok);
+  const note = live[live.length - 1];   // nhiều chung kết cùng lúc: hiện cái mới nhất
   let el = document.getElementById("landing-card");
-  if (!el) { el = document.createElement("div"); el.id = "landing-card"; el.className = "landing-card"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); document.body.appendChild(el); el.onclick = () => el.classList.remove("show"); }
-  const kind = note.weird === "sf" ? " · nhánh viễn tưởng" : note.weird === "abs" ? " · nhánh phi lý" : "";
-  el.innerHTML = `<p class="lc-h">${note.n ? `Mùa ${note.n} khép lại` : "Một mùa khép lại"}: ${E(note.vn)}${kind}</p><p class="lc-t">${E(note.line)}</p>`;
+  if (!note) { if (el) { el.hidden = true; el.classList.remove("show"); } return; }
+  if (!el) {   // trang cũ chưa có chỗ sẵn: đặt ngay trên #dec
+    const dec = document.getElementById("dec"); if (!dec || !dec.parentNode) return;
+    el = document.createElement("div"); el.id = "landing-card"; el.className = "landing-card"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite");
+    dec.parentNode.insertBefore(el, dec);
+  }
+  const key = `${note.n}|${note.age}|${note.vn}|${note.line}`;
+  if (el.dataset.key !== key) {
+    const E = typeof esc === "function" ? esc : (x => String(x));
+    const kind = note.weird === "sf" ? " · nhánh viễn tưởng" : note.weird === "abs" ? " · nhánh phi lý" : "";
+    el.innerHTML = `<p class="lc-h">${note.n ? `Mùa ${note.n} khép lại` : "Một mùa khép lại"}: ${E(note.vn)}${kind}</p><p class="lc-t">${E(note.line)}</p>`;
+    el.dataset.key = key;
+  }
   if (/^#[0-9a-f]{6}$/i.test(note.color || "")) {
     const th = document.documentElement.dataset.theme, dark = th === "dark" || (th !== "light" && typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches);
     el.style.borderLeftColor = seasonMark(note.color, dark ? "d" : "l");
-  }
-  el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
-  clearTimeout(seasonNotes.t); seasonNotes.t = setTimeout(() => el.classList.remove("show"), 7000);
+  } else el.style.borderLeftColor = "";
+  el.hidden = false; el.classList.add("show");
 }
 
 </script>
@@ -39858,6 +39878,7 @@ function play(){const L=G.life;G.paused=false;G.acting=false;G.card=null;G.story
    <main class="col">
      <div id="codex" hidden></div>
      <div id="aiInfo" hidden></div>
+     <div id="landing-card" class="landing-card" role="status" aria-live="polite" hidden></div>
      <div id="dec" data-tab="nam"></div>
      <div id="wantHome"></div>
      <form id="want" autocomplete="off"><div class="want-row" id="wantRow"><label for="wantIn" id="wantLead">Tôi muốn</label><input id="wantIn" maxlength="200" enterkeyhint="go"><button class="btn pen" id="wantGo" type="submit">Làm</button></div>
@@ -40169,7 +40190,7 @@ function renderCodex(){const L=G.life,c=document.getElementById("codex");if(!c||
 
 /* ---------- Kết thúc ---------- */
 function ending(){
-  stop(); leaveBoard(); clearInterval(G.timerIv); { const t = document.getElementById("toast"); if (t) t.remove(); const lc = document.getElementById("landing-card"); if (lc) lc.classList.remove("show"); }
+  stop(); leaveBoard(); clearInterval(G.timerIv); { const t = document.getElementById("toast"); if (t) t.remove(); const lc = document.getElementById("landing-card"); if (lc) { lc.hidden = true; lc.classList.remove("show"); } }
   const L = G.life; const meta = metaOnDeath(L); const kids = L.kids.filter(k => k.alive).length;
   const avgH = Math.round(L.map.filter(m => !m.end).reduce((s, m) => s + m.h, 0) / Math.max(1, L.map.filter(m => !m.end).length));
   store.add({ name: L.name, country: L.birthC.n, age: L.age, cause: L.cause, date: Date.now() });

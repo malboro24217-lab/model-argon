@@ -8,7 +8,8 @@
      seasonTheme(L)   → đặt body[data-season], body[data-weird] và biến --season, --season-ink-l/-d (chữ, ≥ 4,5), --season-mark-l/-d
                         (vạch, viền, thanh tiến độ, ≥ 3) cho giấy sáng / tối; L không có mùa thì gỡ hết
      seasonBanner(L)  → điền #season-banner ("Mùa N: tên" + khoảng tuổi + năm thứ mấy + nhịp); không có mùa thì ẩn
-     seasonNotes(L)   → thẻ chung kết (L.uiNotes, canon.js ghi lúc mùa đáp xuống): hiện một thẻ nhỏ không chặn, tự tắt; không phải quyết định
+     seasonNotes(L)   → thẻ chung kết (L.uiNotes, canon.js ghi lúc mùa đáp xuống): một thẻ ngắn trong cột quyết định (#landing-card, trên #dec),
+                        không chặn, không phải quyết định; còn tới quyết định kế tiếp hoặc tới năm sau, cái nào tới trước
      weirdMenu(L)     → ô chọn Độ điên trong menu (#weirdBox); đổi thì gọi window.setWeird(G.life, v) (Task 8b, qua uiOp);
                         chưa có window.setWeird thì ẩn ô
 */
@@ -116,24 +117,37 @@ function weirdMenu(L) {
   box.hidden = false;
 }
 
-/* Thẻ chung kết: mỗi ghi chú hiện đúng một lần (đánh dấu shown trên ghi chú, không đụng mô phỏng). Không chặn đồng hồ, không nhận phím. */
+/* Thẻ chung kết (R28): một thẻ ngắn nằm ngay trong cột quyết định, trên thẻ đang chờ (hoặc trên nhật ký). Không nổi, không che ô tự nhập,
+   không chặn, không phải quyết định. Tuổi thọ tính theo thời gian trong game, không theo giây thật: thẻ còn tới quyết định kế tiếp của người chơi
+   hoặc tới khi sang năm mới, cái nào tới trước (đồng hồ dừng khi có quyết định chờ, nên thẻ không biến mất dưới tay người đang chọn).
+   Chỉ ghi lên ghi chú các trường giao diện (shown, at, tok); không đụng mô phỏng, nên tua lại vẫn khớp. */
+function landingTok(L) { return (Array.isArray(L.choices) ? L.choices.length : 0) + (L.actSeq || 0); }   // tăng ở mỗi lựa chọn và mỗi hành động tự nhập
 function seasonNotes(L) {
   if (typeof document === "undefined" || !document.body || !L || !Array.isArray(L.uiNotes)) return;
-  // Ghi chú cũ (quá 1 năm) hay đời đã hết: đánh dấu đã xem, không hiện (không để thẻ chung kết cũ đè lên màn kết).
+  const tok = landingTok(L);
+  // Ghi chú cũ (quá 1 năm) hay đời đã hết: đánh dấu đã xem, không bao giờ hiện (không để thẻ của mùa cũ lẫn vào mùa sau hay màn kết).
   for (const x of L.uiNotes) if (x && !x.shown && (L.alive === false || x.age < L.age - 1)) x.shown = true;
-  if (L.alive === false) { const el0 = document.getElementById("landing-card"); if (el0) el0.classList.remove("show"); return; }
-  const fresh = L.uiNotes.filter(x => x && !x.shown && x.kind === "landing"); if (!fresh.length) return;
-  for (const x of fresh) x.shown = true;
-  const note = fresh[fresh.length - 1];   // nhiều chung kết trong một lần vẽ: hiện cái mới nhất, không nháy qua từng cái
-  const E = typeof esc === "function" ? esc : (x => String(x));
+  // Ghi chú mới: neo vào năm và số quyết định lúc trang thấy nó lần đầu; mỗi ghi chú chỉ hiện trong khoảng neo đó.
+  for (const x of L.uiNotes) if (x && !x.shown && x.kind === "landing") { x.shown = true; x.at = L.age; x.tok = tok; }
+  const live = L.alive === false ? [] : L.uiNotes.filter(x => x && x.kind === "landing" && x.at === L.age && x.tok === tok);
+  const note = live[live.length - 1];   // nhiều chung kết cùng lúc: hiện cái mới nhất
   let el = document.getElementById("landing-card");
-  if (!el) { el = document.createElement("div"); el.id = "landing-card"; el.className = "landing-card"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); document.body.appendChild(el); el.onclick = () => el.classList.remove("show"); }
-  const kind = note.weird === "sf" ? " · nhánh viễn tưởng" : note.weird === "abs" ? " · nhánh phi lý" : "";
-  el.innerHTML = `<p class="lc-h">${note.n ? `Mùa ${note.n} khép lại` : "Một mùa khép lại"}: ${E(note.vn)}${kind}</p><p class="lc-t">${E(note.line)}</p>`;
+  if (!note) { if (el) { el.hidden = true; el.classList.remove("show"); } return; }
+  if (!el) {   // trang cũ chưa có chỗ sẵn: đặt ngay trên #dec
+    const dec = document.getElementById("dec"); if (!dec || !dec.parentNode) return;
+    el = document.createElement("div"); el.id = "landing-card"; el.className = "landing-card"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite");
+    dec.parentNode.insertBefore(el, dec);
+  }
+  const key = `${note.n}|${note.age}|${note.vn}|${note.line}`;
+  if (el.dataset.key !== key) {
+    const E = typeof esc === "function" ? esc : (x => String(x));
+    const kind = note.weird === "sf" ? " · nhánh viễn tưởng" : note.weird === "abs" ? " · nhánh phi lý" : "";
+    el.innerHTML = `<p class="lc-h">${note.n ? `Mùa ${note.n} khép lại` : "Một mùa khép lại"}: ${E(note.vn)}${kind}</p><p class="lc-t">${E(note.line)}</p>`;
+    el.dataset.key = key;
+  }
   if (/^#[0-9a-f]{6}$/i.test(note.color || "")) {
     const th = document.documentElement.dataset.theme, dark = th === "dark" || (th !== "light" && typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches);
     el.style.borderLeftColor = seasonMark(note.color, dark ? "d" : "l");
-  }
-  el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
-  clearTimeout(seasonNotes.t); seasonNotes.t = setTimeout(() => el.classList.remove("show"), 7000);
+  } else el.style.borderLeftColor = "";
+  el.hidden = false; el.classList.add("show");
 }

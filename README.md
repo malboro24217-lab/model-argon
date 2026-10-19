@@ -40,10 +40,11 @@ node doi-nguoi/tests/canon-test.js        # canon event và Mùa: 120 đời t�
 node doi-nguoi/tests/canon-plants-test.js # vật gài được dùng dần: vết không lặp giữa hai mùa liền nhau, `what` ít dùng lại, trả nợ / giữ lời, tua lại (khoảng 1,5 phút)
 node doi-nguoi/tests/canon-ui-test.js     # màn kết "Các mùa của đời bạn" (dang dở, bị cắt ngang), banner, màu mùa đủ tương phản ở cả 105 mùa
 node doi-nguoi/tests/season-entry-test.js # R25: vào mùa, host không tự đổi nghề hay tiền khi mùa không khai báo (cả 105 mùa)
-node doi-nguoi/tests/canon-play.mjs --weird 0,1,2 --seeds 11,22 --out /tmp/canon-play   # chơi thật trên Chromium như người chơi, chụp biến cố, banner mùa, thẻ mùa, chung kết, màn kết, Tấm bia; bảng ảnh ở <out>/index.html, summary.json mỗi đời; thêm --width 1366 --dark cho máy tính; thoát 1 nếu lỗi console, lộ undefined/NaN/null hay id vai, banner lệch mùa, kỳ dị ở Độ điên 0
+node doi-nguoi/tests/canon-play.mjs --weird 0,1,2 --seeds 11,22 --out /tmp/canon-play   # chơi thật trên Chromium như người chơi, chụp biến cố, banner mùa, thẻ mùa, chung kết, màn kết, Tấm bia; bảng ảnh ở <out>/index.html, summary.json mỗi đời; thêm --width 1366 --dark cho máy tính, --speed 1 để chơi ở 1× (tăng --max-min); thoát 1 nếu lỗi console, lộ undefined/NaN/null hay id vai, banner lệch mùa, kỳ dị ở Độ điên 0
 node doi-nguoi/tests/ui-agency-test.mjs   # cần playwright-core và Chromium; sửa đường dẫn import ở dòng 2 cho đúng máy
 node doi-nguoi/tests/ui-test.mjs
 node doi-nguoi/tests/ui-want-states.mjs --out /tmp/want-states   # ô tự nhập trong thẻ quyết định, ba trạng thái AI (chưa có · đang trả lời · lỗi rồi gửi lại), phương án 1 không bị tô sẵn, khung "Xem chi tiết" nhớ trạng thái; chụp ở 390px và 1366px
+node doi-nguoi/tests/ui-want-place.mjs --out /tmp/want-place     # ô tự nhập trên mọi loại thẻ (biến cố, chung kết mùa, thẻ thường, chuyện nhỏ, "Bạn tự quyết") ở 390/821/1366, sáng và tối, 5 trạng thái AI, có và không có thẻ "Mùa N khép lại": ô trong thẻ, bấm trúng được, thẻ chung kết không chồng lên (khoảng 5 phút)
 cd argon && node --experimental-strip-types src/agency-test.ts && node --experimental-strip-types src/narrative-test.ts && node --experimental-strip-types src/holdings-test.ts
 cd argon && node --experimental-strip-types src/canon-test.ts           # áp lực, vật gài, 3 vết, generator, 8 mầm, ánh xạ thẻ Codex
 cd argon && node --experimental-strip-types src/canon-content-test.ts   # mọi mùa, mầm và nhánh kỳ dị: cấu trúc, chữ, cổng tuổi, probe quy tắc 9, thay đổi tình thế R25 (khoảng một phút)
