@@ -2,7 +2,7 @@
    Chạy: node argon/tools/divergence-tp.js doi-nguoi/tests/.head.js [số đời=50] [số ngã rẽ mỗi đời=4]
    Giống divergence.js nhưng nhận diện thẻ theo tiền tố tp_ thay vì Argon.FATE.
    In: trung vị/p25/p75 "thẻ về sau khác", tỉ lệ ngã rẽ đạt ≥70% và ≥40%, và từng thẻ (trung vị, số lần đo). */
-const fs = require('fs');
+import fs from 'node:fs'; // argon/package.json có "type": "module": dùng import, không dùng require
 eval(fs.readFileSync(process.argv[2], 'utf8') + `
 const NL = +(process.argv[3] || 50), PER = +(process.argv[4] || 4);
 const isTp = id => /^tp_[a-z][0-9]+$/.test(id);

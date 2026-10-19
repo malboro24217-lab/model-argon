@@ -3,13 +3,14 @@
  * Thu nhập ×3 suốt mùa, đổi lại không còn đời tư. Gag: cây chổi đi theo bạn tới mọi nơi.
  */
 import type { SeasonDef } from "../Season.ts";
-import { C, cap, card, ending, finale, land, noOr } from "../kit.ts";
+import type { SeasonKit } from "../Season.ts";
+import { C, cap, card, ending, finale, land, noOr, wed } from "../kit.ts";
 
 const L_MC = land("dan_chuong_trinh", "Bạn nhận dẫn một chương trình buổi tối. Cây chổi năm ấy được treo trên tường trường quay, như một tấm bằng.", { custom: "become:tv_host", happy: 5 });
 const L_HAI = land("dien_hai", "Bạn đứng trên sân khấu hài, kể chuyện về cây chổi bằng giọng của người đã chán nó, và khán giả cười to hơn bao giờ hết.", { custom: "become:comedian", happy: 6 });
 const L_RUT = land("rut_lui", "Bạn rút lui khi còn được nhớ tới, khép xong chuyện cũ, và còn một khoản đủ để mua sự yên tĩnh trong nhiều năm.", { money: 1.5, custom: "repay:1", happy: 4 });
 const L_QUY = land("quy_cay_choi", "Bạn đem gần hết số tiền kiếm được lập một quỹ học bổng mang tên cây chổi, và cuối cùng được người ta nhớ tới vì một chuyện khác.", { money: -1, happy: 8 });
-const L_CUOI = land("cuoi_nguoi_khong_chup", "Bạn cưới người duy nhất chưa từng xin chụp ảnh với mình.", { custom: "marry", happy: 8 });
+const L_CUOI = land("cuoi_nguoi_khong_chup", "Bạn cưới người từng mang hộp cơm tới hàng ghế đầu, người duy nhất chưa từng xin chụp ảnh với mình.", { custom: "marry", happy: 8 });
 
 const has = (c: { flags: Set<string> }, f: string) => c.flags.has(f);
 const danh = (c: { counters: Record<string, number> }) => c.counters.ns_danh ?? 0;
@@ -19,8 +20,14 @@ const ql = (c: { flags: Set<string> }, co: string, khong: string) => (has(c, "ns
 const hai = ending(L_HAI, "Lên sân khấu hài, tự cười mình", "Vẫn ở trên sân khấu, lần này bằng giọng thật");
 const rut = ending(L_RUT, "Rút lui, cầm tiền trả chuyện cũ", "Yên tĩnh, có tiền, không còn ai nhận ra");
 const quy = ending(L_QUY, "Lập quỹ học bổng mang tên cây chổi", "Tiền đi gần hết, cái tên ở lại");
-const cuoiOk = (c: { age: number; married: boolean }) => !c.married && c.age >= 18;
-const cuoi = (c: { flags: Set<string> }) => ending(L_CUOI, has(c, "ns_quen_fan") ? "Cưới người mang hộp cơm, chưa từng xin chụp ảnh" : "Cưới người chưa từng xin chụp ảnh", "Một đời tư trở lại, cùng một người");
+/**
+ * Người được cưới là chính "người hâm mộ số một" của mùa (npc fan), chỉ khi đã nhận hộp cơm và quen nhau (ns_quen_fan) và người ấy
+ * còn trong dàn. Cưới bằng marry:<tên> để host gắn đúng người (Task 20: chơi thử 21b, "marry" trơn từng rút trúng tên người vợ/chồng cũ).
+ */
+/** Tên thật của người hâm mộ (không lấy nhãn dự phòng của k.npc: cưới phải đúng một người có tên trong dàn). */
+const fanName = (k: SeasonKit): string => { const v = k.N("npc:fan"); return v && v !== "npc:fan" && v !== "ai đó" ? v : ""; };
+const cuoiOk = (c: { age: number; married: boolean; flags: Set<string> }, k: SeasonKit) => !c.married && c.age >= 18 && has(c, "ns_quen_fan") && !!fanName(k);
+const cuoi = (k: SeasonKit) => wed(L_CUOI, "Cưới người mang hộp cơm, chưa từng xin chụp ảnh", "Một đời tư trở lại, cùng một người", fanName(k));
 
 export const NGOI_SAO: SeasonDef = {
   id: "ngoi_sao", vn: "Ngôi sao bất đắc dĩ", color: "#d39b1f", years: [8, 14],
@@ -101,12 +108,12 @@ export const NGOI_SAO: SeasonDef = {
     /* chung_ket: thẻ có `when` đứng trước, thẻ không `when` là dự phòng. tv_host nhận tới 40, comedian tới 45 (PATHS) → mở tới 45 / 50. */
     [
       card("ns_ket_dem_dien", "Đêm diễn cuối của cây chổi", (c, k) => `${danh(c) >= 6 ? "Vé đêm diễn kỷ niệm bán hết trong bốn phút." : "Đêm diễn kỷ niệm còn trống vài hàng ghế, đủ để bạn nhìn rõ từng khuôn mặt."} Trước giờ lên sân khấu, có tin nhắn nhắc bạn về chuyện cũ chưa xong: ${noOr(c, k)}. Người ta nói giờ bạn nổi tiếng rồi, chắc không quên. ${k.gag()}`,
-        (c) => finale(c.age,
+        (c, k) => finale(c.age,
           [ending(L_MC, "Nhận dẫn chương trình buổi tối", "Ổn định, cây chổi thành quá khứ có khung"),
            ...(c.married ? [hai] : [])],
-          [rut, ...(cuoiOk(c) ? [cuoi(c)] : []), quy]), (c) => c.age <= 45),
+          [rut, ...(cuoiOk(c, k) ? [cuoi(k)] : []), quy]), (c) => c.age <= 45),
       card("ns_ket_tang_choi", "Cây chổi cuối cùng", (c, k) => `Bạn đem tặng cây chổi cuối cùng trong số bốn trăm cây. Chuyện cũ vẫn còn đó: ${noOr(c, k)}, và giờ bạn đủ tiền để khép nó lại. Mười mấy năm được cả nước nhận ra, giờ bạn muốn được nhận ra theo cách khác. ${k.gag()}`,
-        (c) => finale(c.age, [hai], [rut, ...(cuoiOk(c) ? [cuoi(c)] : []), quy])),
+        (c, k) => finale(c.age, [hai], [rut, ...(cuoiOk(c, k) ? [cuoi(k)] : []), quy])),
     ],
   ],
 };

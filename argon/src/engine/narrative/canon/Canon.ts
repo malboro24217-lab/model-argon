@@ -13,7 +13,7 @@ import { ASSET_KINDS } from "../../economy/Holdings.ts";
 import type { Rng } from "../../core/Rng.ts";
 import type { SeasonDef } from "./Season.ts";
 import { strongestPlant } from "./Plants.ts";
-import { WEIRD_DOOR_AT } from "./Pressure.ts";
+import { WEIRD_DOOR_AT, axisFlag } from "./Pressure.ts";
 
 /** 8 kiểu hành động của cửa: đối đầu, bỏ chạy, thỏa hiệp, lật bàn, nhận tội, trả đũa, buông, đánh cược. */
 export type DoorKind = "doi_dau" | "bo_chay" | "thoa_hiep" | "lat_ban" | "nhan_toi" | "tra_dua" | "buong" | "danh_cuoc";
@@ -35,7 +35,7 @@ export interface CanonSeed {
 }
 export interface WeirdBranch {
   id: string; kind: "sf" | "abs"; axes: Axis[]; when: (c: FactContext, s: Slots) => boolean;
-  /** Gợi ý dưới nhãn cửa (≤ 70 ký tự). Không có thì sinh "Viễn tưởng|Phi lý: <tên mùa>", kẹp ở 70. */
+  /** Gợi ý dưới nhãn cửa. Luôn được thêm tiền tố "Viễn tưởng: "/"Phi lý: " nếu chưa có (cả câu ≤ 70 ký tự). Không có thì dùng tên mùa. */
   hint?: string;
   /** Nhãn cửa. */
   door: (s: Slots, c: FactContext, N: Names) => string;
@@ -50,6 +50,7 @@ export interface CanonEvent { id: string; seed: string; axis: Axis; age: number;
 const USED_PENALTY = 100;
 /** Mầm có trục vừa nổ được cộng chừng này: đủ thắng mầm lệch trục, nhưng luôn nhỏ hơn USED_PENALTY (mầm chưa dùng luôn thắng). */
 const ON_AXIS_BONUS = 50;
+
 /** 5 mùa thường theo thứ tự lùi về của cửa chung. */
 const NORMAL_SEASONS = ["tron_chay", "vu_an_gia_toc", "ngoi_sao", "lam_lai", "xu_nguoi"] as const;
 /** Mùa cần đã tự lập (bỏ đi, sang nước khác, tự thuê phòng trọ làm lại từ số 0): người còn sống nhờ quỹ gia đình không vào được, kể cả qua cửa của mầm. */
@@ -88,9 +89,9 @@ export const GENERIC_DOORS: SeedDoor[] = [
 ];
 
 /** Mùa thật của một cửa chung: mùa của nó nếu còn mở, không thì mùa thường chưa chơi đầu tiên; null nếu hết. */
-function genericSeason(d: SeedDoor, c: FactContext): string | null {
-  for (const s of [d.season, ...NORMAL_SEASONS]) if (seasonOpen(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s))) return s;
-  return null;
+function genericSeason(d: SeedDoor, c: FactContext, taken: ReadonlySet<string> = new Set()): string | null {
+  const order = [d.season, ...NORMAL_SEASONS].filter((s) => seasonOpen(c, s) && (c.independent || !NEEDS_INDEPENDENT.has(s)));
+  return order.find((s) => !taken.has(s)) ?? order[0] ?? null;   // mùa chưa có trong các cửa đã chọn trước (Task 20)
 }
 
 /** Xáo Fisher–Yates bằng rng (bản sao). */
@@ -105,7 +106,8 @@ const aliveSet = (c: FactContext): Set<string> => new Set(Object.values(c.cast).
 /**
  * Điền chỗ trống của một mầm, hoặc null nếu thiếu chỗ bắt buộc. Thứ tự (spec §4):
  *  1. vật gài của người chơi đúng loại (fromPlayer++); với `who` vật gài phải có npc còn sống;
- *  2. kẻ thù (c.nemesis còn sống), chỉ cho `who`;
+ *  2. kẻ thù (c.nemesis còn sống), chỉ cho `who`, và chỉ khi kẻ thù mang một vai trong who.roles (mầm không khai báo roles thì
+ *     nhận mọi vai): kẻ thù không bao giờ ngồi nhầm chỗ của người mẹ trong di chúc hay của người bạn đời;
  *  3. NPC còn sống mang một vai trong who.roles có |opinion| lớn nhất (hòa thì id nhỏ hơn);
  *  4. tài sản đang có, theo thứ tự what.owns (c.asset_names);
  *  5. thiếu chỗ bắt buộc → null.
@@ -120,7 +122,7 @@ export function fillSlots(seed: CanonSeed, c: FactContext, plants: Plant[], N?: 
     const w = seed.who;
     const p = w.plants ? strongestPlant(plants.filter((x) => !!x.npc && alive.has(x.npc)), w.plants) : undefined;
     if (p && p.npc) { s.who = p.npc; s.fromPlayer++; usedPlant = p; }
-    else if (c.nemesis && alive.has(c.nemesis)) s.who = c.nemesis;
+    else if (c.nemesis && alive.has(c.nemesis) && (!w.roles?.length || (c.roles[c.nemesis] ?? []).some((r) => w.roles!.includes(r)))) s.who = c.nemesis;
     else if (w.roles?.length) {
       const ids = new Set<string>();
       for (const r of w.roles) { const id = c.cast[r]; if (id) ids.add(id); }
@@ -159,8 +161,14 @@ const KY_SLOTS: CanonSeed = {
 /** Độ dài tối đa của hint (như bộ kiểm nội dung). */
 const HINT_MAX = 70;
 const clampHint = (h: string): string => (h.length <= HINT_MAX ? h : h.slice(0, HINT_MAX - 1).trimEnd() + "…");
+/** Hint cửa kỳ dị luôn mở đầu bằng "Viễn tưởng: " / "Phi lý: " (README hứa vậy); hint riêng của nhánh cũng được thêm tiền tố nếu chưa có (Task 20). */
+const WEIRD_PREFIX = /^(Viễn tưởng|Phi lý): /;
+const weirdHint = (b: WeirdBranch): string => {
+  const h = b.hint ?? b.season.vn;
+  return clampHint(WEIRD_PREFIX.test(h) ? h : `${b.kind === "sf" ? "Viễn tưởng" : "Phi lý"}: ${h}`);
+};
 const weirdDoor = (b: WeirdBranch, s: Slots, c: FactContext, N: Names): ResolvedDoor =>
-  ({ kind: "ky", label: b.door(s, c, N), hint: clampHint(b.hint ?? `${b.kind === "sf" ? "Viễn tưởng" : "Phi lý"}: ${b.season.vn}`), season: b.season.id, weird: b.id });
+  ({ kind: "ky", label: b.door(s, c, N), hint: weirdHint(b), season: b.season.id, weird: b.id });
 
 const seedDoor = (d: SeedDoor, season: string, s: Slots, c: FactContext, N: Names): ResolvedDoor => {
   const out: ResolvedDoor = { kind: d.kind, label: d.label(s, c, N), hint: d.hint, season };
@@ -168,20 +176,18 @@ const seedDoor = (d: SeedDoor, season: string, s: Slots, c: FactContext, N: Name
   return out;
 };
 
-/** Bù cửa chung cho đủ `n` cửa, khác kiểu với `taken`; ưu tiên cửa dẫn tới mùa chưa có trong `doors`. */
-function fillGeneric(doors: ResolvedDoor[], n: number, s: Slots, c: FactContext, N: Names, rng: Rng): void {
+/** Bù cửa chung cho đủ `n` cửa, khác kiểu với `taken`; ưu tiên cửa dẫn tới mùa chưa có trong `doors` (distinct: chỉ nhận mùa chưa có). */
+function fillGeneric(doors: ResolvedDoor[], n: number, s: Slots, c: FactContext, N: Names, rng: Rng, distinct = false): void {
   const kinds = new Set(doors.map((d) => d.kind));
-  const cands: { d: SeedDoor; season: string }[] = [];
-  for (const d of shuffle(GENERIC_DOORS, rng)) {
-    if (kinds.has(d.kind) || (d.when && !d.when(c, s))) continue;
-    const season = genericSeason(d, c);
-    if (season) cands.push({ d, season });
-  }
+  const cands = shuffle(GENERIC_DOORS, rng).filter((d) => !kinds.has(d.kind) && (!d.when || d.when(c, s)));
   while (doors.length < n) {
-    const open = cands.filter((x) => !kinds.has(x.d.kind));
-    if (!open.length) break;
     const seasons = new Set(doors.map((d) => d.season));
-    const { d, season } = open.find((x) => !seasons.has(x.season)) ?? open[0]!;
+    const open: { d: SeedDoor; season: string }[] = [];
+    for (const d of cands) { if (kinds.has(d.kind)) continue; const season = genericSeason(d, c, seasons); if (season) open.push({ d, season }); }
+    if (!open.length) break;
+    const fresh = open.find((x) => !seasons.has(x.season));
+    if (!fresh && distinct) break;
+    const { d, season } = fresh ?? open[0]!;
     doors.push(seedDoor(d, season, s, c, N)); kinds.add(d.kind);
   }
 }
@@ -232,11 +238,18 @@ export function generateCanon(c: FactContext, axis: Axis, plants: Plant[], rng: 
 
   const doors: ResolvedDoor[] = [];
   const kinds = new Set<string>();
-  for (const d of shuffle(seed.doors.filter((d) => seasonOpen(c, d.season) && (!d.when || d.when(c, slots))), rng)) {
-    if (doors.length >= 3) break;
-    if (kinds.has(d.kind)) continue;
-    doors.push(seedDoor(d, d.season, slots, c, N)); kinds.add(d.kind);
-  }
+  // Ba cửa khác kiểu; ưu tiên ba mùa khác nhau (Task 20): cửa của mầm khác mùa, rồi cửa chung khác mùa, rồi mới nhận trùng mùa.
+  const seedCands = shuffle(seed.doors.filter((d) => seasonOpen(c, d.season) && (!d.when || d.when(c, slots))), rng);
+  const take = (distinct: boolean) => {
+    for (const d of seedCands) {
+      if (doors.length >= 3) break;
+      if (kinds.has(d.kind) || (distinct && doors.some((x) => x.season === d.season))) continue;
+      doors.push(seedDoor(d, d.season, slots, c, N)); kinds.add(d.kind);
+    }
+  };
+  take(true);
+  if (doors.length < 3) fillGeneric(doors, 3, slots, c, N, rng, true);
+  if (doors.length < 3) take(false);
   if (doors.length < 3) fillGeneric(doors, 3, slots, c, N, rng);
 
   if (c.weird > 0 && c.pressure.ky * c.weird >= WEIRD_DOOR_AT) {
@@ -254,12 +267,12 @@ export function generateCanon(c: FactContext, axis: Axis, plants: Plant[], rng: 
 
 /**
  * Cảnh hiển thị của canon event. Mỗi cửa thành một lựa chọn với effects
- * `{ custom: "canon:<axis>|season:<id>", flags: ["canon_<seed>", "canon_door_<kind>"(, "weird_<nhánh>")] }`
+ * `{ custom: "canon:<axis>|season:<id>", flags: ["canon_<seed>", "canon_door_<kind>", "canon_ax_<axis>@<tuổi>"(, "weird_<nhánh>")] }`
  * gộp với effects của cửa: custom nối bằng "|", cờ cộng thêm, các trường khác lấy của cửa.
  */
 export function canonView(ev: CanonEvent): StoryletView {
   const choices = ev.doors.map((d) => {
-    const flags = [`canon_${ev.seed}`, `canon_door_${d.kind}`, ...(d.weird ? [`weird_${d.weird}`] : [])];
+    const flags = [`canon_${ev.seed}`, `canon_door_${d.kind}`, axisFlag(ev.axis, ev.age), ...(d.weird ? [`weird_${d.weird}`] : [])];
     const custom = `canon:${ev.axis}|season:${d.season}`;
     const x = d.effects;
     const effects: Effect = x

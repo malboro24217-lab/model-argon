@@ -1,11 +1,11 @@
 /**
  * Ánh xạ 200 thẻ Codex sang canon event (spec 2026-10-18-canon-event §6).
  * Viết tay, tất định. `tp_c03_0` = fork tp_c03, route 0.
- *  - TONE_PRESSURE: áp lực mỗi lựa chọn đẩy lên theo tông; thẻ phi lý (tp_a*) cộng thêm Kỳ 2 (xem `pressureFor`).
+ *  - TONE_PRESSURE: áp lực mỗi lựa chọn đẩy lên theo tông; thẻ phi lý (tp_a*) cộng thêm Kỳ ABSURD_KY (xem `pressureFor`).
  *  - CODEX_PLANTS: vật gài của route (nợ, đồ, con vật, người, bí mật, lời hứa...) khi nhãn/hook/hậu quả của route nêu rõ.
  *    Route có vật gài mất cảnh hậu quả 1 bước (`later` và storylet `_echo_`): vật gài sẽ được trả bằng canon event hoặc mùa.
  *    Mục có `pressure` thì thắng bảng tông.
- *  - CODEX_SEASON_TAGS: fork nào làm cảnh phụ trong mùa nào (chỉ mùa thường; mùa kỳ dị thêm ở Task 20).
+ *  - CODEX_SEASON_TAGS: fork nào làm cảnh phụ trong mùa nào (mùa thường viết tay; thẻ phi lý tp_a* thêm mọi mùa phi lý w_X*, Task 20).
  */
 import type { Axis, PlantKind } from "../types.ts";
 
@@ -17,10 +17,12 @@ export const TONE_PRESSURE: Record<string, Partial<Record<Axis, number>>> = {
   truth: { mau: 1 }, deal: { tien: 1 }, build: { tien: 1 }, probe: { ky: 1 }, exit: { dat: 1 },
 };
 
-/** Áp lực mặc định của một route: theo tông; mọi thẻ phi lý `tp_a*` cộng thêm Kỳ 2. */
+/** Kỳ cộng thêm cho mỗi lựa chọn ở thẻ phi lý `tp_a*` (Task 20: 2 → 1, để nhánh kỳ dị ở mức "Phim" về 25–40% số đời). */
+export const ABSURD_KY = 1;
+/** Áp lực mặc định của một route: theo tông; mọi thẻ phi lý `tp_a*` cộng thêm Kỳ ABSURD_KY. */
 export function pressureFor(forkId: string, tone: string): Partial<Record<Axis, number>> {
   const p = { ...(TONE_PRESSURE[tone] ?? {}) };
-  if (forkId.startsWith("tp_a")) p.ky = (p.ky ?? 0) + 2;
+  if (forkId.startsWith("tp_a")) p.ky = (p.ky ?? 0) + ABSURD_KY;
   return p;
 }
 
@@ -586,8 +588,18 @@ const SEASON_FORKS: Record<string, string[]> = {
   xu_nguoi: ["tp_c04", "tp_c09", "tp_c11", "tp_c14", "tp_c36", "tp_m25", "tp_l19", "tp_l36"],
 };
 
+/** Id mùa của 50 nhánh phi lý (w_X01–w_X50, weird/abs_*.ts). */
+export const ABS_SEASON_IDS: string[] = Array.from({ length: 50 }, (_, i) => "w_X" + String(i + 1).padStart(2, "0"));
+/**
+ * Cả 50 thẻ phi lý của Codex (tp_a01–tp_a50) làm cảnh phụ cho mọi mùa phi lý (Task 20, spec §6 "phi lý → mùa sitcom"):
+ * cùng giọng hài vô lý ở đời thường (con vật, giấy tờ, xóm giềng), không mang tiền đề nào trái với một mùa phi lý cụ thể.
+ * Mùa khoa học viễn tưởng (w_S*) không nhận: giọng nghiêm hơn, hài xóm giềng làm loãng mùa.
+ */
+const ABSURD_FORKS: string[] = Array.from({ length: 50 }, (_, i) => "tp_a" + String(i + 1).padStart(2, "0"));
+
 export const CODEX_SEASON_TAGS: Record<string, string[]> = (() => {
   const out: Record<string, string[]> = {};
   for (const [season, forks] of Object.entries(SEASON_FORKS)) for (const f of forks) (out[f] ??= []).push(season);
+  for (const f of ABSURD_FORKS) (out[f] ??= []).push(...ABS_SEASON_IDS);
   return out;
 })();

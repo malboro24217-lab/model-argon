@@ -4,7 +4,7 @@
  * Một mùa = 5 nhịp (mở màn → khởi động → cú lật → đáy → chung kết), mỗi nhịp vài thẻ. `compileSeason` biến mỗi thẻ
  * thành một Storylet ("ss_<mùa>_<nhịp>_<i>") chỉ mở khi đúng mùa, đúng nhịp và đã tới `counters.season_next`.
  * Host (Task 7) giữ `season_beat` / `season_next`: khi hết thẻ khả thi của nhịp thì tăng nhịp và đặt
- * `season_next = tuổi + beatGap(độ dài mùa)`.
+ * `season_next = tuổi + beatGap(độ dài mùa)` (độ dài / 4).
  *
  * Hợp đồng tên với host — Storylet.build nhận `names(id)` như mọi thẻ khác; thẻ mùa đọc thêm các khóa:
  *   names("scar:nguoi" | "scar:do" | "scar:no") → chữ của vết, "" nếu không có
@@ -48,6 +48,16 @@ export interface SeasonDef {
 
 /** Tuổi tối đa lúc mùa kết thúc. */
 export const SEASON_END_MAX = 85;
+/**
+ * Phần tiền riêng vượt mức reset.cash vẫn còn lại khi vào mùa (Task 20). Trước đây vào mùa là xóa sạch phần vượt
+ * (tiền "về mức X lần thu nhập"), nhưng nợ thì giữ nguyên, nên người đang có của để dành mà vào Làm lại từ số 0 / Xứ người
+ * mất đệm trả nợ và tỉ lệ vỡ nợ tăng ~+9 điểm so với đời không có canon. Giữ lại phần này: tiền "gửi lại", không mang theo người.
+ */
+export const RESET_CASH_KEEP = 0.5;
+/** Số tiền cộng vào tiền riêng khi vào mùa có reset.cash: lên thẳng mức đặt lại nếu đang thấp hơn; nếu cao hơn thì chỉ mất (1 − RESET_CASH_KEEP) phần vượt. */
+export function resetCashDelta(target: number, own: number): number {
+  return own > target ? -(own - target) * (1 - RESET_CASH_KEEP) : target - own;
+}
 /** Mùa ngắn nhất (năm). */
 export const SEASON_MIN = 5;
 
@@ -62,8 +72,11 @@ export function seasonLength(def: SeasonDef, age: number, rngNext: number): numb
   return Math.max(SEASON_MIN, len);
 }
 
-/** Khoảng năm giữa hai nhịp. */
-export const beatGap = (len: number): number => Math.max(1, Math.round(len / 5));
+/**
+ * Khoảng năm giữa hai nhịp. 5 nhịp có 4 khoảng: nhịp mở màn ở năm vào mùa, chung kết rơi vào khoảng năm cuối mùa
+ * (Task 20: trước là len/5, chung kết đáp ở 4/5 độ dài nên mùa ngắn hơn khai báo một phần năm).
+ */
+export const beatGap = (len: number): number => Math.max(1, Math.round(len / 4));
 
 const DURABLE_CUSTOM = new Set(["migrate_now", "migrate", "move_city", "marry", "spouse_leave", "have_child"]);
 /** Thay đổi bền, đủ làm chung kết: đổi con đường, đổi nước/thành phố, hôn nhân, con, mua/bán, thu nhập ×k, tiền ≥ 1 năm. */

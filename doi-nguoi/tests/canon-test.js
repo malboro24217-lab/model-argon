@@ -217,5 +217,19 @@ for (let i = 0; i < 30; i++) { const P = lives[i]; G.life = P; const R = replayL
   const a = JSON.stringify(P.lw.history), b = JSON.stringify(R.lw.history);
   if (a !== b || Math.round(R.savings) !== Math.round(P.savings)) { mism++; if (mism < 3) console.log('replay mismatch seed', P.seed, a.length, b.length); } }
 assert.strictEqual(mism, 0, 'replay matches history and savings on 30 lives');
+// Task 20: vào mùa có reset.cash thì phần tiền riêng vượt mức đặt lại chỉ mất một nửa (Argon.resetCashDelta); nợ không đổi.
+{ const P = grow(4409, 34, P => canonIndependent(P) && P.lw.season === null && P.income > 0);
+  const target = def('lam_lai').reset.cash * Math.max(300, householdIncome(P));
+  P.savings = target + 10 * Math.max(300, householdIncome(P)); const own0 = moneyFacts(P).own_cash, debt0 = factContext(P).debt;
+  enterSeason(P, 'lam_lai');
+  const own1 = moneyFacts(P).own_cash;
+  assert(own0 > target && near(own1, target + (own0 - target) * Argon.RESET_CASH_KEEP, 0.01), 'reset.cash keeps half the excess: ' + own0 + ' -> ' + own1);
+  assert(near(factContext(P).debt, debt0, 0.001), 'reset.cash leaves debt alone'); }
+// Task 20: đang trong mùa thì canon event mới chờ chung kết (không cắt mùa), trừ lần ép nổ ở FORCE_SECOND_AT.
+{ const P = grow(5501, 40, P => P.lw.season === null && P.lw.canon.n >= 1);
+  enterSeason(P, 'ngoi_sao'); for (const k in P.lw.pressure) P.lw.pressure[k] = 30; P.lw.canon.last = P.age - 20;
+  assert.strictEqual(Argon.dueAxis(factContext(P)), null, 'no canon event while a season runs');
+  exitSeason(P, 'landing', null);
+  assert(Argon.dueAxis(factContext(P)) !== null, 'canon event fires once the season has landed'); }
 console.log('PASS canon-test');
 `);

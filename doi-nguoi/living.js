@@ -64,7 +64,7 @@ function factContext(L) {
     econ_phase: s.economic_phase, ill: !!L.ill, migrated: L.migrated, flags: L.lw.sflags, counters: L.lw.counters, cast: castMap, opinion, roles, hooks: hooksMap, last_move, doors: L.lw.cz.doors,
     years_since_major: L.age - L.lw.st.last_major_age, tension: L.lw.st.tension, crises_survived: s.perception.crises_survived, traits: L.traits || { coop: 0, fair: 0, risk: 0, bold: 0 },
     ...moneyFacts(L),
-    ...canonFacts(L)
+    ...canonFacts(L, castMap, opinion)
   };
 }
 
@@ -301,6 +301,9 @@ function eulogyVN(L) {
 }
 
 /* ---- Chuyện nhỏ: 1–3 mỗi năm ---- */
+/** Trong mùa, khi không còn thẻ mùa hay cảnh phụ gắn tag mùa, thẻ đời thường chỉ ra với xác suất này (spec §5 "khoảng 30%").
+ *  Task 20: 0.3 → 0.4, vì mùa nay dài trọn độ dài khai báo và không bị cắt, nên ngân sách quyết định tụt dưới 120. */
+const SEASON_DAILY_GATE = 0.4;
 function microScene(L, ctx) {
   const lw = L.lw; if (!lw || L.pending || !L.alive || (lw.decisions || 0) >= (lw.budget || 0)) return false;
   ctx = ctx || factContext(L);
@@ -311,13 +314,13 @@ function microScene(L, ctx) {
   const pool = pools().micro.filter(s => (cnt[s.id] || 0) < (s.meta && (s.meta.path || s.meta.kind === "money") ? (s.maxPerLife ?? 1) : 1) && (last[s.id] === undefined || L.age - last[s.id] >= 10) && !(moneyDone && s.meta && s.meta.kind === "money"));
   // Chuyện mới trước: chỉ cho một thẻ quay lại khi không còn thẻ nào chưa gặp.
   const opts = { minUrgency: 0, history: lw.history, age: L.age };
-  // Trong mùa: thẻ của mùa trước (thứ tự khai báo), rồi cảnh phụ gắn tag mùa; thẻ ngoài mùa chỉ khi rng < 0.3.
+  // Trong mùa: thẻ của mùa trước (thứ tự khai báo), rồi cảnh phụ gắn tag mùa; thẻ ngoài mùa chỉ khi rng < SEASON_DAILY_GATE.
   const se = lw.season;
   if (se) { const ss = nextSeasonCard(L); if (ss) { fireSeasonCard(L, ss); return true; } if (!lw.season) ctx = factContext(L); }
   let st = null;
   if (lw.season) { const tagged = pool.filter(s => s.meta && s.meta.season && s.meta.season.includes(lw.season.id));
     st = Argon.selectStorylet(tagged.filter(s => !cnt[s.id]), ctx, opts, L.ar.rngStory) || Argon.selectStorylet(tagged, ctx, opts, L.ar.rngStory);
-    if (!st && L.ar.rngStory.next() >= 0.3) return false; }
+    if (!st && L.ar.rngStory.next() >= SEASON_DAILY_GATE) return false; }
   if (!st) st = Argon.selectStorylet(pool.filter(s => !cnt[s.id]), ctx, opts, L.ar.rngStory) || Argon.selectStorylet(pool, ctx, opts, L.ar.rngStory);
   // Lấp chỗ trống: chuyện chung không theo nhánh, chỉ khi nhánh hết chuyện
   if (!st && L.ar.rngStory.next() < 0.6) { const fill = Argon.eligible(pools().generic.filter(s => !cnt[s.id]), ctx, { minUrgency: 0, history: lw.history, age: L.age }); if (fill.length) st = fill[Math.floor(L.ar.rngStory.next() * fill.length)].s; }

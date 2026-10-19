@@ -452,7 +452,7 @@ const X07 = weird("X07", "abs", ["danh", "tinh"],
           [C("Để tóc bạc, chịu phạt", { money: -0.4, flags: ["x07_toc_bac"], counters: { x07_tu_do: 1 }, happy: 3 }, "Mất tiền phạt, được làm người đúng tuổi"),
            C("Nhuộm theo hợp đồng", { flags: ["x07_nhuom"], counters: { x07_xa: 1 }, happy: -3 }, "Giữ được tiền, gương mặt thành đồ dùng")]),
         card("x07_day_bua_com", "Bữa cơm thiếu một người", (c) => `${n(c, "x07_xa") >= 3 ? "Bữa cơm cuối tuần giờ chỉ còn bạn với một gói mì in mặt mình." : "Bữa cơm cuối tuần vắng dần, nhưng vẫn còn người chờ."} Người nhà nói không trách gì bạn, chỉ là họ đã quen ăn trước.`,
-          [C("Xin hãng nghỉ một năm không lương", { money: -0.3, flags: ["x07_nghi_nam"], rel: 5 }, "Mất tiền, kéo lại được một bữa cơm"),
+          [C("Bảo hãng tạm dừng hợp đồng một năm", { money: -0.3, flags: ["x07_nghi_nam"], rel: 5 }, "Mất tiền, kéo lại được một bữa cơm"),
            C("Gửi thêm tiền về thay cho mình", { money: -0.1, flags: ["x07_gui_tien"], counters: { x07_xa: 1 } }, "Người nhà đủ ăn, bàn ăn vẫn trống")]),
       ],
       [

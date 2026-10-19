@@ -526,7 +526,7 @@ const S07 = weird("S07", "sf", ["ky", "dat"],
           [C("Quay lại kéo người kia ra", { health: -6, flags: ["s07_cuu_nguoi"], rel: 4 }, "Có người mang ơn cả đời, phổi mang sẹo"),
            C("Làm đúng quy trình, chờ đội cứu hộ", { flags: ["s07_dung_quy_trinh"], happy: -3 }, "An toàn cho mình, áy náy rất lâu")]),
         card("s07_day_quen_giong", "Dưới đất quên giọng bạn", (c, k) => `Cuộc gọi về nhà thưa dần. Đứa trẻ trong họ gọi bạn là \"cô chú trên trời\" và không nhớ mặt. ${k.gag()}`,
-          [C("Xin nghỉ phép về thăm", { money: -0.3, flags: ["s07_ve_phep"], rel: 3 }, "Gặp lại mọi người, tốn một nửa năm tiết kiệm"),
+          [C("Xin chỉ huy cho về thăm một chuyến", { money: -0.3, flags: ["s07_ve_phep"], rel: 3 }, "Gặp lại mọi người, tốn một nửa năm tiết kiệm"),
            C("Làm thêm ca cho quên", { money: 0.2, health: -2, flags: ["s07_lam_them"] }, "Giàu thêm, xa thêm")]),
       ],
       /* chung_ket */

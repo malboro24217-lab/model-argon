@@ -24,7 +24,7 @@
  */
 import {
   createRng, PATHS, STORYLETS, MICRO, BRANCHES, BRANCHES2, LIFE_VARIANTS, TEMPER_LIFE, TEMPER2_ECHO, PATH_STORYLETS, TURNING_STORYLETS,
-  SEASONS, SEASON_STORYLETS, BEATS, compileSeason, seasonLength, beatGap, isDurable, seasonKitFromNames, landingOf,
+  SEASONS, SEASON_STORYLETS, BEATS, compileSeason, seasonLength, beatGap, RESET_CASH_KEEP, resetCashDelta, isDurable, seasonKitFromNames, landingOf,
   WEIRD, AXES, fillSlots, generateCanon, canonView, CANON_SEEDS,
   type SeasonDef, type SeasonKit, type FactContext, type Effect, type StoryletView, type CanonSeed, type Plant, type PlantKind, type Slots, type CastRole,
 } from "./engine/index.ts";
@@ -41,8 +41,8 @@ const ALL_SEASONS: SeasonDef[] = [...SEASONS, ...WEIRD.map((b) => b.season)];
 
 /* ------------------------------------------------------------------ kiểm đơn vị */
 
-ok(beatGap(12) === 2, "beatGap(12) === 2");
-ok(beatGap(3) === 1 && beatGap(1) === 1 && beatGap(20) === 4 && beatGap(8) === 2, "beatGap = max(1, round(len/5))");
+ok(beatGap(12) === 3, "beatGap(12) === 3");
+ok(beatGap(3) === 1 && beatGap(1) === 1 && beatGap(20) === 5 && beatGap(8) === 2, "beatGap = max(1, round(len/4))");
 ok(BEATS.join(",") === "mo_man,khoi_dong,cu_lat,day,chung_ket", "5 nhịp đúng thứ tự");
 
 ok(isDurable({ custom: "become:singer" }), "durable: become:");
@@ -59,6 +59,9 @@ const probe: SeasonDef = { ...SEASONS[0]!, years: [8, 20] };
 ok(seasonLength(probe, 30, 0) === 8 && seasonLength(probe, 30, 0.99999) === 20, "seasonLength phủ hai đầu years");
 ok(seasonLength(probe, 75, 0.99999) === 10, "seasonLength kết thúc ≤ 85");
 ok(seasonLength(probe, 83, 0.5) === 5, "seasonLength tối thiểu 5");
+/* resetCashDelta (Task 20): thấp hơn mức đặt lại thì lên thẳng mức đó; cao hơn thì chỉ mất (1 − RESET_CASH_KEEP) phần vượt */
+ok(RESET_CASH_KEEP === 0.5 && resetCashDelta(100, 20) === 80 && resetCashDelta(100, -50) === 150, "resetCashDelta: dưới mức → lên mức");
+ok(resetCashDelta(0, 1000) === -500 && resetCashDelta(200, 1000) === -400 && resetCashDelta(100, 100) === 0, "resetCashDelta: trên mức → giữ một nửa phần vượt");
 
 /* ------------------------------------------------------------------ kiểm từng mùa */
 
@@ -564,10 +567,8 @@ const PREMISE: Record<string, { rules: string[]; variants?: string[]; cards?: st
   tron_chay: { rules: ["nợ", "thuê nhà"], why: "mùa trốn nợ: dàn mới có gã đòi nợ (vai creditor), bạn bỏ đi và thuê một căn gác" },
   lam_lai: { rules: ["thuê nhà"], variants: ["home"], why: "mùa bắt đầu trong một phòng trọ thuê, tiền về không (cả người có nhà riêng); người sống nhờ không vào được mùa (NEEDS_INDEPENDENT)" },
   xu_nguoi: { rules: ["thuê nhà"], why: "mùa sang nước khác: bạn thuê căn phòng dưới mái của bà chủ nhà" },
-  w_S07: { rules: ["việc"], cards: ["s07_day_quen_giong"], why: "nhánh ký hợp đồng lên trạm sao Hỏa: dàn mới có chỉ huy trạm (first_boss), ca trực là việc của mùa" },
   w_S33: { rules: ["việc"], cards: ["s33_mo_phong", "s33_mo_dong_nghiep", "s33_kd_mang", "s33_cl_ban_sao", "s33_day_dong_nghiep"], why: "nhánh nhận việc làm người thật cho máy: dàn mới có chị giám sát (first_boss) và người đồng nghiệp, chỗ làm là của mùa" },
   w_S50: { rules: ["không nợ"], why: "nhánh hệ thống xóa bạn khỏi mọi hồ sơ, xóa luôn sổ nợ: \"không còn nợ ai\" là tiền đề của mùa (chung kết repay hay lấy lại nợ)" },
-  w_X07: { rules: ["việc"], cards: ["x07_day_bua_com"], why: "nhánh bán bản quyền khuôn mặt cho hãng mì: hợp đồng với hãng là việc của mùa (dàn mới first_boss: chị đại diện của hãng)" },
   w_X22: { rules: ["hưu"], why: "nhánh giấy tờ cộng thêm ba mươi tuổi: sổ hưu, lương hưu theo tuổi trên giấy là tiền đề của mùa" },
   w_X37: { rules: ["nợ"], why: "nhánh thừa kế món nợ một triệu chiếc bánh của bà cô: giấy nợ trả bằng bánh là tiền đề của mùa (dàn mới có ông trưởng ban đòi bánh, vai creditor)" },
   w_X40: { rules: ["nợ"], why: "nhánh người của một ngày: người kia vay tiền dưới tên bạn là tiền đề của mùa (dàn mới có bà chủ tiệm cầm đồ, vai creditor)" },

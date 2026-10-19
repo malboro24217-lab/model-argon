@@ -9,7 +9,7 @@
 import type { Choice, FactContext } from "../../types.ts";
 import type { WeirdBranch } from "../Canon.ts";
 import type { Landing } from "../Season.ts";
-import { C, cap, card, ending, land, noOr, pathOpen, season, weird } from "../kit.ts";
+import { C, cap, card, ending, land, noOr, pathOpen, season, wed, weird } from "../kit.ts";
 
 type Names = (id: string) => string;
 
@@ -20,17 +20,6 @@ const nameOr = (N: Names, id: string | undefined, d: string): string => {
   return !v || v === id || v === "ai đó" ? d : v;
 };
 const cnt = (c: FactContext, k: string): number => c.counters[k] ?? 0;
-/**
- * Lựa chọn chung kết cưới một người có tên: thay "marry" bằng "marry:<tên>" (host đặt tên bạn đời theo tên này).
- * Không có tên thì giữ nguyên effects của landing. Landing cưới có thêm tiền ≥ 1 năm nên vẫn bền khi đổi custom.
- */
-const wed = (l: Landing, label: string, hint: string, name: string | null): Choice => {
-  if (!name) return ending(l, label, hint);
-  const clean = name.replace(/[|:]/g, "").trim();
-  if (!clean) return ending(l, label, hint);
-  const custom = (l.effects.custom ?? "").split("|").map((p) => (p === "marry" ? `marry:${clean}` : p)).join("|");
-  return C(label, { ...l.effects, custom }, hint);
-};
 
 /* ======================================================================= X21 Vụ án cây cau */
 
@@ -116,7 +105,7 @@ const X21 = weird("X21", "abs", ["dat", "luat", "ky"],
     ],
   }));
 
-/* ======================================================================= X22 Cụ già 35 tuổi (nâng từ a03) */
+/* ======================================================================= X22 Cụ già trên giấy (trước: "Cụ già 35 tuổi", nhưng mở từ 25 đến 45 tuổi) (nâng từ a03) */
 
 const cu22 = (c: FactContext): string => (c.sex === "F" ? "bà" : "ông");
 /** Đã thật sự lĩnh lương hưu theo tuổi trên giấy (nhận sổ hưu, hay nhận mà vẫn lén đi làm): hint nói "lương hưu đang lĩnh", không thì "suất hưu đang chờ". */
@@ -139,7 +128,7 @@ const X22 = weird("X22", "abs", ["luat", "ky", "danh"],
     text: `${c.flags.has("tp_a03_seen") ? "Lần trước giấy tờ chỉ cộng cho bạn mười tuổi. Lần này hệ thống sửa lỗi bằng cách cộng thêm hai mươi nữa." : "Hệ thống hộ tịch vừa nâng cấp, và bạn là lỗi đầu tiên của nó."} Trên giấy tờ mới, bạn sinh trước mình ba mươi năm, đủ tuổi nghỉ hưu từ hôm qua. Ảnh vẫn là ảnh bạn, chỉ có ai đó vẽ thêm bộ râu bằng bút bi. "Máy không sai bao giờ, chỉ có người sai," người cán bộ ở quầy nói, rồi đóng dấu.`,
   }),
   season({
-    id: "w_X22", vn: "Cụ già 35 tuổi", color: "#d4a24c", years: [6, 10], weird: "abs",
+    id: "w_X22", vn: "Cụ già trên giấy", color: "#d4a24c", years: [6, 10], weird: "abs",
     rules: { income: 0.7, yearly: { happy: 1 }, flags: ["w_cu_gia_tren_giay"] },
     reset: { cast: [{ key: "chu_hoi", role: "neighbor", label: "cụ chủ tịch hội người cao tuổi" }, { key: "can_bo", role: "official", label: "cô cán bộ hộ tịch mới" }] },
     gag: { key: "nhuong_ghe", lines: [

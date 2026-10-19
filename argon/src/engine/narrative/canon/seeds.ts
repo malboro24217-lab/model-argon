@@ -140,6 +140,8 @@ const quanHe = (s: Slots, c: FactContext): string =>
   vai(s, c, "spouse") ? "người bạn đời" : vai(s, c, "sibling") ? "người ruột thịt" : vai(s, c, "partner") ? "người cùng làm ăn"
     : vai(s, c, "childhood_friend") ? "người bạn từ thuở nhỏ" : "người bạn tin nhất";
 const nhoTuoi = (c: FactContext): boolean => c.age < 16;
+/** Người ở chỗ `who` là người trong nhà (bạn đời, anh chị em, bố mẹ, con)? Câu chữ "trước mặt cả nhà" chỉ hợp khi đúng (Task 20). */
+const nguoiNha = (s: Slots, c: FactContext): boolean => (["spouse", "sibling", "father", "mother", "child"] as const).some((r) => vai(s, c, r));
 
 const PHAN_BOI: CanonSeed = {
   id: "phan_boi", axes: ["tinh", "mau"], ages: [10, 72],
@@ -166,9 +168,10 @@ const PHAN_BOI: CanonSeed = {
     return `Sổ tiết kiệm chung chỉ còn lại con số không. Dòng rút cuối cùng mang chữ ký của ${ai}, ${qh}, vào một buổi sáng bạn còn đang ngủ.`;
   },
   doors: [
-    { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Sự thật ra ánh sáng, và cả nhà phải chọn phe",
+    { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Sự thật ra ánh sáng, và người quanh bạn phải chọn phe",
       label: (s, c, N) => (nhoTuoi(c) ? (s.what?.kind === "secret" ? "Kể hết với bố mẹ, chỉ rõ ai đã nói ra" : "Kể hết với bố mẹ, chỉ tận chỗ giấu")
-        : vua(`Gọi cả nhà ngồi lại, hỏi thẳng ${ten(s, N, "người ấy")}`, "Gọi cả nhà ngồi lại, hỏi thẳng một lần")) },
+        : nguoiNha(s, c) ? vua(`Gọi cả nhà ngồi lại, hỏi thẳng ${ten(s, N, "người ấy")}`, "Gọi cả nhà ngồi lại, hỏi thẳng một lần")
+        : vua(`Hẹn ${ten(s, N, "người ấy")} ra, hỏi thẳng một lần`, "Hẹn người ấy ra, hỏi thẳng một lần")) },
     { kind: "tra_dua", season: "vu_an_gia_toc", hint: "Hả dạ về sau, nhưng mối thù sẽ đi theo bạn nhiều năm",
       label: (s, c, N) => vua(`Giữ bằng chứng, chờ ngày trả lại ${ten(s, N, "người ấy")}`, "Giữ bằng chứng, chờ ngày trả lại"),
       effects: nho("HUMILIATED_ME", -0.4, "bị trả đũa sau vụ phản bội") },
@@ -246,7 +249,9 @@ const DI_CHUC: CanonSeed = {
       const ai = ten(s, N, "");
       return `${ai} gọi bạn vào phòng. Trên bàn có ba bản di chúc viết tay, mỗi bản gạch một cái tên; một trong ba cái tên ấy là của bạn.${thu} ${ai} muốn bạn chọn bản nào được giữ lại.`;
     }
-    const mo = s.who ? `${ten(s, N, "")} đặt lên bàn ba bản di chúc viết tay của bố mẹ` : "Dọn tủ của bố mẹ, bạn tìm thấy ba bản di chúc viết tay";
+    const mo = !s.who ? "Dọn tủ của bố mẹ, bạn tìm thấy ba bản di chúc viết tay"
+      : nguoiNha(s, c) ? `${ten(s, N, "")} đặt lên bàn ba bản di chúc viết tay của bố mẹ`
+      : `${ten(s, N, "")} mang tới ba bản di chúc viết tay của bố mẹ bạn, nói là được nhờ giữ hộ từ nhiều năm trước`;
     return `${mo}, mỗi bản gạch một cái tên. Không bản nào ghi ngày.${thu} Ai giữ được bản nào là chuyện của cả họ.`;
   },
   doors: [
@@ -323,9 +328,10 @@ const VE_XA: CanonSeed = {
     { kind: "thoa_hiep", season: "xu_nguoi", hint: "Đi muộn một mùa, mất lòng người giới thiệu",
       label: () => "Đi, nhưng đòi viết lại dòng bị gạch", when: indep,
       effects: nho("WIN_WIN_DEAL", 0.1, "hợp đồng đi xa được viết lại") },
-    { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Biết rõ sự thật, nhưng cả nhà bị kéo vào cuộc",
-      label: (s, c, N) => (s.who ? vua(`Hỏi thẳng ${ten(s, N, "")} trước mặt cả nhà`, "Hỏi thẳng người giới thiệu trước mặt cả nhà")
-        : "Hỏi thẳng người giới thiệu trước mặt cả nhà") },
+    { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Biết rõ sự thật, nhưng chuyện vỡ ra trước mặt mọi người",
+      label: (s, c, N) => (s.who && nguoiNha(s, c) ? vua(`Hỏi thẳng ${ten(s, N, "")} trước mặt cả nhà`, "Hỏi thẳng người giới thiệu trước mặt cả nhà")
+        : s.who ? vua(`Hỏi thẳng ${ten(s, N, "")} trước mặt mọi người`, "Hỏi thẳng người giới thiệu trước mặt mọi người")
+        : "Hỏi thẳng người giới thiệu trước mặt mọi người") },
     { kind: "lat_ban", season: "ngoi_sao", hint: "Cứu được người khác, thành cái gai trong mắt kẻ đứng sau",
       label: () => "Chụp tờ hợp đồng, đăng lên cảnh báo mọi người",
       effects: nho("HUMILIATED_ME", -0.3, "bị bêu tên vì tờ hợp đồng") },
@@ -339,33 +345,35 @@ const VE_XA: CanonSeed = {
 /* ------------------------------------------------------------------ 8. Đêm nước lên (nâng từ Codex c05) */
 
 const NUOC_LEN: CanonSeed = {
-  id: "nuoc_len", axes: ["dat", "than"], ages: [8, 16],
+  // Task 20: mở cho mọi tuổi (trước là 8–16): biến cố trước 17 tuổi gần như không bao giờ nổ, nên mầm này chưa từng xuất hiện.
+  // Chữ và cửa rẽ theo tuổi: còn nhỏ (nhoTuoi) là đứa trẻ giữa đêm lũ, lớn rồi là người lớn trong nhà.
+  id: "nuoc_len", axes: ["dat", "than"], ages: [8, 72],
   who: { roles: ["neighbor", "official"], plants: ["person"], required: false },
   what: { plants: ["animal", "object"], required: false },
   title: () => "Nước tới bậc thềm thứ hai",
   text: (s, c, N) => {
-    /* c05 là thẻ người lớn (18–65) nên thường chưa gặp khi mầm này nổ (8–16); vẫn gọi lại nếu đã gặp. */
+    /* c05 là thẻ người lớn (18–65); nếu đã gặp thì gọi lại lần nước lên trước. */
     const lan = daGap(c, C05) ? ` Lần nước lên trước, ${hoi(c, C05, ["cả nhà đã theo xe lên thành phố", "bạn đã ở lại giữ đồ chung", "bạn đã rủ mọi người chở từng lượt"], "bạn đã kịp thoát")}; lần này nước lên nhanh hơn.` : "";
     const xe = s.who ? `${ten(s, N, "")} đứng trên thùng chiếc xe tải duy nhất còn nổ máy, gọi cả nhà bạn trèo lên. Thùng xe đã chật kín họ hàng nhà ${ten(s, N, "")}.`
       : "Đầu ngõ, chiếc xe tải duy nhất còn nổ máy đang bóp còi gọi người; thùng xe đã chật kín họ hàng nhà tài xế.";
-    const con = s.what ? `${cap(vat(s))} vẫn còn ở trong nhà.` : "Chiếc cặp sách của bạn vẫn nằm trên bàn học.";
+    const con = s.what ? `${cap(vat(s))} vẫn còn ở trong nhà.` : nhoTuoi(c) ? "Chiếc cặp sách của bạn vẫn nằm trên bàn học." : "Mấy cuốn album ảnh cũ vẫn nằm trong tủ.";
     return `Nửa đêm, nước ở ${noi(s)} đã lên tới bậc thềm thứ hai.${lan} ${xe} ${con} Trên xe chỉ còn chỗ cho vài người nữa.`;
   },
   doors: [
     { kind: "thoa_hiep", season: "lam_lai", hint: "Cả nhà an toàn, mọi thứ còn lại phải làm lại từ đầu",
       label: () => "Theo cả nhà lên xe, về chỗ tạm cư" },
     { kind: "buong", season: "lam_lai", hint: "Đi nhẹ, mang theo một nỗi tiếc rất lâu",
-      label: (s) => (s.what ? vua(`Bỏ ${vat(s)} lại, trèo lên xe không ngoái nhìn`, "Bỏ hết lại, trèo lên xe không ngoái nhìn")
-        : "Bỏ cặp sách lại, trèo lên xe không ngoái nhìn") },
+      label: (s, c) => (s.what ? vua(`Bỏ ${vat(s)} lại, trèo lên xe không ngoái nhìn`, "Bỏ hết lại, trèo lên xe không ngoái nhìn")
+        : nhoTuoi(c) ? "Bỏ cặp sách lại, trèo lên xe không ngoái nhìn" : "Bỏ hết lại, trèo lên xe không ngoái nhìn") },
     { kind: "danh_cuoc", season: "ngoi_sao", hint: "Cả xóm nhớ ơn, cả tỉnh biết mặt bạn",
-      label: () => "Rủ người lớn chở thêm từng lượt cho cả xóm",
-      effects: nho("HELPED_IN_CRISIS", 0.3, "đêm nước lên, đứa trẻ rủ chở cả xóm") },
-    { kind: "lat_ban", season: "vu_an_gia_toc", hint: "Nói được điều người lớn không dám, gây thù với cả một họ",
+      label: (s, c) => (nhoTuoi(c) ? "Rủ người lớn chở thêm từng lượt cho cả xóm" : "Mượn thêm thuyền, chở từng lượt cho cả xóm"),
+      effects: (c, s) => nho("HELPED_IN_CRISIS", 0.3, nhoTuoi(c) ? "đêm nước lên, đứa trẻ rủ chở cả xóm" : "đêm nước lên, bạn chở cả xóm từng lượt")(c, s) },
+    { kind: "lat_ban", season: "vu_an_gia_toc", hint: "Nói ra điều ai cũng nghĩ mà không dám, gây thù với cả một họ",
       label: (s, c, N) => (s.who ? vua(`Hỏi to vì sao ${ten(s, N, "")} chỉ chở người nhà`, "Hỏi to vì sao xe chỉ chở người nhà")
         : "Hỏi to vì sao xe chỉ chở người nhà tài xế"),
-      effects: nho("HUMILIATED_ME", -0.3, "bị một đứa trẻ hỏi giữa đêm lũ") },
+      effects: (c, s) => nho("HUMILIATED_ME", -0.3, nhoTuoi(c) ? "bị một đứa trẻ hỏi giữa đêm lũ" : "bị hỏi thẳng giữa đêm lũ")(c, s) },
     { kind: "doi_dau", season: "vu_an_gia_toc", hint: "Giữ được nhà, rồi cả họ tranh nhau sửa nhà ai trước",
-      label: () => "Ở lại trên gác cùng người lớn, giữ nhà" },
+      label: (s, c) => (nhoTuoi(c) ? "Ở lại trên gác cùng người lớn, giữ nhà" : "Ở lại trên gác, giữ nhà") },
   ],
 };
 

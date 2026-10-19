@@ -41,13 +41,13 @@ function canonInit(L) {
   L.weird ??= 1;
 }
 
-/** Các trường canon của FactContext. nemesis để trống: mầm chưa kiểm vai cho kẻ thù (xem báo cáo Task 7). */
-function canonFacts(L) {
+/** Các trường canon của FactContext. nemesis: kẻ thù truyền kiếp (Argon.nemesisOf trên cast/opinion factContext vừa dựng; Task 20). */
+function canonFacts(L, cast, opinion) {
   const lw = L.lw; if (!lw.canon) canonInit(L);
   const se = lw.season;
   return {
     pressure: { ...lw.pressure }, plants: lw.plants.slice(), season: se ? se.id : null, season_beat: se ? (lw.counters.season_beat || 0) : 0,
-    canon_n: lw.canon.n, last_canon_age: lw.canon.last, weird: L.weird ?? 1, nemesis: undefined, can_migrate: canMigrate(L)
+    canon_n: lw.canon.n, last_canon_age: lw.canon.last, weird: L.weird ?? 1, nemesis: cast && opinion ? Argon.nemesisOf({ cast, opinion }) : undefined, can_migrate: canMigrate(L)
   };
 }
 
@@ -110,7 +110,7 @@ function enterSeason(L, id) {
   const scars = Argon.pickScars(ctx, lw.plants, lw.promises.filter(p => p.kept === null).map(p => ({ to: p.to, what: p.what })), x => castName(L, x)); // 2
   const rs = canonRng(L, "season:" + id), r = () => rs.next(), ar = canonRng(L, "cast:" + id);
   // 3. đặt lại: tiền (chỉ người đã tự lập, tính trên tiền riêng), hiệu ứng đầu mùa, người mới
-  if (d.reset.cash !== undefined && ctx.independent) L.savings += d.reset.cash * Math.max(300, householdIncome(L)) - ctx.own_cash;
+  if (d.reset.cash !== undefined && ctx.independent) L.savings += Argon.resetCashDelta(d.reset.cash * Math.max(300, householdIncome(L)), ctx.own_cash);
   if (d.reset.effects) canonApplyQuiet(L, canonOwnOnly(L, d.reset.effects, true));
   const cast = {};
   for (const nc of d.reset.cast || []) cast[nc.key] = seasonCastMember(L, nc, r, ar).id;
