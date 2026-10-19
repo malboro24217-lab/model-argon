@@ -251,21 +251,22 @@ Chạy lại trên nền `cb0cc59` (đã có 20a), cùng test và cùng seed: 80
 - `canon-content-test`: 105 mùa, 869 thẻ, 100 nhánh kỳ dị, 0 lỗi.
 - Probe quy tắc 9: khoảng 1,07 triệu lần dựng thẻ, 0 vi phạm. Trước đợt quét 20a, cùng probe bắt 131 lỗi.
 
-**Chuẩn của spec §8:**
+**Chuẩn của spec §8** (đo lại trên bản ghép `canon-int`, gồm 8b, 20, 20c, 20d, 21c và vòng sửa 1 của cả năm nhánh; `argon/tools/canon-stats.js` 200 đời ở mức Phim, seed i·7919+17; cột Task 20 là số trong `2026-10-19-canon-tuning.md`):
 
-| Chỉ số | Mục tiêu | Hiện có |
-|---|---|---|
-| Canon event mỗi đời | 2–4, 100% đời ≥ 2 | Đạt trên mẫu của Task 7 (xem trên) |
-| Thẻ về sau khác khi đổi cửa canon (`divergence-canon.js`) | trung vị ≥ 80% | TBD sau Task 20 |
-| Mùa chiếm thời gian từ 18 tuổi | ≥ 60% | TBD sau Task 20 (đo sớm ở Task 7: 46%) |
-| Canon event có ≥ 1 chỗ trống điền bằng vật gài của người chơi | ≥ 70% | TBD sau Task 20 (đo sớm: gần 100%) |
-| Tổ hợp (mầm, người, đồ vật, cửa) khác nhau | ≥ 150 | TBD sau Task 20 |
-| Nhánh kỳ dị ở mức Phim | 25–40% số đời | TBD sau Task 20 (đo sớm: 75%) |
-| Nhánh kỳ dị ở mức Đời thật | 0% | TBD sau Task 20 (generator đã có test) |
-| Phá sản so với main | ≤ +5 điểm | TBD sau Task 20 |
-| `replay-test` | khớp 100% | PASS ở mọi lần ghép |
+| Chỉ số | Mục tiêu | Task 20 (200 đời) | Bản ghép (200 đời) |
+|---|---|---|---|
+| Canon event mỗi đời | 2–4, 100% đời tới 60 có ≥ 2 | 1.0, tối đa 4, cách ≥ 8 | 1.0, tối đa 4, cách ≥ 8 |
+| Mùa chiếm thời gian từ 18 tuổi | ≥ 60% | 0,673 | 0,643 |
+| Canon event có ≥ 1 chỗ trống từ vật gài của người chơi | ≥ 70% | 1,0 (tươi 0,635) | 0,998 (tươi 0,974, sau 20c) |
+| Tổ hợp khác nhau | ≥ 150 | 537 | 567 |
+| Nhánh kỳ dị ở mức Phim | 25–40% | 0,325 | 0,32 |
+| Quyết định mỗi đời, trung vị | 120–130 | 126 | 129 |
+| Phá sản so với main / canon tắt | ≤ +5 điểm | 0,57 (main 0,57; canon tắt 0,55) | **0,64 (canon tắt 0,535: +10,5 điểm; so main 0,57 của Task 20: +7) — chưa đạt** |
+| Thẻ về sau khác khi đổi cửa canon | trung vị ≥ 80% | 0,66 (R27: khoảng trống đã biết) | chưa đo lại |
+| `replay-test` | khớp 100% | PASS | PASS (replayDiff 0, cfBad 0) |
 
-Các số "đo sớm" chạy trên bản đang làm, chưa cân chỉnh. Chúng chỉ cho biết Task 20 phải kéo chỉ số nào.
+Phá sản tăng sau khi ghép: Task 20 riêng +5 điểm so với canon tắt (120 đời), 8b riêng +7,5, 20d riêng +2,5, bản ghép +11,7 (120 đời) / +10,5 (200 đời). R24 (thưởng và khoản lỗ tính trên lương gốc, kể cả trong mùa hệ số < 1) và luật năm −0,03…−0,05 của 20d (R25) cộng dồn với cân chỉnh của Task 20. Cần một lượt cân lại (`RESET_CASH_KEEP`, luật năm, hay khoản lỗ trong mùa hệ số thấp).
+
 
 ## 6. Giới hạn đã biết và việc để sau
 - **Kẻ thù truyền kiếp (nemesis) chưa nối.**
